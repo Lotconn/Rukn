@@ -30,8 +30,10 @@
             ],
             "sources": [
                 {
-                    "type": "dir",
-                    "path": "../../"
+                    "type": "git",
+                    "url": "https://gitlab.com/munadi/munadi.git",
+                    "tag": "TAG_NAME",
+                    "commit": "COMMIT_ID"
                 },
                 {
                     "type": "file",
