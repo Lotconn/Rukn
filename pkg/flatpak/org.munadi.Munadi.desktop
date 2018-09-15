@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Munadi
+Exec=munadi
+Icon=org.munadi.Munadi
+Type=Application
+Categories=Utility;
+Terminal=false
+Encoding=UTF-8
+Comment=Simple Athan App

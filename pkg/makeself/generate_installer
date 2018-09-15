@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# makeself.sh /home/joe/mysoft mysoft.sh "Joe's Nice Software Package" ./setup 
+# e.g. makeself.sh [args] archive_dir file_name label startup_script [script_args]
+
+strip ./files/munadi
+chmod +x -R ./files/
+makeself --xz --nox11 ./files install_munadi.sh "Munadi 17.02 Installer" ./install.sh

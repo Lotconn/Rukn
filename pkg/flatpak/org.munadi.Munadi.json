@@ -1,0 +1,46 @@
+{
+    "app-id": "org.munadi.Munadi",
+    "runtime": "org.kde.Platform",
+    "runtime-version": "5.11",
+    "sdk": "org.kde.Sdk",
+    "command": "munadi",
+    "branch": "17.02",
+    "finish-args": [
+        "--device=dri",
+        "--share=ipc", 
+        "--socket=x11",
+        "--socket=wayland",
+        "--share=network",
+        "--socket=pulseaudio",
+        "--filesystem=xdg-config/autostart:create",
+	"--talk-name=org.freedesktop.Notifications"
+    ],
+    "modules": [
+        {
+            "name": "munadi",
+            "buildsystem": "simple",
+            "build-commands": [
+                "install -D org.munadi.Munadi.desktop /app/share/applications/org.munadi.Munadi.desktop",
+                "install -D org.munadi.Munadi.png /app/share/icons/hicolor/96x96/apps/org.munadi.Munadi.png",
+                "mv src/* .",
+                "qmake munadi.pro",
+                "make -j4",
+                "install -D munadi /app/bin/munadi"
+            ],
+            "sources": [
+                {
+                    "type": "dir",
+                    "path": "../../"
+                },
+                {
+                    "type": "file",
+                    "path": "org.munadi.Munadi.desktop"
+                },
+                {
+                    "type": "file",
+                    "path": "org.munadi.Munadi.png"
+                }
+            ]
+        }
+    ]
+}

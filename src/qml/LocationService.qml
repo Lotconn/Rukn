@@ -1,0 +1,49 @@
+import QtQuick 2.0
+import QtPositioning 5.5
+import QtLocation 5.6
+Item {
+    id: ls
+
+    signal searchResults(var locations)
+
+    function search(query) {
+        geocodeModel.reset()
+        geocodeModel.query = query
+        geocodeModel.update()
+    }
+
+    Plugin {
+        id: aPlugin
+        name: "osm"
+    }
+
+    GeocodeModel {
+        id: geocodeModel
+        plugin: aPlugin
+        autoUpdate: false
+
+        onLocationsChanged: {
+            ls.searchResults(this)
+        }
+    }
+
+//    PositionSource {
+
+//        id: src
+//        active: true
+
+//        onPositionChanged: {
+
+//            active = false
+//            var coord = src.position.coordinate;
+//            search(coord)
+//        }
+//    }
+
+
+
+//     function findMe() {
+//            geocodeModel.query = "california"//"77.100.28.69"// "birmingham"//  src.position.coordinate;//"53 Brandl St, Eight Mile Plains, Australia"
+//            geocodeModel.update()
+//    }
+}

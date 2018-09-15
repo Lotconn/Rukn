@@ -1,0 +1,116 @@
+import QtQuick 2.0
+import QtQuick.Controls 2.0
+import QtQuick.Layouts 1.1
+import QtQuick.Controls 2.0
+
+import "../data/Adhan.js" as Adhan
+
+
+// This is the main page, which showa prayer time, fav mosque selection = and time left.
+
+Page {
+
+    PageBorder {
+
+        Grid {
+            anchors.fill: parent
+            columns: 1
+            rows: mm.stickerMode ? 7 : 9
+
+            property int cellHeight: height / rows
+            property int cellWidth: width
+
+            LocationInfoRow {
+                id: locationInfoRow
+                cityName: mm.cityName
+                countryName: mm.stateName.length > 0 ? mm.stateName + ", " + mm.countryName : mm.countryName
+            }
+
+            DateRow {
+                id: date
+            }
+
+            PrayerRow {
+                id: fajr
+                prayerId: Adhan.adhan.Prayer.Fajr
+                prayerLabel: "Fajr"
+                athanTime: mm.fajr
+            }
+
+            PrayerRow {
+                id: sunrise
+                prayerId: Adhan.adhan.Prayer.Sunrise
+                prayerLabel: "Srise"
+                athanTime: mm.srise
+            }
+
+            PrayerRow {
+                id: duhr
+                prayerId: Adhan.adhan.Prayer.Dhuhr
+                prayerLabel: "Duhr"
+                athanTime: mm.duhr
+            }
+
+            PrayerRow {
+                id: asr
+                prayerId: Adhan.adhan.Prayer.Asr
+                prayerLabel: "Asr"
+                athanTime: mm.asr
+            }
+
+            PrayerRow {
+                id: mgrb
+                prayerId: Adhan.adhan.Prayer.Maghrib
+                prayerLabel: "Mgrb"
+                athanTime: mm.mgrb
+            }
+
+            PrayerRow {
+                id: isha
+                prayerId: Adhan.adhan.Prayer.Isha
+                prayerLabel: "Isha"
+                athanTime: mm.isha
+            }
+
+            TimeLeftRow {
+                id: timeLeft
+                text: mm.timeLeftStr
+            }
+        }
+
+    }
+
+//    Connections {
+//        target: mm
+//        onCityNameChanged: {
+//            locationInfoRow.cityName = mm.cityName
+
+//        }
+//    }
+
+//    Connections {
+//        target: mm
+//        onCountryNameChanged: {
+//            locationInfoRow.countryName = mm.countryName
+//        }
+//    }
+
+//    function updateTimeLeft() {
+
+//        if(engine.isAthanPlaying()) {
+//            timeLeft.text = qsTr("%1 Athan").arg(engine.getCurrPrayerLabel());
+//            mm.nextPrayerLabel = engine.getCurrPrayerLabel()
+//        }
+//        else {
+//            var prayerLabel = engine.getNextPrayerLabel();
+//            mm.nextPrayerLabel = prayerLabel
+
+//            if(prayerLabel === "") {
+//                timeLeft.visible = false;
+//            } else {
+//                timeLeft.visible = true;
+//                timeLeft.text = qsTr(prayerLabel) + qsTr(" in ") + engine.getTimeDifference();
+//            }
+//        }
+//    }
+}
