@@ -13,15 +13,16 @@
         "--share=network",
         "--socket=pulseaudio",
         "--filesystem=xdg-config/autostart:create",
-	"--talk-name=org.freedesktop.Notifications"
+        "--talk-name=org.freedesktop.Notifications"
     ],
     "modules": [
         {
             "name": "munadi",
             "buildsystem": "simple",
             "build-commands": [
-                "install -D org.munadi.Munadi.desktop /app/share/applications/org.munadi.Munadi.desktop",
-                "install -D org.munadi.Munadi.png /app/share/icons/hicolor/96x96/apps/org.munadi.Munadi.png",
+                "install -Dm644 org.munadi.Munadi.desktop /app/share/applications/org.munadi.Munadi.desktop",
+                "install -Dm644 org.munadi.Munadi.appdata.xml /app/share/appdata/org.munadi.Munadi.appdata.xml",
+                "tar xf org.munadi.Munadi.icons.tar.gz -C /app/share/",
                 "mv src/* .",
                 "qmake munadi.pro",
                 "make -j4",
@@ -38,7 +39,11 @@
                 },
                 {
                     "type": "file",
-                    "path": "org.munadi.Munadi.png"
+                    "path": "org.munadi.Munadi.appdata.xml"
+                },
+                {
+                    "type": "file",
+                    "path": "org.munadi.Munadi.icons.tar.gz"
                 }
             ]
         }
