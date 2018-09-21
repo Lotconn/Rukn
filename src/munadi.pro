@@ -7,12 +7,30 @@ DEFINES -= ARABIC
 win32 || mac || linux {
 QT += core gui network qml quick multimedia location positioning
 DEFINES += DESKTOP
+TARGET = munadi
+}
+
+CONFIG(flatpak) {
+message("flatpak build")
+
+target.path = $$(FLATPAK_DEST)/bin
+
+desktop.files = xdg/org.munadi.Munadi.desktop
+desktop.path = $$(FLATPAK_DEST)/share/applications
+
+appdata.files = xdg/org.munadi.Munadi.appdata.xml
+appdata.path = $$(FLATPAK_DEST)/share/appdata
+
+icons.files = xdg/org.munadi.Munadi.icons/*
+icons.path = $$(FLATPAK_DEST)/share/icons
+
+INSTALLS += target desktop appdata icons
 }
 
 android {
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 QT += core gui network qml quick multimedia location positioning
-DEFINES -= DESKTOP
+DEFINES += ANDROID
 TARGET = Munadi
 }
 
