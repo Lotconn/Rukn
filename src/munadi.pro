@@ -5,7 +5,7 @@ DEFINES -= ARABIC
 #DEFINES += QT_NO_DEBUG_OUTPUT
 
 win32 || mac || linux {
-QT += core gui network qml quick multimedia location positioning
+QT += core gui network qml quick quickcontrols2 multimedia location positioning
 DEFINES += DESKTOP
 TARGET = munadi
 }
@@ -29,7 +29,7 @@ INSTALLS += target desktop appdata icons
 
 android {
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
-QT += core gui network qml quick multimedia location positioning
+QT += core gui network qml quick quickcontrols2 multimedia location positioning
 DEFINES += ANDROID
 TARGET = Munadi
 }
@@ -53,11 +53,6 @@ SOURCES = qml/*.qml
 
 DISTFILES += qml/*.qml \
     android/AndroidManifest.xml \
-    android_release.keystore \
-    android/assets/audio/athan.ogg \
-    android/res/drawable-ldpi/icon.png \
-    munadi64.png \
-    munadi80.png
 
 contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
     ANDROID_EXTRA_LIBS = \

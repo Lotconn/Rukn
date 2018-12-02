@@ -1,9 +1,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 1.4
-import Qt.labs.controls 1.0
 import QtQuick.Layouts 1.2
 import Qt.labs.settings 1.0
-import Munadi.RequestType 1.0
 
 Rectangle {
     border.color: main.borderColour

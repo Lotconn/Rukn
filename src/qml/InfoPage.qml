@@ -2,7 +2,6 @@ import QtQuick 2.5
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.2
 import Qt.labs.settings 1.0
-import Munadi.RequestType 1.0
 
 Rectangle {
     id: table

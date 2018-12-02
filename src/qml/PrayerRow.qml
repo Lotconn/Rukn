@@ -2,7 +2,7 @@ import QtQuick 2.5
 import QtQuick.Controls 2.0
 import QtMultimedia 5.5
 
-import "../data/Adhan.js" as Adhan
+import "qrc:/data/Adhan.js" as Adhan
 
 Item {
     width: parent.cellWidth

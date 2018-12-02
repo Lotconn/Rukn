@@ -1,7 +1,19 @@
 <?xml version="1.0"?>
-<manifest package="org.munadi" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="17.02" android:versionCode="39" android:installLocation="auto">
-    <application android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="Munadi" android:theme="@android:style/Theme.Material.Light" android:icon="@drawable/icon">
-        <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|locale|fontScale|keyboard|keyboardHidden|navigation" android:name="org.qtproject.qt5.android.bindings.QtActivity" android:label="@string/app_name" android:screenOrientation="unspecified">
+<manifest
+        package="org.munadi.Munadi"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:versionName="18.12"
+        android:versionCode="39"
+        android:installLocation="auto">
+    <application
+            android:name="org.qtproject.qt5.android.bindings.QtApplication"
+            android:label="Munadi"
+            android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar"
+            android:icon="@drawable/icon">
+        <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|locale|fontScale|keyboard|keyboardHidden|navigation"
+                android:name="org.qtproject.qt5.android.bindings.QtActivity"
+                android:label="@string/app_name"
+                android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -28,29 +40,12 @@
             <meta-data android:value="@string/fatal_error_msg" android:name="android.app.fatal_error_msg"/>
             <!--  Messages maps -->
             <!-- Splash screen-->
-            <meta-data android:name="android.app.splash_screen" android:resource="@layout/splash"/>
+            <meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/splash"/>
             <!-- Splash screen -->
         </activity>
     </application>
-
     <supports-screens android:largeScreens="true" android:normalScreens="true" android:anyDensity="true" android:smallScreens="true"/>
-
-
-
-
-
-<uses-sdk android:minSdkVersion="16" android:targetSdkVersion="23"/>
-
-
-
-
-
-
-
-
-
-
-
-<uses-permission android:name="android.permission.INTERNET"/>
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-sdk android:minSdkVersion="20"/>
 </manifest>

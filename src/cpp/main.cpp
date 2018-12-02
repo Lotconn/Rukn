@@ -9,10 +9,10 @@ int main(int argc, char *argv[])
 {
 
 #if defined(Q_OS_ANDROID) && defined(Q_OS_LINUX)
-    qputenv("QT_QUICK_CONTROLS_STYLE", "Material");
+    //qputenv("QT_QUICK_CONTROLS_STYLE", "Material");
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
-        
+
     QGuiApplication app(argc, argv);
 
     app.setOrganizationDomain("munadi.org");

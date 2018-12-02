@@ -6,7 +6,7 @@ import QtPositioning 5.5
 import QtLocation 5.6
 import QtMultimedia 5.5
 
-import "../data/Adhan.js" as Adhan
+import "qrc:/data/Adhan.js" as Adhan
 
 ApplicationWindow {
     id: mainWindow

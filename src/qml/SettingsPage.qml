@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.1
 import Qt.labs.settings 1.0
 import QtPositioning 5.3
 
-import "../data/Adhan.js" as Adhan
+import "qrc:/data/Adhan.js" as Adhan
 
 Page {
 

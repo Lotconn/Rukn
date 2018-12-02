@@ -1,6 +1,6 @@
 import QtQuick 2.5
 import Qt.labs.settings 1.0
-import "../data/Adhan.js" as Adhan
+import "qrc:/data/Adhan.js" as Adhan
 
 QtObject {
     id: munadiModel

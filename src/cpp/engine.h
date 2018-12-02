@@ -5,8 +5,8 @@
 #include <QtCore>
 #include <QtDebug>
 
-#define APP_VERSION "17.02"
-#define MUNADI_API_URL "http://munadi.org/"
+#define APP_VERSION "18.12"
+#define MUNADI_API_URL "https://munadi.org/"
 
 extern "C" {
 #include "libitl/hijri.h"

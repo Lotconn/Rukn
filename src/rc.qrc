@@ -37,5 +37,6 @@
         <file>qml/LocationSearchComponent.qml</file>
         <file>data/timezones.tsv</file>
         <file>qml/AdjustmentComponent.qml</file>
+        <file>qtquickcontrols2.conf</file>
     </qresource>
 </RCC>

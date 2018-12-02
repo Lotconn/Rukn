@@ -3,8 +3,7 @@ import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.1
 import QtQuick.Controls 2.0
 
-import "../data/Adhan.js" as Adhan
-
+import "qrc:/data/Adhan.js" as Adhan
 
 // This is the main page, which showa prayer time, fav mosque selection = and time left.
 
