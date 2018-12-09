@@ -19,7 +19,7 @@ Item {
         anchors.bottomMargin: parent.height / 10
         visible: mm.nextPrayer !== Adhan.adhan.Prayer.None
         anchors.horizontalCenter: parent.horizontalCenter
-        from: mm.timeForCurrentPrayer.getTime()
+        from: mm.timeForCurrentPrayer !== null ? mm.timeForCurrentPrayer.getTime() : 0
         to: visible ? mm.timeForNextPrayer.getTime() : 0    // Next prayer might be None
         value: mm.currentDate.getTime()
         width: parent.width

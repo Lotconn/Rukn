@@ -1,10 +1,12 @@
 import QtQuick 2.0
 import QtPositioning 5.5
 import QtLocation 5.6
+
 Item {
     id: ls
 
     signal searchResults(var locations)
+    property bool loading: geocodeModel.status == GeocodeModel.Loading ? true : false
 
     function search(query) {
         geocodeModel.reset()

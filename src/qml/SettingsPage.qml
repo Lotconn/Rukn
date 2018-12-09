@@ -35,14 +35,26 @@ Page {
 
                 RowLayout {} // Top padding
 
+                ColumnLayout {
+                    SettingTitle {
+                        horizontalAlignment: Text.AlignHCenter
+
+                        font.italic: true
+                        text: qsTr("Application")
+                    }
+                    Line {
+                        Layout.fillWidth: true
+                    }
+                }
+
                 RowLayout {
                     ColumnLayout {
                         SettingTitle {
-                            text: qsTr("Popup on Athan?")
+                            text: qsTr("Show on Athan")
                         }
 
                         SettingSubtitle {
-                            text: qsTr("Try to pop up on Athan.")
+                            text: qsTr("Try to show window on Athan.")
                         }
                     }
 
@@ -60,7 +72,7 @@ Page {
                 RowLayout {
                     ColumnLayout {
                         SettingTitle {
-                            text: qsTr("Autostart?")
+                            text: qsTr("Autostart")
                         }
 
                         SettingSubtitle {
@@ -111,25 +123,10 @@ Page {
 
                 RowLayout {
                     ColumnLayout {
-                        SettingTitle {
-                            text: qsTr("Volume")
-                        }
 
                         RowLayout {
-                            Slider {
-                                id: vol
-                                value: 1.0
-                                Layout.fillWidth: true
-                                onValueChanged: {
-                                    athan.volume = value
-                                }
-                            }
-                        }
-
-                        RowLayout {
-                            Text {
-                                font.family: theme.defaultFontFamily; color: theme.defaultFontColour
-                                text: qsTr("Mute Athan")
+                            SettingTitle {
+                                text: qsTr("Mute all Athans")
                                 Layout.fillWidth: true
                             }
                             Switch {
@@ -139,7 +136,6 @@ Page {
                         }
 
                         Settings {
-                            property alias athanVolume: vol.value
                             property alias athanMuted: muted.checked
                         }
 
@@ -148,82 +144,30 @@ Page {
 
                 ColumnLayout {
                     SettingTitle {
-                        text: qsTr("Adjustment")
+                        horizontalAlignment: Text.AlignHCenter
+                        font.italic: true
+                        text: qsTr("Prayer")
+                    }
+                    Line {
+                        Layout.fillWidth: true
                     }
 
                     AdjustmentComponent {
-                        id: fajrAdjustment
-                        prayerId: Adhan.adhan.Prayer.Fajr
-
-                        onValueChanged: {
-                            mm.fajrAdjustment = value
-                            mm.invalidate()
-                        }
-                    }
-                    AdjustmentComponent {
-                        id: sriseAdjustment
-                        prayerId: Adhan.adhan.Prayer.Sunrise
-
-                        onValueChanged: {
-                            mm.sriseAdjustment = value
-                            mm.invalidate()
-                        }
-                    }
-                    AdjustmentComponent {
-                        id: duhrAdjustment
-                        prayerId: Adhan.adhan.Prayer.Dhuhr
-
-                        onValueChanged: {
-                            mm.duhrAdjustment = value
-                            mm.invalidate()
-                        }
-                    }
-                    AdjustmentComponent {
-                        id: asrAdjustment
-                        prayerId: Adhan.adhan.Prayer.Asr
-
-                        onValueChanged: {
-                            mm.asrAdjustment = value
-                            mm.invalidate()
-                        }
-                    }
-                    AdjustmentComponent {
-                        id: mgrbAdjustment
-                        prayerId: Adhan.adhan.Prayer.Maghrib
-
-                        onValueChanged: {
-                            mm.mgrbAdjustment = value
-                            mm.invalidate()
-                        }
-                    }
-                    AdjustmentComponent {
-                        id: ishaAdjustment
-                        prayerId: Adhan.adhan.Prayer.Isha
-
-                        onValueChanged: {
-                            mm.ishaAdjustment = value
-                            mm.invalidate()
-                        }
-                    }
-
-                    Settings {
-                        category: "Adjustments"
-
-                        property alias fajrAdjustment:      fajrAdjustment.value
-                        property alias sunriseAdjustment:   sriseAdjustment.value
-                        property alias duhrAdjustment:      duhrAdjustment.value
-                        property alias asrAdjustment:       asrAdjustment.value
-                        property alias magribAdjustment:    mgrbAdjustment.value
-                        property alias ishaAdjustment:      ishaAdjustment.value
+                        Layout.fillWidth: true
                     }
                 }
 
+                SettingTitle {
+                    horizontalAlignment: Text.AlignHCenter
+
+                    font.italic: true
+                    text: qsTr("Other")
+                }
+                Line {
+                    Layout.fillWidth: true
+                }
                 GridLayout {
                     columns: 2
-                    SettingTitle {
-                        text: qsTr("Other")
-                        Layout.columnSpan: 2
-                    }
                     Text {
                         font.family: theme.defaultFontFamily; color: theme.defaultFontColour
                         text: qsTr("Mathhab");

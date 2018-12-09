@@ -1,42 +1,68 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.1
+import Qt.labs.settings 1.0
 
-RowLayout {
-    property alias value: slider.value
-    property alias label: prayerLabel.text
-    property var prayerId
+ColumnLayout {
+    id: component
 
-    Item {
-        width: 60; height: parent.height
-
-        Text {
-            id: prayerLabel
-            anchors.fill: parent
-            verticalAlignment: Text.AlignVCenter
-            font: theme.defaultFontFamily
-            color: theme.defaultFontColour
-            text: mm.mapPrayerName(prayerId)
-        }
-    }
-
-    Slider {
-        id: slider
+    TabBar {
+        id: selectedPrayerTab
         Layout.fillWidth: true
-        from: -20
-        to: 20
-        stepSize: 1
-        snapMode: Slider.SnapAlways
+        Repeater {
+            model: 6
+            TabButton {
+                text: mm.prayerNames[index]
+            }
+        }
+//        Component.onCompleted: {
+//            selectedPrayerTab.removeItem(1)
+//        }
     }
-    Item {
-        width: 40; height: parent.height
 
+    GridLayout {
+        columns: 3
         Text {
-            anchors.fill: parent
+            id: volText
+            text: qsTr("Volume")
+        }
+        Slider {
+            id: volume
+            Layout.fillWidth: true
+            value: mm.prayerConfig[selectedPrayerTab.currentIndex].volume
+            onValueChanged: {
+                mm.prayerConfig[selectedPrayerTab.currentIndex].volume = value
+            }
+            enabled: selectedPrayerTab.currentIndex !== 1
+        }
+        Text {
+            //Layout.minimumWidth: parent.width * 0.1
+            text: (volume.value * 100).toFixed() + qsTr("%")
+            Layout.minimumWidth: volText.width
+        }
+        Text {
+            text: qsTr("Minutes")
+        }
+        Slider {
+            id: mins
+            Layout.fillWidth: true
+            stepSize: 1
+            value: mm.prayerConfig[selectedPrayerTab.currentIndex].adjustment
+            from: -10
+            to: 10
+
+            onValueChanged: {
+                mm.prayerConfig[selectedPrayerTab.currentIndex].adjustment = value
+                mm.invalidate()
+            }
+        }
+        Text {
             verticalAlignment: Text.AlignVCenter
             font.family: theme.defaultFontFamily
             color: theme.defaultFontColour
-            text: slider.value >= 0 ? "+ " + slider.value.toFixed() : "- " + Math.abs(slider.value.toFixed())
+            text: mins.value >= 0 ? "+ " + mins.value.toFixed() : "- " + Math.abs(mins.value.toFixed())
         }
     }
+
+
 }

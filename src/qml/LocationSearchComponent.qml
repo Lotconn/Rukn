@@ -69,6 +69,12 @@ Item {
             }
         }
 
+        ProgressBar {
+            Layout.fillWidth: true
+            indeterminate: true
+            visible: locationService.loading
+        }
+
         ComboBox {
             id: locationsComboBox
             enabled: model.count > 0
@@ -106,7 +112,7 @@ Item {
                         mm.latitude = location.coordinate.latitude
                         mm.longitude = location.coordinate.longitude
 
-                        locationSearch.detailsVisible = true
+                        //locationSearch.detailsVisible = true
 
                         mm.invalidate()
                     }
@@ -135,7 +141,7 @@ Item {
                 mm.latitude = location.coordinate.latitude
                 mm.longitude = location.coordinate.longitude
 
-                locationSearch.detailsVisible = true
+                //locationSearch.detailsVisible = true
 
                 mm.invalidate()
             }

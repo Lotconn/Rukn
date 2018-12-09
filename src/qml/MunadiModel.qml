@@ -26,26 +26,17 @@ QtObject {
         }
     }
 
-    function mapPrayerName(prayer) {
-        switch(prayer) {
-            case Adhan.adhan.Prayer.Fajr:      return qsTr("Fajr");
-            case Adhan.adhan.Prayer.Sunrise:   return qsTr("Srise");
-            case Adhan.adhan.Prayer.Dhuhr:     return qsTr("Duhr");
-            case Adhan.adhan.Prayer.Asr:       return qsTr("Asr");
-            case Adhan.adhan.Prayer.Maghrib:   return qsTr("Mgrb");
-            case Adhan.adhan.Prayer.Isha:      return qsTr("Isha");
-        }
-    }
+    property var prayerNames: [qsTr("Fajr"), qsTr("Srise"), qsTr("Duhr"), qsTr("Asr"), qsTr("Mgrb"), qsTr("Isha")]
 
     onInvalidate: {
         var params = mapCalcMethod(calcMethod)
         params.madhab               = madhab
-        params.adjustments.fajr     = fajrAdjustment
-        params.adjustments.sunrise  = sriseAdjustment
-        params.adjustments.dhuhr    = duhrAdjustment
-        params.adjustments.asr      = asrAdjustment
-        params.adjustments.maghrib  = mgrbAdjustment
-        params.adjustments.isha     = ishaAdjustment
+        params.adjustments.fajr     = prayerConfig[0].adjustment
+        params.adjustments.sunrise  = prayerConfig[1].adjustment
+        params.adjustments.dhuhr    = prayerConfig[2].adjustment
+        params.adjustments.asr      = prayerConfig[3].adjustment
+        params.adjustments.maghrib  = prayerConfig[4].adjustment
+        params.adjustments.isha     = prayerConfig[5].adjustment
         mm.params = params
         currentDate = new Date()
     }
@@ -101,11 +92,12 @@ QtObject {
     property string mgrb:   formattedTime(prayerTimes.maghrib, utcOffset, dateFormat)
     property string isha:   formattedTime(prayerTimes.isha, utcOffset, dateFormat)
 
-
-    property int fajrAdjustment
-    property int sriseAdjustment
-    property int duhrAdjustment
-    property int asrAdjustment
-    property int mgrbAdjustment
-    property int ishaAdjustment
+    property var prayerConfig: [
+        {'adjustment': 0, 'volume': 0.2},
+        {'adjustment': 0, 'volume': 0.0},
+        {'adjustment': 0, 'volume': 1.0},
+        {'adjustment': 0, 'volume': 1.0},
+        {'adjustment': 0, 'volume': 1.0},
+        {'adjustment': 0, 'volume': 0.5},
+    ]
 }

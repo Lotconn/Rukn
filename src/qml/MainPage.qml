@@ -78,38 +78,4 @@ Page {
         }
 
     }
-
-//    Connections {
-//        target: mm
-//        onCityNameChanged: {
-//            locationInfoRow.cityName = mm.cityName
-
-//        }
-//    }
-
-//    Connections {
-//        target: mm
-//        onCountryNameChanged: {
-//            locationInfoRow.countryName = mm.countryName
-//        }
-//    }
-
-//    function updateTimeLeft() {
-
-//        if(engine.isAthanPlaying()) {
-//            timeLeft.text = qsTr("%1 Athan").arg(engine.getCurrPrayerLabel());
-//            mm.nextPrayerLabel = engine.getCurrPrayerLabel()
-//        }
-//        else {
-//            var prayerLabel = engine.getNextPrayerLabel();
-//            mm.nextPrayerLabel = prayerLabel
-
-//            if(prayerLabel === "") {
-//                timeLeft.visible = false;
-//            } else {
-//                timeLeft.visible = true;
-//                timeLeft.text = qsTr(prayerLabel) + qsTr(" in ") + engine.getTimeDifference();
-//            }
-//        }
-//    }
 }

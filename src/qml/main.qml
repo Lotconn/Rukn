@@ -33,6 +33,10 @@ ApplicationWindow {
         }
     }
 
+    Component.onDestruction: {
+        mm.prayerConfig = mm.prayerConfig
+    }
+
     // Globals
 
     MunadiModel {
@@ -49,8 +53,8 @@ ApplicationWindow {
         interval: 1000; running: true; repeat: true
 
         onTriggered: {
-
             var date = new Date()
+            mm.currentDate = date
 
             if(date.getSeconds() == 0) {
 
@@ -59,6 +63,7 @@ ApplicationWindow {
                         && mm.timeForNextPrayer.getHours() === date.getHours()
                         && mm.timeForNextPrayer.getMinutes() === date.getMinutes()) {
 
+                    athan.volume = mm.prayerConfig[mm.currentPrayer].volume
                     athan.play()
 
                     if(mm.showOnAthan) {
@@ -72,7 +77,7 @@ ApplicationWindow {
             }
 
             if(athan.isOn) {
-                mm.timeLeftStr = mm.mapPrayerName(mm.currentPrayer) + " Athan ..."
+                mm.timeLeftStr = mm.prayerNames[mm.currentPrayer] + qsTr(" Athan ...")
             } else {
                 if(mm.nextPrayer === Adhan.adhan.Prayer.None) {
                     mm.timeLeftStr = ""
@@ -81,7 +86,7 @@ ApplicationWindow {
                     var hrs = Math.floor(totalMins / 60)
                     var mins = Math.ceil(totalMins % 60)
 
-                    mm.timeLeftStr = hrs + "h " + mins + "m until " + mm.mapPrayerName(mm.nextPrayer)
+                    mm.timeLeftStr = hrs + qsTr("h ") + mins + qsTr("m until ") + mm.prayerNames[mm.nextPrayer]
                 }
             }
         }
@@ -99,6 +104,7 @@ ApplicationWindow {
         property alias calcMethod:          mm.calcMethod
         property alias madhab:              mm.madhab
         property alias overrideOffsetBy:    mm.overrideOffsetBy
+        property alias prayerConfig:        mm.prayerConfig
     }
 
     LocationService {
