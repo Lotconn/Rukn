@@ -28,12 +28,19 @@ ColumnLayout {
         }
         Slider {
             id: volume
+            live: false
+            enabled: selectedPrayerTab.currentIndex !== 1
             Layout.fillWidth: true
             value: mm.prayerConfig[selectedPrayerTab.currentIndex].volume
+            //pressed always reports true, below is a work around to play sound while moving slider, then stoppting.
             onValueChanged: {
                 mm.prayerConfig[selectedPrayerTab.currentIndex].volume = value
+                athan.stop()
             }
-            enabled: selectedPrayerTab.currentIndex !== 1
+            onMoved: {
+                athan.volume = volume.valueAt(volume.position)
+                athan.play()
+            }
         }
         Text {
             //Layout.minimumWidth: parent.width * 0.1

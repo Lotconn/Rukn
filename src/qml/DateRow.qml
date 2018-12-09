@@ -72,7 +72,7 @@ Item {
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 font.italic: true
-                font.pixelSize: parent.height / 3
+                font.pixelSize: parent.height / 2
                 color: theme.fontColour
                 elide: Text.ElideRight
                 fontSizeMode: Text.Fit

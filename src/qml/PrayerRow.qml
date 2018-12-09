@@ -76,31 +76,6 @@ Item {
         }
     }
 
-//    Item {
-//        height: parent.height; width: height
-//        //width: parent.colCellWidth
-//        anchors.centerIn: parent
-
-//        Image {
-//            id: athanStopBtn
-//            visible: mm.currentPrayer === prayerId && athan.isOn
-//            anchors.centerIn: parent
-//            source: "qrc:/img/stop.png"
-//            fillMode: Image.PreserveAspectFit
-//            scale: 0.6
-//        }
-
-//        MouseArea {
-//           id: mouseArea
-
-//           hoverEnabled: true
-//           anchors.fill: parent
-//           onClicked: {
-//               athan.stop()
-//           }
-//       }
-//    }
-
     Line {
         id: line
         width: parent.width - parent.width / 5

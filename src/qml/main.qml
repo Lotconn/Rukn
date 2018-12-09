@@ -53,15 +53,14 @@ ApplicationWindow {
         interval: 1000; running: true; repeat: true
 
         onTriggered: {
-            var date = new Date()
-            mm.currentDate = date
+            mm.currentDate = new Date()
 
-            if(date.getSeconds() == 0) {
+            if(mm.currentDate.getSeconds() === 0) {
 
-                if(mm.nextPrayer !== Adhan.adhan.Prayer.None
-                        && mm.nextPrayer !== Adhan.adhan.Prayer.Sunrise
-                        && mm.timeForNextPrayer.getHours() === date.getHours()
-                        && mm.timeForNextPrayer.getMinutes() === date.getMinutes()) {
+                if(mm.currentPrayer !== Adhan.adhan.Prayer.None
+                        && mm.currentPrayer !== Adhan.adhan.Prayer.Sunrise
+                        && mm.timeForCurrentPrayer.getHours() === mm.currentDate.getHours()
+                        && mm.timeForCurrentPrayer.getMinutes() === mm.currentDate.getMinutes()) {
 
                     athan.volume = mm.prayerConfig[mm.currentPrayer].volume
                     athan.play()
@@ -72,8 +71,6 @@ ApplicationWindow {
                         mainWindow.requestActivate()
                     }
                 }
-
-                mm.currentDate = date
             }
 
             if(athan.isOn) {

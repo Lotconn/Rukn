@@ -105,10 +105,15 @@ Item {
                         timezones.forEach( function(tz) { timezonesComboBox.model.append({text: tz}) })
                         mm.latitude = 0
                     } else {
+
+                        var address = location.address.text
+                        var comma = address.indexOf(',')
+                        var addresHead = address.substring(0, comma)
+                        var addressTail = address.substring(comma + 1).trim()
+
                         mm.timeZone = timezones[0]
-                        mm.cityName = location.address.city
-                        mm.stateName = location.address.state
-                        mm.countryName = location.address.country
+                        mm.cityName = addresHead
+                        mm.countryName = addressTail
                         mm.latitude = location.coordinate.latitude
                         mm.longitude = location.coordinate.longitude
 
@@ -134,10 +139,14 @@ Item {
 
                 if(model.count < 1) return
 
+                var address = location.address.text
+                var comma = address.indexOf(',')
+                var addresHead = address.substring(0, comma)
+                var addressTail = address.substring(comma + 1).trim()
+
                 mm.timeZone = model.get(currentIndex).text
-                mm.cityName = location.address.city
-                mm.stateName = location.address.state
-                mm.countryName = location.address.country
+                mm.cityName = addresHead
+                mm.countryName = addressTail
                 mm.latitude = location.coordinate.latitude
                 mm.longitude = location.coordinate.longitude
 

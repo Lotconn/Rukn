@@ -6,8 +6,6 @@ Rectangle {
 
     //visible: mm.stickerMode ? false : true
 
-    //border.color: theme.borderColour
-
     width: parent.cellWidth
     height: parent.cellHeight
 
@@ -29,27 +27,28 @@ Rectangle {
     }
     Text {
         id: cityName
-        anchors.horizontalCenter:  parent.horizontalCenter
+        width: parent.width
+        horizontalAlignment: Text.AlignHCenter
         anchors.top: parent.top
         anchors.topMargin: height / 4
         font.family: theme.defaultFontFamily
         font.pixelSize: parent.height / 2.5
         color: theme.fontColour
         elide: Text.ElideRight
-        //font.underline: mouseArea.
 
         visible: !mm.locationNotSet
     }
     Text {
         id: countryName
-        anchors.horizontalCenter:  parent.horizontalCenter
+        width: parent.width
+        horizontalAlignment: Text.AlignHCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: height / 3
         font.family: theme.defaultFontFamily
         font.pixelSize: parent.height / 4
         font.italic: true
         color: "grey"   //main.defaultFontColour
-        elide: Text.ElideRight
+        elide: Text.ElideMiddle
 
         visible: cityName.visible
         font.underline: cityName.font.underline
