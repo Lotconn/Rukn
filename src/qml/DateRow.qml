@@ -13,14 +13,7 @@ Item {
     Keys.onLeftPressed: prevDate()
     Keys.onRightPressed: nextDate()
     Keys.onDownPressed: currentDate()
-    Keys.onUpPressed: {
-        // Toggle Hijri/Miladi
-        if(mm.calendarPreference == "Hijri") {
-            mm.calendarPreference = "Gregorian"
-        } else {
-            mm.calendarPreference = "Hijri"
-        }
-    }
+    Keys.onUpPressed: toggleCalendar()
 
 //    Keys.onPressed: {
 //        console.debug("Keys.onPressedD: ", event.key)
@@ -44,6 +37,8 @@ Item {
             width: parent.colCellWidth / 2
 
             TextButton {
+                enabled: false
+                visible: enabled
                 text: "<"
                 anchors.fill: parent
                 anchors.verticalCenter: parent.verticalCenter
@@ -90,7 +85,7 @@ Item {
 
                     cursorShape: Qt.PointingHandCursor
 
-                    onClicked: currentDate()
+                    onClicked: toggleCalendar() //currentDate()
                     onHoveredChanged: containsMouse ? dateText.font.underline = true : dateText.font.underline = false
                 }
 
@@ -110,7 +105,9 @@ Item {
             width: parent.colCellWidth / 2
             visible: parent.columns == 3
 
-            TextButton{
+            TextButton {
+                enabled: false
+                visible: enabled
                 text: ">"
                 anchors.fill: parent
                 anchors.verticalCenter: parent.verticalCenter
@@ -143,5 +140,15 @@ Item {
         var nextDate = mm.currentDate
         nextDate.setDate(mm.currentDate.getDate() + 1)
         mm.currentDate = nextDate
+    }
+
+    function toggleCalendar() {
+
+        // Toggle Hijri/Miladi
+        if(mm.calendarPreference == "Hijri") {
+            mm.calendarPreference = "Gregorian"
+        } else {
+            mm.calendarPreference = "Hijri"
+        }
     }
 }

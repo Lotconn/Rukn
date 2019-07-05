@@ -51,7 +51,6 @@ Page {
                         text: qsTr('About Munadi?')
                         answer: qsTr("
 Munadi is a simple Athan app, with an aim to bring Athan and Iqama time of any location throughout the world.\n
-You can contribute directly or indirectly, by spreading the word, coding, or even by making Du'aa.\n
 The project aims to target, by priority order, Linux, Windows, Android, and Raspberry Pi.\n
 Stay tuned for updates, by regularly visiting munadi.org.\n")
                     }
