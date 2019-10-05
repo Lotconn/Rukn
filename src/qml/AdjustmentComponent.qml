@@ -28,10 +28,11 @@ ColumnLayout {
         }
         Slider {
             id: volume
-            enabled: selectedPrayerTab.currentIndex !== 1
+            enabled: selectedPrayerTab.currentIndex !== 1   // Skip sunrise tab
             Layout.fillWidth: true
             value: mm.prayerConfig[selectedPrayerTab.currentIndex].volume
-            onValueChanged: {
+
+            onMoved: {
                 mm.prayerConfig[selectedPrayerTab.currentIndex].volume = value
                 mm.prayerConfig = mm.prayerConfig   // Workaround for Android
             }
@@ -52,7 +53,7 @@ ColumnLayout {
             from: -10
             to: 10
 
-            onValueChanged: {
+            onMoved: {
                 mm.prayerConfig[selectedPrayerTab.currentIndex].adjustment = value
                 mm.prayerConfig = mm.prayerConfig       // Workaround for Android
                 mm.invalidate()
