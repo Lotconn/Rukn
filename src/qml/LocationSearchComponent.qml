@@ -104,23 +104,21 @@ Item {
                     if(timezones.length > 1) {
                         timezones.forEach( function(tz) { timezonesComboBox.model.append({text: tz}) })
                         mm.latitude = 0
-                    } else {
-
-                        var address = location.address.text
-                        var comma = address.indexOf(',')
-                        var addresHead = address.substring(0, comma)
-                        var addressTail = address.substring(comma + 1).trim()
-
-                        mm.timeZone = timezones[0]
-                        mm.cityName = addresHead
-                        mm.countryName = addressTail
-                        mm.latitude = location.coordinate.latitude
-                        mm.longitude = location.coordinate.longitude
-
-                        //locationSearch.detailsVisible = true
-
-                        mm.invalidate()
                     }
+
+                    var address = location.address.text.split(',')
+
+                    console.log(address)
+
+                    mm.timeZone = timezones[0]
+                    mm.cityName = address.length > 0 ? address[0] : ""
+                    mm.countryName = address.length > 1 ? address[address.length -1] : ""
+                    mm.latitude = location.coordinate.latitude
+                    mm.longitude = location.coordinate.longitude
+
+                    //locationSearch.detailsVisible = true
+
+                    mm.invalidate()
                 }
             }
         }
@@ -139,16 +137,14 @@ Item {
 
                 if(model.count < 1) return
 
-                var address = location.address.text
-                var comma = address.indexOf(',')
-                var addresHead = address.substring(0, comma)
-                var addressTail = address.substring(comma + 1).trim()
+//                var address = location.address.text.split(',')
+//                console.log(address)
 
                 mm.timeZone = model.get(currentIndex).text
-                mm.cityName = addresHead
-                mm.countryName = addressTail
-                mm.latitude = location.coordinate.latitude
-                mm.longitude = location.coordinate.longitude
+//                mm.cityName = address.length > 0 ? address[0] : ""
+//                mm.countryName = address.length > 1 ? address[address.length -1] : ""
+//                mm.latitude = location.coordinate.latitude
+//                mm.longitude = location.coordinate.longitude
 
                 //locationSearch.detailsVisible = true
 
@@ -166,7 +162,7 @@ Item {
             TextField {
                 id: locationTextField
 
-                text: mm.cityName + ", " + mm.stateName + ", " + mm.countryName
+                text: mm.cityName + ", " + mm.countryName
                 font.family: theme.defaultFontFamily
                 Layout.fillWidth: true
             }

@@ -22,7 +22,7 @@ Page {
             LocationInfoRow {
                 id: locationInfoRow
                 cityName: mm.cityName
-                countryName: mm.stateName.length > 0 ? mm.stateName + ", " + mm.countryName : mm.countryName
+                countryName: mm.countryName
             }
 
             DateRow {

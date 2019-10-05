@@ -51,7 +51,6 @@ QtObject {
     property string dateFormat: "24h"
 
     property string cityName: ""
-    property string stateName
     property string countryName
     property string timeZone
     property double latitude

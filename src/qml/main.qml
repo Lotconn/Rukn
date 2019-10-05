@@ -93,7 +93,6 @@ ApplicationWindow {
 
     Settings {
         property alias cityName:            mm.cityName
-        property alias stateName:           mm.stateName
         property alias countryName:         mm.countryName
         property alias timeZone:            mm.timeZone
         property alias latitude:            mm.latitude
