@@ -15,9 +15,6 @@ ColumnLayout {
                 text: mm.prayerNames[index]
             }
         }
-//        Component.onCompleted: {
-//            selectedPrayerTab.removeItem(1)
-//        }
     }
 
     GridLayout {

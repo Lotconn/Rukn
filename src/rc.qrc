@@ -15,7 +15,6 @@
         <file>img/stop.png</file>
         <file>data/Ubuntu.ttf</file>
         <file>img/about.png</file>
-        <file>qml/AboutPage.qml</file>
         <file>qml/ContribPage.qml</file>
         <file>qml/workerscript.js</file>
         <file>qml/SearchBox.qml</file>

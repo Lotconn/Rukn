@@ -136,10 +136,6 @@ ApplicationWindow {
         SettingsPage {
             id: settingsPage
         }
-
-        AboutPage {
-            id: aboutPage
-        }
     }
 
     footer: TabBar {
@@ -158,9 +154,6 @@ ApplicationWindow {
         }
         TabButton {
             text: qsTr("Settings")
-        }
-        TabButton {
-            text: qsTr("Help")
         }
     }
 

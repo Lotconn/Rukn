@@ -294,6 +294,62 @@ Page {
                     property alias hijriAdjustment: hijriSlider.value
                 }
 
+                RowLayout {}
+
+                ColumnLayout {
+                    SettingTitle {
+                        horizontalAlignment: Text.AlignHCenter
+                        font.italic: true
+                        text: qsTr("About Munadi")
+                    }
+
+                    Line {
+                        Layout.fillWidth: true
+                    }
+                }
+
+                GridLayout {
+                    columns: 2
+                    columnSpacing: 20
+
+                    Text {
+                        text: qsTr("Author")
+                        color: theme.fontColour;
+                        font.family: theme.defaultFontFamily
+                        font.italic: true
+                    }
+                    Text {
+                        text: qsTr("Abou A. Abbad")
+                        Layout.fillWidth: true
+                        color: theme.fontColour;
+                        font.family: theme.defaultFontFamily
+                    }
+                    Text {
+                        text: qsTr("Website")
+                        color: theme.fontColour;
+                        font.family: theme.defaultFontFamily
+                        font.italic: true
+                    }
+                    Text {
+                        property string link: "http://munadi.org/"
+                        text: "<a href=\"http://munadi.org/\">munadi.org</a>"
+                        Layout.fillWidth: true
+                        onLinkActivated: Qt.openUrlExternally(link)
+                    }
+                    Text {
+                        text: qsTr("Version")
+                        color: theme.fontColour;
+                        font.family: theme.defaultFontFamily
+                        font.italic: true
+                    }
+                    Text {
+                        text: engine.getVersionNo()
+                        Layout.fillWidth: true
+                        color: theme.fontColour;
+                        font.family: theme.defaultFontFamily
+                    }
+                }
+
                 RowLayout {} // Bottom padding
             }
         }
