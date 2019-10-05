@@ -238,3 +238,5 @@ Makefile
 .qmake.stash
 munadi_plugin_import.cpp
 rc_qmlcache.qrc
+*.qmlc
+
