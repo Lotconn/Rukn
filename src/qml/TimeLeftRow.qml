@@ -18,7 +18,7 @@ Item {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: parent.height / 10
         anchors.horizontalCenter: parent.horizontalCenter
-        from: mm.timeForCurrentPrayer.getTime()
+        from: mm.timeForCurrentPrayer ? mm.timeForCurrentPrayer.getTime() : 0
         to: mm.timeForNextPrayer ? mm.timeForNextPrayer.getTime() : 0    // Next prayer might be None, so calc next day Fajr!
         value: mm.currentDate.getTime()
         width: parent.width
