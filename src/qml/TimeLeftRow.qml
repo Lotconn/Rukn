@@ -17,10 +17,9 @@ Item {
     ProgressBar {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: parent.height / 10
-        visible: mm.nextPrayer !== Adhan.adhan.Prayer.None
         anchors.horizontalCenter: parent.horizontalCenter
-        from: mm.timeForCurrentPrayer !== null ? mm.timeForCurrentPrayer.getTime() : 0
-        to: visible ? mm.timeForNextPrayer.getTime() : 0    // Next prayer might be None
+        from: mm.timeForCurrentPrayer.getTime()
+        to: mm.timeForNextPrayer ? mm.timeForNextPrayer.getTime() : 0    // Next prayer might be None, so calc next day Fajr!
         value: mm.currentDate.getTime()
         width: parent.width
         opacity: 0.8

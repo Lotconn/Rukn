@@ -76,15 +76,18 @@ ApplicationWindow {
             if(athan.isOn) {
                 mm.timeLeftStr = mm.prayerNames[mm.currentPrayer] + qsTr(" Athan ...")
             } else {
-                if(mm.nextPrayer === Adhan.adhan.Prayer.None) {
-                    mm.timeLeftStr = ""
-                } else {
-                    var totalMins = (mm.timeForNextPrayer.getTime() - mm.currentDate.getTime()) / 60000
-                    var hrs = Math.floor(totalMins / 60)
-                    var mins = Math.ceil(totalMins % 60)
 
-                    mm.timeLeftStr = hrs + qsTr("h ") + mins + qsTr("m until ") + mm.prayerNames[mm.nextPrayer]
+                if(mm.nextPrayer === Adhan.adhan.Prayer.None) { // Next day's Fajr!
+                    var tomorrow = new Date()
+                    tomorrow.setDate(tomorrow.getDate() + 1)
+                    mm.timeForNextPrayer = (new Adhan.adhan.PrayerTimes(mm.coordinates, tomorrow, mm.params)).timeForPrayer(0)
                 }
+
+                var totalMins = (mm.timeForNextPrayer.getTime() - mm.currentDate.getTime()) / 60000
+                var hrs = Math.floor(totalMins / 60)
+                var mins = Math.ceil(totalMins % 60)
+
+                mm.timeLeftStr = hrs + qsTr("h ") + mins + qsTr("m until ") + (mm.prayerNames[mm.nextPrayer] || qsTr("Fajr"))
             }
         }
     }

@@ -2,7 +2,6 @@
     <qresource prefix="/">
         <file>qml/main.qml</file>
         <file>qml/PageButton.qml</file>
-        <file>qml/InfoPage.qml</file>
         <file>qml/CompassPage.qml</file>
         <file>qml/SettingsPage.qml</file>
         <file>qml/SettingTitle.qml</file>
@@ -15,14 +14,10 @@
         <file>img/stop.png</file>
         <file>data/Ubuntu.ttf</file>
         <file>img/about.png</file>
-        <file>qml/ContribPage.qml</file>
-        <file>qml/workerscript.js</file>
-        <file>qml/SearchBox.qml</file>
         <file>data/whatsnew.html</file>
         <file>qml/MunadiModel.qml</file>
         <file>qml/Theme.qml</file>
         <file>qml/MainPage.qml</file>
-        <file>qml/FavMosqueComboBox.qml</file>
         <file>qml/PageBorder.qml</file>
         <file>qml/PrayerRow.qml</file>
         <file>qml/TimeLeftRow.qml</file>

@@ -50,7 +50,7 @@ QtObject {
     property string calendarPreference
     property string dateFormat: "24h"
 
-    property string cityName: ""
+    property string cityName
     property string countryName
     property string timeZone
     property double latitude
@@ -64,8 +64,8 @@ QtObject {
     property bool showOnAthan:      false
 //    property bool checkForUpdates:  true
 
-    property var nextPrayer:            prayerTimes.nextPrayer(currentDate)
     property var currentPrayer:         prayerTimes.currentPrayer(currentDate)
+    property var nextPrayer:            prayerTimes.nextPrayer(currentDate)
     property var timeForCurrentPrayer:  prayerTimes.timeForPrayer(currentPrayer)
     property var timeForNextPrayer:     prayerTimes.timeForPrayer(nextPrayer)
 
@@ -76,20 +76,20 @@ QtObject {
     property var prayerTimes:   new Adhan.adhan.PrayerTimes(coordinates, currentDate, params)
     property var formattedTime: Adhan.adhan.Date.formattedTime
 
-    property var calcMethod:        qsTr("Muslim World League")
-    property int madhab:            Adhan.adhan.Madhab.Shafi
-    property var params:            new Adhan.adhan.CalculationMethod.MuslimWorldLeague()
+    property var calcMethod:    qsTr("Muslim World League")
+    property int madhab:        Adhan.adhan.Madhab.Shafi
+    property var params:        new Adhan.adhan.CalculationMethod.MuslimWorldLeague()
 
 
     onCalcMethodChanged:    invalidate()
     onMadhabChanged:        invalidate()
 
-    property string fajr:   formattedTime(prayerTimes.fajr, utcOffset, dateFormat)
-    property string srise:  formattedTime(prayerTimes.sunrise, utcOffset, dateFormat)
-    property string duhr:   formattedTime(prayerTimes.dhuhr, utcOffset, dateFormat)
-    property string asr:    formattedTime(prayerTimes.asr, utcOffset, dateFormat)
-    property string mgrb:   formattedTime(prayerTimes.maghrib, utcOffset, dateFormat)
-    property string isha:   formattedTime(prayerTimes.isha, utcOffset, dateFormat)
+    property string fajr:   formattedTime(prayerTimes.fajr,     utcOffset, dateFormat)
+    property string srise:  formattedTime(prayerTimes.sunrise,  utcOffset, dateFormat)
+    property string duhr:   formattedTime(prayerTimes.dhuhr,    utcOffset, dateFormat)
+    property string asr:    formattedTime(prayerTimes.asr,      utcOffset, dateFormat)
+    property string mgrb:   formattedTime(prayerTimes.maghrib,  utcOffset, dateFormat)
+    property string isha:   formattedTime(prayerTimes.isha,     utcOffset, dateFormat)
 
     property var prayerConfig: [
         {'adjustment': 0, 'volume': 0.2},

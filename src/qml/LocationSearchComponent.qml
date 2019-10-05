@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.1
 Item {
     id: locationSearch
 
-    width: parent.width// - theme.margin * 2
+    width: parent.width
     anchors.horizontalCenter: parent.horizontalCenter
     Layout.fillHeight: true
     implicitHeight: cl.height
@@ -108,8 +108,6 @@ Item {
 
                     var address = location.address.text.split(',')
 
-                    console.log(address)
-
                     mm.timeZone = timezones[0]
                     mm.cityName = address.length > 0 ? address[0] : ""
                     mm.countryName = address.length > 1 ? address[address.length -1] : ""
@@ -137,17 +135,7 @@ Item {
 
                 if(model.count < 1) return
 
-//                var address = location.address.text.split(',')
-//                console.log(address)
-
                 mm.timeZone = model.get(currentIndex).text
-//                mm.cityName = address.length > 0 ? address[0] : ""
-//                mm.countryName = address.length > 1 ? address[address.length -1] : ""
-//                mm.latitude = location.coordinate.latitude
-//                mm.longitude = location.coordinate.longitude
-
-                //locationSearch.detailsVisible = true
-
                 mm.invalidate()
             }
         }
