@@ -235,3 +235,6 @@ qrc_*.cpp
 Makefile
 *-build-*
 .flatpak-builder
+.qmake.stash
+munadi_plugin_import.cpp
+rc_qmlcache.qrc
