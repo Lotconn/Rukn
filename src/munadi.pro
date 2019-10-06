@@ -32,6 +32,12 @@ ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 QT += core gui network qml quick quickcontrols2 multimedia location positioning
 DEFINES += ANDROID
 TARGET = Munadi
+
+DISTFILES += qml/*.qml \
+    android/AndroidManifest.xml \
+
+include($$PWD/../libs/android/openssl/openssl.pri)
+
 }
 
 HEADERS +=                  \
@@ -51,12 +57,5 @@ lupdate_only{
 SOURCES = qml/*.qml
 }
 
-DISTFILES += qml/*.qml \
-    android/AndroidManifest.xml \
 
-contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
-    ANDROID_EXTRA_LIBS = \
-        $$PWD/../libs/android/openssl/libcrypto.so \
-        $$PWD/../libs/android/openssl/libssl.so
-}
 
