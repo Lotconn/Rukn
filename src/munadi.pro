@@ -10,22 +10,23 @@ DEFINES += DESKTOP
 TARGET = munadi
 }
 
+target.path = /usr/bin
+desktop.files = xdg/org.munadi.Munadi.desktop
+desktop.path = /usr/share/applications
+metainfo.files = xdg/org.munadi.Munadi.metainfo.xml
+metainfo.path = /usr/share/metainfo
+icons.files = xdg/org.munadi.Munadi.icons/*
+icons.path = /usr/share/icons
+
 CONFIG(flatpak) {
 message("flatpak build")
-
 target.path = $$(FLATPAK_DEST)/bin
-
-desktop.files = xdg/org.munadi.Munadi.desktop
 desktop.path = $$(FLATPAK_DEST)/share/applications
-
-appdata.files = xdg/org.munadi.Munadi.appdata.xml
-appdata.path = $$(FLATPAK_DEST)/share/appdata
-
-icons.files = xdg/org.munadi.Munadi.icons/*
+metainfo.path = $$(FLATPAK_DEST)/share/metainfo
 icons.path = $$(FLATPAK_DEST)/share/icons
-
-INSTALLS += target desktop appdata icons
 }
+
+INSTALLS += target desktop metainfo icons
 
 android {
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android

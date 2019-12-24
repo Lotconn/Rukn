@@ -123,12 +123,13 @@ void Engine::setStartup(bool set)
 #elif defined(Q_OS_LINUX)
     QDir autostartDir = QDir::homePath() + QDir::separator() + ".config/autostart";
 
-//    if(!autostartDir.exists())
-//    {
-//        if(!autostartDir.mkpath(autostartDir.path())) return;
-//    }
-
-    QFile desktopFile("/app/share/applications/org.munadi.Munadi.desktop");
+    if(!autostartDir.exists())
+    {
+        if(!autostartDir.mkpath(autostartDir.path())) return;
+    }
+    
+    // Assume Snap for now, Flatpak has no support for autostart as of 19.12
+    QFile desktopFile("/snap/munadi/current/usr/share/applications/org.munadi.Munadi.desktop");
     QFile autostartDesktopFile(autostartDir.filePath("org.munadi.Munadi.desktop"));
 
     if(set)
@@ -147,7 +148,7 @@ void Engine::setStartup(bool set)
 
         QTextStream in(&desktopFile);
         QString data = in.readAll();
-        data.replace("Exec=munadi", "Exec=flatpak run org.munadi.Munadi --hidden");
+        data.replace("Exec=munadi", "Exec=munadi --hidden");
         QTextStream out(&autostartDesktopFile);
         out << data;
     }
