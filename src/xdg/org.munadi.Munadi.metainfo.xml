@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2018 Abou Abbad <aa@hak.pw> -->
+<!-- Copyright 2019 Abou Abbad <aa@hak.pw> -->
 <component type="desktop-application">
     <id>org.munadi.Munadi</id>
     <metadata_license>CC0-1.0</metadata_license>
@@ -44,23 +44,49 @@
     <screenshots>
         <screenshot type="default">
             <caption>Main page</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/1702/main_page.png</image>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/1812/0_main_page.png</image>
     
         </screenshot>
         <screenshot>
             <caption>Location search</caption>  
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/1702/location_search.png</image>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/1812/1_location_search.png</image>
     
         </screenshot>
         <screenshot>
             <caption>Settings page</caption>  
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/1702/settings_page.png</image>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/1812/2_settings_page.png</image>
     
         </screenshot>
   
     </screenshots>
 
     <releases>
+        <release version="19.12" date="2019-12-01">
+            <description>
+                <p>This is a minor release, mainly adding support for Snap packaging:</p>
+                <ul>
+                    <li>Removed about page and merged it with settings page</li>
+                    <li>Added support for Snap</li>
+                    <li>Minor UI changes</li>
+                </ul>
+      
+            </description>
+    
+        </release>
+        <release version="18.12" date="2018-12-01">
+            <description>
+                <p>This release added requested features made by many of you,
+            some features were removed, and of course some UI enhancements:</p>
+                <ul>
+                    <li>Removed: Date can now go forward and backwards</li>
+                    <li>Athan volumes can be configured individually</li>
+                    <li>Added support for Android and Flatpak</li>
+                    <li>UI enhancements</li>
+                </ul>
+      
+            </description>
+    
+        </release>
         <release version="17.02" date="2017-02-01">
             <description>
                 <p>This release added requested features made by many of you,

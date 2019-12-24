@@ -17,6 +17,7 @@ Item {
     Plugin {
         id: aPlugin
         name: "osm"
+        PluginParameter { name: "osm.geocoding.host"; value: "https://nominatim.openstreetmap.org" }
     }
 
     GeocodeModel {
