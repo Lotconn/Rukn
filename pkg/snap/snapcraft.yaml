@@ -10,7 +10,7 @@ apps:
     command: desktop-launch munadi
     common-id: org.munadi.Munadi
     autostart: org.munadi.Munadi.desktop
-    plugs: [network, unity7, unity8, opengl, mir, audio-playback, desktop, desktop-legacy]
+    plugs: [network, unity7, opengl, mir, audio-playback, desktop, desktop-legacy]
     environment: 
       DISABLE_WAYLAND: 1
 parts:

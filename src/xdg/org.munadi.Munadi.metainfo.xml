@@ -24,20 +24,21 @@
     </categories>
 
     <description>
-        <p>
+    <p>
       Munadi - Simple Athan App.
     </p>
         <p>Features:</p>
         <ul>
             <li>Prayer times for almost any city</li>
             <li>Light and free from advertisements</li>
-            <li>Hijri and Georgian date, adjustable</li>
+            <li>Toggle between Hijri and Georgian date</li>
             <li>Ability to select your preferred Madhab</li>
             <li>Ability to adjust prayer time +/- manually</li>
             <li>Ability to enable, mute or adjust Athan volume</li>
             <li>Choose from 10 different popular calculation methods</li>
     
         </ul>
+        <p>Keywords: Athan, Azan, Adhan, Prayer, Time, Salah, Salat, Namaz, Muslim, Islamic, Hijri</p>
   
     </description>
 
