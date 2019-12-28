@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% set active_page = "about" %}
+{% block title %}About{% endblock %}
+{% block content %}
+ <div class="container">
+
+        <h2>The Project</h2>
+        <p>The aim is to create a single Athan application that will run under as many devices and operating systems as possible.
+        </p>
+        <p>
+        As well as achieving that goal, the application's sourcecode will be opensource, and the application will cost nothing and will contain no advertisements, tracking or any other horrible things.
+        </p>
+        <p>
+        Anybody willing to contribute to the project is very welcome, please contact me to discuss where help is needed.
+        </p>
+
+        </br>
+
+        <h2>Contributors</h2>
+        <p>
+        <a target="_blank" href="https://qt.io/">Qt-Project</a>: Munadi uses the cross-platform Qt Framework for the GUI and other functions.
+        </p>
+        <p>
+        <a target="_blank" href="https://github.com/batoulapps/adhan-js/">BatoulApps</a>: Munadi uses adhan-js from BatoulApps to do the calculations.
+        </p>
+        <p>
+        <a target="_blank" href="https://gitlab.com/munadi/munadi/">GitLab</a>: All sourcecode is now hosted at GitLab.
+        </p>
+</div>
+{% endblock %}

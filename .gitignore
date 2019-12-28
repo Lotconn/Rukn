@@ -240,3 +240,5 @@ munadi_plugin_import.cpp
 rc_qmlcache.qrc
 *.qmlc
 
+# Web
+web/config.py
