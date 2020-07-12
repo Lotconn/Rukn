@@ -77,10 +77,17 @@ ApplicationWindow {
                 mm.timeLeftStr = mm.prayerNames[mm.currentPrayer] + qsTr(" Athan ...")
             } else {
 
-                if(mm.nextPrayer === Adhan.adhan.Prayer.None) { // Next day's Fajr!
+                if(mm.currentPrayer === Adhan.adhan.Prayer.None) { // Yesterday's Isha!
+                    var yesterday = new Date()
+                    yesterday.setDate(yesterday.getDate() - 1)
+                    console.debug(yesterday)
+                    mm.timeForCurrentPrayer = (new Adhan.adhan.PrayerTimes(mm.coordinates, yesterday, mm.params))
+                    .timeForPrayer(Adhan.adhan.Prayer.Isha)
+                } else if(mm.nextPrayer === Adhan.adhan.Prayer.None) { // Next day's Fajr!
                     var tomorrow = new Date()
                     tomorrow.setDate(tomorrow.getDate() + 1)
-                    mm.timeForNextPrayer = (new Adhan.adhan.PrayerTimes(mm.coordinates, tomorrow, mm.params)).timeForPrayer(0)
+                    mm.timeForNextPrayer = (new Adhan.adhan.PrayerTimes(mm.coordinates, tomorrow, mm.params))
+                    .timeForPrayer(Adhan.adhan.Prayer.Fajr)
                 }
 
                 var totalMins = (mm.timeForNextPrayer.getTime() - mm.currentDate.getTime()) / 60000

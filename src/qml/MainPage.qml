@@ -39,14 +39,14 @@ Page {
             PrayerRow {
                 id: sunrise
                 prayerId: Adhan.adhan.Prayer.Sunrise
-                prayerLabel: "Srise"
+                prayerLabel: "Sunrise"
                 athanTime: mm.srise
             }
 
             PrayerRow {
                 id: duhr
                 prayerId: Adhan.adhan.Prayer.Dhuhr
-                prayerLabel: "Duhr"
+                prayerLabel: "Dhuhr"
                 athanTime: mm.duhr
             }
 
@@ -60,7 +60,7 @@ Page {
             PrayerRow {
                 id: mgrb
                 prayerId: Adhan.adhan.Prayer.Maghrib
-                prayerLabel: "Mgrb"
+                prayerLabel: "Maghrib"
                 athanTime: mm.mgrb
             }
 
