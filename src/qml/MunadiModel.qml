@@ -7,6 +7,7 @@ QtObject {
 
     Component.onCompleted: {
         currentDate = new Date();
+        invalidate();
     }
 
     signal invalidate()
@@ -26,7 +27,7 @@ QtObject {
         }
     }
 
-    property var prayerNames: [qsTr("Fajr"), qsTr("Srise"), qsTr("Duhr"), qsTr("Asr"), qsTr("Mgrb"), qsTr("Isha")]
+    property var prayerNames: [qsTr("Fajr"), qsTr("Sunrise"), qsTr("Dhuhr"), qsTr("Asr"), qsTr("Maghrib"), qsTr("Isha")]
 
     onInvalidate: {
         var params = mapCalcMethod(calcMethod)
