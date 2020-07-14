@@ -5,7 +5,6 @@ import QtQuick.Layouts 1.1
 Rectangle {
 
     //visible: mm.stickerMode ? false : true
-
     width: parent.cellWidth
     height: parent.cellHeight
 
@@ -13,13 +12,13 @@ Rectangle {
     property alias countryName: countryName.text
 
     Text {
-        anchors.horizontalCenter:  parent.horizontalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: height / 3
         font.family: theme.defaultFontFamily
         font.pixelSize: parent.height / 4
         font.italic: true
-        color: "grey"   //main.defaultFontColour
+        color: "grey" //main.defaultFontColour
         elide: Text.ElideRight
         text: "Click here to set location ..."
         visible: mm.locationNotSet
@@ -47,7 +46,7 @@ Rectangle {
         font.family: theme.defaultFontFamily
         font.pixelSize: parent.height / 4
         font.italic: true
-        color: "grey"   //main.defaultFontColour
+        color: "grey" //main.defaultFontColour
         elide: Text.ElideMiddle
 
         visible: cityName.visible
@@ -67,7 +66,8 @@ Rectangle {
         cursorShape: Qt.PointingHandCursor
 
         onClicked: popup.open()
-        onHoveredChanged: containsMouse ? cityName.font.underline = true : cityName.font.underline = false
+        onHoveredChanged: containsMouse ? cityName.font.underline
+                                          = true : cityName.font.underline = false
     }
 
     Popup {
@@ -81,7 +81,7 @@ Rectangle {
 
         LocationSearchComponent {
             Component.onCompleted: {
-                if(mm.locationNotSet) {
+                if (mm.locationNotSet) {
                     popup.open()
                 }
             }

@@ -1,9 +1,11 @@
 import QtQuick 2.5
 
 Item {
-    FontLoader { source: "qrc:/data/Ubuntu.ttf" }
+    FontLoader {
+        source: "qrc:/data/Ubuntu.ttf"
+    }
 
-    property string borderColour: "darkgrey"//"#EDEDED"
+    property string borderColour: "darkgrey" //"#EDEDED"
     property string fontColour: "#545454"
     property string defaultFontColour: "#545454"
     //property int defaultFontSize: 5

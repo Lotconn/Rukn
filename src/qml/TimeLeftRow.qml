@@ -6,7 +6,6 @@ import "qrc:/data/Adhan.js" as Adhan
 Item {
 
     //visible: mm.stickerMode ? false : true
-
     visible: !mm.locationNotSet
 
     width: parent.cellWidth
@@ -20,7 +19,8 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         from: mm.timeForCurrentPrayer.getTime()
         to: mm.timeForNextPrayer.getTime()
-        value: if(mm.timeForCurrentPrayer && mm.timeForNextPrayer) mm.currentDate.getTime();
+        value: if (mm.timeForCurrentPrayer && mm.timeForNextPrayer)
+                   mm.currentDate.getTime()
         width: parent.width
         opacity: 0.8
     }
@@ -50,12 +50,12 @@ Item {
     }
 
     MouseArea {
-       id: mouseArea
+        id: mouseArea
 
-       hoverEnabled: true
-       anchors.fill: parent
-       onClicked: {
-           athan.stop()
-       }
-   }
+        hoverEnabled: true
+        anchors.fill: parent
+        onClicked: {
+            athan.stop()
+        }
+    }
 }

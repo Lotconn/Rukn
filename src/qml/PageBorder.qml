@@ -5,10 +5,10 @@ Rectangle {
     anchors.bottom: parent.bottom
     anchors.left: parent.left
     anchors.right: parent.right
+
     //anchors.horizontalCenter: parent.horizontalCenter
 
     //width: parent.width - 20
-
     anchors.leftMargin: theme.margin
     anchors.rightMargin: theme.margin
     anchors.topMargin: theme.margin
