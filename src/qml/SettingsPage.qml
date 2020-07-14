@@ -144,19 +144,31 @@ Page {
                     }
                 }
 
-                ColumnLayout {
-                    SettingTitle {
-                        horizontalAlignment: Text.AlignHCenter
-                        font.italic: true
-                        text: qsTr("Prayer")
-                    }
-                    Line {
-                        Layout.fillWidth: true
-                    }
+                SettingTitle {
+                    horizontalAlignment: Text.AlignHCenter
+                    font.italic: true
+                    text: qsTr("Athan")
+                }
+                Line {
+                    Layout.fillWidth: true
+                }
 
-                    AdjustmentComponent {
-                        Layout.fillWidth: true
-                    }
+                AudioManComp {
+                    id: audioManComp
+                    Layout.fillWidth: true
+                }
+
+                SettingTitle {
+                    horizontalAlignment: Text.AlignHCenter
+                    font.italic: true
+                    text: qsTr("Prayer")
+                }
+                Line {
+                    Layout.fillWidth: true
+                }
+
+                AdjustmentComponent {
+                    Layout.fillWidth: true
                 }
 
                 SettingTitle {
