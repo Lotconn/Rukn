@@ -32,5 +32,9 @@
         <file>data/timezones.tsv</file>
         <file>qml/AdjustmentComponent.qml</file>
         <file>qtquickcontrols2.conf</file>
+        <file>qml/AudioManComp.qml</file>
+        <file>img/start.png</file>
+        <file>img/minus.png</file>
+        <file>img/plus.png</file>
     </qresource>
 </RCC>

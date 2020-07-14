@@ -45,7 +45,6 @@ ApplicationWindow {
 
     MediaPlayer {
         id: athan
-        source: "qrc:/data/athan.ogg"
         property bool isOn: playbackState === MediaPlayer.PlayingState
     }
 
@@ -125,6 +124,8 @@ ApplicationWindow {
         property alias madhab: mm.madhab
         property alias overrideOffsetBy: mm.overrideOffsetBy
         property alias prayerConfig: mm.prayerConfig
+        property alias audioList: mm.audioList
+        property alias audioListIndex: mm.audioListIndex
     }
 
     LocationService {

@@ -58,5 +58,8 @@ lupdate_only{
 SOURCES = qml/*.qml
 }
 
+DISTFILES += \
+    qml/AudioManComp.qml
+
 
 

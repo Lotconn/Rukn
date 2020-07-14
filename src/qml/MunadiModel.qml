@@ -133,4 +133,7 @@ QtObject {
             "adjustment": 0,
             "volume": 0.5
         }]
+
+    property var audioList: ["Built-in"]
+    property int audioListIndex: 0
 }
