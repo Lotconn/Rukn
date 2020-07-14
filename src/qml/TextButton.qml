@@ -5,7 +5,7 @@ Button {
     id: control
 
     hoverEnabled: true
-    anchors.margins:parent.height / 10
+    anchors.margins: parent.height / 10
     font.pixelSize: parent.height / 3
 
     contentItem: Text {
@@ -16,7 +16,6 @@ Button {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
-
     }
 
     background: Rectangle {

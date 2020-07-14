@@ -25,13 +25,13 @@ ColumnLayout {
         }
         Slider {
             id: volume
-            enabled: selectedPrayerTab.currentIndex !== 1   // Skip sunrise tab
+            enabled: selectedPrayerTab.currentIndex !== 1 // Skip sunrise tab
             Layout.fillWidth: true
             value: mm.prayerConfig[selectedPrayerTab.currentIndex].volume
 
             onMoved: {
                 mm.prayerConfig[selectedPrayerTab.currentIndex].volume = value
-                mm.prayerConfig = mm.prayerConfig   // Workaround for Android
+                mm.prayerConfig = mm.prayerConfig // Workaround for Android
             }
         }
         Text {
@@ -52,7 +52,7 @@ ColumnLayout {
 
             onMoved: {
                 mm.prayerConfig[selectedPrayerTab.currentIndex].adjustment = value
-                mm.prayerConfig = mm.prayerConfig       // Workaround for Android
+                mm.prayerConfig = mm.prayerConfig // Workaround for Android
                 mm.invalidate()
             }
         }
@@ -60,9 +60,9 @@ ColumnLayout {
             verticalAlignment: Text.AlignVCenter
             font.family: theme.defaultFontFamily
             color: theme.defaultFontColour
-            text: mins.value >= 0 ? "+ " + mins.value.toFixed() : "- " + Math.abs(mins.value.toFixed())
+            text: mins.value >= 0 ? "+ " + mins.value.toFixed(
+                                        ) : "- " + Math.abs(
+                                        mins.value.toFixed())
         }
     }
-
-
 }

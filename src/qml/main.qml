@@ -11,25 +11,26 @@ import "qrc:/data/Adhan.js" as Adhan
 ApplicationWindow {
     id: mainWindow
 
-    width: 400; height: 600
+    width: 400
+    height: 600
 
     Component.onCompleted: {
 
-        if(engine.isStartupFlag()) {
+        if (engine.isStartupFlag()) {
             showMinimized()
         } else {
             show()
         }
 
-//        if(mm.checkForUpdates) {
-//            updater.check()
-//        }
+        //        if(mm.checkForUpdates) {
+        //            updater.check()
+        //        }
 
         // Only display what's new once
-        if(news.newsVersion !== engine.getVersionNo()) {
+        if (news.newsVersion !== engine.getVersionNo()) {
             whatsNewPopup.text = engine.getWhatsNew()
             whatsNewPopup.open()
-            news.newsVersion = engine.getVersionNo();
+            news.newsVersion = engine.getVersionNo()
         }
     }
 
@@ -38,7 +39,6 @@ ApplicationWindow {
     }
 
     // Globals
-
     MunadiModel {
         id: mm
     }
@@ -50,22 +50,26 @@ ApplicationWindow {
     }
 
     Timer {
-        interval: 1000; running: true; repeat: true
+        interval: 1000
+        running: true
+        repeat: true
 
         onTriggered: {
             mm.currentDate = new Date()
 
-            if(mm.currentDate.getSeconds() === 0) {
+            if (mm.currentDate.getSeconds() === 0) {
 
-                if(mm.currentPrayer !== Adhan.adhan.Prayer.None
+                if (mm.currentPrayer !== Adhan.adhan.Prayer.None
                         && mm.currentPrayer !== Adhan.adhan.Prayer.Sunrise
-                        && mm.timeForCurrentPrayer.getHours() === mm.currentDate.getHours()
-                        && mm.timeForCurrentPrayer.getMinutes() === mm.currentDate.getMinutes()) {
+                        && mm.timeForCurrentPrayer.getHours(
+                            ) === mm.currentDate.getHours()
+                        && mm.timeForCurrentPrayer.getMinutes(
+                            ) === mm.currentDate.getMinutes()) {
 
                     athan.volume = mm.prayerConfig[mm.currentPrayer].volume
                     athan.play()
 
-                    if(mm.showOnAthan) {
+                    if (mm.showOnAthan) {
                         mainWindow.show()
                         mainWindow.raise()
                         mainWindow.requestActivate()
@@ -73,44 +77,54 @@ ApplicationWindow {
                 }
             }
 
-            if(athan.isOn) {
-                mm.timeLeftStr = mm.prayerNames[mm.currentPrayer] + qsTr(" Athan ...")
+            if (athan.isOn) {
+                mm.timeLeftStr = mm.prayerNames[mm.currentPrayer] + qsTr(
+                            " Athan ...")
             } else {
 
-                if(mm.currentPrayer === Adhan.adhan.Prayer.None) { // Yesterday's Isha!
+                if (mm.currentPrayer === Adhan.adhan.Prayer.None) {
+                    // Yesterday's Isha!
                     var yesterday = new Date()
                     yesterday.setDate(yesterday.getDate() - 1)
                     console.debug(yesterday)
-                    mm.timeForCurrentPrayer = (new Adhan.adhan.PrayerTimes(mm.coordinates, yesterday, mm.params))
-                    .timeForPrayer(Adhan.adhan.Prayer.Isha)
-                } else if(mm.nextPrayer === Adhan.adhan.Prayer.None) { // Next day's Fajr!
+                    mm.timeForCurrentPrayer
+                            = (new Adhan.adhan.PrayerTimes(mm.coordinates,
+                                                           yesterday,
+                                                           mm.params)).timeForPrayer(
+                                Adhan.adhan.Prayer.Isha)
+                } else if (mm.nextPrayer === Adhan.adhan.Prayer.None) {
+                    // Next day's Fajr!
                     var tomorrow = new Date()
                     tomorrow.setDate(tomorrow.getDate() + 1)
-                    mm.timeForNextPrayer = (new Adhan.adhan.PrayerTimes(mm.coordinates, tomorrow, mm.params))
-                    .timeForPrayer(Adhan.adhan.Prayer.Fajr)
+                    mm.timeForNextPrayer = (new Adhan.adhan.PrayerTimes(mm.coordinates,
+                                                                        tomorrow,
+                                                                        mm.params)).timeForPrayer(
+                                Adhan.adhan.Prayer.Fajr)
                 }
 
-                var totalMins = (mm.timeForNextPrayer.getTime() - mm.currentDate.getTime()) / 60000
+                var totalMins = (mm.timeForNextPrayer.getTime(
+                                     ) - mm.currentDate.getTime()) / 60000
                 var hrs = Math.floor(totalMins / 60)
                 var mins = Math.ceil(totalMins % 60)
 
-                mm.timeLeftStr = hrs + qsTr("h ") + mins + qsTr("m until ") + (mm.prayerNames[mm.nextPrayer] || qsTr("Fajr"))
+                mm.timeLeftStr = hrs + qsTr("h ") + mins + qsTr(
+                            "m until ") + (mm.prayerNames[mm.nextPrayer]
+                                           || qsTr("Fajr"))
             }
         }
     }
 
     // Below used for variables worth remembering only
-
     Settings {
-        property alias cityName:            mm.cityName
-        property alias countryName:         mm.countryName
-        property alias timeZone:            mm.timeZone
-        property alias latitude:            mm.latitude
-        property alias longitude:           mm.longitude
-        property alias calcMethod:          mm.calcMethod
-        property alias madhab:              mm.madhab
-        property alias overrideOffsetBy:    mm.overrideOffsetBy
-        property alias prayerConfig:        mm.prayerConfig
+        property alias cityName: mm.cityName
+        property alias countryName: mm.countryName
+        property alias timeZone: mm.timeZone
+        property alias latitude: mm.latitude
+        property alias longitude: mm.longitude
+        property alias calcMethod: mm.calcMethod
+        property alias madhab: mm.madhab
+        property alias overrideOffsetBy: mm.overrideOffsetBy
+        property alias prayerConfig: mm.prayerConfig
     }
 
     LocationService {
@@ -122,7 +136,6 @@ ApplicationWindow {
     }
 
     // Window content
-
     Settings {
         category: "Window"
         property alias width: mainWindow.width
@@ -177,7 +190,8 @@ ApplicationWindow {
 
         x: (parent.width - width) / 2
         y: (parent.height - height) / 2
-        width: parent.width * 0.8; height: parent.height * 0.8
+        width: parent.width * 0.8
+        height: parent.height * 0.8
 
         Flickable {
             id: flickable
@@ -190,10 +204,9 @@ ApplicationWindow {
                 textFormat: TextArea.RichText
             }
 
-            ScrollBar.vertical: ScrollBar { }
+            ScrollBar.vertical: ScrollBar {}
         }
     }
-
 
     Settings {
         id: news
@@ -201,11 +214,11 @@ ApplicationWindow {
         property string newsVersion
     }
 
-//    Connections {
-//        target: updater
-//        onUpdateAvailable: {
-//            whatsNewPopup.text = info
-//            whatsNewPopup.open()
-//        }
-//    }
+    //    Connections {
+    //        target: updater
+    //        onUpdateAvailable: {
+    //            whatsNewPopup.text = info
+    //            whatsNewPopup.open()
+    //        }
+    //    }
 }

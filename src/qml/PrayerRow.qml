@@ -9,14 +9,14 @@ Item {
     height: parent.cellHeight
 
     property alias prayerLabel: prayerLabel.text
-    property alias athanTime:   athanLabel.text
-    property alias iqamaTime:   iqamaLabel.text
-    property alias lineWidth:   line.width
+    property alias athanTime: athanLabel.text
+    property alias iqamaTime: iqamaLabel.text
+    property alias lineWidth: line.width
 
     property var prayerId
 
     Grid {
-        columns: iqamaLabel.text == "" ? 2 : 3;
+        columns: iqamaLabel.text == "" ? 2 : 3
         rows: 1
 
         anchors.fill: parent
@@ -65,7 +65,7 @@ Item {
             width: parent.colCellWidth
             visible: parent.columns == 3
 
-            Text{
+            Text {
                 id: iqamaLabel
 
                 anchors.verticalCenter: parent.verticalCenter

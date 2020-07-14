@@ -9,7 +9,6 @@ Rectangle {
     signal click
 
     //radius: height / 15
-
     color: ma.containsMouse && engine.ff() === "d" ? "lightgrey" : "white"
 
     Image {

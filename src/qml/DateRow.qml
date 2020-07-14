@@ -3,7 +3,7 @@ import QtQuick.Controls 2.0
 
 Item {
 
-    Component.onCompleted: forceActiveFocus()   // Hack to force focus
+    Component.onCompleted: forceActiveFocus() // Hack to force focus
 
     visible: mm.stickerMode ? false : true
 
@@ -15,11 +15,9 @@ Item {
     Keys.onDownPressed: currentDate()
     Keys.onUpPressed: toggleCalendar()
 
-//    Keys.onPressed: {
-//        console.debug("Keys.onPressedD: ", event.key)
-//    }
-
-
+    //    Keys.onPressed: {
+    //        console.debug("Keys.onPressedD: ", event.key)
+    //    }
     Grid {
         columns: 3
         rows: 1
@@ -57,9 +55,8 @@ Item {
             Text {
                 id: dateText
 
-//                width: parent.width;
-//                anchors.centerIn: parent
-
+                //                width: parent.width;
+                //                anchors.centerIn: parent
                 anchors.fill: parent
                 anchors.margins: 10
                 //anchors.verticalCenter: parent.verticalCenter
@@ -86,17 +83,17 @@ Item {
                     cursorShape: Qt.PointingHandCursor
 
                     onClicked: toggleCalendar() //currentDate()
-                    onHoveredChanged: containsMouse ? dateText.font.underline = true : dateText.font.underline = false
+                    onHoveredChanged: containsMouse ? dateText.font.underline
+                                                      = true : dateText.font.underline = false
                 }
 
-
-//                onHoveredChanged: {
-//                    if(hovered) {
-//                        text = "hhhhh"
-//                    } /*else {
-//                        text = mm.currentDateStr
-//                    }*/
-//                }
+                //                onHoveredChanged: {
+                //                    if(hovered) {
+                //                        text = "hhhhh"
+                //                    } /*else {
+                //                        text = mm.currentDateStr
+                //                    }*/
+                //                }
             }
         }
 
@@ -127,7 +124,7 @@ Item {
     }
 
     function currentDate() {
-        mm.currentDate = new Date();
+        mm.currentDate = new Date()
     }
 
     function prevDate() {
@@ -145,7 +142,7 @@ Item {
     function toggleCalendar() {
 
         // Toggle Hijri/Miladi
-        if(mm.calendarPreference == "Hijri") {
+        if (mm.calendarPreference == "Hijri") {
             mm.calendarPreference = "Gregorian"
         } else {
             mm.calendarPreference = "Hijri"

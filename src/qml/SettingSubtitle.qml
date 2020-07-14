@@ -5,6 +5,6 @@ Text {
     //font.pointSize: theme.defaultFontSize - 2
     Layout.fillWidth: true
     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-    color: theme.fontColour;
+    color: theme.fontColour
     //font.family: theme.defaultFontFamily
 }

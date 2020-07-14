@@ -17,7 +17,10 @@ Item {
     Plugin {
         id: aPlugin
         name: "osm"
-        PluginParameter { name: "osm.geocoding.host"; value: "https://nominatim.openstreetmap.org" }
+        PluginParameter {
+            name: "osm.geocoding.host"
+            value: "https://nominatim.openstreetmap.org"
+        }
     }
 
     GeocodeModel {
@@ -30,23 +33,21 @@ Item {
         }
     }
 
-//    PositionSource {
+    //    PositionSource {
 
-//        id: src
-//        active: true
+    //        id: src
+    //        active: true
 
-//        onPositionChanged: {
+    //        onPositionChanged: {
 
-//            active = false
-//            var coord = src.position.coordinate;
-//            search(coord)
-//        }
-//    }
+    //            active = false
+    //            var coord = src.position.coordinate;
+    //            search(coord)
+    //        }
+    //    }
 
-
-
-//     function findMe() {
-//            geocodeModel.query = "california"//"77.100.28.69"// "birmingham"//  src.position.coordinate;//"53 Brandl St, Eight Mile Plains, Australia"
-//            geocodeModel.update()
-//    }
+    //     function findMe() {
+    //            geocodeModel.query = "california"//"77.100.28.69"// "birmingham"//  src.position.coordinate;//"53 Brandl St, Eight Mile Plains, Australia"
+    //            geocodeModel.update()
+    //    }
 }

@@ -3,6 +3,7 @@ import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.1
 import Qt.labs.settings 1.0
 import QtPositioning 5.3
+import QtQuick.Dialogs 1.0
 
 import "qrc:/data/Adhan.js" as Adhan
 
@@ -19,7 +20,9 @@ Page {
             Keys.onUpPressed: scrollBar.decrease()
             Keys.onDownPressed: scrollBar.increase()
 
-            ScrollBar.vertical: ScrollBar { id: scrollBar }
+            ScrollBar.vertical: ScrollBar {
+                id: scrollBar
+            }
 
             contentWidth: parent.width
             contentHeight: content.height + theme.margin * 2
@@ -42,6 +45,7 @@ Page {
                         font.italic: true
                         text: qsTr("Application")
                     }
+
                     Line {
                         Layout.fillWidth: true
                     }
@@ -88,28 +92,27 @@ Page {
                     visible: enabled
                 }
 
-//                RowLayout {
-//                    ColumnLayout {
-//                        SettingTitle {
-//                            text: qsTr("Check for updates")
-//                        }
+                //                RowLayout {
+                //                    ColumnLayout {
+                //                        SettingTitle {
+                //                            text: qsTr("Check for updates")
+                //                        }
 
-//                        SettingSubtitle {
-//                            text: qsTr("Munadi will check for updates when it first starts.")
-//                        }
-//                    }
+                //                        SettingSubtitle {
+                //                            text: qsTr("Munadi will check for updates when it first starts.")
+                //                        }
+                //                    }
 
-//                    Switch {
-//                        id: cfu
-//                        checked: true
-//                        onCheckedChanged: {
-//                            mm.checkForUpdates = checked
-//                        }
-//                    }
-//                    enabled: engine.ff() === "d"
-//                    visible: enabled
-//                }
-
+                //                    Switch {
+                //                        id: cfu
+                //                        checked: true
+                //                        onCheckedChanged: {
+                //                            mm.checkForUpdates = checked
+                //                        }
+                //                    }
+                //                    enabled: engine.ff() === "d"
+                //                    visible: enabled
+                //                }
                 Settings {
                     category: "App"
                     property alias autoStartUp: asu.checked
@@ -117,7 +120,7 @@ Page {
                     property alias showOnAthan: soa.checked
 
                     onAutoStartUpChanged: {
-                        engine.setStartup(asu.checked);
+                        engine.setStartup(asu.checked)
                     }
                 }
 
@@ -138,7 +141,6 @@ Page {
                         Settings {
                             property alias athanMuted: muted.checked
                         }
-
                     }
                 }
 
@@ -169,8 +171,9 @@ Page {
                 GridLayout {
                     columns: 2
                     Text {
-                        font.family: theme.defaultFontFamily; color: theme.defaultFontColour
-                        text: qsTr("Mathhab");
+                        font.family: theme.defaultFontFamily
+                        color: theme.defaultFontColour
+                        text: qsTr("Mathhab")
                     }
                     ComboBox {
                         id: mathhab
@@ -190,8 +193,9 @@ Page {
                         }
                     }
                     Text {
-                        font.family: theme.defaultFontFamily; color: theme.defaultFontColour
-                        text: qsTr("Algorithm");
+                        font.family: theme.defaultFontFamily
+                        color: theme.defaultFontColour
+                        text: qsTr("Algorithm")
                     }
                     ComboBox {
                         id: algo
@@ -205,50 +209,47 @@ Page {
                         model: ListModel {
                             ListElement {
                                 text: qsTr("Muslim World League")
-                                //calcMethod: new Adhan.adhan.CalculationMethod.MuslimWorldLeague()
                             }
                             ListElement {
                                 text: qsTr("Egyptian")
-                                //calcMethod: new Adhan.adhan.CalculationMethod.Egyptian()
                             }
                             ListElement {
                                 text: qsTr("Karachi")
-                                //calcMethod: new Adhan.adhan.CalculationMethod.Karachi()
                             }
                             ListElement {
                                 text: qsTr("Umm AlQura")
-                                //calcMethod: new Adhan.adhan.CalculationMethod.UmmAlQura()
                             }
                             ListElement {
-                                text: qsTr("Gulf")
-                                //calcMethod: new Adhan.adhan.CalculationMethod.Gulf()
-                            }
-                            ListElement {
-                                text: qsTr("Qatar")
-                                //calcMethod: new Adhan.adhan.CalculationMethod.Qatar()
-                            }
-                            ListElement {
-                                text: qsTr("Kuwait")
-                                //calcMethod: new Adhan.adhan.CalculationMethod.Kuwait()
+                                text: qsTr("Dubai")
                             }
                             ListElement {
                                 text: qsTr("Moonsighting Committee")
-                                //calcMethod: new Adhan.adhan.CalculationMethod.MoonsightingCommittee()
                             }
                             ListElement {
                                 text: qsTr("North America")
-                                //calcMethod: new Adhan.adhan.CalculationMethod.NorthAmerica()
+                            }
+                            ListElement {
+                                text: qsTr("Kuwait")
+                            }
+                            ListElement {
+                                text: qsTr("Qatar")
+                            }
+                            ListElement {
+                                text: qsTr("Singapore")
+                            }
+                            ListElement {
+                                text: qsTr("Turkey")
                             }
                             ListElement {
                                 text: qsTr("Other")
-                                //calcMethod: new Adhan.adhan.CalculationMethod.Other()
                             }
                         }
                     }
 
                     Text {
-                        font.family: theme.defaultFontFamily; color: theme.defaultFontColour
-                        text: qsTr("Calendar");
+                        font.family: theme.defaultFontFamily
+                        color: theme.defaultFontColour
+                        text: qsTr("Calendar")
                     }
                     RowLayout {
                         ComboBox {
@@ -256,7 +257,8 @@ Page {
                             Layout.fillWidth: true
 
                             onCurrentIndexChanged: {
-                                mm.calendarPreference = model.get(currentIndex).text
+                                mm.calendarPreference = model.get(
+                                            currentIndex).text
                             }
 
                             model: ListModel {
@@ -273,7 +275,9 @@ Page {
                             id: hijriSlider
                             Layout.fillWidth: true
                             visible: calendar.currentIndex == 0
-                            from: -3; to: 3; stepSize: 1
+                            from: -3
+                            to: 3
+                            stepSize: 1
                             snapMode: Slider.SnapAlways
 
                             onValueChanged: mm.hijriDateOffset = value
@@ -281,7 +285,10 @@ Page {
 
                         Text {
                             visible: hijriSlider.visible
-                            text: hijriSlider.value >= 0 ? "+ " + hijriSlider.value.toFixed() : "- " + Math.abs(hijriSlider.value.toFixed())
+                            text: hijriSlider.value
+                                  >= 0 ? "+ " + hijriSlider.value.toFixed(
+                                             ) : "- " + Math.abs(
+                                             hijriSlider.value.toFixed())
                         }
                     }
                 }
@@ -314,19 +321,19 @@ Page {
 
                     Text {
                         text: qsTr("Author")
-                        color: theme.fontColour;
+                        color: theme.fontColour
                         font.family: theme.defaultFontFamily
                         font.italic: true
                     }
                     Text {
                         text: qsTr("Abou A. Abbad")
                         Layout.fillWidth: true
-                        color: theme.fontColour;
+                        color: theme.fontColour
                         font.family: theme.defaultFontFamily
                     }
                     Text {
                         text: qsTr("Website")
-                        color: theme.fontColour;
+                        color: theme.fontColour
                         font.family: theme.defaultFontFamily
                         font.italic: true
                     }
@@ -338,14 +345,14 @@ Page {
                     }
                     Text {
                         text: qsTr("Version")
-                        color: theme.fontColour;
+                        color: theme.fontColour
                         font.family: theme.defaultFontFamily
                         font.italic: true
                     }
                     Text {
                         text: engine.getVersionNo()
                         Layout.fillWidth: true
-                        color: theme.fontColour;
+                        color: theme.fontColour
                         font.family: theme.defaultFontFamily
                     }
                 }
