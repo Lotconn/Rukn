@@ -134,6 +134,9 @@ QtObject {
             "volume": 0.5
         }]
 
-    property var audioList: ["Built-in"]
+    property var audioList: [{
+            "name": "Makkah (built-in)",
+            "path": "qrc:/data/athan.ogg"
+        }]
     property int audioListIndex: 0
 }
