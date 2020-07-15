@@ -151,7 +151,6 @@ ApplicationWindow {
         anchors.fill: parent
         focus: false
         currentIndex: tabBar.currentIndex
-        interactive: engine.ff() !== "d"
 
         MainPage {
             id: mainPage
