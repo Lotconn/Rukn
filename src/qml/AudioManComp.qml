@@ -12,7 +12,11 @@ RowLayout {
         folder: shortcuts.home
 
         onAccepted: {
-            mm.audioList.push(fileDialog.fileUrl)
+            var name = fileUrl.toString().split('/').slice(-1)[0]
+            mm.audioList.push({
+                                  "name": name,
+                                  "path": fileDialog.fileUrl
+                              })
             mm.audioListIndex = mm.audioList.length - 1
             audioListCb.model = mm.audioList
             audioListCb.currentIndex = mm.audioListIndex
@@ -23,8 +27,7 @@ RowLayout {
         id: audioListCb
         model: mm.audioList
         Layout.fillWidth: true
-
-        displayText: currentText.split('/').slice(-1)[0]
+        textRole: "name"
 
         Component.onCompleted: {
             currentIndex = mm.audioListIndex
@@ -35,11 +38,7 @@ RowLayout {
         }
 
         onCurrentIndexChanged: {
-            if (currentIndex > 0) {
-                athan.source = mm.audioList[currentIndex]
-            } else {
-                athan.source = "qrc:/data/athan.ogg"
-            }
+            athan.source = mm.audioList[currentIndex]["path"]
         }
 
         onActivated: {
