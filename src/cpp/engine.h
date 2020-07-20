@@ -15,19 +15,11 @@ extern "C" {
 #include "updater.h"
 #include <QStringList>
 
-#ifdef DESKTOP
-#include <QtWidgets/QMenu>
-#include <QtWidgets/QSystemTrayIcon>
-#endif
-
 #ifdef Q_OS_ANDROID
 #include <QtPositioning/QGeoCoordinate>
 #include <QtPositioning/QGeoPositionInfo>
 #include <QtPositioning/QGeoPositionInfoSource>
 #include <QtPositioning/QGeoAddress>
-//#include <QtPositioning/QGeoSearchManager>
-//#include <QtPositioning/QGeoSearchReply>
-//#include <QtPositioning/QGeoServiceProvider>
 #endif
 
 
@@ -69,14 +61,10 @@ public:
     }
 
     //Updater * updater;
-
-    void showMainWindow();
     void setStartupFlag();
     Q_INVOKABLE bool isStartupFlag();
 
 private:
-
-    class QQuickView * parent;
 
     bool startupFalg = false;
 

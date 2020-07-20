@@ -61,13 +61,6 @@ int Engine::findOffset(QString tzs, QDateTime dt)
 
     return dst ? offset + 1 : offset;
 }
-void Engine::showMainWindow()
-{
-//    parent->setWindowState( Qt::WindowState(parent->windowState() & ~Qt::WindowMinimized) );
-//    parent->show();
-//    parent->showNormal();
-//    parent->raise();  // for MacOS
-}
 
 QString Engine::getHijriDate(const QDate &date, const int offset)
 {
