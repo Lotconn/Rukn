@@ -332,18 +332,6 @@ Page {
                     columnSpacing: 20
 
                     Text {
-                        text: qsTr("Author")
-                        color: theme.fontColour
-                        font.family: theme.defaultFontFamily
-                        font.italic: true
-                    }
-                    Text {
-                        text: qsTr("Abou A. Abbad")
-                        Layout.fillWidth: true
-                        color: theme.fontColour
-                        font.family: theme.defaultFontFamily
-                    }
-                    Text {
                         text: qsTr("Website")
                         color: theme.fontColour
                         font.family: theme.defaultFontFamily
