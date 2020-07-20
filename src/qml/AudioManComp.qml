@@ -1,7 +1,6 @@
-import QtQuick 2.0
+import QtQuick 2.9
 import QtQuick.Layouts 1.3
-import QtQuick.Controls 2.5
-import Qt.labs.settings 1.1
+import QtQuick.Controls 2.2
 import QtQuick.Dialogs 1.2
 
 RowLayout {
@@ -70,14 +69,23 @@ RowLayout {
     }
 
     Button {
-        icon.source: athan.isOn ? "qrc:/img/stop.png" : "qrc:/img/start.png"
-        implicitWidth: height
-        onClicked: {
-            if (athan.isOn) {
-                athan.stop()
-            } else {
-                athan.play()
+        // Two comp below can be replaced with source.icon
+        // they're here because of Snap issues !!! Remove after core20 is out
+        Image {
+            source: athan.isOn ? "qrc:/img/stop.png" : "qrc:/img/start.png"
+            anchors.margins: parent.height / 5
+            anchors.fill: parent
+        }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                if (athan.isOn) {
+                    athan.stop()
+                } else {
+                    athan.play()
+                }
             }
         }
+        implicitWidth: height
     }
 }
