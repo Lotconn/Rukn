@@ -59,7 +59,4 @@ SOURCES = qml/*.qml
 }
 
 DISTFILES += \
-    qml/AudioManComp.qml
-
-
-
+    qml/*.qml
