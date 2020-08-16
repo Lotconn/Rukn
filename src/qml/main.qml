@@ -104,7 +104,7 @@ ApplicationWindow {
                 var totalMins = (mm.timeForNextPrayer.getTime(
                                      ) - mm.currentDate.getTime()) / 60000
                 var hrs = Math.floor(totalMins / 60)
-                var mins = Math.ceil(totalMins % 60)
+                var mins = Math.floor(totalMins % 60)
 
                 mm.timeLeftStr = hrs + qsTr("h ") + mins + qsTr(
                             "m until ") + (mm.prayerNames[mm.nextPrayer]
