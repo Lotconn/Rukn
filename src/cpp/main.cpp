@@ -28,8 +28,10 @@ int main(int argc, char *argv[])
 
     QTranslator translator;
     // look up e.g. :/i18n/munadi_ar.qm
-    if (translator.load(QLocale(), QLatin1String("munadi"), QLatin1String("_"), QLatin1String(":/i18n")))
+    if (translator.load(QLocale(), QLatin1String("munadi"), QLatin1String("_"), QLatin1String(":/i18n"))) {
         app.installTranslator(&translator);
+        app.setLayoutDirection(Qt::RightToLeft);  //TODO: Temp, remove after snap supports Qt5.12, we assuming Arabic here!
+    }
 
     QQmlApplicationEngine qae;
 
