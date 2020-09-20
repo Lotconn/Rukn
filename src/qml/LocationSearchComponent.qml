@@ -154,50 +154,50 @@ Item {
             visible: locationSearch.detailsVisible
             columns: 2
             Text {
-                font.family: theme.defaultFontFamily
-                color: theme.defaultFontColour
+                
+                color: theme.fontColour
                 text: qsTr("Location")
             }
             TextField {
                 id: locationTextField
 
                 text: mm.cityName + ", " + mm.countryName
-                font.family: theme.defaultFontFamily
+                
                 Layout.fillWidth: true
             }
             Text {
-                font.family: theme.defaultFontFamily
-                color: theme.defaultFontColour
+                
+                color: theme.fontColour
                 text: qsTr("Timezone")
             }
             TextField {
                 id: timezoneTextField
 
                 text: mm.timeZone
-                font.family: theme.defaultFontFamily
+                
                 Layout.fillWidth: true
             }
             Text {
-                font.family: theme.defaultFontFamily
-                color: theme.defaultFontColour
+                
+                color: theme.fontColour
                 text: qsTr("Latitude")
             }
             TextField {
                 id: latitudeTextField
 
                 text: mm.latitude.toString()
-                font.family: theme.defaultFontFamily
+                
             }
             Text {
-                font.family: theme.defaultFontFamily
-                color: theme.defaultFontColour
+                
+                color: theme.fontColour
                 text: qsTr("Longitude")
             }
             TextField {
                 id: longitudeTextField
 
                 text: mm.longitude.toString()
-                font.family: theme.defaultFontFamily
+                
             }
         }
     }

@@ -39,6 +39,7 @@ Item {
 
         Image {
             id: athanStopBtn
+            mirror: mainPage.mirrored
             visible: athan.isOn
             height: timeLeft.height / 2
             anchors.right: parent.right

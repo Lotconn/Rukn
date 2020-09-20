@@ -1,8 +1,7 @@
 QML_IMPORT_PATH = ./
 
-CONFIG += qt c++17 qtquickcompiler
-DEFINES -= ARABIC
-#DEFINES += QT_NO_DEBUG_OUTPUT
+CONFIG += ltcg qt c++17 qtquickcompiler ccache lrelease embed_translations precompile_header
+TRANSLATIONS += i18n/munadi_ar.ts
 
 win32 || mac || linux {
 QT += core gui network qml quick quickcontrols2 multimedia location positioning

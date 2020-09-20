@@ -33,6 +33,7 @@ Item {
             Text {
                 id: prayerLabel
 
+                text: mm.prayerNames[prayerId]
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
                 font.bold: athan.isOn ? prayerId === mm.currentPrayer : prayerId === mm.nextPrayer

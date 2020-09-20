@@ -183,8 +183,8 @@ Page {
                 GridLayout {
                     columns: 2
                     Text {
-                        font.family: theme.defaultFontFamily
-                        color: theme.defaultFontColour
+
+                        color: theme.fontColour
                         text: qsTr("Mathhab")
                     }
                     ComboBox {
@@ -205,62 +205,26 @@ Page {
                         }
                     }
                     Text {
-                        font.family: theme.defaultFontFamily
-                        color: theme.defaultFontColour
+
+                        color: theme.fontColour
                         text: qsTr("Algorithm")
                     }
                     ComboBox {
                         id: algo
                         Layout.fillWidth: true
-                        currentIndex: 0
 
+                        //currentIndex: 0
                         onActivated: {
-                            mm.calcMethod = model.get(currentIndex).text
+                            mm.calcMethodIndex = currentIndex
+                            console.debug('calcIdx: ', mm.calcMethodIndex)
                         }
-
-                        model: ListModel {
-                            ListElement {
-                                text: qsTr("Muslim World League")
-                            }
-                            ListElement {
-                                text: qsTr("Egyptian")
-                            }
-                            ListElement {
-                                text: qsTr("Karachi")
-                            }
-                            ListElement {
-                                text: qsTr("Umm AlQura")
-                            }
-                            ListElement {
-                                text: qsTr("Dubai")
-                            }
-                            ListElement {
-                                text: qsTr("Moonsighting Committee")
-                            }
-                            ListElement {
-                                text: qsTr("North America")
-                            }
-                            ListElement {
-                                text: qsTr("Kuwait")
-                            }
-                            ListElement {
-                                text: qsTr("Qatar")
-                            }
-                            ListElement {
-                                text: qsTr("Singapore")
-                            }
-                            ListElement {
-                                text: qsTr("Turkey")
-                            }
-                            ListElement {
-                                text: qsTr("Other")
-                            }
-                        }
+                        textRole: 'name'
+                        model: mm.calcMethod
                     }
 
                     Text {
-                        font.family: theme.defaultFontFamily
-                        color: theme.defaultFontColour
+
+                        color: theme.fontColour
                         text: qsTr("Calendar")
                     }
                     RowLayout {
@@ -297,10 +261,14 @@ Page {
 
                         Text {
                             visible: hijriSlider.visible
-                            text: hijriSlider.value
-                                  >= 0 ? "+ " + hijriSlider.value.toFixed(
-                                             ) : "- " + Math.abs(
-                                             hijriSlider.value.toFixed())
+                            color: theme.fontColour
+                            text: hijriSlider.value >= 0 ? qsTr("+ %1").arg(
+                                                               hijriSlider.value.toFixed(
+                                                                   )) : qsTr(
+                                                               "- %1").arg(
+                                                               Math.abs(
+                                                                   hijriSlider.value.toFixed(
+                                                                       )))
                         }
                     }
                 }
@@ -334,7 +302,7 @@ Page {
                     Text {
                         text: qsTr("Website")
                         color: theme.fontColour
-                        font.family: theme.defaultFontFamily
+
                         font.italic: true
                     }
                     Text {
@@ -346,14 +314,13 @@ Page {
                     Text {
                         text: qsTr("Version")
                         color: theme.fontColour
-                        font.family: theme.defaultFontFamily
+
                         font.italic: true
                     }
                     Text {
                         text: engine.getVersionNo()
                         Layout.fillWidth: true
                         color: theme.fontColour
-                        font.family: theme.defaultFontFamily
                     }
                 }
 

@@ -72,6 +72,7 @@ RowLayout {
         // Two comp below can be replaced with source.icon
         // they're here because of Snap issues !!! Remove after core20 is out
         Image {
+            mirror: mainPage.mirrored
             source: athan.isOn ? "qrc:/img/stop.png" : "qrc:/img/start.png"
             anchors.margins: parent.height / 5
             anchors.fill: parent

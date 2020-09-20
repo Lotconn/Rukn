@@ -30,42 +30,36 @@ Page {
             PrayerRow {
                 id: fajr
                 prayerId: Adhan.adhan.Prayer.Fajr
-                prayerLabel: "Fajr"
                 athanTime: mm.fajr
             }
 
             PrayerRow {
                 id: sunrise
                 prayerId: Adhan.adhan.Prayer.Sunrise
-                prayerLabel: "Sunrise"
                 athanTime: mm.srise
             }
 
             PrayerRow {
                 id: duhr
                 prayerId: Adhan.adhan.Prayer.Dhuhr
-                prayerLabel: "Dhuhr"
                 athanTime: mm.duhr
             }
 
             PrayerRow {
                 id: asr
                 prayerId: Adhan.adhan.Prayer.Asr
-                prayerLabel: "Asr"
                 athanTime: mm.asr
             }
 
             PrayerRow {
                 id: mgrb
                 prayerId: Adhan.adhan.Prayer.Maghrib
-                prayerLabel: "Maghrib"
                 athanTime: mm.mgrb
             }
 
             PrayerRow {
                 id: isha
                 prayerId: Adhan.adhan.Prayer.Isha
-                prayerLabel: "Isha"
                 athanTime: mm.isha
             }
 

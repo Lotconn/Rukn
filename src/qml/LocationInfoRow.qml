@@ -15,7 +15,7 @@ Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: height / 3
-        font.family: theme.defaultFontFamily
+
         font.pixelSize: parent.height / 4
         font.italic: true
         color: "grey" //main.defaultFontColour
@@ -29,9 +29,9 @@ Rectangle {
         width: parent.width
         horizontalAlignment: Text.AlignHCenter
         anchors.top: parent.top
-        anchors.topMargin: height / 4
-        font.family: theme.defaultFontFamily
-        font.pixelSize: parent.height / 2.5
+        anchors.topMargin: height / 6
+
+        font.pixelSize: parent.height / 3
         color: theme.fontColour
         elide: Text.ElideRight
 
@@ -42,8 +42,8 @@ Rectangle {
         width: parent.width
         horizontalAlignment: Text.AlignHCenter
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: height / 3
-        font.family: theme.defaultFontFamily
+        anchors.bottomMargin: height / 6
+
         font.pixelSize: parent.height / 4
         font.italic: true
         color: "grey" //main.defaultFontColour

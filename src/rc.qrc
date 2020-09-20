@@ -12,7 +12,6 @@
         <file>img/munadi.png</file>
         <file>img/arrow.png</file>
         <file>img/stop.png</file>
-        <file>data/Ubuntu.ttf</file>
         <file>img/about.png</file>
         <file>data/whatsnew.html</file>
         <file>qml/MunadiModel.qml</file>
@@ -36,5 +35,9 @@
         <file>img/start.png</file>
         <file>img/minus.png</file>
         <file>img/plus.png</file>
+        <file>data/NotoNaskhArabicUI-Bold.ttf</file>
+        <file>data/NotoNaskhArabicUI-Regular.ttf</file>
+        <file>data/NotoSans-Bold.ttf</file>
+        <file>data/NotoSans-Regular.ttf</file>
     </qresource>
 </RCC>

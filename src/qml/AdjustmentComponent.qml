@@ -36,7 +36,8 @@ ColumnLayout {
         }
         Text {
             //Layout.minimumWidth: parent.width * 0.1
-            text: (volume.value * 100).toFixed() + qsTr("%")
+            color: theme.fontColour
+            text: qsTr("%1 %").arg((volume.value * 100).toFixed())
             Layout.minimumWidth: volText.width
         }
         Text {
@@ -58,11 +59,11 @@ ColumnLayout {
         }
         Text {
             verticalAlignment: Text.AlignVCenter
-            font.family: theme.defaultFontFamily
-            color: theme.defaultFontColour
-            text: mins.value >= 0 ? "+ " + mins.value.toFixed(
-                                        ) : "- " + Math.abs(
-                                        mins.value.toFixed())
+
+            color: theme.fontColour
+            text: mins.value >= 0 ? qsTr("+ %1").arg(mins.value.toFixed(
+                                                         )) : qsTr("- %1").arg(
+                                        Math.abs(mins.value.toFixed()))
         }
     }
 }
