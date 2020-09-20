@@ -61,6 +61,16 @@
     </screenshots>
 
     <releases>
+        <release version="20.09" date="2020-09-01">
+            <description>
+                <p>This release adds some requested features:</p>
+                <ul>
+                    <li>Added support for RTL languages</li>
+                    <li>Added Arabic translation, thanks to Damascene</li>
+                    <li>Some other minor enhancements</li>
+                </ul>
+            </description>
+        </release>
         <release version="20.07" date="2020-07-01">
             <description>
                 <p>This release adds some requested features:</p>

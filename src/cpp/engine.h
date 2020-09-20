@@ -5,7 +5,7 @@
 #include <QtCore>
 #include <QtDebug>
 
-#define APP_VERSION "20.07"
+#define APP_VERSION "20.09"
 #define MUNADI_API_URL "https://munadi.org/"
 
 extern "C" {
