@@ -22,11 +22,13 @@ parts:
     build-packages:
       - g++
       - make
+      - ccache
       - qtbase5-dev
-      - qtdeclarative5-dev
       - qtlocation5-dev
       - qtmultimedia5-dev
+      - qtdeclarative5-dev
       - qtpositioning5-dev
+      - qttools5-dev-tools
       - qtquickcontrols2-5-dev
     stage-packages:
       - qml-module-qt-labs-folderlistmodel

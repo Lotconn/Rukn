@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>qml/main.qml</file>
+        <file>i18n/munadi_ar.qm</file>
         <file>qml/PageButton.qml</file>
         <file>qml/CompassPage.qml</file>
         <file>qml/SettingsPage.qml</file>
