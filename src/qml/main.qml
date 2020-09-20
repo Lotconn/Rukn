@@ -13,6 +13,8 @@ ApplicationWindow {
 
     width: 400
     height: 600
+    LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft
+    LayoutMirroring.childrenInherit: true
 
     Component.onCompleted: {
 
@@ -32,10 +34,16 @@ ApplicationWindow {
             whatsNewPopup.open()
             news.newsVersion = engine.getVersionNo()
         }
+
+        console.debug('UI Dir: ', Qt.application.layoutDirection)
     }
 
     Component.onDestruction: {
         mm.prayerConfig = mm.prayerConfig
+    }
+
+    Theme {
+        id: theme
     }
 
     // Globals
@@ -77,8 +85,8 @@ ApplicationWindow {
             }
 
             if (athan.isOn) {
-                mm.timeLeftStr = mm.prayerNames[mm.currentPrayer] + qsTr(
-                            " Athan ...")
+                mm.timeLeftStr = qsTr("%1 Athan ...").arg(
+                            mm.prayerNames[mm.currentPrayer])
             } else {
 
                 if (mm.currentPrayer === Adhan.adhan.Prayer.None) {
@@ -120,7 +128,7 @@ ApplicationWindow {
         property alias timeZone: mm.timeZone
         property alias latitude: mm.latitude
         property alias longitude: mm.longitude
-        property alias calcMethod: mm.calcMethod
+        property alias calcMethodIndex: mm.calcMethodIndex
         property alias madhab: mm.madhab
         property alias overrideOffsetBy: mm.overrideOffsetBy
         property alias prayerConfig: mm.prayerConfig
@@ -130,10 +138,6 @@ ApplicationWindow {
 
     LocationService {
         id: ls
-    }
-
-    Theme {
-        id: theme
     }
 
     // Window content

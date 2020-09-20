@@ -18,6 +18,19 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain("munadi.org");
     app.setApplicationName("Munadi");
 
+    QFontDatabase::addApplicationFont("qrc:/data/NotoNaskhArabicUI-Regular.ttf");
+    QFontDatabase::addApplicationFont("qrc:/data/NotoNaskhArabicUI-Bold.ttf");
+    QFontDatabase::addApplicationFont("qrc:/data/NotoSans-Regular.ttf");
+    QFontDatabase::addApplicationFont("qrc:/data/NotoSans-Bold.ttf");
+
+    QFont font {"Noto Naskh Arabic UI, Noto Sans"};
+    app.setFont(font);
+
+    QTranslator translator;
+    // look up e.g. :/i18n/munadi_ar.qm
+    if (translator.load(QLocale(), QLatin1String("munadi"), QLatin1String("_"), QLatin1String(":/i18n")))
+        app.installTranslator(&translator);
+
     QQmlApplicationEngine qae;
 
     Engine engine;

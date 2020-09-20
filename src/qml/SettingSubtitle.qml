@@ -6,5 +6,5 @@ Text {
     Layout.fillWidth: true
     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
     color: theme.fontColour
-    //font.family: theme.defaultFontFamily
+    //
 }

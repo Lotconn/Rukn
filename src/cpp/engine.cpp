@@ -76,11 +76,11 @@ QString Engine::getHijriDate(const QDate &date, const int offset)
 
     QString hijriDate;
 
-    hijriDate = hijriDate.append(hDate.to_mname);
-    hijriDate = hijriDate.append(" ");
-    hijriDate = hijriDate.append(QString::number(hDate.day));
-    hijriDate = hijriDate.append(" ");
     hijriDate = hijriDate.append(QString::number(hDate.year));
+    hijriDate = hijriDate.append(" / ");
+    hijriDate = hijriDate.append(QString::number(hDate.month));
+    hijriDate = hijriDate.append(" / ");
+    hijriDate = hijriDate.append(QString::number(hDate.day));
 
     return hijriDate;
 }

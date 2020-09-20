@@ -17,7 +17,7 @@ Page {
             font.pixelSize: Font.pixelSize * parent.scale
             font.pointSize: compass.height / 20
             color: theme.fontColour
-            font.family: theme.defaultFontFamily
+            
         }
 
         Rectangle {
@@ -92,7 +92,7 @@ Page {
             text: qsTr("%1° with respect to North").arg(engine.getQibla(
                                                             ).toFixed(0))
             color: theme.fontColour
-            font.family: theme.defaultFontFamily
+            
         }
     }
 }

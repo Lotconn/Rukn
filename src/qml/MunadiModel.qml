@@ -12,40 +12,8 @@ QtObject {
 
     signal invalidate
 
-    function mapCalcMethod(method) {
-        switch (method) {
-        case qsTr("Muslim World League"):
-            return new Adhan.adhan.CalculationMethod.MuslimWorldLeague()
-        case qsTr("Egyptian"):
-            return new Adhan.adhan.CalculationMethod.Egyptian()
-        case qsTr("Karachi"):
-            return new Adhan.adhan.CalculationMethod.Karachi()
-        case qsTr("Umm AlQura"):
-            return new Adhan.adhan.CalculationMethod.UmmAlQura()
-        case qsTr("Dubai"):
-            return new Adhan.adhan.CalculationMethod.Dubai()
-        case qsTr("Moonsighting Committee"):
-            return new Adhan.adhan.CalculationMethod.MoonsightingCommittee()
-        case qsTr("North America"):
-            return new Adhan.adhan.CalculationMethod.NorthAmerica()
-        case qsTr("Kuwait"):
-            return new Adhan.adhan.CalculationMethod.Kuwait()
-        case qsTr("Qatar"):
-            return new Adhan.adhan.CalculationMethod.Qatar()
-        case qsTr("Singapore"):
-            return new Adhan.adhan.CalculationMethod.Singapore()
-        case qsTr("Turkey"):
-            return new Adhan.adhan.CalculationMethod.Turkey()
-        case qsTr("Other"):
-            return new Adhan.adhan.CalculationMethod.Other()
-        }
-    }
-
-    property var prayerNames: [qsTr("Fajr"), qsTr("Sunrise"), qsTr(
-            "Dhuhr"), qsTr("Asr"), qsTr("Maghrib"), qsTr("Isha")]
-
     onInvalidate: {
-        var params = mapCalcMethod(calcMethod)
+        var params = calcMethod[calcMethodIndex]['method']()
         params.madhab = madhab
         params.adjustments.fajr = prayerConfig[0].adjustment
         params.adjustments.sunrise = prayerConfig[1].adjustment
@@ -58,8 +26,7 @@ QtObject {
     }
 
     property date currentDate
-    property string currentDateStr: calendarPreference === qsTr(
-                                        "Hijri") ? hijriDateStr : gregorianDateStr
+    property string currentDateStr: calendarPreference === "Hijri" ? hijriDateStr : gregorianDateStr
     property string gregorianDateStr: Qt.formatDate(
                                           currentDate,
                                           Qt.TextDate) //TODO make date format configurable
@@ -97,11 +64,9 @@ QtObject {
                                                           currentDate, params)
     property var formattedTime: Adhan.adhan.Date.formattedTime
 
-    property var calcMethod: qsTr("Muslim World League")
     property int madhab: Adhan.adhan.Madhab.Shafi
     property var params: new Adhan.adhan.CalculationMethod.MuslimWorldLeague()
 
-    onCalcMethodChanged: invalidate()
     onMadhabChanged: invalidate()
 
     property string fajr: formattedTime(prayerTimes.fajr, utcOffset, dateFormat)
@@ -113,6 +78,9 @@ QtObject {
     property string mgrb: formattedTime(prayerTimes.maghrib, utcOffset,
                                         dateFormat)
     property string isha: formattedTime(prayerTimes.isha, utcOffset, dateFormat)
+
+    property var prayerNames: [qsTr("Fajr"), qsTr("Sunrise"), qsTr(
+            "Dhuhr"), qsTr("Asr"), qsTr("Maghrib"), qsTr("Isha")]
 
     property var prayerConfig: [{
             "adjustment": 0,
@@ -134,9 +102,75 @@ QtObject {
             "volume": 0.5
         }]
 
+    property int audioListIndex: 0
+
     property var audioList: [{
-            "name": "Makkah (built-in)",
+            "name": qsTr("Makkah (built-in)"),
             "path": "qrc:/data/athan.ogg"
         }]
-    property int audioListIndex: 0
+
+    property int calcMethodIndex: 0
+    onCalcMethodIndexChanged: invalidate()
+
+    property var calcMethod: [{
+            "name": qsTr("Muslim World League"),
+            "method": function () {
+                return new Adhan.adhan.CalculationMethod.MuslimWorldLeague()
+            }
+        }, {
+            "name": qsTr("Egyptian"),
+            "method": function () {
+                return new Adhan.adhan.CalculationMethod.Egyptian()
+            }
+        }, {
+            "name": qsTr("Karachi"),
+            "method": function () {
+                return new Adhan.adhan.CalculationMethod.Karachi()
+            }
+        }, {
+            "name": qsTr("Umm AlQura"),
+            "method": function () {
+                return new Adhan.adhan.CalculationMethod.UmmAlQura()
+            }
+        }, {
+            "name": qsTr("Dubai"),
+            "method": function () {
+                return new Adhan.adhan.CalculationMethod.Dubai()
+            }
+        }, {
+            "name": qsTr("Moonsighting Committee"),
+            "method": function () {
+                return new Adhan.adhan.CalculationMethod.MoonsightingCommittee()
+            }
+        }, {
+            "name": qsTr("North America"),
+            "method": function () {
+                return new Adhan.adhan.CalculationMethod.NorthAmerica()
+            }
+        }, {
+            "name": qsTr("Kuwait"),
+            "method": function () {
+                return new Adhan.adhan.CalculationMethod.Kuwait()
+            }
+        }, {
+            "name": qsTr("Qatar"),
+            "method": function () {
+                return new Adhan.adhan.CalculationMethod.Qatar()
+            }
+        }, {
+            "name": qsTr("Singapore"),
+            "method": function () {
+                return new Adhan.adhan.CalculationMethod.Singapore()
+            }
+        }, {
+            "name": qsTr("Turkey"),
+            "method": function () {
+                return new Adhan.adhan.CalculationMethod.Turkey()
+            }
+        }, {
+            "name": qsTr("Other"),
+            "method": function () {
+                return new Adhan.adhan.CalculationMethod.Other()
+            }
+        }]
 }
