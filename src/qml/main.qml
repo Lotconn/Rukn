@@ -17,6 +17,8 @@ ApplicationWindow {
     LayoutMirroring.childrenInherit: true
 
     Component.onCompleted: {
+        // Required by Qt
+        qsTr("QT_LAYOUT_DIRECTION", "QGuiApplication")
 
         if (engine.isStartupFlag()) {
             showMinimized()

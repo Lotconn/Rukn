@@ -18,20 +18,18 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain("munadi.org");
     app.setApplicationName("Munadi");
 
-    QFontDatabase::addApplicationFont("qrc:/data/NotoNaskhArabicUI-Regular.ttf");
-    QFontDatabase::addApplicationFont("qrc:/data/NotoNaskhArabicUI-Bold.ttf");
-    QFontDatabase::addApplicationFont("qrc:/data/NotoSans-Regular.ttf");
-    QFontDatabase::addApplicationFont("qrc:/data/NotoSans-Bold.ttf");
+    QFontDatabase::addApplicationFont(":/data/NotoNaskhArabicUI-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/data/NotoNaskhArabicUI-Bold.ttf");
+    QFontDatabase::addApplicationFont(":/data/NotoSans-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/data/NotoSans-Bold.ttf");
 
-    QFont font {"Noto Naskh Arabic UI, Noto Sans"};
+    QFont font {"Noto Sans, Noto Naskh Arabic UI"};
     app.setFont(font);
 
     QTranslator translator;
     // look up e.g. :/i18n/munadi_ar.qm
-    if (translator.load(QLocale(), QLatin1String("munadi"), QLatin1String("_"), QLatin1String(":/i18n"))) {
+    if (translator.load(QLocale(), QLatin1String("munadi"), QLatin1String("_"), QLatin1String(":/i18n")))
         app.installTranslator(&translator);
-        app.setLayoutDirection(Qt::RightToLeft);  //TODO: Temp, remove after snap supports Qt5.12, we assuming Arabic here!
-    }
 
     QQmlApplicationEngine qae;
 
