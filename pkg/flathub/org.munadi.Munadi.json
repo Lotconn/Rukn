@@ -16,13 +16,12 @@
     "modules": [
         {
             "name": "munadi",
-	    "subdir": "src",
-            "buildsystem": "qmake",
-            "config-opts": ["CONFIG+=flatpak"],
+            "buildsystem": "cmake-ninja",
+            "config-opts": ["-DCMAKE_BUILD_TYPE=Release"],
             "sources": [
                 {
                     "type": "dir",
-                    "path": "../../"
+                    "path": "../.."
                 }
             ]
         }

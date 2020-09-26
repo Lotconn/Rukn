@@ -13,13 +13,12 @@ ApplicationWindow {
 
     width: 400
     height: 600
-    LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft
     LayoutMirroring.childrenInherit: true
+    LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft
+                             || qsTr("QT_LAYOUT_DIRECTION",
+                                     "QGuiApplication") === "RTL"
 
     Component.onCompleted: {
-        // Required by Qt
-        qsTr("QT_LAYOUT_DIRECTION", "QGuiApplication")
-
         if (engine.isStartupFlag()) {
             showMinimized()
         } else {

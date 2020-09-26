@@ -6,3 +6,6 @@ Type=Application
 Categories=Utility;
 Terminal=false
 Comment=Simple Athan App
+
+Name[ar]=منادي
+Comment[ar]=برنامج اذان بسيط

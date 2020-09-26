@@ -1,0 +1,80 @@
+cmake_minimum_required(VERSION 3.14)
+
+project(munadi LANGUAGES CXX C)
+set(APP_VERSION 20.09.1)
+
+if(CMAKE_VERSION VERSION_LESS "3.7.0")
+    set(CMAKE_INCLUDE_CURRENT_DIR ON)
+endif()
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+#if(ANDROID)
+#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
+#    if (ANDROID_ABI STREQUAL "armeabi-v7a")
+#        set(ANDROID_EXTRA_LIBS
+#            ${CMAKE_CURRENT_SOURCE_DIR}/path/to/libcrypto.so
+#            ${CMAKE_CURRENT_SOURCE_DIR}/path/to/libssl.so)
+#    endif()
+#endif()
+
+configure_file(src/cpp/version.h.in version.h)
+
+find_package(Qt5
+    COMPONENTS
+        Core Gui Quick QuickControls2 Multimedia Location Positioning REQUIRED)
+
+find_package(Qt5QuickCompiler)
+
+set(TS_FILES
+    src/i18n/munadi_ar.ts)
+
+set(HEADERS
+    src/cpp/engine.h
+    src/cpp/updater.h)
+
+set(SOURCES
+    src/cpp/engine.cpp
+    src/cpp/updater.cpp
+    src/cpp/main.cpp
+    src/cpp/libitl/hijri.c)
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+    qt5_add_resources(QRC_FILES src/qml.qrc src/rc.qrc)
+else()
+    qtquick_compiler_add_resources(QRC_FILES src/qml.qrc src/rc.qrc)
+endif()
+
+
+if(ANDROID)
+    add_library(${PROJECT_NAME} SHARED
+        ${SOURCES}
+        ${TS_FILES}
+        ${QRC_FILES})
+else()
+    add_executable(${PROJECT_NAME}
+        ${SOURCES}
+        ${TS_FILES}
+        ${QRC_FILES})
+endif()
+
+target_compile_definitions(${PROJECT_NAME}
+    PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
+
+target_link_libraries(${PROJECT_NAME}
+    PRIVATE Qt5::Core Qt5::Quick Qt5::QuickControls2 Qt5::Multimedia Qt5::Location Qt5::Positioning)
+
+target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_BINARY_DIR}")
+
+install(TARGETS ${PROJECT_NAME})
+
+install(
+    DIRECTORY
+        xdg/icons
+        xdg/metainfo
+        xdg/applications
+    TYPE DATA)
