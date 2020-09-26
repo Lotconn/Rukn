@@ -1,12 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>qml/main.qml</file>
         <file>i18n/munadi_ar.qm</file>
-        <file>qml/PageButton.qml</file>
-        <file>qml/CompassPage.qml</file>
-        <file>qml/SettingsPage.qml</file>
-        <file>qml/SettingTitle.qml</file>
-        <file>qml/SettingSubtitle.qml</file>
         <file>img/settings.png</file>
         <file>img/compass.png</file>
         <file>img/info.png</file>
@@ -15,24 +9,9 @@
         <file>img/stop.png</file>
         <file>img/about.png</file>
         <file>data/whatsnew.html</file>
-        <file>qml/MunadiModel.qml</file>
-        <file>qml/Theme.qml</file>
-        <file>qml/MainPage.qml</file>
-        <file>qml/PageBorder.qml</file>
-        <file>qml/PrayerRow.qml</file>
-        <file>qml/TimeLeftRow.qml</file>
-        <file>qml/Line.qml</file>
-        <file>qml/DateRow.qml</file>
-        <file>qml/TextButton.qml</file>
-        <file>qml/LocationInfoRow.qml</file>
         <file>data/athan.ogg</file>
         <file>data/Adhan.js</file>
-        <file>qml/LocationService.qml</file>
-        <file>qml/LocationSearchComponent.qml</file>
         <file>data/timezones.tsv</file>
-        <file>qml/AdjustmentComponent.qml</file>
-        <file>qtquickcontrols2.conf</file>
-        <file>qml/AudioManComp.qml</file>
         <file>img/start.png</file>
         <file>img/minus.png</file>
         <file>img/plus.png</file>

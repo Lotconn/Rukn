@@ -394,12 +394,12 @@
         <translation>الفجر</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="183"/>
+        <location filename="../qml/main.qml" line="182"/>
         <source>Home</source>
         <translation>الرئيسية</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="186"/>
+        <location filename="../qml/main.qml" line="185"/>
         <source>Settings</source>
         <translation>الإعدادات</translation>
     </message>

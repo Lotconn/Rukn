@@ -61,6 +61,16 @@
     </screenshots>
 
     <releases>
+    	<release version="20.09.1" date="2020-09-26">
+            <description>
+                <p>This release fixes some minor RTL issues and provides Snap improvements:</p>
+                <ul>
+                    <li>Behind the scene improvements to RTL</li>
+                    <li>Enabled perviously disabled window switching using dragging</li>
+                    <li>Switched to core20 and cmake, which means supporting Snap going forward is possible</li>
+                </ul>
+            </description>
+        </release>
         <release version="20.09" date="2020-09-01">
             <description>
                 <p>This release adds some requested features:</p>
@@ -69,7 +79,9 @@
                     <li>Added Arabic translation, thanks to Damascene</li>
                     <li>Some other minor enhancements</li>
                 </ul>
+                
             </description>
+            
         </release>
         <release version="20.07" date="2020-07-01">
             <description>
