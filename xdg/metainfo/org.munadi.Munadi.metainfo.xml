@@ -61,7 +61,18 @@
     </screenshots>
 
     <releases>
-    	<release version="20.09.1" date="2020-09-26">
+    	<release version="20.10" date="2020-10-01">
+            <description>
+                <p>This release adds tray icon support:</p>
+                <ul>
+                    <li>Click on the tray icon to hide/show Munadi</li>
+                    <li>Right click the tray icon for context menu</li>
+                    <li>Clicking on "time left" will stop currently playing Athan</li>
+                </ul>
+                <p>Note: Not all desktop environments support tray icons.</p>
+            </description>
+        </release>
+        <release version="20.09.1" date="2020-09-26">
             <description>
                 <p>This release fixes some minor RTL issues and provides Snap improvements:</p>
                 <ul>
