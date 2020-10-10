@@ -20,7 +20,6 @@ parts:
       - -DCMAKE_BUILD_TYPE=Release
       - -DCMAKE_INSTALL_PREFIX=/usr
     source-type: local
-    source-subdir: src
     source: .
     parse-info: [usr/share/metainfo/org.munadi.Munadi.metainfo.xml]
     build-packages:
