@@ -1,6 +1,6 @@
 #include <QSettings>
 #include <QQmlContext>
-#include <QGuiApplication>
+#include <QApplication>
 #include <QQmlApplicationEngine>
 
 #include "engine.h"
@@ -8,12 +8,9 @@
 int main(int argc, char *argv[])
 {
 
-#if defined(Q_OS_ANDROID) && defined(Q_OS_LINUX)
-    //qputenv("QT_QUICK_CONTROLS_STYLE", "Material");
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-#endif
 
-    QGuiApplication app(argc, argv);
+    QApplication app(argc, argv);
 
     app.setOrganizationDomain("munadi.org");
     app.setApplicationName("Munadi");

@@ -5,6 +5,7 @@ import QtQuick.Controls 2.0
 import QtPositioning 5.5
 import QtLocation 5.6
 import QtMultimedia 5.5
+import Qt.labs.platform 1.1
 
 import "qrc:/data/Adhan.js" as Adhan
 
@@ -217,6 +218,40 @@ ApplicationWindow {
         id: news
         category: 'App'
         property string newsVersion
+    }
+
+    SystemTrayIcon {
+        visible: true
+        icon.mask: true
+        icon.source: "qrc:/img/munadi.png"
+
+        onActivated: {
+            switch(reason) {
+                case SystemTrayIcon.Trigger:
+                    if(mainWindow.visible) {
+                    mainWindow.hide()
+                    } else {
+                        mainWindow.show()
+                        mainWindow.raise()
+                        mainWindow.requestActivate()
+                    }
+            }
+        }
+
+        menu: Menu {
+            MenuItem {
+                text: mm.timeLeftStr
+                onTriggered: athan.stop()
+                font.italic: true
+            }
+
+            MenuSeparator {}
+
+            MenuItem {
+                text: qsTr("Quit")
+                onTriggered: Qt.quit()
+            }
+        }
     }
 
     //    Connections {

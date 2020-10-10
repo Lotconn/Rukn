@@ -3,9 +3,7 @@ cmake_minimum_required(VERSION 3.14)
 project(munadi LANGUAGES CXX C)
 set(APP_VERSION 20.09.1)
 
-if(CMAKE_VERSION VERSION_LESS "3.7.0")
-    set(CMAKE_INCLUDE_CURRENT_DIR ON)
-endif()
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -26,7 +24,7 @@ configure_file(src/cpp/version.h.in version.h)
 
 find_package(Qt5
     COMPONENTS
-        Core Gui Quick QuickControls2 Multimedia Location Positioning REQUIRED)
+        Core Gui Widgets Quick QuickControls2 Multimedia Location Positioning REQUIRED)
 
 find_package(Qt5QuickCompiler)
 
@@ -66,7 +64,7 @@ target_compile_definitions(${PROJECT_NAME}
     PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
 
 target_link_libraries(${PROJECT_NAME}
-    PRIVATE Qt5::Core Qt5::Quick Qt5::QuickControls2 Qt5::Multimedia Qt5::Location Qt5::Positioning)
+    PRIVATE Qt5::Core Qt5::Widgets Qt5::Quick Qt5::QuickControls2 Qt5::Multimedia Qt5::Location Qt5::Positioning)
 
 target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_BINARY_DIR}")
 
