@@ -368,7 +368,7 @@
         <translation type="vanished">أذان 1% ...</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="21"/>
+        <location filename="../qml/main.qml" line="19"/>
         <source>QT_LAYOUT_DIRECTION</source>
         <comment>QGuiApplication</comment>
         <translation>RTL</translation>
@@ -402,6 +402,11 @@
         <location filename="../qml/main.qml" line="185"/>
         <source>Settings</source>
         <translation>الإعدادات</translation>
+    </message>
+    <message>
+        <location filename="../qml/main.qml" line="252"/>
+        <source>Quit</source>
+        <translation>إنهاء</translation>
     </message>
 </context>
 </TS>
