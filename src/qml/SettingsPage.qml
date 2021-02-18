@@ -223,11 +223,14 @@ Page {
                     }
 
                     Text {
-
+                        enabled: false
+                        visible: false
                         color: theme.fontColour
                         text: qsTr("Calendar")
                     }
                     RowLayout {
+                        enabled: false
+                        visible: false
                         ComboBox {
                             id: calendar
                             Layout.fillWidth: true
@@ -262,10 +265,10 @@ Page {
                         Text {
                             visible: hijriSlider.visible
                             color: theme.fontColour
-                            text: hijriSlider.value >= 0 ? qsTr("+ %1").arg(
+                            text: hijriSlider.value >= 0 ? qsTr("+ %L1").arg(
                                                                hijriSlider.value.toFixed(
                                                                    )) : qsTr(
-                                                               "- %1").arg(
+                                                               "- %L1").arg(
                                                                Math.abs(
                                                                    hijriSlider.value.toFixed(
                                                                        )))
@@ -297,20 +300,8 @@ Page {
 
                 GridLayout {
                     columns: 2
-                    columnSpacing: 20
+                    //columnSpacing: 20
 
-                    Text {
-                        text: qsTr("Website")
-                        color: theme.fontColour
-
-                        font.italic: true
-                    }
-                    Text {
-                        property string link: "http://munadi.org/"
-                        text: "<a href=\"http://munadi.org/\">munadi.org</a>"
-                        Layout.fillWidth: true
-                        onLinkActivated: Qt.openUrlExternally(link)
-                    }
                     Text {
                         text: qsTr("Version")
                         color: theme.fontColour
@@ -321,6 +312,42 @@ Page {
                         text: engine.getVersionNo()
                         Layout.fillWidth: true
                         color: theme.fontColour
+                    }
+                    Text {
+                        text: qsTr("Website")
+                        color: theme.fontColour
+
+                        font.italic: true
+                    }
+                    Text {
+                        property string link: "https://munadi.org"
+                        text: `<a href=\"${link}\">${link}</a>`
+                        Layout.fillWidth: true
+                        onLinkActivated: Qt.openUrlExternally(link)
+                    }
+                    Text {
+                        text: qsTr("Contact")
+                        color: theme.fontColour
+
+                        font.italic: true
+                    }
+                    Text {
+                        property string link: "https://munadi.org/contact"
+                        text: `<a href=\"${link}\">${link}</a>`
+                        Layout.fillWidth: true
+                        onLinkActivated: Qt.openUrlExternally(link)
+                    }
+                    Text {
+                        text: qsTr("Support")
+                        color: theme.fontColour
+
+                        font.italic: true
+                    }
+                    Text {
+                        property string link: "https://gitlab.com/munadi/munadi/-/issues"
+                        text: `<a href=\"${link}\">${link}</a>`
+                        Layout.fillWidth: true
+                        onLinkActivated: Qt.openUrlExternally(link)
                     }
                 }
 

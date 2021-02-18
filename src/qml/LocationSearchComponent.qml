@@ -10,14 +10,12 @@ Item {
     Layout.fillHeight: true
     implicitHeight: cl.height
 
-    property bool detailsVisible: false
     property string prevQuery
     property var location
 
     function search(query) {
         prevQuery = query
         locationsComboBox.model.clear()
-        detailsVisible = false
         locationService.search(query)
     }
 
@@ -93,111 +91,17 @@ Item {
             }
 
             onCurrentIndexChanged: {
-
-                timezonesComboBox.model.clear()
-                detailsVisible = false
-
                 if (model.count < 1)
                     return
 
                 location = model.get(currentIndex).location
+                var address = location.address.text.split(',')
 
-                if (location) {
-
-                    var timezones = engine.timeZoneFromCC(
-                                location.address.countryCode)
-
-                    if (timezones.length > 1) {
-                        timezones.forEach(function (tz) {
-                            timezonesComboBox.model.append({
-                                                               "text": tz
-                                                           })
-                        })
-                        mm.latitude = 0
-                    }
-
-                    var address = location.address.text.split(',')
-
-                    mm.timeZone = timezones[0]
-                    mm.cityName = address.length > 0 ? address[0] : ""
-                    mm.countryName = address.length > 1 ? address[address.length - 1] : ""
-                    mm.latitude = location.coordinate.latitude
-                    mm.longitude = location.coordinate.longitude
-
-                    //locationSearch.detailsVisible = true
-                    mm.invalidate()
-                }
-            }
-        }
-
-        ComboBox {
-            id: timezonesComboBox
-
-            enabled: model.count > 0
-            visible: enabled
-            Layout.fillWidth: true
-            textRole: "text"
-
-            model: ListModel {}
-
-            onCurrentIndexChanged: {
-
-                if (model.count < 1)
-                    return
-
-                mm.timeZone = model.get(currentIndex).text
+                mm.cityName = address.length > 0 ? address[0] : ""
+                mm.countryName = address.length > 1 ? address[address.length - 1] : ""
+                mm.latitude = location.coordinate.latitude
+                mm.longitude = location.coordinate.longitude
                 mm.invalidate()
-            }
-        }
-
-        GridLayout {
-            visible: locationSearch.detailsVisible
-            columns: 2
-            Text {
-                
-                color: theme.fontColour
-                text: qsTr("Location")
-            }
-            TextField {
-                id: locationTextField
-
-                text: mm.cityName + ", " + mm.countryName
-                
-                Layout.fillWidth: true
-            }
-            Text {
-                
-                color: theme.fontColour
-                text: qsTr("Timezone")
-            }
-            TextField {
-                id: timezoneTextField
-
-                text: mm.timeZone
-                
-                Layout.fillWidth: true
-            }
-            Text {
-                
-                color: theme.fontColour
-                text: qsTr("Latitude")
-            }
-            TextField {
-                id: latitudeTextField
-
-                text: mm.latitude.toString()
-                
-            }
-            Text {
-                
-                color: theme.fontColour
-                text: qsTr("Longitude")
-            }
-            TextField {
-                id: longitudeTextField
-
-                text: mm.longitude.toString()
-                
             }
         }
     }

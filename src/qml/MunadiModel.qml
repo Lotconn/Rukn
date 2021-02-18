@@ -15,36 +15,29 @@ QtObject {
     onInvalidate: {
         var params = calcMethod[calcMethodIndex]['method']()
         params.madhab = madhab
-        params.adjustments.fajr = prayerConfig[0].adjustment
-        params.adjustments.sunrise = prayerConfig[1].adjustment
-        params.adjustments.dhuhr = prayerConfig[2].adjustment
-        params.adjustments.asr = prayerConfig[3].adjustment
-        params.adjustments.maghrib = prayerConfig[4].adjustment
-        params.adjustments.isha = prayerConfig[5].adjustment
+        params.adjustments.fajr     = prayerConfig[0].adjustment
+        params.adjustments.sunrise  = prayerConfig[1].adjustment
+        params.adjustments.dhuhr    = prayerConfig[2].adjustment
+        params.adjustments.asr      = prayerConfig[3].adjustment
+        params.adjustments.maghrib  = prayerConfig[4].adjustment
+        params.adjustments.isha     = prayerConfig[5].adjustment
         mm.params = params
         currentDate = new Date()
     }
 
     property date currentDate
-    property string currentDateStr: calendarPreference === "Hijri" ? hijriDateStr : gregorianDateStr
-    property string gregorianDateStr: Qt.formatDate(
-                                          currentDate,
-                                          Qt.TextDate) //TODO make date format configurable
+    property string currentDateStr: /*calendarPreference === "Hijri" ? hijriDateStr :*/ gregorianDateStr
+    property string gregorianDateStr: Qt.formatDate(currentDate, Qt.locale(), Locale.LongFormat) //TODO make date format configurable
     property string hijriDateStr: engine.getHijriDate(currentDate,
                                                       hijriDateOffset)
     property int hijriDateOffset
-    //onHijriDateOffsetChanged: {hijriDateStr = engine.getHijriDate(currentDate, hijriDateOffset); calendarPreference = qsTr("Hijri")}
     property string calendarPreference
-    property string dateFormat: "24h"
 
     property string cityName
     property string countryName
-    property string timeZone
     property double latitude
     property double longitude
     property double overrideOffsetBy
-    property double utcOffset: engine.findOffset(timeZone,
-                                                 currentDate) + overrideOffsetBy
 
     property bool locationNotSet: latitude == 0 || longitude == 0
 
@@ -52,10 +45,10 @@ QtObject {
     property bool showOnAthan: false
 
     //    property bool checkForUpdates:  true
-    property var currentPrayer: prayerTimes.currentPrayer(currentDate)
-    property var nextPrayer: prayerTimes.nextPrayer(currentDate)
-    property var timeForCurrentPrayer: prayerTimes.timeForPrayer(currentPrayer)
-    property var timeForNextPrayer: prayerTimes.timeForPrayer(nextPrayer)
+    property var currentPrayer:         prayerTimes.currentPrayer(currentDate)
+    property var nextPrayer:            prayerTimes.nextPrayer(currentDate)
+    property var timeForCurrentPrayer:  prayerTimes.timeForPrayer(currentPrayer)
+    property var timeForNextPrayer:     prayerTimes.timeForPrayer(nextPrayer)
 
     property string timeLeftStr
 
@@ -69,15 +62,12 @@ QtObject {
 
     onMadhabChanged: invalidate()
 
-    property string fajr: formattedTime(prayerTimes.fajr, utcOffset, dateFormat)
-    property string srise: formattedTime(prayerTimes.sunrise, utcOffset,
-                                         dateFormat)
-    property string duhr: formattedTime(prayerTimes.dhuhr, utcOffset,
-                                        dateFormat)
-    property string asr: formattedTime(prayerTimes.asr, utcOffset, dateFormat)
-    property string mgrb: formattedTime(prayerTimes.maghrib, utcOffset,
-                                        dateFormat)
-    property string isha: formattedTime(prayerTimes.isha, utcOffset, dateFormat)
+    property string fajr:   Qt.formatTime(prayerTimes.fajr, "hh:mm ap")
+    property string srise:  Qt.formatTime(prayerTimes.sunrise, "hh:mm ap")
+    property string duhr:   Qt.formatTime(prayerTimes.dhuhr, "hh:mm ap")
+    property string asr:    Qt.formatTime(prayerTimes.asr, "hh:mm ap")
+    property string mgrb:   Qt.formatTime(prayerTimes.maghrib, "hh:mm ap")
+    property string isha:   Qt.formatTime(prayerTimes.isha, "hh:mm ap")
 
     property var prayerNames: [qsTr("Fajr"), qsTr("Sunrise"), qsTr(
             "Dhuhr"), qsTr("Asr"), qsTr("Maghrib"), qsTr("Isha")]
@@ -103,7 +93,6 @@ QtObject {
         }]
 
     property int audioListIndex: 0
-
     property var audioList: [{
             "name": qsTr("Makkah (built-in)"),
             "path": "qrc:/data/athan.ogg"

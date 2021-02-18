@@ -116,8 +116,8 @@ ApplicationWindow {
                 var hrs = Math.floor(totalMins / 60)
                 var mins = Math.floor(totalMins % 60)
 
-                mm.timeLeftStr = hrs + qsTr("h ") + mins + qsTr(
-                            "m until ") + (mm.prayerNames[mm.nextPrayer]
+                mm.timeLeftStr = qsTr("%L1").arg(hrs) + qsTr("h ") + qsTr("%L1").arg(mins)
+                        + qsTr("m until ") + (mm.prayerNames[mm.nextPrayer]
                                            || qsTr("Fajr"))
             }
         }
@@ -127,7 +127,6 @@ ApplicationWindow {
     Settings {
         property alias cityName: mm.cityName
         property alias countryName: mm.countryName
-        property alias timeZone: mm.timeZone
         property alias latitude: mm.latitude
         property alias longitude: mm.longitude
         property alias calcMethodIndex: mm.calcMethodIndex

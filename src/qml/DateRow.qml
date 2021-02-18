@@ -54,13 +54,8 @@ Item {
 
             Text {
                 id: dateText
-
-                //                width: parent.width;
-                //                anchors.centerIn: parent
                 anchors.fill: parent
                 anchors.margins: 10
-                //anchors.verticalCenter: parent.verticalCenter
-                //anchors.horizontalCenter: parent.horizontalCenter
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 font.italic: true
@@ -68,32 +63,16 @@ Item {
                 color: theme.fontColour
                 elide: Text.ElideRight
                 fontSizeMode: Text.Fit
-                //font.underline: hovered
-
-                //text: hovered ? qsTr("Today") : mm.currentDateStr
-
-                //text: mouseArea.containsMouse ? qsTr("Today") : mm.currentDateStr
                 text: mm.currentDateStr
 
                 MouseArea {
                     id: mouseArea
                     anchors.fill: parent
                     hoverEnabled: true
-
                     cursorShape: Qt.PointingHandCursor
-
-                    onClicked: toggleCalendar() //currentDate()
                     onHoveredChanged: containsMouse ? dateText.font.underline
                                                       = true : dateText.font.underline = false
                 }
-
-                //                onHoveredChanged: {
-                //                    if(hovered) {
-                //                        text = "hhhhh"
-                //                    } /*else {
-                //                        text = mm.currentDateStr
-                //                    }*/
-                //                }
             }
         }
 
@@ -140,6 +119,8 @@ Item {
     }
 
     function toggleCalendar() {
+
+        return;
 
         // Toggle Hijri/Miladi
         if (mm.calendarPreference == "Hijri") {

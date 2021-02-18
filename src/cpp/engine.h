@@ -32,9 +32,6 @@ public:
 
     Engine();
 
-    Q_INVOKABLE QStringList timeZoneFromCC(const QString& cc);
-    Q_INVOKABLE int findOffset(QString tzs, QDateTime dt = QDateTime::currentDateTime());
-
     Q_INVOKABLE QString getHijriDate(const QDate &date = QDate::currentDate(), const int offset = 0);
 
     Q_INVOKABLE QString getVersionNo() { return APP_VERSION; }

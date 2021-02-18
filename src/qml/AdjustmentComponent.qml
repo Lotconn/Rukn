@@ -25,6 +25,7 @@ ColumnLayout {
         }
         Slider {
             id: volume
+            stepSize: 0.05
             enabled: selectedPrayerTab.currentIndex !== 1 // Skip sunrise tab
             Layout.fillWidth: true
             value: mm.prayerConfig[selectedPrayerTab.currentIndex].volume
@@ -37,7 +38,7 @@ ColumnLayout {
         Text {
             //Layout.minimumWidth: parent.width * 0.1
             color: theme.fontColour
-            text: qsTr("%1 %").arg((volume.value * 100).toFixed())
+            text: qsTr("%L1 %").arg(Math.abs((volume.value * 100).toFixed()))
             Layout.minimumWidth: volText.width
         }
         Text {
@@ -61,9 +62,8 @@ ColumnLayout {
             verticalAlignment: Text.AlignVCenter
 
             color: theme.fontColour
-            text: mins.value >= 0 ? qsTr("+ %1").arg(mins.value.toFixed(
-                                                         )) : qsTr("- %1").arg(
-                                        Math.abs(mins.value.toFixed()))
+            text: mins.value >= 0 ? qsTr("+ %L1").arg(Math.abs(mins.value.toFixed()))
+                                  : qsTr("- %L1").arg(Math.abs(mins.value.toFixed()))
         }
     }
 }
