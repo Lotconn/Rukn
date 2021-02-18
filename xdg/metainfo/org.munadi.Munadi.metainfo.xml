@@ -61,7 +61,17 @@
     </screenshots>
 
     <releases>
-    	<release version="20.10" date="2020-10-01">
+    	<release version="21.02" date="2021-02-01">
+            <description>
+                <p>This release fixes some bugs:</p>
+                <ul>
+                    <li>Prayer times are now correct for countries with n.5 hours offset from UTC</li>
+                    <li>Everything, including date and time, are now localised correctly</li>
+                    <li>Hijir is disabled temporarily due to not being localised</li>
+                </ul>
+            </description>
+        </release>
+        <release version="20.10" date="2020-10-01">
             <description>
                 <p>This release adds tray icon support:</p>
                 <ul>
