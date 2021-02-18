@@ -20,7 +20,7 @@ Rectangle {
         font.italic: true
         color: "grey" //main.defaultFontColour
         elide: Text.ElideRight
-        text: "Click here to set location ..."
+        text: qsTr("Set your location ...")
         visible: mm.locationNotSet
         font.underline: cityName.font.underline
     }
