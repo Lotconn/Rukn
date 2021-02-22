@@ -32,7 +32,7 @@ QtObject {
     property double overrideOffsetBy
 
     property date currentDate
-    property string currentDateStr: Qt.formatDate(currentDate, Qt.locale(), Locale.LongFormat)
+    property string currentDateStr: Qt.formatDate(currentDate, Qt.DefaultLocaleLongDate)
 
     property bool locationNotSet: latitude == 0 || longitude == 0
 
