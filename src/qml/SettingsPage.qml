@@ -221,67 +221,12 @@ Page {
                         textRole: 'name'
                         model: mm.calcMethod
                     }
-
-                    Text {
-                        enabled: false
-                        visible: false
-                        color: theme.fontColour
-                        text: qsTr("Calendar")
-                    }
-                    RowLayout {
-                        enabled: false
-                        visible: false
-                        ComboBox {
-                            id: calendar
-                            Layout.fillWidth: true
-
-                            onCurrentIndexChanged: {
-                                mm.calendarPreference = model.get(
-                                            currentIndex).text
-                            }
-
-                            model: ListModel {
-                                ListElement {
-                                    text: qsTr("Hijri")
-                                }
-                                ListElement {
-                                    text: qsTr("Gregorian")
-                                }
-                            }
-                        }
-
-                        Slider {
-                            id: hijriSlider
-                            Layout.fillWidth: true
-                            visible: calendar.currentIndex == 0
-                            from: -3
-                            to: 3
-                            stepSize: 1
-                            snapMode: Slider.SnapAlways
-
-                            onValueChanged: mm.hijriDateOffset = value
-                        }
-
-                        Text {
-                            visible: hijriSlider.visible
-                            color: theme.fontColour
-                            text: hijriSlider.value >= 0 ? qsTr("+ %L1").arg(
-                                                               hijriSlider.value.toFixed(
-                                                                   )) : qsTr(
-                                                               "- %L1").arg(
-                                                               Math.abs(
-                                                                   hijriSlider.value.toFixed(
-                                                                       )))
-                        }
-                    }
                 }
 
                 Settings {
                     category: "Other"
                     property alias mathhabCbIndex: mathhab.currentIndex
                     property alias calcMethodCbIndex: algo.currentIndex
-                    property alias calendarCbIndex: calendar.currentIndex
-                    property alias hijriAdjustment: hijriSlider.value
                 }
 
                 RowLayout {}
@@ -300,7 +245,6 @@ Page {
 
                 GridLayout {
                     columns: 2
-                    //columnSpacing: 20
 
                     Text {
                         text: qsTr("Version")

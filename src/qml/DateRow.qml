@@ -13,11 +13,7 @@ Item {
     Keys.onLeftPressed: prevDate()
     Keys.onRightPressed: nextDate()
     Keys.onDownPressed: currentDate()
-    Keys.onUpPressed: toggleCalendar()
 
-    //    Keys.onPressed: {
-    //        console.debug("Keys.onPressedD: ", event.key)
-    //    }
     Grid {
         columns: 3
         rows: 1
@@ -116,17 +112,5 @@ Item {
         var nextDate = mm.currentDate
         nextDate.setDate(mm.currentDate.getDate() + 1)
         mm.currentDate = nextDate
-    }
-
-    function toggleCalendar() {
-
-        return;
-
-        // Toggle Hijri/Miladi
-        if (mm.calendarPreference == "Hijri") {
-            mm.calendarPreference = "Gregorian"
-        } else {
-            mm.calendarPreference = "Hijri"
-        }
     }
 }

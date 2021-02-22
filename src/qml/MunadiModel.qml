@@ -25,19 +25,14 @@ QtObject {
         currentDate = new Date()
     }
 
-    property date currentDate
-    property string currentDateStr: /*calendarPreference === "Hijri" ? hijriDateStr :*/ gregorianDateStr
-    property string gregorianDateStr: Qt.formatDate(currentDate, Qt.locale(), Locale.LongFormat) //TODO make date format configurable
-    property string hijriDateStr: engine.getHijriDate(currentDate,
-                                                      hijriDateOffset)
-    property int hijriDateOffset
-    property string calendarPreference
-
     property string cityName
     property string countryName
     property double latitude
     property double longitude
     property double overrideOffsetBy
+
+    property date currentDate
+    property string currentDateStr: Qt.formatDate(currentDate, Qt.locale(), Locale.LongFormat)
 
     property bool locationNotSet: latitude == 0 || longitude == 0
 
