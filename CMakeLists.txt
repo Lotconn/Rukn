@@ -11,14 +11,10 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#if(ANDROID)
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-#    if (ANDROID_ABI STREQUAL "armeabi-v7a")
-#        set(ANDROID_EXTRA_LIBS
-#            ${CMAKE_CURRENT_SOURCE_DIR}/path/to/libcrypto.so
-#            ${CMAKE_CURRENT_SOURCE_DIR}/path/to/libssl.so)
-#    endif()
-#endif()
+if(ANDROID)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/libs/android/openssl/CMakeLists.txt)
+    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/android")
+endif()
 
 configure_file(src/cpp/version.h.in version.h)
 
@@ -50,6 +46,7 @@ endif()
 
 if(ANDROID)
     add_library(${PROJECT_NAME} SHARED
+        src/android/AndroidManifest.xml
         ${SOURCES}
         ${TS_FILES}
         ${QRC_FILES})
