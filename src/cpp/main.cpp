@@ -23,8 +23,11 @@ int main(int argc, char *argv[])
     QFont font {"Noto Sans, Noto Naskh Arabic UI"};
     app.setFont(font);
 
-    qDebug() << "Locale: " << QLocale::system().name();
-    QLocale::setDefault(QLocale::English);
+    auto locale = QLocale::system().name();
+    qDebug() << "Locale: " << locale;
+
+    if(locale.startsWith("en")) // Work around for Android
+        QLocale::setDefault(QLocale::English);
 
     QTranslator translator;
     // look up e.g. :/i18n/munadi_ar.qm

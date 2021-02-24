@@ -10,12 +10,8 @@ Item {
     width: parent.cellWidth
     height: parent.cellHeight
 
-    Keys.onLeftPressed: prevDate()
-    Keys.onRightPressed: nextDate()
-    Keys.onDownPressed: currentDate()
-
     Grid {
-        columns: 3
+        columns: 1
         rows: 1
 
         anchors.fill: parent
@@ -28,25 +24,7 @@ Item {
 
         Item {
             height: parent.height
-            width: parent.colCellWidth / 2
-
-            TextButton {
-                enabled: false
-                visible: enabled
-                text: "<"
-                anchors.fill: parent
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
-
-                onClicked: {
-                    prevDate()
-                }
-            }
-        }
-
-        Item {
-            height: parent.height
-            width: parent.colCellWidth * 2
+            width: parent.width
 
             Text {
                 id: dateText
@@ -55,7 +33,7 @@ Item {
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 font.italic: true
-                font.pixelSize: parent.height / 2
+                font.pixelSize: parent.height / 3
                 color: theme.fontColour
                 elide: Text.ElideRight
                 fontSizeMode: Text.Fit
@@ -71,46 +49,11 @@ Item {
                 }
             }
         }
-
-        Item {
-            height: parent.height
-            width: parent.colCellWidth / 2
-            visible: parent.columns == 3
-
-            TextButton {
-                enabled: false
-                visible: enabled
-                text: ">"
-                anchors.fill: parent
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
-
-                onClicked: {
-                    nextDate()
-                }
-            }
-        }
     }
 
     Line {
         width: parent.width - parent.width / 5
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
-    }
-
-    function currentDate() {
-        mm.currentDate = new Date()
-    }
-
-    function prevDate() {
-        var prevDate = mm.currentDate
-        prevDate.setDate(mm.currentDate.getDate() - 1)
-        mm.currentDate = prevDate
-    }
-
-    function nextDate() {
-        var nextDate = mm.currentDate
-        nextDate.setDate(mm.currentDate.getDate() + 1)
-        mm.currentDate = nextDate
     }
 }

@@ -9,7 +9,7 @@ Item {
     height: parent.cellHeight
 
     property alias prayerLabel: prayerLabel.text
-    property alias athanTime: athanLabel.text
+    property string athanTime
     property alias iqamaTime: iqamaLabel.text
     property alias lineWidth: line.width
 
@@ -36,7 +36,7 @@ Item {
                 text: mm.prayerNames[prayerId]
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
-                font.bold: athan.isOn ? prayerId === mm.currentPrayer : prayerId === mm.nextPrayer
+                font.bold: prayerId === mm.currentPrayer
                 font.pixelSize: Math.min(parent.height, parent.width) / 2
                 color: theme.fontColour
 
@@ -56,8 +56,19 @@ Item {
                 font.pixelSize: Math.min(parent.height, parent.width) / 2
                 font.bold: prayerLabel.font.bold
                 color: theme.fontColour
+                text: athanTime.substring(5, -5)
 
                 visible: !mm.locationNotSet
+
+                Text {
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.right
+                    text: athanTime.substring(5)
+                    font.italic: true
+                    font.bold: parent.font.bold
+                    color: parent.color
+                    font.pixelSize: parent.font.pixelSize / 2
+                }
             }
         }
 

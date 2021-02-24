@@ -15,9 +15,8 @@ ApplicationWindow {
     width: 400
     height: 600
     LayoutMirroring.childrenInherit: true
-    LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft
-                             || qsTr("QT_LAYOUT_DIRECTION",
-                                     "QGuiApplication") === "RTL"
+    LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft  // Proper way
+                             || qsTr("QT_LAYOUT_DIRECTION", "QGuiApplication") === "RTL"    // Old Qt version, Snap!
 
     Component.onCompleted: {
         if (engine.isStartupFlag()) {
@@ -36,8 +35,6 @@ ApplicationWindow {
             whatsNewPopup.open()
             news.newsVersion = engine.getVersionNo()
         }
-
-        console.debug('UI Dir: ', Qt.application.layoutDirection)
     }
 
     Component.onDestruction: {
