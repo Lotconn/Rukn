@@ -67,10 +67,8 @@ ApplicationWindow {
 
                 if (mm.currentPrayer !== Adhan.adhan.Prayer.None
                         && mm.currentPrayer !== Adhan.adhan.Prayer.Sunrise
-                        && mm.timeForCurrentPrayer.getHours(
-                            ) === mm.currentDate.getHours()
-                        && mm.timeForCurrentPrayer.getMinutes(
-                            ) === mm.currentDate.getMinutes()) {
+                        && mm.timeForCurrentPrayer.getHours() === mm.currentDate.getHours()
+                        && mm.timeForCurrentPrayer.getMinutes() === mm.currentDate.getMinutes()) {
 
                     athan.volume = mm.prayerConfig[mm.currentPrayer].volume
                     athan.play()
@@ -92,30 +90,26 @@ ApplicationWindow {
                     // Yesterday's Isha!
                     var yesterday = new Date()
                     yesterday.setDate(yesterday.getDate() - 1)
+
                     console.debug(yesterday)
-                    mm.timeForCurrentPrayer
-                            = (new Adhan.adhan.PrayerTimes(mm.coordinates,
-                                                           yesterday,
-                                                           mm.params)).timeForPrayer(
-                                Adhan.adhan.Prayer.Isha)
+                    mm.timeForCurrentPrayer = (new Adhan.adhan.PrayerTimes(
+                                   mm.coordinates, yesterday, mm.params)).timeForPrayer(Adhan.adhan.Prayer.Isha)
                 } else if (mm.nextPrayer === Adhan.adhan.Prayer.None) {
                     // Next day's Fajr!
                     var tomorrow = new Date()
                     tomorrow.setDate(tomorrow.getDate() + 1)
                     mm.timeForNextPrayer = (new Adhan.adhan.PrayerTimes(mm.coordinates,
                                                                         tomorrow,
-                                                                        mm.params)).timeForPrayer(
+                                                                         mm.params)).timeForPrayer(
                                 Adhan.adhan.Prayer.Fajr)
                 }
 
-                var totalMins = (mm.timeForNextPrayer.getTime(
-                                     ) - mm.currentDate.getTime()) / 60000
+                var totalMins = (mm.timeForNextPrayer.getTime() - mm.currentDate.getTime()) / 60000
                 var hrs = Math.floor(totalMins / 60)
                 var mins = Math.floor(totalMins % 60)
 
                 mm.timeLeftStr = qsTr("%L1").arg(hrs) + qsTr("h ") + qsTr("%L1").arg(mins)
-                        + qsTr("m until ") + (mm.prayerNames[mm.nextPrayer]
-                                           || qsTr("Fajr"))
+                        + qsTr("m until ") + (mm.prayerNames[mm.nextPrayer] || qsTr("Fajr"))
             }
         }
     }

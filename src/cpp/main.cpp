@@ -2,8 +2,10 @@
 #include <QQmlContext>
 #include <QApplication>
 #include <QQmlApplicationEngine>
+#include <QDateTime>
 
 #include "engine.h"
+#include "alarms.h"
 
 int main(int argc, char *argv[])
 {
@@ -14,6 +16,14 @@ int main(int argc, char *argv[])
 
     app.setOrganizationDomain("munadi.org");
     app.setApplicationName("Munadi");
+
+    Alarms& alarms = Alarms::instance();
+    auto dt = QDateTime::currentDateTimeUtc();
+
+
+    alarms.add(dt.addSecs(66));
+    alarms.add(dt.addSecs(5));
+    alarms.add(dt.addSecs(9));
 
     QFontDatabase::addApplicationFont(":/data/NotoNaskhArabicUI-Regular.ttf");
     QFontDatabase::addApplicationFont(":/data/NotoNaskhArabicUI-Bold.ttf");
