@@ -20,7 +20,8 @@ Button {
 
     background: Rectangle {
         implicitWidth: 100
-        implicitHeight: 40
+        implicitHeight: implicitWidth
+
         opacity: enabled ? 1 : 0.3
         color: control.pressed ? theme.borderColour : "white"
         border.color: theme.borderColour

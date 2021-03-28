@@ -17,14 +17,6 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain("munadi.org");
     app.setApplicationName("Munadi");
 
-    Alarms& alarms = Alarms::instance();
-    auto dt = QDateTime::currentDateTimeUtc();
-
-
-    alarms.add(dt.addSecs(66));
-    alarms.add(dt.addSecs(5));
-    alarms.add(dt.addSecs(9));
-
     QFontDatabase::addApplicationFont(":/data/NotoNaskhArabicUI-Regular.ttf");
     QFontDatabase::addApplicationFont(":/data/NotoNaskhArabicUI-Bold.ttf");
     QFontDatabase::addApplicationFont(":/data/NotoSans-Regular.ttf");
@@ -47,6 +39,7 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine qae;
 
     Engine engine;
+    Alarms& alarms = Alarms::instance();
 
     if(argc > 1 && strcmp(argv[1], "--hidden") == 0)
     {
@@ -54,6 +47,7 @@ int main(int argc, char *argv[])
     }
 
     qae.rootContext()->setContextProperty("engine", &engine);
+    qae.rootContext()->setContextProperty("alarms", &alarms);
     //qae.rootContext()->setContextProperty("updater", engine.updater);
     qae.load(QUrl(QLatin1String("qrc:/qml/main.qml")));
 

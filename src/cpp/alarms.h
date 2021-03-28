@@ -3,13 +3,21 @@
 
 #include <QObject>
 #include <QDateTime>
-#include <set>
+#include <map>
+#include <vector>
+#include <optional>
 
 class Alarms : public QObject
 {
     Q_OBJECT
 
-    std::set<QDateTime> entries;
+    struct Meta {
+        QString id;
+        qint64 interval;
+    };
+
+    //std::set<qint64> entries;
+    std::map<qint64, std::vector<Meta>> entries;
     Alarms(QObject *parent = nullptr);
     void prepNextAlarm();
     qint64 secsToNextAlarm();
@@ -17,11 +25,11 @@ class Alarms : public QObject
 
 public:
     static Alarms& instance();
-    void add(QDateTime&&);
-    void clear();
+    Q_INVOKABLE void add(QDateTime, QString id, qint64 interval = 0);
+    Q_INVOKABLE void clear(QString id);
 
 signals:
-    void trigger();
+    void trigger(QString id);
     void empty();
 
 };
