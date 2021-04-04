@@ -34,7 +34,7 @@ Item {
                 enabled: true
                 visible: enabled
                 autoRepeat: true
-                text: "<"
+                text: qsTr("<")
                 anchors.fill: parent
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -87,7 +87,7 @@ Item {
                 enabled: true
                 visible: enabled
                 autoRepeat: true
-                text: ">"
+                text: qsTr(">")
                 anchors.fill: parent
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
