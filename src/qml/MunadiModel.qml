@@ -53,8 +53,8 @@ QtObject {
 
     function refreshTable() {
         var now = new Date()
-        currentPrayer =         prayerTimes.currentPrayer(now)
-        nextPrayer =            prayerTimes.nextPrayer(now)
+        currentPrayer =         prayerTimes.currentPrayer()
+        nextPrayer =            prayerTimes.nextPrayer()
         timeForCurrentPrayer =  prayerTimes.timeForPrayer(currentPrayer)
         timeForNextPrayer =     prayerTimes.timeForPrayer(nextPrayer)
     }
@@ -62,6 +62,8 @@ QtObject {
     onTimeForNextPrayerChanged: refreshTimeLeft()
 
     function refreshTimeLeft() {
+        console.debug('refreshTimeLeft()')
+
         if (athan.isOn) {
             mm.timeLeftStr = qsTr("%1 Athan ...").arg(mm.prayerNames[mm.currentPrayer])
         } else {
@@ -71,8 +73,17 @@ QtObject {
             var hrs = Math.floor(totalMins / 60)
             var mins = Math.floor(totalMins % 60)
 
-            mm.timeLeftStr = qsTr("%L1").arg(hrs) + qsTr("h ") + qsTr("%L1").arg(mins)
-                    + qsTr("m until ") + (mm.prayerNames[mm.nextPrayer] || qsTr("Fajr"))
+            mm.timeLeftStr = ''
+            if(hrs)     mm.timeLeftStr += qsTr("%L1").arg(hrs) + qsTr("h ")
+            if(mins)    mm.timeLeftStr += qsTr("%L1").arg(mins) + qsTr("m ")
+
+            if(mm.timeLeftStr) {
+                mm.timeLeftStr += qsTr("until ")
+            } else {
+                mm.timeLeftStr += qsTr("Seconds until ")
+            }
+
+            mm.timeLeftStr += mm.prayerNames[mm.nextPrayer]
         }
     }
 

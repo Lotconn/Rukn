@@ -204,7 +204,7 @@ ApplicationWindow {
             }
 
             if(id === "60s_tick") {
-                mm.refreshTimeLeft()
+                mm.invalidate()
                 return
             }
 

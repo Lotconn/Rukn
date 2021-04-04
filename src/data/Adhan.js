@@ -111,6 +111,13 @@ var CalculationMethod = {
         return params;
     },
 
+    // Dianet
+    Turkey: function() {
+        const params = new CalculationParameters(18, 17, 0, "Turkey");
+        params.methodAdjustments = { sunrise: -7, dhuhr: 5, asr: 4, maghrib: 7 };
+        return params;
+    },
+
     // Other
     Other: function() {
         return new CalculationParameters(0, 0, 0, "Other");
