@@ -32,7 +32,6 @@
             <li>Prayer times for almost any city</li>
             <li>Light and free from advertisements</li>
             <li>Choose your own downloaded Athan file</li>
-            <li>Toggle between Hijri and Georgian date</li>
             <li>Enable, mute or adjust individual Athans</li>
             <li>A number of different calculation methods</li>
     
@@ -61,6 +60,19 @@
     </screenshots>
 
     <releases>
+        <release version="21.04" date="2021-04-01">
+            <description>
+                <p>This release contains a large number of changes:</p>
+                <ul>
+                    <li>UI enhancement</li>
+                    <li>Reworked alarm code</li>
+                    <li>Upgraded Adhan.js lib to v3</li>
+                    <li>Restored Android support (coming soon)</li>
+                    <li>Fixed bug with no sound under Ubuntu</li>
+                    <li>Restored ability to navigate to previous or next day (scroll over or click the date)</li>
+                </ul>
+            </description>
+        </release>
     	<release version="21.02" date="2021-02-01">
             <description>
                 <p>This release fixes some bugs:</p>
