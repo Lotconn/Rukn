@@ -2,8 +2,10 @@
 #include <QQmlContext>
 #include <QApplication>
 #include <QQmlApplicationEngine>
+#include <QDateTime>
 
 #include "engine.h"
+#include "alarms.h"
 
 int main(int argc, char *argv[])
 {
@@ -23,8 +25,11 @@ int main(int argc, char *argv[])
     QFont font {"Noto Sans, Noto Naskh Arabic UI"};
     app.setFont(font);
 
-    qDebug() << "Locale: " << QLocale::system().name();
-    QLocale::setDefault(QLocale::English);
+    auto locale = QLocale::system().name();
+    qDebug() << "Locale: " << locale;
+
+    if(locale.startsWith("en")) // Work around for Android
+        QLocale::setDefault(QLocale::English);
 
     QTranslator translator;
     // look up e.g. :/i18n/munadi_ar.qm
@@ -34,6 +39,7 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine qae;
 
     Engine engine;
+    Alarms& alarms = Alarms::instance();
 
     if(argc > 1 && strcmp(argv[1], "--hidden") == 0)
     {
@@ -41,6 +47,7 @@ int main(int argc, char *argv[])
     }
 
     qae.rootContext()->setContextProperty("engine", &engine);
+    qae.rootContext()->setContextProperty("alarms", &alarms);
     //qae.rootContext()->setContextProperty("updater", engine.updater);
     qae.load(QUrl(QLatin1String("qrc:/qml/main.qml")));
 

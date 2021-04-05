@@ -28,10 +28,12 @@ set(TS_FILES
     src/i18n/munadi_ar.ts)
 
 set(HEADERS
+    src/cpp/alarms.h
     src/cpp/engine.h
     src/cpp/updater.h)
 
 set(SOURCES
+    src/cpp/alarms.cpp
     src/cpp/engine.cpp
     src/cpp/updater.cpp
     src/cpp/main.cpp

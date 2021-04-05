@@ -15,9 +15,8 @@ ApplicationWindow {
     width: 400
     height: 600
     LayoutMirroring.childrenInherit: true
-    LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft
-                             || qsTr("QT_LAYOUT_DIRECTION",
-                                     "QGuiApplication") === "RTL"
+    LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft  // Proper way
+                             || qsTr("QT_LAYOUT_DIRECTION", "QGuiApplication") === "RTL"    // Old Qt version, Snap!
 
     Component.onCompleted: {
         if (engine.isStartupFlag()) {
@@ -37,7 +36,13 @@ ApplicationWindow {
             news.newsVersion = engine.getVersionNo()
         }
 
-        console.debug('UI Dir: ', Qt.application.layoutDirection)
+        var midnight = new Date()
+        midnight.setHours(24,0,0,0)
+        alarms.add(midnight, "24h_tick", 24*60*60)
+
+        var min = new Date()
+        min.setSeconds(60);
+        alarms.add(min, "60s_tick", 60)
     }
 
     Component.onDestruction: {
@@ -48,93 +53,27 @@ ApplicationWindow {
         id: theme
     }
 
-    // Globals
     MunadiModel {
         id: mm
     }
 
     MediaPlayer {
         id: athan
-        property bool isOn: playbackState === MediaPlayer.PlayingState
-    }
-
-    Timer {
-        interval: 1000
-        running: true
-        repeat: true
-
-        onTriggered: {
-            mm.currentDate = new Date()
-
-            if (mm.currentDate.getSeconds() === 0) {
-
-                if (mm.currentPrayer !== Adhan.adhan.Prayer.None
-                        && mm.currentPrayer !== Adhan.adhan.Prayer.Sunrise
-                        && mm.timeForCurrentPrayer.getHours(
-                            ) === mm.currentDate.getHours()
-                        && mm.timeForCurrentPrayer.getMinutes(
-                            ) === mm.currentDate.getMinutes()) {
-
-                    athan.volume = mm.prayerConfig[mm.currentPrayer].volume
-                    athan.play()
-
-                    if (mm.showOnAthan) {
-                        mainWindow.show()
-                        mainWindow.raise()
-                        mainWindow.requestActivate()
-                    }
-                }
-            }
-
-            if (athan.isOn) {
-                mm.timeLeftStr = qsTr("%1 Athan ...").arg(
-                            mm.prayerNames[mm.currentPrayer])
-            } else {
-
-                if (mm.currentPrayer === Adhan.adhan.Prayer.None) {
-                    // Yesterday's Isha!
-                    var yesterday = new Date()
-                    yesterday.setDate(yesterday.getDate() - 1)
-                    console.debug(yesterday)
-                    mm.timeForCurrentPrayer
-                            = (new Adhan.adhan.PrayerTimes(mm.coordinates,
-                                                           yesterday,
-                                                           mm.params)).timeForPrayer(
-                                Adhan.adhan.Prayer.Isha)
-                } else if (mm.nextPrayer === Adhan.adhan.Prayer.None) {
-                    // Next day's Fajr!
-                    var tomorrow = new Date()
-                    tomorrow.setDate(tomorrow.getDate() + 1)
-                    mm.timeForNextPrayer = (new Adhan.adhan.PrayerTimes(mm.coordinates,
-                                                                        tomorrow,
-                                                                        mm.params)).timeForPrayer(
-                                Adhan.adhan.Prayer.Fajr)
-                }
-
-                var totalMins = (mm.timeForNextPrayer.getTime(
-                                     ) - mm.currentDate.getTime()) / 60000
-                var hrs = Math.floor(totalMins / 60)
-                var mins = Math.floor(totalMins % 60)
-
-                mm.timeLeftStr = qsTr("%L1").arg(hrs) + qsTr("h ") + qsTr("%L1").arg(mins)
-                        + qsTr("m until ") + (mm.prayerNames[mm.nextPrayer]
-                                           || qsTr("Fajr"))
-            }
-        }
+        property bool isOn: playbackState === MediaPlayer.PlayingState 
     }
 
     // Below used for variables worth remembering only
     Settings {
-        property alias cityName: mm.cityName
-        property alias countryName: mm.countryName
-        property alias latitude: mm.latitude
-        property alias longitude: mm.longitude
-        property alias calcMethodIndex: mm.calcMethodIndex
-        property alias madhab: mm.madhab
-        property alias overrideOffsetBy: mm.overrideOffsetBy
-        property alias prayerConfig: mm.prayerConfig
-        property alias audioList: mm.audioList
-        property alias audioListIndex: mm.audioListIndex
+        property alias cityName:            mm.cityName
+        property alias countryName:         mm.countryName
+        property alias latitude:            mm.latitude
+        property alias longitude:           mm.longitude
+        property alias calcMethodIndex:     mm.calcMethodIndex
+        property alias madhab:              mm.madhab
+        property alias overrideOffsetBy:    mm.overrideOffsetBy
+        property alias prayerConfig:        mm.prayerConfig
+        property alias audioList:           mm.audioList
+        property alias audioListIndex:      mm.audioListIndex
     }
 
     LocationService {
@@ -250,6 +189,45 @@ ApplicationWindow {
                 text: qsTr("Quit")
                 onTriggered: Qt.quit()
             }
+        }
+    }
+
+    Connections {
+        target: alarms
+
+        function onTrigger(id) {
+
+            if(id === "24h_tick") {
+                mm.currentDate = new Date()
+                mm.invalidate()
+                return
+            }
+
+            if(id === "60s_tick") {
+                mm.invalidate()
+                return
+            }
+
+            if(id !== "athan") return
+            console.debug('js: alarm triggered: ', new Date(), ' id: ', id)
+
+            mm.refreshTable()
+            athan.volume = mm.prayerConfig[mm.currentPrayer].volume
+
+            if(athan.volume > 0 && !athan.muted) athan.play()
+
+            if (mm.showOnAthan) {
+                mainWindow.show()
+                mainWindow.raise()
+                mainWindow.requestActivate()
+            }
+        }
+    }
+
+    Connections {
+        target: athan
+        function onPlaybackStateChanged(state) {
+            mm.refreshTimeLeft()
         }
     }
 

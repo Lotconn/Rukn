@@ -14,19 +14,21 @@ Item {
     property alias text: timeLeftLabel.text
 
     ProgressBar {
+        id: progressBar
+        visible: mm.currentPrayer !== 6 && mm.nextPrayer !== 6
         anchors.bottom: parent.bottom
         anchors.bottomMargin: parent.height / 10
         anchors.horizontalCenter: parent.horizontalCenter
-        from: mm.timeForCurrentPrayer.getTime()
-        to: mm.timeForNextPrayer.getTime()
-        value: if (mm.timeForCurrentPrayer && mm.timeForNextPrayer)
-                   mm.currentDate.getTime()
+        from: if(mm.timeForCurrentPrayer) mm.timeForCurrentPrayer.getTime(); else 0
+        to: if(mm.timeForNextPrayer) mm.timeForNextPrayer.getTime(); else 0
+        value: mm.currentDate.getTime()
         width: parent.width
         opacity: 0.8
     }
 
     Text {
         id: timeLeftLabel
+        visible: progressBar.visible
         anchors.fill: parent
         anchors.bottomMargin: parent.height / 5
         verticalAlignment: Text.AlignVCenter
@@ -55,8 +57,6 @@ Item {
 
         hoverEnabled: true
         anchors.fill: parent
-        onClicked: {
-            athan.stop()
-        }
+        onPressed: athan.stop()
     }
 }
