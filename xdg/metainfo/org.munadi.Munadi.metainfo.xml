@@ -60,6 +60,11 @@
     </screenshots>
 
     <releases>
+        <release version="21.04.1" date="2021-04-28">
+            <description>
+                <p>Fix broken progress bar/time left</p>
+            </description>
+        </release>
         <release version="21.04" date="2021-04-01">
             <description>
                 <p>This release contains a large number of changes:</p>

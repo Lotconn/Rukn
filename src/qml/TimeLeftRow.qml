@@ -21,14 +21,14 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         from: if(mm.timeForCurrentPrayer) mm.timeForCurrentPrayer.getTime(); else 0
         to: if(mm.timeForNextPrayer) mm.timeForNextPrayer.getTime(); else 0
-        value: mm.currentDate.getTime()
+        value: mm.currentTime.getTime()
         width: parent.width
         opacity: 0.8
     }
 
     Text {
         id: timeLeftLabel
-        visible: progressBar.visible
+        visible: progressBar.visible || athan.isOn
         anchors.fill: parent
         anchors.bottomMargin: parent.height / 5
         verticalAlignment: Text.AlignVCenter

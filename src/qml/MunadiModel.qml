@@ -34,6 +34,7 @@ QtObject {
     property double overrideOffsetBy
 
     property date currentDate
+    property date currentTime
 
     onCurrentDateChanged: invalidate()
 
@@ -69,6 +70,7 @@ QtObject {
         } else {
             if(!mm.timeForNextPrayer) return
             var now = new Date()
+            mm.currentTime = now
             var totalMins = (mm.timeForNextPrayer.getTime() - now) / 60000
             var hrs = Math.floor(totalMins / 60)
             var mins = Math.floor(totalMins % 60)
