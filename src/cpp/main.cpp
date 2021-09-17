@@ -1,8 +1,7 @@
-#include <QSettings>
 #include <QQmlContext>
 #include <QApplication>
 #include <QQmlApplicationEngine>
-#include <QDateTime>
+#include <kdsingleapplication.h>
 
 #include "engine.h"
 #include "alarms.h"
@@ -13,6 +12,14 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QApplication app(argc, argv);
+    Engine engine;
+    Alarms& alarms = Alarms::instance();
+    KDSingleApplication sapp;
+
+    if (!sapp.isPrimaryInstance()) {
+        sapp.sendMessage(nullptr);
+        return 0;
+    }
 
     app.setOrganizationDomain("munadi.org");
     app.setApplicationName("Munadi");
@@ -38,9 +45,6 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine qae;
 
-    Engine engine;
-    Alarms& alarms = Alarms::instance();
-
     if(argc > 1 && strcmp(argv[1], "--hidden") == 0)
     {
         engine.setStartupFlag();
@@ -48,6 +52,7 @@ int main(int argc, char *argv[])
 
     qae.rootContext()->setContextProperty("engine", &engine);
     qae.rootContext()->setContextProperty("alarms", &alarms);
+    qae.rootContext()->setContextProperty("sapp", &sapp);
     //qae.rootContext()->setContextProperty("updater", engine.updater);
     qae.load(QUrl(QLatin1String("qrc:/qml/main.qml")));
 

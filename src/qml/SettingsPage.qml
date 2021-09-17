@@ -54,6 +54,28 @@ Page {
                 RowLayout {
                     ColumnLayout {
                         SettingTitle {
+                            text: qsTr("Hide on close")
+                        }
+
+                        SettingSubtitle {
+                            text: qsTr("When closing Munadi, hide it instead.")
+                        }
+                    }
+
+                    Switch {
+                        id: hoc
+                        checked: false
+                        onCheckedChanged: {
+                            mm.hideOnClose = hoc.checked
+                        }
+                    }
+                    enabled: engine.ff() === "d"
+                    visible: enabled
+                }
+
+                RowLayout {
+                    ColumnLayout {
+                        SettingTitle {
                             text: qsTr("Show on Athan")
                         }
 
@@ -118,6 +140,7 @@ Page {
                     property alias autoStartUp: asu.checked
                     //property alias checkForUpdates: cfu.checked
                     property alias showOnAthan: soa.checked
+                    property alias hideOnClose: hoc.checked
 
                     onAutoStartUpChanged: {
                         engine.setStartup(asu.checked)

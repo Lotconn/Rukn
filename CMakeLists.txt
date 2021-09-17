@@ -24,6 +24,10 @@ find_package(Qt5
 
 find_package(Qt5QuickCompiler)
 
+set(KDSingleApplication_STATIC ON)
+add_subdirectory(libs/KDSingleApplication)
+
+
 set(TS_FILES
     src/i18n/munadi_ar.ts)
 
@@ -63,7 +67,7 @@ target_compile_definitions(${PROJECT_NAME}
     PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
 
 target_link_libraries(${PROJECT_NAME}
-    PRIVATE Qt5::Core Qt5::Widgets Qt5::Quick Qt5::QuickControls2 Qt5::Multimedia Qt5::Location Qt5::Positioning)
+    PRIVATE Qt5::Core Qt5::Widgets Qt5::Quick Qt5::QuickControls2 Qt5::Multimedia Qt5::Location Qt5::Positioning kdsingleapplication)
 
 target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_BINARY_DIR}")
 

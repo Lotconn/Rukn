@@ -44,6 +44,7 @@ QtObject {
 
     property bool stickerMode: false
     property bool showOnAthan: false
+    property bool hideOnClose: false
 
     //    property bool checkForUpdates:  true
 

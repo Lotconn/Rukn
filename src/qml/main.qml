@@ -231,6 +231,26 @@ ApplicationWindow {
         }
     }
 
+    Connections {
+        target: sapp
+        function onMessageReceived() {
+            mainWindow.show()
+            mainWindow.raise()
+            mainWindow.requestActivate()
+        }
+    }
+
+    Connections {
+        target: mainWindow
+        function onClosing(close) {
+            if(mm.hideOnClose) {
+                console.debug('Hide on close enabled, will hide window instead of closing it.')
+                close.accepted = false
+                mainWindow.hide()
+            }
+        }
+    }
+
     //    Connections {
     //        target: updater
     //        onUpdateAvailable: {

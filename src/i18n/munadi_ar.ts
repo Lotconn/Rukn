@@ -328,6 +328,14 @@
         <source>Version</source>
         <translation>الإصدار</translation>
     </message>
+    <message>
+        <source>Hide on close</source>
+        <translation>إختفي عند الاغلاق</translation>
+    </message>
+    <message>
+        <source>When closing Munadi, hide it instead.</source>
+        <translation>عند إغلاق منادي, إخفيه.</translation>
+    </message>
 </context>
 <context>
     <name>main</name>

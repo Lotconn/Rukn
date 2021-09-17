@@ -1,3 +1,6 @@
 [submodule "libs/android/openssl"]
 	path = libs/android/openssl
 	url = https://github.com/KDAB/android_openssl
+[submodule "libs/KDSingleApplication"]
+	path = libs/KDSingleApplication
+	url = https://github.com/KDAB/KDSingleApplication.git
