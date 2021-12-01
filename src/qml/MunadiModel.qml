@@ -54,7 +54,7 @@ QtObject {
     property var timeForNextPrayer
 
     function refreshTable() {
-        var now = new Date()
+        console.debug('refreshTable()')
         currentPrayer =         prayerTimes.currentPrayer()
         nextPrayer =            prayerTimes.nextPrayer()
         timeForCurrentPrayer =  prayerTimes.timeForPrayer(currentPrayer)
@@ -69,10 +69,16 @@ QtObject {
         if (athan.isOn) {
             mm.timeLeftStr = qsTr("%1 Athan ...").arg(mm.prayerNames[mm.currentPrayer])
         } else {
-            if(!mm.timeForNextPrayer) return
+            if(!mm.timeForNextPrayer)
+            {
+                mm.timeLeftStr = ""
+                return
+            }
+
             var now = new Date()
             mm.currentTime = now
-            var totalMins = (mm.timeForNextPrayer.getTime() - now) / 60000
+            var totalMins = Math.ceil((mm.timeForNextPrayer.getTime() - now) / 60000)
+
             var hrs = Math.floor(totalMins / 60)
             var mins = Math.floor(totalMins % 60)
 
@@ -88,6 +94,7 @@ QtObject {
 
             mm.timeLeftStr += mm.prayerNames[mm.nextPrayer]
         }
+        console.debug("timeLeftStr", mm.timeLeftStr)
     }
 
     property string timeLeftStr
@@ -98,11 +105,12 @@ QtObject {
     property var prayerTimes
     onPrayerTimesChanged: {
         alarms.clear("athan")
-        alarms.add(prayerTimes.fajr,    "athan")
-        alarms.add(prayerTimes.dhuhr,   "athan")
-        alarms.add(prayerTimes.asr,     "athan")
-        alarms.add(prayerTimes.maghrib, "athan")
-        alarms.add(prayerTimes.isha,    "athan")
+
+        alarms.add("athan", prayerTimes.fajr)
+        alarms.add("athan", prayerTimes.dhuhr)
+        alarms.add("athan", prayerTimes.asr)
+        alarms.add("athan", prayerTimes.maghrib)
+        alarms.add("athan", prayerTimes.isha)
         refreshTable()
     }
 

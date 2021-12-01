@@ -18,6 +18,16 @@ ApplicationWindow {
     LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft  // Proper way
                              || qsTr("QT_LAYOUT_DIRECTION", "QGuiApplication") === "RTL"    // Old Qt version, Snap!
 
+    function set_tickers() {
+        var midnight = new Date()
+        midnight.setHours(24,0,0,0)
+        alarms.add("24h_tick", midnight, 24*60*60)
+
+        var min = new Date()
+        min.setSeconds(60);
+        alarms.add("60s_tick", min, 60)
+    }
+
     Component.onCompleted: {
         if (engine.isStartupFlag()) {
             showMinimized()
@@ -36,13 +46,7 @@ ApplicationWindow {
             news.newsVersion = engine.getVersionNo()
         }
 
-        var midnight = new Date()
-        midnight.setHours(24,0,0,0)
-        alarms.add(midnight, "24h_tick", 24*60*60)
-
-        var min = new Date()
-        min.setSeconds(60);
-        alarms.add(min, "60s_tick", 60)
+        set_tickers()
     }
 
     Component.onDestruction: {
@@ -196,30 +200,33 @@ ApplicationWindow {
         target: alarms
 
         function onTrigger(id) {
+            console.log("onTrigger(",id,")")
 
-            if(id === "24h_tick") {
-                mm.currentDate = new Date()
-                mm.invalidate()
-                return
-            }
+            switch(id) {
+            case "24h_tick":
+                mm.currentDate = new Date() // Recalc
+                break
+            case "60s_tick":
+                mm.refreshTable()
+                break
+            case "alarms_reset":
+                set_tickers()
+                mm.currentDate = new Date() // Recalc
+                break
+            case "athan":
+                console.debug('js: alarm triggered: ', new Date(), ' id: ', id)
 
-            if(id === "60s_tick") {
-                mm.invalidate()
-                return
-            }
+                mm.refreshTable()
+                athan.volume = mm.prayerConfig[mm.currentPrayer].volume
 
-            if(id !== "athan") return
-            console.debug('js: alarm triggered: ', new Date(), ' id: ', id)
+                if(athan.volume > 0 && !athan.muted) athan.play()
 
-            mm.refreshTable()
-            athan.volume = mm.prayerConfig[mm.currentPrayer].volume
-
-            if(athan.volume > 0 && !athan.muted) athan.play()
-
-            if (mm.showOnAthan) {
-                mainWindow.show()
-                mainWindow.raise()
-                mainWindow.requestActivate()
+                if (mm.showOnAthan) {
+                    mainWindow.show()
+                    mainWindow.raise()
+                    mainWindow.requestActivate()
+                }
+                break
             }
         }
     }

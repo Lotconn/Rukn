@@ -1,96 +1,133 @@
+#include <QDebug>
+#include <QDateTime>
+
 #include <unistd.h>
 #include <signal.h>
-
-#include "engine.h"
+#include <sys/timerfd.h>
+#include <sys/epoll.h>
 
 #include "alarms.h"
 
 Alarms::Alarms(QObject *parent) : QObject(parent)
 {
-    signal(SIGALRM, Alarms::sighandler);
+    epoll_fd = epoll_create1(0);
+    if(epoll_fd == -1)
+    {
+        qDebug() << "epoll_create1 failed";
+        exit(EXIT_FAILURE);
+    }
+
+    event_loop = std::thread([&]{
+
+        struct epoll_event ev {};
+        uint64_t tmp;
+
+        while (auto nfds = epoll_wait(epoll_fd, &ev, 1, -1))
+        {
+            if(nfds == -1) {
+                qDebug()  << "epoll_wait error: " << errno;
+                perror(0);
+                continue;
+            }
+
+            auto res = read(ev.data.fd, &tmp, sizeof (uint64_t));
+
+            if(res == sizeof (uint64_t))
+            {
+                emit trigger(entries[ev.data.fd].id);
+            }
+            else if(res == -1)
+            {
+                if(errno == ECANCELED)
+                {
+                    qDebug() << "read returned ECANCELED, time probably changed!";
+                    clear_all();
+                    emit trigger("alarms_reset");
+                }
+                else
+                {
+                    qDebug()  << "read error: " << errno << ", res: " << res;
+                    perror(0);
+                }
+            }
+        }
+    });
+    event_loop.detach();
 }
-Alarms& Alarms::instance()
+
+Alarms::~Alarms()
 {
-    static Alarms alarms;
-    return alarms;
+    clear_all();
+    close(epoll_fd);
 }
-void Alarms::sighandler(int i)
-{
-    if(i != SIGALRM) return;
-
-    static Alarms& alarms = Alarms::instance();
-
-    alarms.prepNextAlarm();
-
-    alarm(alarms.secsToNextAlarm());
-}
-void Alarms::add(QDateTime dt, QString id, qint64 interval)
+void Alarms::add(QString id, QDateTime dt, qint64 interval)
 {
     if(auto epoch = dt.toSecsSinceEpoch(); epoch > QDateTime::currentSecsSinceEpoch())
     {
-        entries[epoch].emplace_back(Meta{id, interval});
-        alarm(secsToNextAlarm());
-        qDebug() << "New alarm for: " << QDateTime::fromSecsSinceEpoch(epoch) << ", id: "
-                    << id << ", interval: " << interval << ", count: " << entries.size();
+        auto timer_fd = timerfd_create(CLOCK_REALTIME, 0);
+        if(timer_fd == -1)
+        {
+            qDebug() << "Failed to create timerfd {id: " << id << ", dt: "
+                     << dt << ", interval: " << interval << "}";
+            return;
+        }
+
+        struct itimerspec new_val {};
+
+        new_val.it_value.tv_sec = epoch;
+        new_val.it_interval.tv_sec = interval;
+
+        if(timerfd_settime(timer_fd, TFD_TIMER_ABSTIME|TFD_TIMER_CANCEL_ON_SET, &new_val, 0) == -1)
+        {
+            qDebug() << "timerfd_settime failed {timer_fd: " << timer_fd;
+            close(timer_fd);
+            return;
+        }
+
+        struct epoll_event ev {};
+        ev.data.fd = timer_fd;
+
+        if(interval)
+            ev.events = EPOLLIN | EPOLLET;
+        else
+            ev.events = EPOLLIN | EPOLLET | EPOLLONESHOT;
+
+        if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, timer_fd, &ev) == -1)
+        {
+            qDebug() << "epoll_ctl failed {timer_fd: " << timer_fd;
+            close(timer_fd);
+            return;
+        }
+
+        entries[timer_fd] = Meta{id, new_val};
+
+        qDebug() << "New alarm " << "{id: " << id << ", dt: " << dt << ", interval: "
+                 << interval << ", count: " << entries.size() << ", timer_fd: " << timer_fd << "}";
     }
 }
 void Alarms::clear(QString id)
 {
     for(auto it = std::begin(entries); it != std::end(entries);)
     {
-        auto& meta_list = it->second;
-        meta_list.erase(std::remove_if(meta_list.begin(), meta_list.end(),
-                                      [&](Meta& meta){return meta.id == id;}) ,meta_list.end());
-
-        if(meta_list.size())
+        if(it->second.id == id)
         {
-            ++it;
+            close(it->first); // Key, i.e. timer_fd
+            it = entries.erase(it);
         }
         else
         {
-            it = entries.erase(it);
-        }
-    }
-
-    qDebug() << "Alarm count: " << entries.size();
-
-    alarm(secsToNextAlarm());
-}
-void Alarms::prepNextAlarm()
-{
-    if(entries.empty())
-    {
-        emit empty();
-        return;
-    }
-
-    auto it = entries.begin();
-    auto epoch = it->first;
-    auto meta_list = it->second;
-    entries.erase(it);
-
-    for(auto& meta : meta_list)
-    {
-        emit trigger(meta.id);
-        qDebug() << "Alarm triggered !!! " << QDateTime::currentDateTime() << ", id: " << meta.id;
-
-        if(meta.interval)
-        {
-            add(QDateTime::fromSecsSinceEpoch(epoch + meta.interval), meta.id, meta.interval);
+            ++it;
         }
     }
 }
-qint64 Alarms::secsToNextAlarm()
+
+void Alarms::clear_all()
 {
-    if(entries.empty()) return 0;
+    for(auto it = std::begin(entries); it != std::end(entries); ++it)
+    {
+        close(it->first); // Key, i.e. timer_fd
+    }
+    entries.clear();
 
-    auto it = entries.begin();
-    auto epoch = it->first;
-    auto diff = epoch - QDateTime::currentSecsSinceEpoch();
-
-    if(diff > 0) return diff;
-
-    // We shouldn't reach here, else probably delayed signal, let's catch up!
-    prepNextAlarm();            // Consume delayed alarm ..
-    return secsToNextAlarm();   // ... until we either have no more or valid one found
+    qDebug() << "All alarms cleared";
 }
