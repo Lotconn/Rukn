@@ -4,29 +4,30 @@
 #include <QObject>
 #include <QDateTime>
 #include <map>
-#include <vector>
-#include <optional>
+#include <thread>
 
 class Alarms : public QObject
 {
     Q_OBJECT
 
+    int epoll_fd = -1;
+
+
     struct Meta {
         QString id;
-        qint64 interval;
+        struct itimerspec timer;
     };
 
-    //std::set<qint64> entries;
-    std::map<qint64, std::vector<Meta>> entries;
-    Alarms(QObject *parent = nullptr);
-    void prepNextAlarm();
-    qint64 secsToNextAlarm();
-    static void sighandler(int);
+    std::map<uint64_t, Meta> entries;
+    std::thread event_loop;
 
 public:
-    static Alarms& instance();
-    Q_INVOKABLE void add(QDateTime, QString id, qint64 interval = 0);
+    Alarms(QObject *parent = nullptr);
+    virtual ~Alarms();
+
+    Q_INVOKABLE void add(QString id, QDateTime, qint64 interval = 0);
     Q_INVOKABLE void clear(QString id);
+    Q_INVOKABLE void clear_all();
 
 signals:
     void trigger(QString id);

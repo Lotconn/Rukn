@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
     Engine engine;
-    Alarms& alarms = Alarms::instance();
+    Alarms alarms;
     KDSingleApplication sapp;
 
     if (!sapp.isPrimaryInstance()) {

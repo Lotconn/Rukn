@@ -95,7 +95,7 @@ Item {
                     return
 
                 location = model.get(currentIndex).location
-                var address = location.address.text.split(',')
+                var address = location.address.text.split(',').map(s => s.trim())
 
                 mm.cityName = address.length > 0 ? address[0] : ""
                 mm.countryName = address.length > 1 ? address[address.length - 1] : ""
