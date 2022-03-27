@@ -1,5 +1,6 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.0
+import QtQuick.Controls.Material 2.0
 import QtQuick.Layouts 1.1
 import Qt.labs.settings 1.0
 
@@ -22,6 +23,7 @@ ColumnLayout {
         Text {
             id: volText
             text: qsTr("Volume")
+            color: Material.secondaryTextColor
         }
         Slider {
             id: volume
@@ -37,12 +39,13 @@ ColumnLayout {
         }
         Text {
             //Layout.minimumWidth: parent.width * 0.1
-            color: theme.fontColour
+            color: Material.secondaryTextColor
             text: qsTr("%L1 %").arg(Math.abs((volume.value * 100).toFixed()))
             Layout.minimumWidth: volText.width
         }
         Text {
             text: qsTr("Minutes")
+            color: Material.secondaryTextColor
         }
         Slider {
             id: mins
@@ -61,7 +64,7 @@ ColumnLayout {
         Text {
             verticalAlignment: Text.AlignVCenter
 
-            color: theme.fontColour
+            color: Material.secondaryTextColor
             text: mins.value >= 0 ? qsTr("+ %L1").arg(Math.abs(mins.value.toFixed()))
                                   : qsTr("- %L1").arg(Math.abs(mins.value.toFixed()))
         }

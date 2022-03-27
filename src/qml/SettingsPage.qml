@@ -1,5 +1,6 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.0
+import QtQuick.Controls.Material 2.0
 import QtQuick.Layouts 1.1
 import Qt.labs.settings 1.0
 import QtPositioning 5.3
@@ -48,6 +49,43 @@ Page {
 
                     Line {
                         Layout.fillWidth: true
+                    }
+                }
+
+                RowLayout {
+                    Text {
+
+                        color: Material.secondaryTextColor
+                        text: qsTr("Theme")
+                    }
+                    ComboBox {
+                        id: themeChoice
+                        Layout.fillWidth: true
+                        currentIndex: mm.themeListIndex
+
+                        onActivated: {
+                            mm.themeListIndex = currentIndex
+                        }
+
+                        onCurrentIndexChanged: {
+                            switch(currentIndex) {
+                            case 0:
+                                mainWindow.Material.theme = Material.System
+                                break
+                            case 1:
+                                mainWindow.Material.theme = Material.Light
+                                break
+                            case 2:
+                                mainWindow.Material.theme = Material.Dark
+                                break
+                            }
+                        }
+
+                        model: mm.themeList
+                    }
+                    Settings {
+                        category: "App"
+                        property alias themeChoiceIndex: themeChoice.currentIndex
                     }
                 }
 
@@ -147,6 +185,15 @@ Page {
                     }
                 }
 
+                SettingTitle {
+                    horizontalAlignment: Text.AlignHCenter
+                    font.italic: true
+                    text: qsTr("Athan")
+                }
+                Line {
+                    Layout.fillWidth: true
+                }
+
                 RowLayout {
                     ColumnLayout {
 
@@ -165,15 +212,6 @@ Page {
                             property alias athanMuted: muted.checked
                         }
                     }
-                }
-
-                SettingTitle {
-                    horizontalAlignment: Text.AlignHCenter
-                    font.italic: true
-                    text: qsTr("Athan")
-                }
-                Line {
-                    Layout.fillWidth: true
                 }
 
                 AudioManComp {
@@ -207,7 +245,7 @@ Page {
                     columns: 2
                     Text {
 
-                        color: theme.fontColour
+                        color: Material.secondaryTextColor
                         text: qsTr("Mathhab")
                     }
                     ComboBox {
@@ -229,14 +267,13 @@ Page {
                     }
                     Text {
 
-                        color: theme.fontColour
+                        color: Material.secondaryTextColor
                         text: qsTr("Algorithm")
                     }
                     ComboBox {
                         id: algo
                         Layout.fillWidth: true
 
-                        //currentIndex: 0
                         onActivated: {
                             mm.calcMethodIndex = currentIndex
                             console.debug('calcIdx: ', mm.calcMethodIndex)
@@ -271,50 +308,50 @@ Page {
 
                     Text {
                         text: qsTr("Version")
-                        color: theme.fontColour
+                        color: Material.secondaryTextColor
 
                         font.italic: true
                     }
-                    Text {
+                    TextButton {
                         text: engine.getVersionNo()
-                        Layout.fillWidth: true
-                        color: theme.fontColour
+                        onClicked: {
+                            whatsNewPopup.text = engine.getWhatsNew()
+                            whatsNewPopup.open()
+                        }
                     }
                     Text {
                         text: qsTr("Website")
-                        color: theme.fontColour
+                        color: Material.secondaryTextColor
 
                         font.italic: true
                     }
-                    Text {
-                        property string link: "https://munadi.org"
-                        text: `<a href=\"${link}\">${link}</a>`
-                        Layout.fillWidth: true
-                        onLinkActivated: Qt.openUrlExternally(link)
+                    TextButton {
+                        property string link: "munadi.org"
+                        text: link
+                        onClicked: Qt.openUrlExternally(link)
                     }
                     Text {
                         text: qsTr("Contact")
-                        color: theme.fontColour
+                        color: Material.secondaryTextColor
 
                         font.italic: true
                     }
-                    Text {
-                        property string link: "https://munadi.org/contact"
-                        text: `<a href=\"${link}\">${link}</a>`
-                        Layout.fillWidth: true
-                        onLinkActivated: Qt.openUrlExternally(link)
+                    TextButton {
+                        property string link: "munadi.org/contact"
+                        text: link
+                        onClicked: Qt.openUrlExternally(link)
                     }
                     Text {
                         text: qsTr("Support")
-                        color: theme.fontColour
+                        color: Material.secondaryTextColor
 
                         font.italic: true
                     }
-                    Text {
-                        property string link: "https://gitlab.com/munadi/munadi/-/issues"
-                        text: `<a href=\"${link}\">${link}</a>`
+                    TextButton {
+                        property string link: "gitlab.com/munadi/munadi/-/issues"
+                        text: link
                         Layout.fillWidth: true
-                        onLinkActivated: Qt.openUrlExternally(link)
+                        onClicked: Qt.openUrlExternally(link)
                     }
                 }
 

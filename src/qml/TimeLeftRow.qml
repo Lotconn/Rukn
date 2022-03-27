@@ -1,5 +1,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.0
+import QtQuick.Controls.Material 2.0
+
 
 import "qrc:/data/Adhan.js" as Adhan
 
@@ -22,7 +24,7 @@ Item {
         from: if(mm.timeForCurrentPrayer) mm.timeForCurrentPrayer.getTime(); else 0
         to: if(mm.timeForNextPrayer) mm.timeForNextPrayer.getTime(); else 0
         value: mm.currentTime.getTime()
-        width: parent.width
+        width: parent.width / 2
         opacity: 0.8
     }
 
@@ -35,7 +37,7 @@ Item {
         horizontalAlignment: Text.AlignHCenter
         font.italic: true
         font.pixelSize: parent.height / 3
-        color: theme.fontColour
+        color: Material.secondaryTextColor
         elide: Text.ElideRight
         fontSizeMode: Text.Fit
 

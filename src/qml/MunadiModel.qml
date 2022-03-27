@@ -140,6 +140,9 @@ QtObject {
             "path": "qrc:/data/athan.ogg"
         }]
 
+    property int themeListIndex: 0
+    property var themeList: [qsTr("System"), qsTr("Light"), qsTr("Dark")]
+
     property int calcMethodIndex: 0
     onCalcMethodIndexChanged: invalidate()
 

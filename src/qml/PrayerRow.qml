@@ -1,5 +1,6 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.0
+import QtQuick.Controls.Material 2.0
 import QtMultimedia 5.5
 
 import "qrc:/data/Adhan.js" as Adhan
@@ -38,7 +39,7 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 font.bold: prayerId === mm.currentPrayer
                 font.pixelSize: Math.min(parent.height, parent.width) / 2
-                color: theme.fontColour
+                color: Material.secondaryTextColor
 
                 visible: !mm.locationNotSet
             }
@@ -55,7 +56,7 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 font.pixelSize: Math.min(parent.height, parent.width) / 2
                 font.bold: prayerLabel.font.bold
-                color: theme.fontColour
+                color: Material.secondaryTextColor
                 text: athanTime.substring(5, -5)
 
                 visible: !mm.locationNotSet

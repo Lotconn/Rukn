@@ -74,7 +74,7 @@ RowLayout {
         Image {
             mirror: mainPage.mirrored
             source: athan.isOn ? "qrc:/img/stop.png" : "qrc:/img/start.png"
-            anchors.margins: parent.height / 5
+            anchors.margins: parent.height / 3
             anchors.fill: parent
         }
         MouseArea {

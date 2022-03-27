@@ -1,8 +1,9 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.0
+import QtQuick.Controls.Material 2.0
 import QtQuick.Layouts 1.1
 
-Rectangle {
+Item {
 
     //visible: mm.stickerMode ? false : true
     width: parent.cellWidth
@@ -18,7 +19,7 @@ Rectangle {
 
         font.pixelSize: parent.height / 4
         font.italic: true
-        color: "grey" //main.defaultFontColour
+        color: Material.secondaryTextColor
         elide: Text.ElideRight
         text: qsTr("Set your location ...")
         visible: mm.locationNotSet
@@ -32,7 +33,7 @@ Rectangle {
         anchors.topMargin: height / 6
 
         font.pixelSize: parent.height / 3
-        color: theme.fontColour
+        color: Material.secondaryTextColor
         elide: Text.ElideRight
 
         visible: !mm.locationNotSet
@@ -46,7 +47,7 @@ Rectangle {
 
         font.pixelSize: parent.height / 4
         font.italic: true
-        color: "grey" //main.defaultFontColour
+        color: Material.secondaryTextColor
         elide: Text.ElideMiddle
 
         visible: cityName.visible
@@ -66,8 +67,7 @@ Rectangle {
         cursorShape: Qt.PointingHandCursor
 
         onClicked: popup.open()
-        onHoveredChanged: containsMouse ? cityName.font.underline
-                                          = true : cityName.font.underline = false
+        onHoveredChanged: cityName.font.underline = containsMouse
     }
 
     Popup {

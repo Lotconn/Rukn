@@ -1,5 +1,6 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.0
+import QtQuick.Controls.Material 2.0
 
 Item {
 
@@ -36,6 +37,7 @@ Item {
                 autoRepeat: true
                 text: qsTr("<")
                 anchors.fill: parent
+                horizontalAlignment: Text.AlignHCenter
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
 
@@ -55,7 +57,7 @@ Item {
                 horizontalAlignment: Text.AlignHCenter
                 font.italic: true
                 font.pixelSize: parent.height / 3
-                color: theme.fontColour
+                color: Material.secondaryTextColor
                 elide: Text.ElideRight
                 fontSizeMode: Text.Fit
                 text: mm.currentDateStr
@@ -88,7 +90,8 @@ Item {
                 visible: enabled
                 autoRepeat: true
                 text: qsTr(">")
-                anchors.fill: parent
+                //anchors.fill: parent
+                horizontalAlignment: Text.AlignHCenter
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
 

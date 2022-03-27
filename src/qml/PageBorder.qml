@@ -1,6 +1,6 @@
 import QtQuick 2.0
 
-Rectangle {
+Item {
     anchors.top: parent.top
     anchors.bottom: parent.bottom
     anchors.left: parent.left

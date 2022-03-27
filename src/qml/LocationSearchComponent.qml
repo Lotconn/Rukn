@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.0
+import QtQuick.Controls.Material 2.0
 import QtQuick.Layouts 1.1
 
 Item {
@@ -20,7 +21,7 @@ Item {
     }
 
     // When used on overlay mode, use white background
-    Rectangle {
+    Item {
         anchors.fill: parent
         anchors.margins: -10
     }

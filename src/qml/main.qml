@@ -2,6 +2,7 @@ import QtQuick 2.5
 import QtQuick.Window 2.0
 import Qt.labs.settings 1.0
 import QtQuick.Controls 2.0
+import QtQuick.Controls.Material 2.0
 import QtPositioning 5.5
 import QtLocation 5.6
 import QtMultimedia 5.5
@@ -11,6 +12,9 @@ import "qrc:/data/Adhan.js" as Adhan
 
 ApplicationWindow {
     id: mainWindow
+
+    Material.theme: Material.System
+    Material.accent: Material.BlueGrey
 
     width: 400
     height: 600
