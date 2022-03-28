@@ -1,16 +1,16 @@
 import QtQuick 2.0
-import QtQuick.Controls 2.0
-import QtQuick.Controls.Material 2.0
+import QtQuick.Controls 2.15
+import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts 1.1
 
 Item {
 
     //visible: mm.stickerMode ? false : true
-    width: parent.cellWidth
-    height: parent.cellHeight
+    Layout.preferredWidth: parent.width
+    Layout.fillHeight: true
 
-    property alias cityName: cityName.text
-    property alias countryName: countryName.text
+    property string cityName
+    property string countryName
 
     Text {
         anchors.horizontalCenter: parent.horizontalCenter
@@ -23,35 +23,20 @@ Item {
         elide: Text.ElideRight
         text: qsTr("Set your location ...")
         visible: mm.locationNotSet
-        font.underline: cityName.font.underline
+        font.underline: textId.font.underline
     }
     Text {
-        id: cityName
+        id: textId
         width: parent.width
         horizontalAlignment: Text.AlignHCenter
-        anchors.top: parent.top
-        anchors.topMargin: height / 6
-
-        font.pixelSize: parent.height / 3
+        verticalAlignment: Text.AlignVCenter
+        font.pixelSize: parent.height / 2
         color: Material.secondaryTextColor
         elide: Text.ElideRight
 
         visible: !mm.locationNotSet
-    }
-    Text {
-        id: countryName
-        width: parent.width
-        horizontalAlignment: Text.AlignHCenter
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: height / 6
 
-        font.pixelSize: parent.height / 4
-        font.italic: true
-        color: Material.secondaryTextColor
-        elide: Text.ElideMiddle
-
-        visible: cityName.visible
-        font.underline: cityName.font.underline
+        text: `${cityName}, <i>${countryName}</i>`
     }
 
     Line {
@@ -67,7 +52,7 @@ Item {
         cursorShape: Qt.PointingHandCursor
 
         onClicked: popup.open()
-        onHoveredChanged: cityName.font.underline = containsMouse
+        onHoveredChanged: textId.font.underline = containsMouse
     }
 
     Popup {

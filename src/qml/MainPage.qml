@@ -9,63 +9,93 @@ Page {
 
     PageBorder {
 
-        Grid {
+        ColumnLayout {
             anchors.fill: parent
-            columns: 1
-            rows: mm.stickerMode ? 7 : 9
-
-            property int cellHeight: height / rows
-            property int cellWidth: width
 
             LocationInfoRow {
                 id: locationInfoRow
                 cityName: mm.cityName
                 countryName: mm.countryName
+                Layout.preferredHeight: 20
             }
 
             DateRow {
                 id: date
+                Layout.preferredHeight: 60
             }
 
             PrayerRow {
                 id: fajr
                 prayerId: Adhan.adhan.Prayer.Fajr
                 athanTime: mm.fajr
+                Layout.preferredHeight: 60
             }
 
             PrayerRow {
                 id: sunrise
                 prayerId: Adhan.adhan.Prayer.Sunrise
                 athanTime: mm.srise
+                Layout.preferredHeight: 30
+                prayerLabel: "🌅 "
+            }
+
+            Line {
+                Layout.preferredWidth: parent.width - parent.width / 8
+                Layout.alignment: Qt.AlignHCenter
             }
 
             PrayerRow {
                 id: duhr
                 prayerId: Adhan.adhan.Prayer.Dhuhr
                 athanTime: mm.duhr
+                Layout.preferredHeight: 60
+            }
+
+            Line {
+                Layout.preferredWidth: parent.width - parent.width / 8
+                Layout.alignment: Qt.AlignHCenter
             }
 
             PrayerRow {
                 id: asr
                 prayerId: Adhan.adhan.Prayer.Asr
                 athanTime: mm.asr
+                Layout.preferredHeight: 60
+            }
+
+            Line {
+                Layout.preferredWidth: parent.width - parent.width / 8
+                Layout.alignment: Qt.AlignHCenter
             }
 
             PrayerRow {
                 id: mgrb
                 prayerId: Adhan.adhan.Prayer.Maghrib
                 athanTime: mm.mgrb
+                Layout.preferredHeight: 60
+            }
+
+            Line {
+                Layout.preferredWidth: parent.width - parent.width / 8
+                Layout.alignment: Qt.AlignHCenter
             }
 
             PrayerRow {
                 id: isha
                 prayerId: Adhan.adhan.Prayer.Isha
                 athanTime: mm.isha
+                Layout.preferredHeight: 60
+            }
+
+            Line {
+                Layout.preferredWidth: parent.width - parent.width / 8
+                Layout.alignment: Qt.AlignHCenter
             }
 
             TimeLeftRow {
                 id: timeLeft
                 text: mm.timeLeftStr
+                 Layout.preferredHeight: 60
             }
         }
     }

@@ -1,7 +1,7 @@
 import QtQuick 2.5
 import QtQuick.Window 2.0
 import Qt.labs.settings 1.0
-import QtQuick.Controls 2.0
+import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.0
 import QtPositioning 5.5
 import QtLocation 5.6
@@ -12,6 +12,11 @@ import "qrc:/data/Adhan.js" as Adhan
 
 ApplicationWindow {
     id: mainWindow
+
+    Rectangle {
+        color: Material.dialogColor
+        anchors.fill: parent
+    }
 
     Material.theme: Material.System
     Material.accent: Material.BlueGrey
@@ -34,7 +39,7 @@ ApplicationWindow {
 
     Component.onCompleted: {
         if (engine.isStartupFlag()) {
-            showMinimized()
+            hide()
         } else {
             show()
         }
@@ -97,38 +102,19 @@ ApplicationWindow {
         property alias y: mainWindow.y
     }
 
-    SwipeView {
-        id: pagesHolder
-
+    MainPage {
+        id: mainPage
+        anchors.margins: 12
         anchors.fill: parent
-        focus: false
-        currentIndex: tabBar.currentIndex
 
-        MainPage {
-            id: mainPage
-        }
-
-        SettingsPage {
-            id: settingsPage
-        }
-    }
-
-    footer: TabBar {
-        visible: true
-        id: tabBar
-
-        //anchors.topMargin: 20
-        y: 20
-        focus: false
-        position: TabBar.Footer
-        width: parent.width
-        currentIndex: pagesHolder.currentIndex
-
-        TabButton {
-            text: qsTr("Home")
-        }
-        TabButton {
-            text: qsTr("Settings")
+        RoundButton {
+            text: "⚙"
+            opacity: 0.5
+            flat: true
+            anchors.margins: -10
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            onClicked: settingsPopup.open()
         }
     }
 
@@ -160,6 +146,28 @@ ApplicationWindow {
         }
     }
 
+    Popup {
+        id: settingsPopup
+
+        parent: ApplicationWindow.overlay
+        modal: true
+
+        x: (parent.width - width) / 2
+        y: (parent.height - height) / 2
+        width: parent.width * 0.9
+        height: parent.height * 0.8
+
+        Flickable {
+            anchors.fill: parent
+
+            SettingsPage {
+                anchors.fill: parent
+            }
+
+            ScrollBar.vertical: ScrollBar {}
+        }
+    }
+
     Settings {
         id: news
         category: 'App'
@@ -185,14 +193,13 @@ ApplicationWindow {
         }
 
         menu: Menu {
+            visible: false
             MenuItem {
-                text: mm.timeLeftStr
-                onTriggered: athan.stop()
+                text: mm.timeLeftStr + (athan.isOn ? qsTr(" (stop)") : "")
+                onTriggered: athan.isOn ? athan.stop() : mainWindow.show()
                 font.italic: true
             }
-
             MenuSeparator {}
-
             MenuItem {
                 text: qsTr("Quit")
                 onTriggered: Qt.quit()

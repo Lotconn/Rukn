@@ -1,6 +1,7 @@
 import QtQuick 2.5
-import QtQuick.Controls 2.0
+import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.0
+import QtQuick.Layouts 1.15
 
 Item {
 
@@ -8,8 +9,8 @@ Item {
 
     visible: mm.stickerMode ? false : true
 
-    width: parent.cellWidth
-    height: parent.cellHeight
+    Layout.preferredWidth: parent.width
+    Layout.fillHeight: true
 
     Keys.onLeftPressed: prevDate()
     Keys.onRightPressed: nextDate()
@@ -31,13 +32,10 @@ Item {
             height: parent.height
             width: parent.colCellWidth / 2
 
-            TextButton {
-                enabled: true
-                visible: enabled
+            RoundButton {
+                flat: true
                 autoRepeat: true
                 text: qsTr("<")
-                anchors.fill: parent
-                horizontalAlignment: Text.AlignHCenter
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
 
@@ -55,7 +53,7 @@ Item {
                 anchors.margins: 10
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
-                font.italic: true
+                font.bold: true
                 font.pixelSize: parent.height / 3
                 color: Material.secondaryTextColor
                 elide: Text.ElideRight
@@ -85,13 +83,10 @@ Item {
             width: parent.colCellWidth / 2
             visible: parent.columns == 3
 
-            TextButton {
-                enabled: true
-                visible: enabled
+            RoundButton {
+                flat: true
                 autoRepeat: true
                 text: qsTr(">")
-                //anchors.fill: parent
-                horizontalAlignment: Text.AlignHCenter
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
 

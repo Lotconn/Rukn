@@ -2,34 +2,26 @@ import QtQuick 2.5
 import QtQuick.Controls 2.0
 import QtQuick.Controls.Material 2.0
 import QtMultimedia 5.5
+import QtQuick.Layouts 1.15
 
 import "qrc:/data/Adhan.js" as Adhan
 
 Item {
-    width: parent.cellWidth
-    height: parent.cellHeight
+    Layout.preferredWidth: parent.width
+    Layout.fillHeight: true
 
     property alias prayerLabel: prayerLabel.text
     property string athanTime
     property alias iqamaTime: iqamaLabel.text
-    property alias lineWidth: line.width
 
     property var prayerId
 
-    Grid {
-        columns: iqamaLabel.text == "" ? 2 : 3
-        rows: 1
-
+    RowLayout {
         anchors.fill: parent
-        verticalItemAlignment: Grid.AlignVCenter
-        horizontalItemAlignment: Grid.AlignHCenter
-
-        property double colCellWidth: width / columns
-        property double colCellHeight: height
 
         Item {
-            height: parent.height
-            width: parent.colCellWidth
+            Layout.preferredWidth: parent.width/2.2
+            Layout.preferredHeight: parent.height
 
             Text {
                 id: prayerLabel
@@ -46,8 +38,8 @@ Item {
         }
 
         Item {
-            height: parent.height
-            width: parent.colCellWidth
+            Layout.preferredWidth: parent.width/2
+            Layout.preferredHeight: parent.height
 
             Text {
                 id: athanLabel
@@ -74,9 +66,9 @@ Item {
         }
 
         Item {
-            height: parent.height
-            width: parent.colCellWidth
-            visible: parent.columns == 3
+            Layout.preferredWidth: parent.width/2
+            Layout.preferredHeight: parent.height
+            visible: false
 
             Text {
                 id: iqamaLabel
@@ -87,13 +79,5 @@ Item {
                 color: theme.fontColour
             }
         }
-    }
-
-    Line {
-        id: line
-        width: parent.width - parent.width / 5
-        anchors.bottom: parent.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
-        //opacity: 0.8
     }
 }

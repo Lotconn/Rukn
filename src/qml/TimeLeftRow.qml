@@ -1,6 +1,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.0
 import QtQuick.Controls.Material 2.0
+import QtQuick.Layouts 1.15
 
 
 import "qrc:/data/Adhan.js" as Adhan
@@ -10,13 +11,15 @@ Item {
     //visible: mm.stickerMode ? false : true
     visible: !mm.locationNotSet
 
-    width: parent.cellWidth
-    height: parent.cellHeight
+    Layout.preferredWidth: parent.width
+    Layout.fillHeight: true
 
     property alias text: timeLeftLabel.text
 
     ProgressBar {
         id: progressBar
+
+        Material.accent: Material.Grey
         visible: mm.currentPrayer !== 6 && mm.nextPrayer !== 6
         anchors.bottom: parent.bottom
         anchors.bottomMargin: parent.height / 10
@@ -25,7 +28,7 @@ Item {
         to: if(mm.timeForNextPrayer) mm.timeForNextPrayer.getTime(); else 0
         value: mm.currentTime.getTime()
         width: parent.width / 2
-        opacity: 0.8
+        opacity: 0.6
     }
 
     Text {

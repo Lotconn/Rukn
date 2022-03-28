@@ -7,15 +7,10 @@ import Qt.labs.settings 1.0
 ColumnLayout {
     id: component
 
-    TabBar {
-        id: selectedPrayerTab
+    ComboBox {
+        id: selectedPrayerCB
         Layout.fillWidth: true
-        Repeater {
-            model: 6
-            TabButton {
-                text: mm.prayerNames[index]
-            }
-        }
+        model: mm.prayerNames
     }
 
     GridLayout {
@@ -28,17 +23,16 @@ ColumnLayout {
         Slider {
             id: volume
             stepSize: 0.05
-            enabled: selectedPrayerTab.currentIndex !== 1 // Skip sunrise tab
+            enabled: selectedPrayerCB.currentIndex !== 1 // Skip sunrise tab
             Layout.fillWidth: true
-            value: mm.prayerConfig[selectedPrayerTab.currentIndex].volume
+            value: mm.prayerConfig[selectedPrayerCB.currentIndex].volume
 
             onMoved: {
-                mm.prayerConfig[selectedPrayerTab.currentIndex].volume = value
+                mm.prayerConfig[selectedPrayerCB.currentIndex].volume = value
                 mm.prayerConfig = mm.prayerConfig // Workaround for Android
             }
         }
         Text {
-            //Layout.minimumWidth: parent.width * 0.1
             color: Material.secondaryTextColor
             text: qsTr("%L1 %").arg(Math.abs((volume.value * 100).toFixed()))
             Layout.minimumWidth: volText.width
@@ -51,15 +45,24 @@ ColumnLayout {
             id: mins
             Layout.fillWidth: true
             stepSize: 1
-            value: mm.prayerConfig[selectedPrayerTab.currentIndex].adjustment
+            value: mm.prayerConfig[selectedPrayerCB.currentIndex].adjustment
             from: -10
             to: 10
 
+            onPressedChanged: {
+                if(pressed) {
+                    settingsPopup.opacity = 0.3
+                } else {
+                    settingsPopup.opacity = 1
+                }
+            }
+
             onMoved: {
-                mm.prayerConfig[selectedPrayerTab.currentIndex].adjustment = value
+                mm.prayerConfig[selectedPrayerCB.currentIndex].adjustment = value
                 mm.prayerConfig = mm.prayerConfig // Workaround for Android
                 mm.invalidate()
             }
+
         }
         Text {
             verticalAlignment: Text.AlignVCenter
