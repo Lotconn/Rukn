@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 
     if(argc > 1 && strcmp(argv[1], "--hidden") == 0)
     {
-        engine.setStartupFlag();
+        engine.autostart_hidden(true);
     }
 
     qae.rootContext()->setContextProperty("engine", &engine);

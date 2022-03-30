@@ -14,7 +14,6 @@ extern "C" {
 }
 
 #include "updater.h"
-#include <QStringList>
 
 #ifdef Q_OS_ANDROID
 #include <QtPositioning/QGeoCoordinate>
@@ -36,18 +35,8 @@ public:
 
     Q_INVOKABLE QString getVersionNo() { return APP_VERSION; }
     Q_INVOKABLE QString getWhatsNew();
-//#ifdef DESKTOP
-    Q_INVOKABLE void setStartup(bool set);
-//#endif
 
-    Q_INVOKABLE QString lang()
-    {
-#ifdef ARABIC
-    return "ar";
-#else
-    return "en";
-#endif
-    }
+    Q_INVOKABLE void autostart(bool set);
 
     Q_INVOKABLE QString ff()    // Form factor
     {
@@ -59,12 +48,12 @@ public:
     }
 
     //Updater * updater;
-    void setStartupFlag();
-    Q_INVOKABLE bool isStartupFlag();
+    void autostart_hidden(bool flag);
+    Q_INVOKABLE bool autostart_hidden();
 
 private:
 
-    bool startupFalg = false;
+    bool hidden = false;
 
     bool init();
 };

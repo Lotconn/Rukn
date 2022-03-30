@@ -6,6 +6,7 @@
 #include <QSettings>
 #include <QQuickView>
 #include <QTextStream>
+#include <QDBusInterface>
 
 #ifdef DESKTOP
 
@@ -45,70 +46,116 @@ QString Engine::getHijriDate(const QDate &date, const int offset)
     return hijriDate;
 }
 
-void Engine::setStartupFlag()
+void Engine::autostart_hidden(bool flag)
 {
-    startupFalg = true;
+    hidden = flag;
 }
 
-bool Engine::isStartupFlag()
+bool Engine::autostart_hidden()
 {
-    return startupFalg;
+    return hidden;
 }
 
-void Engine::setStartup(bool set)
+namespace
+{
+#if defined(Q_OS_WIN)
+    void autostart_win(bool set)
+    {
+        if(set)
+        {
+            QSettings startup("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+                              QSettings::NativeFormat);
+            startup.setValue(QGuiApplication::applicationName(), "\"" + QGuiApplication::applicationFilePath().replace('/','\\') + "\""+ " -startup");
+        }
+        else
+        {
+            QSettings startup("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+                              QSettings::NativeFormat);
+            startup.remove(QGuiApplication::applicationName());
+        }
+    }
+#elif defined(Q_OS_LINUX)
+    void autostart_snap(bool set)
+    {
+        if(!QDir("/snap").exists())
+        {
+            return;
+        }
+
+        QDir autostartDir = QDir::homePath() + QDir::separator() + ".config/autostart";
+
+        if(!autostartDir.exists())
+        {
+            if(!autostartDir.mkpath(autostartDir.path())) return;
+        }
+
+        QFile desktopFile("/snap/munadi/current/usr/share/applications/org.munadi.Munadi.desktop");
+        QFile autostartDesktopFile(autostartDir.filePath("org.munadi.Munadi.desktop"));
+
+        if(set)
+        {
+            if (!desktopFile.open(QIODevice::ReadOnly | QIODevice::Text))
+            {
+                     qDebug() << "Failed to open .desktop file!";
+                     return;
+            }
+
+            if (!autostartDesktopFile.open(QIODevice::WriteOnly | QIODevice::Text))
+            {
+                     qDebug() << "Failed to create .desktop file!";
+                     return;
+            }
+
+            QTextStream in(&desktopFile);
+            QString data = in.readAll();
+            data.replace("Exec=munadi", "Exec=munadi --hidden");
+            QTextStream out(&autostartDesktopFile);
+            out << data;
+        }
+        else
+        {
+            autostartDesktopFile.remove();
+        }
+    }
+    void autostart_flatpak(bool set)
+    {
+        QDBusInterface portal("org.freedesktop.portal.Desktop",
+                              "/org/freedesktop/portal/desktop",
+                              "org.freedesktop.portal.Background");
+
+        QList<QString> commandline = {"munadi", "--hidden"};
+
+        QHash<QString, QVariant> params;
+        params.insert("reason", "Background Athan.");
+        params.insert("autostart", set);
+        params.insert("commandline", QVariant(commandline));
+
+        portal.call("RequestBackground", "", params);
+    }
+#elif defined(Q_OS_MAC)
+    void autostart_mac(bool set)
+    {
+        //TODO
+    }
+#endif
+}
+
+void Engine::autostart(bool set)
 {
 #if defined(Q_OS_WIN)
 
-    //qDebug() << "void Engine::setStarup(bool set)";
+    autostart_win(set);
 
-    if(set)
-    {
-        QSettings startup("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
-                          QSettings::NativeFormat);
-        startup.setValue(QGuiApplication::applicationName(), "\"" + QGuiApplication::applicationFilePath().replace('/','\\') + "\""+ " -startup");
-    }
-    else
-    {
-        QSettings startup("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
-                          QSettings::NativeFormat);
-        startup.remove(QGuiApplication::applicationName());
-    }
 #elif defined(Q_OS_LINUX)
-    QDir autostartDir = QDir::homePath() + QDir::separator() + ".config/autostart";
 
-    if(!autostartDir.exists())
-    {
-        if(!autostartDir.mkpath(autostartDir.path())) return;
-    }
-    
-    // Assume Snap for now, Flatpak has no support for autostart as of 2019.12
-    QFile desktopFile("/snap/munadi/current/usr/share/applications/org.munadi.Munadi.desktop");
-    QFile autostartDesktopFile(autostartDir.filePath("org.munadi.Munadi.desktop"));
+    // Can't tell if we're on Snap, Flatpak or otherwise, so do all!
+    autostart_snap(set);
+    autostart_flatpak(set);
 
-    if(set)
-    {
-        if (!desktopFile.open(QIODevice::ReadOnly | QIODevice::Text))
-        {
-                 qDebug() << "Failed to open file!";
-                 return;
-        }
+#elif defined(Q_OS_MAC)
 
-        if (!autostartDesktopFile.open(QIODevice::WriteOnly | QIODevice::Text))
-        {
-                 qDebug() << "Failed to create file!";
-                 return;
-        }
+    autostart_mac(set);
 
-        QTextStream in(&desktopFile);
-        QString data = in.readAll();
-        data.replace("Exec=munadi", "Exec=munadi --hidden");
-        QTextStream out(&autostartDesktopFile);
-        out << data;
-    }
-    else
-    {
-        autostartDesktopFile.remove();
-    }
 #endif
 }
 

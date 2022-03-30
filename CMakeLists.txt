@@ -20,7 +20,7 @@ configure_file(src/cpp/version.h.in version.h)
 
 find_package(Qt5
     COMPONENTS
-        Core Gui Widgets Quick QuickControls2 Multimedia Location Positioning REQUIRED)
+        Core Gui Widgets Quick QuickControls2 Multimedia Location Positioning DBus REQUIRED)
 
 find_package(Qt5QuickCompiler)
 find_package(Threads)
@@ -54,11 +54,13 @@ endif()
 if(ANDROID)
     add_library(${PROJECT_NAME} SHARED
         src/android/AndroidManifest.xml
+        ${HEADERS}
         ${SOURCES}
         ${TS_FILES}
         ${QRC_FILES})
 else()
     add_executable(${PROJECT_NAME}
+        ${HEADERS}
         ${SOURCES}
         ${TS_FILES}
         ${QRC_FILES})
@@ -68,8 +70,8 @@ target_compile_definitions(${PROJECT_NAME}
     PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
 
 target_link_libraries(${PROJECT_NAME}
-    PRIVATE Qt5::Core Qt5::Widgets Qt5::Quick Qt5::QuickControls2 Qt5::Multimedia Qt5::Location Qt5::Positioning
-    kdsingleapplication Threads::Threads)
+    PRIVATE Qt5::Core Qt5::Widgets Qt5::Quick Qt5::QuickControls2 Qt5::Multimedia Qt5::Location
+    Qt5::Positioning Qt5::DBus kdsingleapplication Threads::Threads )
 
 target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_BINARY_DIR}")
 
