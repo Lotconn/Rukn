@@ -13,9 +13,17 @@ import "qrc:/data/Adhan.js" as Adhan
 ApplicationWindow {
     id: mainWindow
 
-    Rectangle {
-        color: Material.dialogColor
-        anchors.fill: parent
+    onVisibilityChanged: {
+        alarms.clear("60s_tick")
+
+        if(visibility === ApplicationWindow.Hidden) return
+
+        var min = new Date()
+        min.setSeconds(60)
+        min.setMilliseconds(0)
+        alarms.add("60s_tick", min, 60)
+
+        mm.refreshTable()
     }
 
     Material.theme: Material.System
@@ -23,6 +31,7 @@ ApplicationWindow {
 
     width: 400
     height: 600
+    color: Material.dialogColor
     LayoutMirroring.childrenInherit: true
     LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft  // Proper way
                              || qsTr("QT_LAYOUT_DIRECTION", "QGuiApplication") === "RTL"    // Old Qt version, Snap!
@@ -31,14 +40,10 @@ ApplicationWindow {
         var midnight = new Date()
         midnight.setHours(24,0,0,0)
         alarms.add("24h_tick", midnight, 24*60*60)
-
-        var min = new Date()
-        min.setSeconds(60);
-        alarms.add("60s_tick", min, 60)
     }
 
     Component.onCompleted: {
-        if (engine.isStartupFlag()) {
+        if (engine.autostart_hidden()) {
             hide()
         } else {
             show()
@@ -106,16 +111,6 @@ ApplicationWindow {
         id: mainPage
         anchors.margins: 12
         anchors.fill: parent
-
-        RoundButton {
-            text: "⚙"
-            opacity: 0.5
-            flat: true
-            anchors.margins: -10
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            onClicked: settingsPopup.open()
-        }
     }
 
     Popup {
@@ -194,12 +189,42 @@ ApplicationWindow {
 
         menu: Menu {
             visible: false
+
+            onAboutToShow: {
+                mm.refreshTimeLeft()
+            }
             MenuItem {
-                text: mm.timeLeftStr + (athan.isOn ? qsTr(" (stop)") : "")
-                onTriggered: athan.isOn ? athan.stop() : mainWindow.show()
-                font.italic: true
+                text: '🌙    ' + mm.fajr
+            }
+            MenuItem {
+                text: '🌄    ' + mm.srise
+            }
+            MenuItem {
+                text: '🌞    ' + mm.duhr
+            }
+            MenuItem {
+                text: '⛅    ' + mm.asr
+            }
+            MenuItem {
+                text: '🌇    ' + mm.mgrb
+            }
+            MenuItem {
+                text: '🌃    ' + mm.isha
             }
             MenuSeparator {}
+            MenuItem {
+                id: timeleft
+                visible: text.length > 0
+                onTriggered: athan.isOn ? athan.stop() : mainWindow.show()
+                text: mm.timeLeftStr + (athan.isOn ? " 🔇" : "")
+            }
+            MenuSeparator {}
+            MenuItem {
+                property bool hidden: mainWindow.visibility === ApplicationWindow.Hidden ||
+                                        mainWindow.visibility === ApplicationWindow.Minimized
+                text: hidden ? qsTr("Show") : qsTr("Hide")
+                onTriggered: hidden ? mainWindow.showNormal() : mainWindow.hide()
+            }
             MenuItem {
                 text: qsTr("Quit")
                 onTriggered: Qt.quit()
@@ -220,17 +245,18 @@ ApplicationWindow {
             case "60s_tick":
                 mm.refreshTable()
                 break
-            case "alarms_reset":
+            case "alarms_reset": // Happens when clock change or wakeup after sleep for e.g.
                 set_tickers()
                 mm.currentDate = new Date() // Recalc
                 break
             case "athan":
                 console.debug('js: alarm triggered: ', new Date(), ' id: ', id)
-
-                mm.refreshTable()
                 athan.volume = mm.prayerConfig[mm.currentPrayer].volume
 
-                if(athan.volume > 0 && !athan.muted) athan.play()
+                if(athan.volume > 0 && !athan.muted) {
+                    athan.play()
+                    mm.refreshTable()
+                }
 
                 if (mm.showOnAthan) {
                     mainWindow.show()
@@ -262,7 +288,7 @@ ApplicationWindow {
         target: mainWindow
         function onClosing(close) {
             if(mm.hideOnClose) {
-                console.debug('Hide on close enabled, will hide window instead of closing it.')
+                console.debug('"Hide on close" enabled, will hide window instead of closing it.')
                 close.accepted = false
                 mainWindow.hide()
             }

@@ -9,354 +9,350 @@ import QtQuick.Dialogs 1.0
 import "qrc:/data/Adhan.js" as Adhan
 
 Page {
+    Flickable {
+        anchors.fill: parent
+        focus: true
+        clip: true
+        boundsBehavior: Flickable.StopAtBounds
 
-    PageBorder {
+        Keys.onUpPressed: scrollBar.decrease()
+        Keys.onDownPressed: scrollBar.increase()
 
-        Flickable {
-            anchors.fill: parent
-            focus: true
-            clip: true
-            boundsBehavior: Flickable.StopAtBounds
+        ScrollBar.vertical: ScrollBar {
+            id: scrollBar
+        }
 
-            Keys.onUpPressed: scrollBar.decrease()
-            Keys.onDownPressed: scrollBar.increase()
+        contentWidth: parent.width
+        contentHeight: content.height + theme.margin * 2
 
-            ScrollBar.vertical: ScrollBar {
-                id: scrollBar
-            }
+        ColumnLayout {
+            id: content
 
-            contentWidth: parent.width
-            contentHeight: content.height + theme.margin * 2
+            spacing: 10
+            width: parent.width - 40
+            anchors.margins: 10
+
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            RowLayout {} // Top padding
 
             ColumnLayout {
-                id: content
+                SettingTitle {
+                    horizontalAlignment: Text.AlignHCenter
 
-                spacing: 10
-                width: parent.width - 40
-                anchors.margins: 10
-
-                anchors.horizontalCenter: parent.horizontalCenter
-
-                RowLayout {} // Top padding
-
-                ColumnLayout {
-                    SettingTitle {
-                        horizontalAlignment: Text.AlignHCenter
-
-                        font.italic: true
-                        text: qsTr("Application")
-                    }
-
-                    Line {
-                        Layout.fillWidth: true
-                    }
+                    font.italic: true
+                    text: qsTr("Application")
                 }
 
-                RowLayout {
-                    Text {
-
-                        color: Material.secondaryTextColor
-                        text: qsTr("Theme")
-                    }
-                    ComboBox {
-                        id: themeChoice
-                        Layout.fillWidth: true
-                        currentIndex: mm.themeListIndex
-
-                        onActivated: {
-                            mm.themeListIndex = currentIndex
-                        }
-
-                        onCurrentIndexChanged: {
-                            switch(currentIndex) {
-                            case 0:
-                                mainWindow.Material.theme = Material.System
-                                break
-                            case 1:
-                                mainWindow.Material.theme = Material.Light
-                                break
-                            case 2:
-                                mainWindow.Material.theme = Material.Dark
-                                break
-                            }
-                        }
-
-                        model: mm.themeList
-                    }
-                    Settings {
-                        category: "App"
-                        property alias themeChoiceIndex: themeChoice.currentIndex
-                    }
+                Line {
+                    Layout.fillWidth: true
                 }
+            }
 
-                RowLayout {
-                    ColumnLayout {
-                        SettingTitle {
-                            text: qsTr("Hide on close")
-                        }
+            RowLayout {
+                Text {
 
-                        SettingSubtitle {
-                            text: qsTr("When closing Munadi, hide it instead.")
-                        }
-                    }
-
-                    Switch {
-                        id: hoc
-                        checked: false
-                        onCheckedChanged: {
-                            mm.hideOnClose = hoc.checked
-                        }
-                    }
-                    enabled: engine.ff() === "d"
-                    visible: enabled
+                    color: Material.secondaryTextColor
+                    text: qsTr("Theme")
                 }
+                ComboBox {
+                    id: themeChoice
+                    Layout.fillWidth: true
+                    currentIndex: mm.themeListIndex
 
-                RowLayout {
-                    ColumnLayout {
-                        SettingTitle {
-                            text: qsTr("Show on Athan")
-                        }
+                    onActivated: {
+                        mm.themeListIndex = currentIndex
+                    }
 
-                        SettingSubtitle {
-                            text: qsTr("Try to show window on Athan.")
+                    onCurrentIndexChanged: {
+                        switch(currentIndex) {
+                        case 0:
+                            mainWindow.Material.theme = Material.System
+                            break
+                        case 1:
+                            mainWindow.Material.theme = Material.Light
+                            break
+                        case 2:
+                            mainWindow.Material.theme = Material.Dark
+                            break
                         }
                     }
 
-                    Switch {
-                        id: soa
-                        checked: false
-                        onCheckedChanged: {
-                            mm.showOnAthan = soa.checked
-                        }
-                    }
-                    enabled: engine.ff() === "d"
-                    visible: enabled
+                    model: mm.themeList
                 }
-
-                RowLayout {
-                    ColumnLayout {
-                        SettingTitle {
-                            text: qsTr("Autostart")
-                        }
-
-                        SettingSubtitle {
-                            text: qsTr("Try to start minimised after login.")
-                        }
-                    }
-
-                    Switch {
-                        id: asu
-                        checked: false
-                    }
-                    enabled: engine.ff() === "d"
-                    visible: enabled
-                }
-
-                //                RowLayout {
-                //                    ColumnLayout {
-                //                        SettingTitle {
-                //                            text: qsTr("Check for updates")
-                //                        }
-
-                //                        SettingSubtitle {
-                //                            text: qsTr("Munadi will check for updates when it first starts.")
-                //                        }
-                //                    }
-
-                //                    Switch {
-                //                        id: cfu
-                //                        checked: true
-                //                        onCheckedChanged: {
-                //                            mm.checkForUpdates = checked
-                //                        }
-                //                    }
-                //                    enabled: engine.ff() === "d"
-                //                    visible: enabled
-                //                }
                 Settings {
                     category: "App"
-                    property alias autoStartUp: asu.checked
-                    //property alias checkForUpdates: cfu.checked
-                    property alias showOnAthan: soa.checked
-                    property alias hideOnClose: hoc.checked
-
-                    onAutoStartUpChanged: {
-                        engine.setStartup(asu.checked)
-                    }
+                    property alias themeChoiceIndex: themeChoice.currentIndex
                 }
+            }
 
-                SettingTitle {
-                    horizontalAlignment: Text.AlignHCenter
-                    font.italic: true
-                    text: qsTr("Athan")
-                }
-                Line {
-                    Layout.fillWidth: true
-                }
-
-                RowLayout {
-                    ColumnLayout {
-
-                        RowLayout {
-                            SettingTitle {
-                                text: qsTr("Mute all Athans")
-                                Layout.fillWidth: true
-                            }
-                            Switch {
-                                id: muted
-                                onCheckedChanged: athan.muted = muted.checked
-                            }
-                        }
-
-                        Settings {
-                            property alias athanMuted: muted.checked
-                        }
-                    }
-                }
-
-                AudioManComp {
-                    id: audioManComp
-                    Layout.fillWidth: true
-                }
-
-                SettingTitle {
-                    horizontalAlignment: Text.AlignHCenter
-                    font.italic: true
-                    text: qsTr("Prayer")
-                }
-                Line {
-                    Layout.fillWidth: true
-                }
-
-                AdjustmentComponent {
-                    Layout.fillWidth: true
-                }
-
-                SettingTitle {
-                    horizontalAlignment: Text.AlignHCenter
-
-                    font.italic: true
-                    text: qsTr("Other")
-                }
-                Line {
-                    Layout.fillWidth: true
-                }
-                GridLayout {
-                    columns: 2
-                    Text {
-
-                        color: Material.secondaryTextColor
-                        text: qsTr("Mathhab")
-                    }
-                    ComboBox {
-                        id: mathhab
-                        Layout.fillWidth: true
-
-                        onActivated: {
-                            mm.madhab = currentIndex + 1
-                        }
-
-                        model: ListModel {
-                            ListElement {
-                                text: qsTr("Majority")
-                            }
-                            ListElement {
-                                text: qsTr("Hanafi")
-                            }
-                        }
-                    }
-                    Text {
-
-                        color: Material.secondaryTextColor
-                        text: qsTr("Algorithm")
-                    }
-                    ComboBox {
-                        id: algo
-                        Layout.fillWidth: true
-
-                        onActivated: {
-                            mm.calcMethodIndex = currentIndex
-                            console.debug('calcIdx: ', mm.calcMethodIndex)
-                        }
-                        textRole: 'name'
-                        model: mm.calcMethod
-                    }
-                }
-
-                Settings {
-                    category: "Other"
-                    property alias mathhabCbIndex: mathhab.currentIndex
-                    property alias calcMethodCbIndex: algo.currentIndex
-                }
-
-                RowLayout {}
-
+            RowLayout {
                 ColumnLayout {
                     SettingTitle {
-                        horizontalAlignment: Text.AlignHCenter
-                        font.italic: true
-                        text: qsTr("About Munadi")
+                        text: qsTr("Hide on close")
                     }
 
-                    Line {
-                        Layout.fillWidth: true
+                    SettingSubtitle {
+                        text: qsTr("When closing Munadi, hide it instead.")
                     }
                 }
 
-                GridLayout {
-                    columns: 2
-
-                    Text {
-                        text: qsTr("Version")
-                        color: Material.secondaryTextColor
-
-                        font.italic: true
+                Switch {
+                    id: hoc
+                    checked: false
+                    onCheckedChanged: {
+                        mm.hideOnClose = hoc.checked
                     }
-                    TextButton {
-                        text: engine.getVersionNo()
-                        onClicked: {
-                            whatsNewPopup.text = engine.getWhatsNew()
-                            whatsNewPopup.open()
+                }
+                enabled: engine.ff() === "d"
+                visible: enabled
+            }
+
+            RowLayout {
+                ColumnLayout {
+                    SettingTitle {
+                        text: qsTr("Show on Athan")
+                    }
+
+                    SettingSubtitle {
+                        text: qsTr("Try to show window on Athan.")
+                    }
+                }
+
+                Switch {
+                    id: soa
+                    checked: false
+                    onCheckedChanged: {
+                        mm.showOnAthan = soa.checked
+                    }
+                }
+                enabled: engine.ff() === "d"
+                visible: enabled
+            }
+
+            RowLayout {
+                ColumnLayout {
+                    SettingTitle {
+                        text: qsTr("Autostart")
+                    }
+
+                    SettingSubtitle {
+                        text: qsTr("Try to start minimised after login.")
+                    }
+                }
+
+                Switch {
+                    id: asu
+                    checked: false
+                }
+                enabled: engine.ff() === "d"
+                visible: enabled
+            }
+
+            //                RowLayout {
+            //                    ColumnLayout {
+            //                        SettingTitle {
+            //                            text: qsTr("Check for updates")
+            //                        }
+
+            //                        SettingSubtitle {
+            //                            text: qsTr("Munadi will check for updates when it first starts.")
+            //                        }
+            //                    }
+
+            //                    Switch {
+            //                        id: cfu
+            //                        checked: true
+            //                        onCheckedChanged: {
+            //                            mm.checkForUpdates = checked
+            //                        }
+            //                    }
+            //                    enabled: engine.ff() === "d"
+            //                    visible: enabled
+            //                }
+            Settings {
+                category: "App"
+                property alias autoStartUp: asu.checked
+                //property alias checkForUpdates: cfu.checked
+                property alias showOnAthan: soa.checked
+                property alias hideOnClose: hoc.checked
+
+                onAutoStartUpChanged: {
+                    engine.autostart(asu.checked)
+                }
+            }
+
+            SettingTitle {
+                horizontalAlignment: Text.AlignHCenter
+                font.italic: true
+                text: qsTr("Athan")
+            }
+            Line {
+                Layout.fillWidth: true
+            }
+
+            RowLayout {
+                ColumnLayout {
+
+                    RowLayout {
+                        SettingTitle {
+                            text: qsTr("Mute all Athans")
+                            Layout.fillWidth: true
+                        }
+                        Switch {
+                            id: muted
+                            onCheckedChanged: athan.muted = muted.checked
                         }
                     }
-                    Text {
-                        text: qsTr("Website")
-                        color: Material.secondaryTextColor
 
-                        font.italic: true
-                    }
-                    TextButton {
-                        property string link: "munadi.org"
-                        text: link
-                        onClicked: Qt.openUrlExternally(link)
-                    }
-                    Text {
-                        text: qsTr("Contact")
-                        color: Material.secondaryTextColor
-
-                        font.italic: true
-                    }
-                    TextButton {
-                        property string link: "munadi.org/contact"
-                        text: link
-                        onClicked: Qt.openUrlExternally(link)
-                    }
-                    Text {
-                        text: qsTr("Support")
-                        color: Material.secondaryTextColor
-
-                        font.italic: true
-                    }
-                    TextButton {
-                        property string link: "gitlab.com/munadi/munadi/-/issues"
-                        text: link
-                        Layout.fillWidth: true
-                        onClicked: Qt.openUrlExternally(link)
+                    Settings {
+                        property alias athanMuted: muted.checked
                     }
                 }
-
-                RowLayout {} // Bottom padding
             }
+
+            AudioManComp {
+                id: audioManComp
+                Layout.fillWidth: true
+            }
+
+            SettingTitle {
+                horizontalAlignment: Text.AlignHCenter
+                font.italic: true
+                text: qsTr("Prayer")
+            }
+            Line {
+                Layout.fillWidth: true
+            }
+
+            AdjustmentComponent {
+                Layout.fillWidth: true
+            }
+
+            SettingTitle {
+                horizontalAlignment: Text.AlignHCenter
+
+                font.italic: true
+                text: qsTr("Other")
+            }
+            Line {
+                Layout.fillWidth: true
+            }
+            GridLayout {
+                columns: 2
+                Text {
+
+                    color: Material.secondaryTextColor
+                    text: qsTr("Mathhab")
+                }
+                ComboBox {
+                    id: mathhab
+                    Layout.fillWidth: true
+
+                    onActivated: {
+                        mm.madhab = currentIndex + 1
+                    }
+
+                    model: ListModel {
+                        ListElement {
+                            text: qsTr("Majority")
+                        }
+                        ListElement {
+                            text: qsTr("Hanafi")
+                        }
+                    }
+                }
+                Text {
+
+                    color: Material.secondaryTextColor
+                    text: qsTr("Algorithm")
+                }
+                ComboBox {
+                    id: algo
+                    Layout.fillWidth: true
+
+                    onActivated: {
+                        mm.calcMethodIndex = currentIndex
+                        console.debug('calcIdx: ', mm.calcMethodIndex)
+                    }
+                    textRole: 'name'
+                    model: mm.calcMethod
+                }
+            }
+
+            Settings {
+                category: "Other"
+                property alias mathhabCbIndex: mathhab.currentIndex
+                property alias calcMethodCbIndex: algo.currentIndex
+            }
+
+            RowLayout {}
+
+            ColumnLayout {
+                SettingTitle {
+                    horizontalAlignment: Text.AlignHCenter
+                    font.italic: true
+                    text: qsTr("About Munadi")
+                }
+
+                Line {
+                    Layout.fillWidth: true
+                }
+            }
+
+            GridLayout {
+                columns: 2
+
+                Text {
+                    text: qsTr("Version")
+                    color: Material.secondaryTextColor
+
+                    font.italic: true
+                }
+                TextButton {
+                    text: engine.getVersionNo()
+                    onClicked: {
+                        whatsNewPopup.text = engine.getWhatsNew()
+                        whatsNewPopup.open()
+                    }
+                }
+                Text {
+                    text: qsTr("Website")
+                    color: Material.secondaryTextColor
+
+                    font.italic: true
+                }
+                TextButton {
+                    property string link: "munadi.org"
+                    text: link
+                    onClicked: Qt.openUrlExternally(link)
+                }
+                Text {
+                    text: qsTr("Contact")
+                    color: Material.secondaryTextColor
+
+                    font.italic: true
+                }
+                TextButton {
+                    property string link: "munadi.org/contact"
+                    text: link
+                    onClicked: Qt.openUrlExternally(link)
+                }
+                Text {
+                    text: qsTr("Support")
+                    color: Material.secondaryTextColor
+
+                    font.italic: true
+                }
+                TextButton {
+                    property string link: "gitlab.com/munadi/munadi/-/issues"
+                    text: link
+                    Layout.fillWidth: true
+                    onClicked: Qt.openUrlExternally(link)
+                }
+            }
+
+            RowLayout {} // Bottom padding
         }
     }
 }

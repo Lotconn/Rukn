@@ -33,6 +33,7 @@ Item {
             width: parent.colCellWidth / 2
 
             RoundButton {
+                opacity: 0.5
                 flat: true
                 autoRepeat: true
                 text: qsTr("<")
@@ -84,6 +85,7 @@ Item {
             visible: parent.columns == 3
 
             RoundButton {
+                opacity: 0.5
                 flat: true
                 autoRepeat: true
                 text: qsTr(">")

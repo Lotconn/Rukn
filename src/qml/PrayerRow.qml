@@ -4,8 +4,6 @@ import QtQuick.Controls.Material 2.0
 import QtMultimedia 5.5
 import QtQuick.Layouts 1.15
 
-import "qrc:/data/Adhan.js" as Adhan
-
 Item {
     Layout.preferredWidth: parent.width
     Layout.fillHeight: true
@@ -20,7 +18,7 @@ Item {
         anchors.fill: parent
 
         Item {
-            Layout.preferredWidth: parent.width/2.2
+            Layout.preferredWidth: parent.width / 2.1
             Layout.preferredHeight: parent.height
 
             Text {
@@ -38,7 +36,7 @@ Item {
         }
 
         Item {
-            Layout.preferredWidth: parent.width/2
+            Layout.preferredWidth: parent.width / 2
             Layout.preferredHeight: parent.height
 
             Text {
@@ -66,7 +64,7 @@ Item {
         }
 
         Item {
-            Layout.preferredWidth: parent.width/2
+            Layout.preferredWidth: parent.width / 2
             Layout.preferredHeight: parent.height
             visible: false
 

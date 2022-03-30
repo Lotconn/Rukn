@@ -22,7 +22,7 @@ Item {
         Material.accent: Material.Grey
         visible: mm.currentPrayer !== 6 && mm.nextPrayer !== 6
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: parent.height / 10
+        anchors.bottomMargin: parent.height / 6
         anchors.horizontalCenter: parent.horizontalCenter
         from: if(mm.timeForCurrentPrayer) mm.timeForCurrentPrayer.getTime(); else 0
         to: if(mm.timeForNextPrayer) mm.timeForNextPrayer.getTime(); else 0
@@ -35,11 +35,11 @@ Item {
         id: timeLeftLabel
         visible: progressBar.visible || athan.isOn
         anchors.fill: parent
-        anchors.bottomMargin: parent.height / 5
+        anchors.bottomMargin: parent.height / 3
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         font.italic: true
-        font.pixelSize: parent.height / 3
+        font.pixelSize: parent.height
         color: Material.secondaryTextColor
         elide: Text.ElideRight
         fontSizeMode: Text.Fit

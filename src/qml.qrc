@@ -9,7 +9,6 @@
         <file>qml/MunadiModel.qml</file>
         <file>qml/Theme.qml</file>
         <file>qml/MainPage.qml</file>
-        <file>qml/PageBorder.qml</file>
         <file>qml/PrayerRow.qml</file>
         <file>qml/TimeLeftRow.qml</file>
         <file>qml/Line.qml</file>

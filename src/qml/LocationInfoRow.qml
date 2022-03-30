@@ -13,11 +13,8 @@ Item {
     property string countryName
 
     Text {
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: height / 3
-
-        font.pixelSize: parent.height / 4
+        anchors.centerIn: parent
+        font.pixelSize: parent.height / 2
         font.italic: true
         color: Material.secondaryTextColor
         elide: Text.ElideRight
@@ -27,9 +24,7 @@ Item {
     }
     Text {
         id: textId
-        width: parent.width
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
+        anchors.centerIn: parent
         font.pixelSize: parent.height / 2
         color: Material.secondaryTextColor
         elide: Text.ElideRight

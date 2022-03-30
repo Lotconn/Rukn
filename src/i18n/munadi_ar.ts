@@ -225,6 +225,18 @@
         <source>Seconds until </source>
         <translation>ثواني حتى </translation>
     </message>
+    <message>
+        <source>System</source>
+        <translation>النظام</translation>
+    </message>
+    <message>
+        <source>Light</source>
+        <translation>فاتح</translation>
+    </message>
+    <message>
+        <source>Dark</source>
+        <translation>داكن</translation>
+    </message>
 </context>
 <context>
     <name>SettingsPage</name>
@@ -336,6 +348,10 @@
         <source>When closing Munadi, hide it instead.</source>
         <translation>عند إغلاق منادي, إخفيه.</translation>
     </message>
+    <message>
+        <source>Theme</source>
+        <translation>المظهر</translation>
+    </message>
 </context>
 <context>
     <name>main</name>
@@ -370,15 +386,23 @@
     </message>
     <message>
         <source>Home</source>
-        <translation>الرئيسية</translation>
+        <translation type="vanished">الرئيسية</translation>
     </message>
     <message>
         <source>Settings</source>
-        <translation>الإعدادات</translation>
+        <translation type="vanished">الإعدادات</translation>
     </message>
     <message>
         <source>Quit</source>
         <translation>إنهاء</translation>
+    </message>
+    <message>
+        <source>Show</source>
+        <translation>إظهار</translation>
+    </message>
+    <message>
+        <source>Hide</source>
+        <translation>إخفاء</translation>
     </message>
 </context>
 </TS>
