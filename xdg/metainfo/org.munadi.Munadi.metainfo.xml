@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2019 AA <aa@hak.pw> -->
+<!-- Copyright 2022 AA <aa@hak.pw> -->
 <component type="desktop-application">
     <id>org.munadi.Munadi</id>
     <metadata_license>CC0-1.0</metadata_license>
@@ -52,24 +52,45 @@
 
     <screenshots>
         <screenshot type="default">
-            <caption>Main page</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2007/0_main_page.png</image>
+            <caption>Main page - dark mode</caption>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2204/1_main_dark.png</image>
     
         </screenshot>
         <screenshot>
-            <caption>Location search</caption>  
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2007/1_location_search.png</image>
+            <caption>Main page - light mode</caption>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2204/2_main_light.png</image>
     
         </screenshot>
         <screenshot>
-            <caption>Settings page</caption>  
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2007/2_settings_page.png</image>
-    
+            <caption>Settings page</caption>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2204/3_settings.png</image>
+
+        </screenshot>
+        <screenshot>
+            <caption>Tray menu</caption>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2204/4_tray.png</image>
+
+        </screenshot>
+        <screenshot>
+            <caption>Location search</caption>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2204/5_location_search.png</image>
+
         </screenshot>
   
     </screenshots>
 
     <releases>
+        <release version="22.04" date="2022-04-01">
+            <description>
+                <p>Ramadan Kareem, some gifts:</p>
+                <ul>
+                    <li>Dark mode!</li>
+                    <li>Major UI changes</li>
+                    <li>Better tray UI and usability</li>
+                    <li>Flatpak integration (autostart, background and hidden autostart)</li>
+                </ul>
+            </description>
+        </release>
         <release version="21.12" date="2021-12-01">
             <description>
                 <p>This release contains a number of fixes and a new features:</p>
