@@ -109,7 +109,7 @@ ApplicationWindow {
 
     MainPage {
         id: mainPage
-        anchors.margins: 12
+        anchors.margins: 10
         anchors.fill: parent
     }
 

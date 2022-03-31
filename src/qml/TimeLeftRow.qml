@@ -39,7 +39,7 @@ Item {
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         font.italic: true
-        font.pixelSize: parent.height
+        font.pixelSize: parent.height / 2
         color: Material.secondaryTextColor
         elide: Text.ElideRight
         fontSizeMode: Text.Fit

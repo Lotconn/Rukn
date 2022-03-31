@@ -33,7 +33,6 @@ Page {
             prayerId: Adhan.adhan.Prayer.Sunrise
             athanTime: mm.srise
             Layout.preferredHeight: 30
-            prayerLabel: "🌄 "
         }
 
         Line {
