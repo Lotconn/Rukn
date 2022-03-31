@@ -13,19 +13,6 @@ import "qrc:/data/Adhan.js" as Adhan
 ApplicationWindow {
     id: mainWindow
 
-    onVisibilityChanged: {
-        alarms.clear("60s_tick")
-
-        if(visibility === ApplicationWindow.Hidden) return
-
-        var min = new Date()
-        min.setSeconds(60)
-        min.setMilliseconds(0)
-        alarms.add("60s_tick", min, 60)
-
-        mm.refreshTable()
-    }
-
     Material.theme: Material.System
     Material.accent: Material.BlueGrey
 
@@ -36,19 +23,12 @@ ApplicationWindow {
     LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft  // Proper way
                              || qsTr("QT_LAYOUT_DIRECTION", "QGuiApplication") === "RTL"    // Old Qt version, Snap!
 
-    function set_tickers() {
-        var midnight = new Date()
-        midnight.setHours(24,0,0,0)
-        alarms.add("24h_tick", midnight, 24*60*60)
-    }
-
     Component.onCompleted: {
         if (engine.autostart_hidden()) {
             hide()
         } else {
             show()
         }
-
         //        if(mm.checkForUpdates) {
         //            updater.check()
         //        }
@@ -59,12 +39,20 @@ ApplicationWindow {
             whatsNewPopup.open()
             news.newsVersion = engine.getVersionNo()
         }
-
-        set_tickers()
+        mm.set_24h_ticker()
     }
 
     Component.onDestruction: {
         mm.prayerConfig = mm.prayerConfig
+    }
+
+    onVisibilityChanged: {
+        alarms.clear("60s_tick")
+
+        if(visibility === ApplicationWindow.Hidden) return
+
+        mm.set_60s_ticker()
+        mm.refreshTable()
     }
 
     Theme {
@@ -220,10 +208,10 @@ ApplicationWindow {
             }
             MenuSeparator {}
             MenuItem {
-                property bool hidden: mainWindow.visibility === ApplicationWindow.Hidden ||
-                                        mainWindow.visibility === ApplicationWindow.Minimized
-                text: hidden ? qsTr("Show") : qsTr("Hide")
-                onTriggered: hidden ? mainWindow.showNormal() : mainWindow.hide()
+                property bool hidden_or_min: mainWindow.visibility === ApplicationWindow.Hidden ||
+                                             mainWindow.visibility === ApplicationWindow.Minimized
+                text: hidden_or_min ? qsTr("Show") : qsTr("Hide")
+                onTriggered: hidden_or_min ? mainWindow.showNormal() : mainWindow.hide()
             }
             MenuItem {
                 text: qsTr("Quit")
@@ -246,16 +234,18 @@ ApplicationWindow {
                 mm.refreshTable()
                 break
             case "alarms_reset": // Happens when clock change or wakeup after sleep for e.g.
-                set_tickers()
+                mm.set_24h_ticker()
+                if(visibility !== ApplicationWindow.Hidden) mm.set_60s_ticker()
                 mm.currentDate = new Date() // Recalc
                 break
             case "athan":
-                console.debug('js: alarm triggered: ', new Date(), ' id: ', id)
+                console.debug('athan triggered: ', new Date(), ' id: ', id)
+
+                mm.refreshTable()
                 athan.volume = mm.prayerConfig[mm.currentPrayer].volume
 
                 if(athan.volume > 0 && !athan.muted) {
                     athan.play()
-                    mm.refreshTable()
                 }
 
                 if (mm.showOnAthan) {
