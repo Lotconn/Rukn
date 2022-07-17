@@ -20,6 +20,9 @@ There are many other ways one can build Munadi from source, here are some, inclu
 
   - `flatpak install org.kde.Platform//5.15-21.08 org.kde.Sdk//5.15-21.08`
 
+> Note: The commands below are executed **_outside_** the checkout "munadi" folder.\
+> It is not required but recommended.
+
 4 - _To to build Munadi:_
 
 - `flatpak-builder --force-clean --ccache ./build/ ./munadi/pkg/flathub/org.munadi.Munadi.json`
@@ -28,8 +31,6 @@ There are many other ways one can build Munadi from source, here are some, inclu
   
 - `flatpak-builder --run ./build/ ./munadi/pkg/flathub/org.munadi.Munadi.json munadi`
 
-> Note: The commands are executed **_outside_** the checkout "munadi" folder.\
-> It is not required but recommended.
 
 ### Qt.io
 1 - Download and install Qt
@@ -43,6 +44,9 @@ There are many other ways one can build Munadi from source, here are some, inclu
 
   - `sudo apt install snap snapcraft`
 
+> Note: The commands below are executed **_within_** the checkout "munadi" folder.\
+> It is required last time I checked !
+
 2 - Copy the `.yaml` file to the root folder (next to `CmakeLists.txt`):
 
   - `cp ./pkg/snap/snapcraft.yaml .`
@@ -53,5 +57,3 @@ There are many other ways one can build Munadi from source, here are some, inclu
 
 4 - I forgot how to run the results post snapping !
 
-> Note: The commands are executed **_within_** the checkout "munadi" folder.\
-> It is required last time I checked !
