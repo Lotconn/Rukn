@@ -1,25 +1,11 @@
 /*
-    MIT License
+  This file is part of KDSingleApplication.
 
-    Copyright (C) 2019-2021 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
+  SPDX-FileCopyrightText: 2019-2023 Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>
 
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
+  SPDX-License-Identifier: MIT
 
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE.
+  Contact KDAB at <info@kdab.com> for commercial licensing options.
 */
 
 #include <QtCore/QProcess>
@@ -47,7 +33,7 @@ void tst_SimpleTest::testSimple_data()
     QTest::addRow("message-1") << QStringLiteral("Hello");
     QTest::addRow("message-2") << QStringLiteral("Hello World");
     QTest::addRow("message-3") << QStringLiteral("Hello World 123456789");
-    //QTest::addRow("message empty") << QString();
+    // QTest::addRow("message empty") << QString();
 
     for (int i = 1; i <= 2048; i *= 2) {
         QTest::addRow("message-x-%d", i) << QString(i, QLatin1Char('x'));
@@ -73,7 +59,7 @@ void tst_SimpleTest::testSimple()
     QVERIFY(primary.waitForStarted());
     QCOMPARE(primary.state(), QProcess::Running);
     output.clear();
-    ok = QTest::qWaitFor([&](){
+    ok = QTest::qWaitFor([&]() {
         output += primary.readAllStandardOutput();
         return output == "Primary\n";
     });
@@ -86,7 +72,7 @@ void tst_SimpleTest::testSimple()
     QCOMPARE(secondary.state(), QProcess::Running);
 
     output.clear();
-    ok = QTest::qWaitFor([&](){
+    ok = QTest::qWaitFor([&]() {
         output += secondary.readAllStandardOutput();
         return output == "Secondary\n";
     });
@@ -99,7 +85,7 @@ void tst_SimpleTest::testSimple()
 
     output.clear();
     const QByteArray expected = "MESSAGE: >" + message.toUtf8() + "<\n";
-    ok = QTest::qWaitFor([&](){
+    ok = QTest::qWaitFor([&]() {
         output += primary.readAllStandardOutput();
         return output == expected;
     });

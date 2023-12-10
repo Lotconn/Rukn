@@ -1,25 +1,11 @@
 /*
-    MIT License
+  This file is part of KDSingleApplication.
 
-    Copyright (C) 2019-2021 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
+  SPDX-FileCopyrightText: 2019-2023 Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>
 
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
+  SPDX-License-Identifier: MIT
 
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE.
+  Contact KDAB at <info@kdab.com> for commercial licensing options.
 */
 
 #include <QtCore/QCoreApplication>
@@ -46,27 +32,27 @@ int main(int argc, char **argv)
 
     QCoreApplication app(argc, argv);
 
-    const int delay = (int)QRandomGenerator::global()->bounded(100, 200);
+    const int delay = ( int )QRandomGenerator::global()->bounded(100, 200);
     QThread::msleep(delay);
 
     const QString appName = QLatin1String("stresstest2-") + app.arguments().at(1);
+    const int timeout = app.arguments().at(2).toInt();
 
     KDSingleApplication kdsa(appName);
     if (kdsa.isPrimaryInstance()) {
         std::cout << "Primary" << std::endl;
 
-        int counter = app.arguments().at(2).toInt();
+        int counter = app.arguments().at(3).toInt();
         --counter;
 
         QObject::connect(&kdsa, &KDSingleApplication::messageReceived,
-                         [&counter]()
-        {
-            --counter;
-            if (counter == 0)
-                qApp->quit();
-        });
+                         [&counter]() {
+                             --counter;
+                             if (counter == 0)
+                                 qApp->quit();
+                         });
 
-        QTimer::singleShot(30000, [&counter](){
+        QTimer::singleShot(timeout, [&counter]() {
             std::cerr << "Primary time out, still " << counter << " secondaries" << std::endl;
             qApp->exit(1);
         });
@@ -75,7 +61,7 @@ int main(int argc, char **argv)
     } else {
         std::cout << "Secondary" << std::endl;
 
-        if (!kdsa.sendMessage(QByteArray(delay, 'x')))
+        if (!kdsa.sendMessageWithTimeout(QByteArray(delay, 'x'), timeout))
             return 1;
     }
 

@@ -1,25 +1,11 @@
 /*
-    MIT License
+  This file is part of KDSingleApplication.
 
-    Copyright (C) 2019-2021 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
+  SPDX-FileCopyrightText: 2019-2023 Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>
 
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
+  SPDX-License-Identifier: MIT
 
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE.
+  Contact KDAB at <info@kdab.com> for commercial licensing options.
 */
 
 #include "kdsingleapplication_localsocket_p.h"
@@ -58,9 +44,10 @@ KDSingleApplicationLocalSocket::KDSingleApplicationLocalSocket(const QString &na
     : QObject(parent)
 {
 #if defined(Q_OS_UNIX)
+    /* cppcheck-suppress useInitializationList */
     m_socketName = QStringLiteral("kdsingleapp-%1-%2-%3")
-            .arg(::getuid())
-            .arg(qEnvironmentVariable("XDG_SESSION_ID"), name);
+                       .arg(::getuid())
+                       .arg(qEnvironmentVariable("XDG_SESSION_ID"), name);
 #elif defined(Q_OS_WIN)
     // I'm not sure of a "global session identifier" on Windows; are
     // multiple logins from the same user a possibility? For now, following this:
@@ -70,14 +57,14 @@ KDSingleApplicationLocalSocket::KDSingleApplicationLocalSocket(const QString &na
     BOOL haveSessionId = ProcessIdToSessionId(GetCurrentProcessId(), &sessionId);
 
     m_socketName = QString::fromUtf8("kdsingleapp-%1-%2")
-            .arg(haveSessionId ? sessionId : 0)
-            .arg(name);
+                       .arg(haveSessionId ? sessionId : 0)
+                       .arg(name);
 #else
 #error "KDSingleApplication has not been ported to this platform"
 #endif
 
     const QString lockFilePath =
-            QDir::tempPath() + QLatin1Char('/') + m_socketName + QLatin1String(".lock");
+        QDir::tempPath() + QLatin1Char('/') + m_socketName + QLatin1String(".lock");
 
     qCDebug(kdsaLocalSocket) << "Socket name is" << m_socketName;
     qCDebug(kdsaLocalSocket) << "Lock file path is" << lockFilePath;
@@ -87,8 +74,11 @@ KDSingleApplicationLocalSocket::KDSingleApplicationLocalSocket(const QString &na
 
     if (!lockFile->tryLock()) {
         // someone else has the lock => we're secondary
+        qCDebug(kdsaLocalSocket) << "Secondary instance";
         return;
     }
+
+    qCDebug(kdsaLocalSocket) << "Primary instance";
 
     std::unique_ptr<QLocalServer> server = std::make_unique<QLocalServer>();
     if (!server->listen(m_socketName)) {
@@ -139,8 +129,10 @@ bool KDSingleApplicationLocalSocket::sendMessage(const QByteArray &message, int 
 
     qCDebug(kdsaLocalSocket) << "Socket state:" << socket.state() << "Timer remaining" << deadline.remainingTime() << "Expired?" << deadline.hasExpired();
 
-    if (deadline.hasExpired())
+    if (deadline.hasExpired()) {
+        qCWarning(kdsaLocalSocket) << "Connection timed out";
         return false;
+    }
 
     socket.write(&LOCALSOCKET_PROTOCOL_VERSION, 1);
 
@@ -151,25 +143,33 @@ bool KDSingleApplicationLocalSocket::sendMessage(const QByteArray &message, int 
         socket.write(encodedMessage);
     }
 
-    qCDebug(kdsaLocalSocket) << "Wrote message in the socket" << "Timer remaining" << deadline.remainingTime() << "Expired?" << deadline.hasExpired();
+    qCDebug(kdsaLocalSocket) << "Wrote message in the socket"
+                             << "Timer remaining" << deadline.remainingTime() << "Expired?" << deadline.hasExpired();
 
     // There is no acknowledgement mechanism here.
     // Should there be one?
 
     while (socket.bytesToWrite() > 0) {
-        if (!socket.waitForBytesWritten(deadline.remainingTime()))
+        if (!socket.waitForBytesWritten(deadline.remainingTime())) {
+            qCWarning(kdsaLocalSocket) << "Message to primary timed out";
             return false;
+        }
     }
 
-    qCDebug(kdsaLocalSocket) << "Bytes written, now disconnecting" << "Timer remaining" << deadline.remainingTime() << "Expired?" << deadline.hasExpired();
+    qCDebug(kdsaLocalSocket) << "Bytes written, now disconnecting"
+                             << "Timer remaining" << deadline.remainingTime() << "Expired?" << deadline.hasExpired();
 
     socket.disconnectFromServer();
 
-    if (socket.state() == QLocalSocket::UnconnectedState)
+    if (socket.state() == QLocalSocket::UnconnectedState) {
+        qCDebug(kdsaLocalSocket) << "Disconnected -- success!";
         return true;
+    }
 
-    if (!socket.waitForDisconnected(deadline.remainingTime()))
+    if (!socket.waitForDisconnected(deadline.remainingTime())) {
+        qCWarning(kdsaLocalSocket) << "Disconnection from primary timed out";
         return false;
+    }
 
     qCDebug(kdsaLocalSocket) << "Disconnected -- success!";
 
@@ -180,36 +180,38 @@ void KDSingleApplicationLocalSocket::handleNewConnection()
 {
     Q_ASSERT(m_localServer);
 
-    QLocalSocket *socket = m_localServer->nextPendingConnection();
+    QLocalSocket *socket;
+    while ((socket = m_localServer->nextPendingConnection())) {
+        qCDebug(kdsaLocalSocket) << "Got new connection on" << m_socketName << "state" << socket->state();
 
-    qCDebug(kdsaLocalSocket) << "Got new connection on" << m_socketName << "state" << socket->state();
+        Connection c(std::move(socket));
+        socket = c.socket.get();
 
-    Connection c(socket);
+        c.readDataConnection = QObjectConnectionHolder(
+            connect(socket, &QLocalSocket::readyRead,
+                    this, &KDSingleApplicationLocalSocket::readDataFromSecondary));
 
-    c.readDataConnection = QObjectConnectionHolder(
-                connect(c.socket.get(), &QLocalSocket::readyRead,
-                        this, &KDSingleApplicationLocalSocket::readDataFromSecondary));
+        c.secondaryDisconnectedConnection = QObjectConnectionHolder(
+            connect(socket, &QLocalSocket::disconnected,
+                    this, &KDSingleApplicationLocalSocket::secondaryDisconnected));
 
-    c.secondaryDisconnectedConnection = QObjectConnectionHolder(
-                connect(c.socket.get(), &QLocalSocket::disconnected,
-                        this, &KDSingleApplicationLocalSocket::secondaryDisconnected));
+        c.abortConnection = QObjectConnectionHolder(
+            connect(c.timeoutTimer.get(), &QTimer::timeout,
+                    this, &KDSingleApplicationLocalSocket::abortConnectionToSecondary));
 
-    c.abortConnection = QObjectConnectionHolder(
-                connect(c.timeoutTimer.get(), &QTimer::timeout,
-                        this, &KDSingleApplicationLocalSocket::abortConnectionToSecondary));
+        m_clients.push_back(std::move(c));
 
-    m_clients.push_back(std::move(c));
+        // Note that by the time we get here, the socket could've already been closed,
+        // and no signals emitted (hello, Windows!). Read what's already in the socket.
+        if (readDataFromSecondarySocket(socket))
+            return;
 
-    // Note that by the time we get here, the socket could've already been closed,
-    // and no signals emitted (hello, Windows!). Read what's already in the socket.
-    if (readDataFromSecondarySocket(socket))
-        return;
-
-    if (socket->state() == QLocalSocket::UnconnectedState)
-        secondarySocketDisconnected(socket);
+        if (socket->state() == QLocalSocket::UnconnectedState)
+            secondarySocketDisconnected(socket);
+    }
 }
 
-template <typename Container>
+template<typename Container>
 static auto findConnectionBySocket(Container &container, QLocalSocket *socket)
 {
     auto i = std::find_if(container.begin(),
@@ -219,7 +221,7 @@ static auto findConnectionBySocket(Container &container, QLocalSocket *socket)
     return i;
 }
 
-template <typename Container>
+template<typename Container>
 static auto findConnectionByTimer(Container &container, QTimer *timer)
 {
     auto i = std::find_if(container.begin(),
@@ -296,8 +298,8 @@ void KDSingleApplicationLocalSocket::abortConnectionToSecondary()
     qCDebug(kdsaLocalSocket) << "Secondary timed out. Data read:" << c.readData;
 }
 
-KDSingleApplicationLocalSocket::Connection::Connection(QLocalSocket *socket)
-    : socket(socket)
+KDSingleApplicationLocalSocket::Connection::Connection(QLocalSocket *_socket)
+    : socket(_socket)
     , timeoutTimer(new QTimer)
 {
     timeoutTimer->start(LOCALSOCKET_CONNECTION_TIMEOUT);

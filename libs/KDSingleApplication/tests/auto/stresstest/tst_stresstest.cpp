@@ -1,44 +1,88 @@
 /*
-    MIT License
+  This file is part of KDSingleApplication.
 
-    Copyright (C) 2019-2021 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
+  SPDX-FileCopyrightText: 2019-2023 Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>
 
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
+  SPDX-License-Identifier: MIT
 
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE.
+  Contact KDAB at <info@kdab.com> for commercial licensing options.
 */
 
 #include <QtCore/QProcess>
 #include <QtCore/QRandomGenerator>
 #include <QtTest/QTest>
 
-
 #include <vector>
 #include <memory>
+
+#ifdef Q_OS_UNIX
+#include <sys/time.h>
+#include <sys/resource.h>
+#endif
 
 class tst_StressTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:
+    void initTestCase();
     void testOnePrimaryManySecondaries();
 
     void testOnlyOnePrimary_data();
     void testOnlyOnePrimary();
+
+private:
+    bool m_isRunninginCI = false;
 };
+
+// The default timeouts don't seem to be enough
+// on Windows/OSX; increase it when the number of instances grows.
+static int calculateTimeout(int instances)
+{
+    return qMax(instances * 5000, 30000);
+}
+
+void tst_StressTest::initTestCase()
+{
+#ifdef Q_OS_UNIX
+    // increase the system limits if possible
+    struct rlimit ulimit;
+    if (::getrlimit(RLIMIT_NOFILE, &ulimit) != 0) {
+        perror("Cannot get ulimits");
+        QFAIL("Aborting testcase");
+    }
+
+    // up to 100 processes, up to 4 fds per process;
+    // this should be more than enough!
+    constexpr int minimumNumberOfFds = 4096;
+
+    if (ulimit.rlim_cur < minimumNumberOfFds) {
+        ulimit.rlim_cur = minimumNumberOfFds;
+
+        if (::setrlimit(RLIMIT_NOFILE, &ulimit) != 0) {
+            perror("Cannot set ulimits");
+            QFAIL("Aborting testcase");
+        }
+    }
+#endif
+
+    // Avoid overloading the Windows VMs, or they'll time out
+#if defined(Q_OS_WIN)
+    m_isRunninginCI = []() {
+        bool ok;
+        const int ciBuild = qEnvironmentVariableIntValue("CI_BUILD", &ok);
+        if (!ok)
+            return true;
+        return ciBuild != 0;
+    }();
+#else
+    m_isRunninginCI = false;
+#endif
+
+    if (m_isRunninginCI)
+        qDebug() << "Running a subset of the tests to avoid overloading the CI. Set CI_BUILD=0 to override";
+    else
+        qDebug() << "Running full tests";
+}
 
 void tst_StressTest::testOnePrimaryManySecondaries()
 {
@@ -55,20 +99,23 @@ void tst_StressTest::testOnePrimaryManySecondaries()
     const QString executable = QStringLiteral("stresstest/stresstest");
 #endif
 
-    const int secondariesCount = 50;
-    const int runsPerSecondary = 50;
+    const int secondariesCount = m_isRunninginCI ? 5 : 50;
+    const int runsPerSecondary = m_isRunninginCI ? 5 : 50;
+
     const QString testId = QString::number(QRandomGenerator::global()->generate());
+    const int timeout = calculateTimeout(secondariesCount);
+    const QString timeoutString = QString::number(timeout);
 
     QByteArray output;
     bool ok;
 
     QProcess primary;
     primary.setProcessChannelMode(QProcess::ForwardedErrorChannel);
-    primary.start(executable, { testId, QStringLiteral("primary"), QString::number(secondariesCount * runsPerSecondary) });
+    primary.start(executable, { testId, QStringLiteral("primary"), timeoutString, QString::number(secondariesCount * runsPerSecondary) });
     QVERIFY(primary.waitForStarted());
     QCOMPARE(primary.state(), QProcess::Running);
     output.clear();
-    ok = QTest::qWaitFor([&](){
+    ok = QTest::qWaitFor([&]() {
         output += primary.readAllStandardOutput();
         return output == "Primary\n";
     });
@@ -79,16 +126,16 @@ void tst_StressTest::testOnePrimaryManySecondaries()
     for (int i = 0; i < secondariesCount; ++i) {
         std::unique_ptr<QProcess> secondary = std::make_unique<QProcess>();
         secondary->setProcessChannelMode(QProcess::ForwardedErrorChannel);
-        secondary->start(executable, { testId, QStringLiteral("secondary"), QString::number(runsPerSecondary) });
+        secondary->start(executable, { testId, QStringLiteral("secondary"), timeoutString, QString::number(runsPerSecondary) });
         secondaries.push_back(std::move(secondary));
     }
 
     for (auto &secondary : secondaries)
-        QVERIFY(secondary->waitForStarted());
+        QVERIFY(secondary->waitForStarted(timeout));
 
     for (auto &secondary : secondaries) {
         if (secondary->state() != QProcess::NotRunning)
-            QVERIFY(secondary->waitForFinished());
+            QVERIFY(secondary->waitForFinished(timeout));
         QCOMPARE(secondary->exitCode(), 0);
         QCOMPARE(secondary->exitStatus(), QProcess::NormalExit);
     }
@@ -96,7 +143,7 @@ void tst_StressTest::testOnePrimaryManySecondaries()
     secondaries.clear();
 
     if (primary.state() != QProcess::NotRunning)
-        QVERIFY(primary.waitForFinished());
+        QVERIFY(primary.waitForFinished(timeout));
     QCOMPARE(primary.exitCode(), 0);
     QCOMPARE(primary.exitStatus(), QProcess::NormalExit);
 }
@@ -104,7 +151,9 @@ void tst_StressTest::testOnePrimaryManySecondaries()
 void tst_StressTest::testOnlyOnePrimary_data()
 {
     QTest::addColumn<int>("count");
-    for (int i = 10; i <= 100; i += 10)
+
+    const int totalCount = m_isRunninginCI ? 10 : 100;
+    for (int i = 10; i <= totalCount; i += 10)
         QTest::addRow("count-%d", i) << i;
 }
 
@@ -124,18 +173,21 @@ void tst_StressTest::testOnlyOnePrimary()
     const QString countString = QString::number(count);
     const QString testId = QString::number(QRandomGenerator::global()->generate());
 
+    const auto timeout = calculateTimeout(count);
+    const auto timeoutString = QString::number(timeout);
+
     std::vector<std::unique_ptr<QProcess>> processes;
     processes.reserve(count);
     for (int i = 0; i < count; ++i) {
         std::unique_ptr<QProcess> process = std::make_unique<QProcess>();
         process->setProcessChannelMode(QProcess::ForwardedErrorChannel);
-        process->start(executable, { testId, countString });
+        process->start(executable, { testId, timeoutString, countString });
         processes.push_back(std::move(process));
     }
 
     for (auto &process : processes) {
         if (process->state() != QProcess::NotRunning)
-            QVERIFY(process->waitForFinished());
+            QVERIFY(process->waitForFinished(timeout));
         QCOMPARE(process->exitCode(), 0);
         QCOMPARE(process->exitStatus(), QProcess::NormalExit);
 
