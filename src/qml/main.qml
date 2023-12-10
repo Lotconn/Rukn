@@ -13,8 +13,8 @@ import "qrc:/data/Adhan.js" as Adhan
 ApplicationWindow {
     id: mainWindow
 
-    Material.theme: Material.System
-    Material.accent: Material.BlueGrey
+    Material.theme: Material.Light
+    Material.accent: Material.Grey
 
     width: 400
     height: 600

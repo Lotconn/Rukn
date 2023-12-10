@@ -2,8 +2,14 @@ import QtQuick 2.9
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.2
 import QtQuick.Dialogs 1.2
+import QtMultimedia 5.0
 
 RowLayout {
+
+    MediaPlayer {
+        id: athanPreview
+        volume: 1.0
+    }
 
     FileDialog {
         id: fileDialog
@@ -37,7 +43,7 @@ RowLayout {
         }
 
         onCurrentIndexChanged: {
-            athan.source = mm.audioList[currentIndex]["path"]
+            athanPreview.source = mm.audioList[currentIndex]["path"]
         }
 
         onActivated: {
@@ -73,17 +79,18 @@ RowLayout {
         // they're here because of Snap issues !!! Remove after core20 is out
         Image {
             mirror: mainPage.mirrored
-            source: athan.isOn ? "qrc:/img/stop.png" : "qrc:/img/start.png"
+            source: athanPreview.playbackState === MediaPlayer.PlayingState
+                    ? "qrc:/img/stop.png" : "qrc:/img/start.png"
             anchors.margins: parent.height / 3
             anchors.fill: parent
         }
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                if (athan.isOn) {
-                    athan.stop()
+                if (athanPreview.playbackState === MediaPlayer.PlayingState) {
+                    athanPreview.stop()
                 } else {
-                    athan.play()
+                    athanPreview.play()
                 }
             }
         }

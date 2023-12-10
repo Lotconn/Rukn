@@ -13,7 +13,7 @@ Page {
             id: locationInfoRow
             cityName: mm.cityName
             countryName: mm.countryName
-            Layout.preferredHeight: 20
+            Layout.preferredHeight: 30
         }
 
         DateRow {
@@ -91,7 +91,7 @@ Page {
         TimeLeftRow {
             id: timeLeft
             text: mm.timeLeftStr
-             Layout.preferredHeight: 40
+             Layout.preferredHeight: 50
 
              RoundButton {
                  text: "⚙"

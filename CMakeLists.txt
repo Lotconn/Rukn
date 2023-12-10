@@ -45,8 +45,8 @@ set(SOURCES
     src/cpp/alarms.cpp
     src/cpp/engine.cpp
     src/cpp/updater.cpp
-    src/cpp/libitl/hijri.c
-src/cpp/main.cpp)
+    src/cpp/main.cpp
+    src/cpp/libitl/hijri.c)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
     qt6_add_resources(QRC_FILES src/qml.qrc src/rc.qrc)
