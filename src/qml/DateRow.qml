@@ -1,13 +1,11 @@
-import QtQuick 2.5
-import QtQuick.Controls 2.15
-import QtQuick.Controls.Material 2.0
-import QtQuick.Layouts 1.15
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Controls.Material
+import QtQuick.Layouts
 
 Item {
 
     Component.onCompleted: forceActiveFocus() // Hack to force focus
-
-    visible: mm.stickerMode ? false : true
 
     Layout.preferredWidth: parent.width
     Layout.fillHeight: true
@@ -15,6 +13,8 @@ Item {
     Keys.onLeftPressed: prevDate()
     Keys.onRightPressed: nextDate()
     Keys.onDownPressed: currentDate()
+
+    property bool buttonsVisible: true
 
     Grid {
         columns: 3
@@ -33,6 +33,7 @@ Item {
             width: parent.colCellWidth / 2
 
             RoundButton {
+                visible: buttonsVisible
                 opacity: 0.5
                 flat: true
                 autoRepeat: true
@@ -85,6 +86,7 @@ Item {
             visible: parent.columns == 3
 
             RoundButton {
+                visible: buttonsVisible
                 opacity: 0.5
                 flat: true
                 autoRepeat: true
@@ -95,12 +97,6 @@ Item {
                 onPressed: nextDate()
             }
         }
-    }
-
-    Line {
-        width: parent.width - parent.width / 5
-        anchors.bottom: parent.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
     }
 
     function currentDate() {

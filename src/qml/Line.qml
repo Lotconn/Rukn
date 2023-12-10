@@ -1,8 +1,10 @@
-import QtQuick 2.0
-import QtQuick.Controls.Material 2.0
+import QtQuick
+import QtQuick.Controls.Material
+import QtQuick.Layouts
 
 Rectangle {
-    color: Material.dividerColor
+    color: Material.secondaryTextColor
     height: 1
-    opacity: 0.5
+    Layout.preferredWidth: parent.width - parent.width / 8
+    Layout.alignment: Qt.AlignHCenter
 }

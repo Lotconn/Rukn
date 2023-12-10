@@ -17,7 +17,6 @@ find_package(Qt6
     COMPONENTS
         Core Gui Widgets Quick QuickControls2 Multimedia Location Positioning REQUIRED)
 
-#find_package(Qt6QuickCompiler)
 find_package(Threads)
 
 qt_standard_project_setup()

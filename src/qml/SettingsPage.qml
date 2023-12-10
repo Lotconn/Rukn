@@ -1,10 +1,10 @@
-import QtQuick 2.5
-import QtQuick.Controls 2.0
-import QtQuick.Controls.Material 2.0
-import QtQuick.Layouts 1.1
-import Qt.labs.settings 1.0
-import QtPositioning 5.3
-import QtQuick.Dialogs 1.0
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Controls.Material
+import QtQuick.Layouts
+import Qt.labs.settings
+import QtPositioning
+import QtQuick.Dialogs
 
 import "qrc:/data/Adhan.js" as Adhan
 
@@ -35,6 +35,23 @@ Page {
             anchors.horizontalCenter: parent.horizontalCenter
 
             RowLayout {} // Top padding
+
+            ColumnLayout {
+                width: parent.width
+
+                Line {
+                    Layout.fillWidth: true
+                }
+
+                LocationInfoRow {
+                    id: locationInfoRow
+                    cityName: mm.cityName
+                    countryName: mm.countryName
+
+                    Layout.preferredWidth: parent.width
+                    Layout.preferredHeight: 30
+                }
+            }
 
             ColumnLayout {
                 SettingTitle {
@@ -84,6 +101,54 @@ Page {
                     category: "App"
                     property alias themeChoiceIndex: themeChoice.currentIndex
                 }
+            }
+
+            Slider {
+                id: blur
+                Layout.fillWidth: true
+                stepSize: 1
+                value: mm.bg_img_blur
+                from: 0
+                to: 64
+
+                onPressedChanged: {
+                    if(pressed) {
+                        settingsPopup.opacity = 0
+                        settingsPopup.modal = false
+                    } else {
+                        settingsPopup.opacity = 1
+                        settingsPopup.modal = true
+                    }
+                }
+
+                onMoved: {
+                    mm.bg_img_blur = value
+                }
+
+            }
+
+            Slider {
+                id: opacity
+                Layout.fillWidth: true
+                stepSize: .01
+                value: mm.rectangle_opacity
+                from: 0
+                to: 1
+
+                onPressedChanged: {
+                    if(pressed) {
+                        settingsPopup.opacity = 0
+                        settingsPopup.modal = false
+                    } else {
+                        settingsPopup.opacity = 1
+                        settingsPopup.modal = true
+                    }
+                }
+
+                onMoved: {
+                    mm.rectangle_opacity = value
+                }
+
             }
 
             RowLayout {
@@ -323,7 +388,7 @@ Page {
                     font.italic: true
                 }
                 TextButton {
-                    property string link: "munadi.org"
+                    property string link: "https://munadi.org"
                     text: link
                     onClicked: Qt.openUrlExternally(link)
                 }
@@ -334,7 +399,7 @@ Page {
                     font.italic: true
                 }
                 TextButton {
-                    property string link: "munadi.org/contact"
+                    property string link: "https://munadi.org/contact"
                     text: link
                     onClicked: Qt.openUrlExternally(link)
                 }
@@ -345,7 +410,7 @@ Page {
                     font.italic: true
                 }
                 TextButton {
-                    property string link: "gitlab.com/munadi/munadi/-/issues"
+                    property string link: "https://gitlab.com/munadi/munadi/-/issues"
                     text: link
                     Layout.fillWidth: true
                     onClicked: Qt.openUrlExternally(link)

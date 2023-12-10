@@ -1,5 +1,5 @@
-import QtQuick 2.5
-import Qt.labs.settings 1.0
+import QtQuick
+import Qt.labs.settings
 import "qrc:/data/Adhan.js" as Adhan
 
 QtObject {
@@ -38,13 +38,19 @@ QtObject {
 
     onCurrentDateChanged: invalidate()
 
-    property string currentDateStr: Qt.formatDate(currentDate, Qt.DefaultLocaleLongDate)
+    property string currentDateStr: Qt.formatDate(currentDate, Locale.LongFormat)
 
     property bool locationNotSet: latitude == 0 || longitude == 0
 
     property bool stickerMode: false
     property bool showOnAthan: false
     property bool hideOnClose: false
+
+    property int bg_img_blur: 32
+    property double rectangle_opacity: 0.8
+    property double content_opacity: 1.0
+    property int rectangle_radius: 20
+    property double page_margins_p: 0.02
 
     //    property bool checkForUpdates:  true
 

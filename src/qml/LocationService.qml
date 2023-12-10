@@ -1,6 +1,6 @@
-import QtQuick 2.0
-import QtPositioning 5.5
-import QtLocation 5.6
+import QtQuick
+import QtPositioning
+import QtLocation
 
 Item {
     id: ls
@@ -17,7 +17,7 @@ Item {
     Plugin {
         id: aPlugin
         name: "osm"
-        PluginParameter {
+        parameters: PluginParameter {
             name: "osm.geocoding.host"
             value: "https://nominatim.openstreetmap.org"
         }

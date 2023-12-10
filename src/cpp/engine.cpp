@@ -6,15 +6,15 @@
 #include <QSettings>
 #include <QQuickView>
 #include <QTextStream>
+
+#if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
+
 #include <QDBusInterface>
-
-#ifdef DESKTOP
-
 #include <QGuiApplication>
 
-#ifdef Q_OS_WIN
+#elif defined(Q_OS_WIN)
+
 #include <windows.h>
-#endif
 
 #endif
 
@@ -74,7 +74,7 @@ namespace
             startup.remove(QGuiApplication::applicationName());
         }
     }
-#elif defined(Q_OS_LINUX)
+#elif defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
     void autostart_snap(bool set)
     {
         if(!QDir("/snap").exists())
@@ -119,9 +119,11 @@ namespace
     }
     void autostart_flatpak(bool set)
     {
+#ifndef ANDROID
         QDBusInterface portal("org.freedesktop.portal.Desktop",
                               "/org/freedesktop/portal/desktop",
                               "org.freedesktop.portal.Background");
+#endif
 
         QList<QString> commandline = {"munadi", "--hidden"};
 
@@ -129,8 +131,9 @@ namespace
         params.insert("reason", "Background Athan.");
         params.insert("autostart", set);
         params.insert("commandline", QVariant(commandline));
-
+#ifndef ANDROID
         portal.call("RequestBackground", "", params);
+#endif
     }
 #elif defined(Q_OS_MAC)
     void autostart_mac(bool set)
@@ -146,7 +149,7 @@ void Engine::autostart(bool set)
 
     autostart_win(set);
 
-#elif defined(Q_OS_LINUX)
+#elif defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
 
     // Can't tell if we're on Snap, Flatpak or otherwise, so do all!
     autostart_snap(set);

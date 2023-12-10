@@ -7,10 +7,6 @@ import QtQuick.Layouts 1.15
 import "qrc:/data/Adhan.js" as Adhan
 
 Item {
-
-    //visible: mm.stickerMode ? false : true
-    visible: !mm.locationNotSet
-
     Layout.preferredWidth: parent.width
     Layout.fillHeight: true
 
@@ -19,23 +15,23 @@ Item {
     ProgressBar {
         id: progressBar
 
-        Material.accent: Material.Grey
+        Material.accent: timeLeftLabel.color
         visible: mm.currentPrayer !== 6 && mm.nextPrayer !== 6
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: parent.height / 6
+        anchors.bottomMargin: parent.height / 10
         anchors.horizontalCenter: parent.horizontalCenter
         from: if(mm.timeForCurrentPrayer) mm.timeForCurrentPrayer.getTime(); else 0
         to: if(mm.timeForNextPrayer) mm.timeForNextPrayer.getTime(); else 0
         value: mm.currentTime.getTime()
         width: parent.width / 2
-        opacity: 0.6
+        height: parent.height / 10
+        opacity: mm.rectangle_opacity
     }
 
     Text {
         id: timeLeftLabel
         visible: progressBar.visible || athan.isOn
         anchors.fill: parent
-        anchors.bottomMargin: parent.height / 3
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         font.italic: true
@@ -46,7 +42,6 @@ Item {
 
         Image {
             id: athanStopBtn
-            mirror: mainPage.mirrored
             visible: athan.isOn
             height: timeLeft.height / 2
             anchors.right: parent.right

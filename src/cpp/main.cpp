@@ -1,25 +1,30 @@
 #include <QQmlContext>
 #include <QApplication>
 #include <QQmlApplicationEngine>
+
+#ifndef ANDROID
 #include <kdsingleapplication.h>
+#endif
 
 #include "engine.h"
 #include "alarms.h"
 
 int main(int argc, char *argv[])
 {
-
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-
     QApplication app(argc, argv);
     Engine engine;
     Alarms alarms;
+
+#ifndef ANDROID
     KDSingleApplication sapp;
 
     if (!sapp.isPrimaryInstance()) {
         sapp.sendMessage(nullptr);
+        qDebug() << "Munadi already running!";
+
         return 0;
     }
+#endif
 
     app.setOrganizationDomain("munadi.org");
     app.setApplicationName("Munadi");
@@ -52,7 +57,9 @@ int main(int argc, char *argv[])
 
     qae.rootContext()->setContextProperty("engine", &engine);
     qae.rootContext()->setContextProperty("alarms", &alarms);
+#ifndef ANDROID
     qae.rootContext()->setContextProperty("sapp", &sapp);
+#endif
     //qae.rootContext()->setContextProperty("updater", engine.updater);
     qae.load(QUrl(QLatin1String("qrc:/qml/main.qml")));
 

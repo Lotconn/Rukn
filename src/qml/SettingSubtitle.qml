@@ -1,6 +1,6 @@
-import QtQuick 2.5
-import QtQuick.Layouts 1.2
-import QtQuick.Controls.Material 2.0
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Controls.Material
 
 Text {
     //font.pointSize: theme.defaultFontSize - 2

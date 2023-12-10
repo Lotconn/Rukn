@@ -1,27 +1,30 @@
-import QtQuick 2.9
-import QtQuick.Layouts 1.3
-import QtQuick.Controls 2.2
-import QtQuick.Dialogs 1.2
-import QtMultimedia 5.0
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Controls
+import QtQuick.Dialogs
+import Qt.labs.platform
+import QtMultimedia
 
 RowLayout {
 
     MediaPlayer {
         id: athanPreview
-        volume: 1.0
+        audioOutput: AudioOutput {
+            volume: 1.0
+        }
     }
 
     FileDialog {
         id: fileDialog
         title: qsTr("Please choose an audio file")
-        folder: shortcuts.home
+        folder: StandardPaths.writableLocation(StandardPaths.DocumentsLocation)
 
         onAccepted: {
-            var name = fileUrl.toString().split('/').slice(-1)[0]
+            console.log("fff", fileDialog.file)
+            var name = fileDialog.file.toString().split('/').slice(-1)[0]
             mm.audioList.push({
                                   "name": name,
-                                  "path": fileDialog.fileUrl
-                              })
+                                  "path": fileDialog.file                              })
             mm.audioListIndex = mm.audioList.length - 1
             audioListCb.model = mm.audioList
             audioListCb.currentIndex = mm.audioListIndex
@@ -56,7 +59,7 @@ RowLayout {
         implicitWidth: height
 
         onClicked: {
-            fileDialog.visible = true
+            fileDialog.open()
         }
     }
 
@@ -75,23 +78,13 @@ RowLayout {
     }
 
     Button {
-        // Two comp below can be replaced with source.icon
-        // they're here because of Snap issues !!! Remove after core20 is out
-        Image {
-            mirror: mainPage.mirrored
-            source: athanPreview.playbackState === MediaPlayer.PlayingState
-                    ? "qrc:/img/stop.png" : "qrc:/img/start.png"
-            anchors.margins: parent.height / 3
-            anchors.fill: parent
-        }
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {
-                if (athanPreview.playbackState === MediaPlayer.PlayingState) {
-                    athanPreview.stop()
-                } else {
-                    athanPreview.play()
-                }
+        icon.source: athanPreview.playbackState === MediaPlayer.PlayingState
+                                 ? "qrc:/img/stop.png" : "qrc:/img/start.png"
+        onPressed: {
+            if (athanPreview.playbackState === MediaPlayer.PlayingState) {
+                athanPreview.stop()
+            } else {
+                athanPreview.play()
             }
         }
         implicitWidth: height

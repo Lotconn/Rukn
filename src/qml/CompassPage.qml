@@ -1,6 +1,6 @@
-import QtQuick 2.5
+import QtQuick
 //import QtSensors 5.3
-import QtQuick.Controls 2.0
+import QtQuick.Controls
 
 Page {
     Text {

@@ -1,19 +1,19 @@
-import QtQuick 2.5
-import QtQuick.Window 2.0
-import Qt.labs.settings 1.0
-import QtQuick.Controls 2.15
-import QtQuick.Controls.Material 2.0
-import QtPositioning 5.5
-import QtLocation 5.6
-import QtMultimedia 5.5
-import Qt.labs.platform 1.1
+import QtQuick
+import QtQuick.Window
+import Qt.labs.settings
+import QtQuick.Controls
+import QtQuick.Controls.Material
+import QtPositioning
+import QtLocation
+import QtMultimedia
+import Qt.labs.platform
 
 import "qrc:/data/Adhan.js" as Adhan
 
 ApplicationWindow {
     id: mainWindow
 
-    Material.theme: Material.Light
+    Material.theme: Material.System
     Material.accent: Material.Grey
 
     width: 400
@@ -28,6 +28,7 @@ ApplicationWindow {
             hide()
         } else {
             show()
+            //showFullScreen()
         }
         //        if(mm.checkForUpdates) {
         //            updater.check()
@@ -49,7 +50,7 @@ ApplicationWindow {
     onVisibilityChanged: {
         alarms.clear("60s_tick")
 
-        if(visibility === ApplicationWindow.Hidden) return
+        if(mainWindow.visibility === ApplicationWindow.Hidden) return
 
         mm.set_60s_ticker()
         mm.refreshTable()
@@ -65,7 +66,8 @@ ApplicationWindow {
 
     MediaPlayer {
         id: athan
-        property bool isOn: playbackState === MediaPlayer.PlayingState 
+        audioOutput: AudioOutput {}
+        property bool isOn: playbackState === MediaPlayer.PlayingState
     }
 
     // Below used for variables worth remembering only
@@ -80,6 +82,8 @@ ApplicationWindow {
         property alias prayerConfig:        mm.prayerConfig
         property alias audioList:           mm.audioList
         property alias audioListIndex:      mm.audioListIndex
+        property alias opacity:             mm.rectangle_opacity
+        property alias blur:                mm.bg_img_blur
     }
 
     LocationService {
@@ -95,9 +99,36 @@ ApplicationWindow {
         property alias y: mainWindow.y
     }
 
+    Image {
+        anchors.fill: parent
+        id: blurImg
+        source: "qrc:/img/bg" + i + ".jpg"
+        fillMode: Image.PreserveAspectCrop
+
+        // Delete below or keep for testing
+
+        property int i: 2 //Math.floor(Math.random() * 10)
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                parent.i = (parent.i + 1) % 24
+                console.log("parent.i: ", parent.i)
+                parent.source = "qrc:/img/bg" + parent.i + ".jpg"
+                //parent.source = "file:///home/aa/Pictures/bg/bg" + parent.i + ".jpg"
+                //mainWindow.width = mainWindow.width
+            }
+        }
+    }
+
     MainPage {
         id: mainPage
-        anchors.margins: 10
+
+        property double marg: Math.max(mainWindow.width, mainWindow.height) * mm.page_margins_p
+        anchors.topMargin: marg
+        anchors.bottomMargin: anchors.topMargin
+        anchors.leftMargin: marg
+        anchors.rightMargin: anchors.leftMargin
         anchors.fill: parent
     }
 
@@ -111,8 +142,10 @@ ApplicationWindow {
 
         x: (parent.width - width) / 2
         y: (parent.height - height) / 2
-        width: parent.width * 0.8
+        width: Math.min(parent.width, parent.height)
         height: parent.height * 0.8
+
+        onClosed: popup.open()
 
         Flickable {
             id: flickable
@@ -130,24 +163,43 @@ ApplicationWindow {
     }
 
     Popup {
-        id: settingsPopup
+        id: popup
 
         parent: ApplicationWindow.overlay
         modal: true
 
         x: (parent.width - width) / 2
+        y: (parent.height - height) / 4
+        width: parent.width * .9 //Math.min(parent.width * .9, parent.height / 1.8)
+        //height: parent.height * 0.8
+
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+        onClosed: if(mm.locationNotSet) open()
+
+        LocationSearchComponent {
+            Component.onCompleted: {
+                if (mm.locationNotSet && !whatsNewPopup.visible) {
+                    popup.open()
+                }
+            }
+        }
+    }
+
+    Popup {
+        id: settingsPopup
+
+        parent: ApplicationWindow.overlay
+        modal: true
+        focus: true
+
+        x: (parent.width - width) / 2
         y: (parent.height - height) / 2
-        width: parent.width * 0.9
+        width: parent.width * .9 //Math.min(parent.width * .9, parent.height / 1.8)
         height: parent.height * 0.8
 
-        Flickable {
+        SettingsPage {
             anchors.fill: parent
-
-            SettingsPage {
-                anchors.fill: parent
-            }
-
-            ScrollBar.vertical: ScrollBar {}
         }
     }
 
