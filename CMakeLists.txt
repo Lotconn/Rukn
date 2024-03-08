@@ -15,7 +15,7 @@ configure_file(src/cpp/version.h.in version.h)
 
 find_package(Qt6
     COMPONENTS
-        Core Gui Widgets Quick QuickControls2 Multimedia Location Positioning REQUIRED)
+        Core Gui Widgets Quick QuickControls2 Multimedia Location Positioning WaylandClient REQUIRED)
 
 find_package(Threads)
 
@@ -50,7 +50,6 @@ set(SOURCES
 if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
     qt6_add_resources(QRC_FILES src/qml.qrc src/rc.qrc)
 else()
-    #qtquick_compiler_add_resources(QRC_FILES src/qml.qrc src/rc.qrc)
     qt6_add_resources(QRC_FILES src/qml.qrc src/rc.qrc)
 endif()
 
@@ -83,14 +82,14 @@ if(ANDROID)
     add_android_openssl_libraries(${PROJECT_NAME})
 endif()
 
-
+qt6_import_plugins(INCLUDE_BY_TYPE wayland-shell-integration)
 
 target_compile_definitions(${PROJECT_NAME}
     PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC Qt6::Core Qt6::Widgets Qt6::Quick Qt6::QuickControls2 Qt6::Multimedia Qt6::Location
-    Qt6::Positioning Threads::Threads )
+    Qt6::Positioning Qt6::WaylandClient Threads::Threads )
 
 if(LINUX)
     target_link_libraries(${PROJECT_NAME} PUBLIC Qt6::DBus kdsingleapplication)
