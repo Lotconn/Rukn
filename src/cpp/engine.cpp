@@ -6,6 +6,8 @@
 #include <QSettings>
 #include <QQuickView>
 #include <QTextStream>
+#include <QTranslator>
+#include <QCalendar>
 
 #if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
 
@@ -25,25 +27,9 @@ Engine::Engine()
 
 QString Engine::getHijriDate(const QDate &date, const int offset)
 {
-    sDate hDate;
 
-    QDate adjDate = date.addDays(offset);
-
-    // Convert using hijri code from meladi to hijri
-    int ret = h_date(&hDate, adjDate.day(), adjDate.month(), adjDate.year());
-
-    if (ret)
-        return "";
-
-    QString hijriDate;
-
-    hijriDate = hijriDate.append(QString::number(hDate.year));
-    hijriDate = hijriDate.append(".");
-    hijriDate = hijriDate.append(QString::number(hDate.month));
-    hijriDate = hijriDate.append(".");
-    hijriDate = hijriDate.append(QString::number(hDate.day));
-
-    return hijriDate;
+    QCalendar q(QCalendar::System::Gregorian);
+    return q.dateFromParts(date.year(), date.month(), date.day() +  offset).toString(QString("dd-MM-yyyy"), QCalendar(QCalendar::System::IslamicCivil));
 }
 
 void Engine::autostart_hidden(bool flag)

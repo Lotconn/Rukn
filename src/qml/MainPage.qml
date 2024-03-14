@@ -8,50 +8,31 @@ ColumnLayout {
     anchors.fill: parent
 
     property bool isWide: width > height * 1.2
-    property int defaultAlignment: isWide ? Layout.Center : Layout.Center
+    property int defaultAlignment: isWide ? Layout.Left : Layout.Center
 
     DateRow {
         id: topBar
 
-        //visible: !isWide
-        buttonsVisible: !isWide
-
         Layout.preferredHeight: 40
-        //Layout.preferredWidth: Math.min(parent.width, parent.height/1.8)
+        Layout.preferredWidth: Math.min(parent.width, parent.height/1.8)
         Layout.fillHeight: true
         Layout.alignment: defaultAlignment
-
-        Rectangle {
-            anchors.fill: parent
-            color: Material.backgroundColor
-            opacity: mm.rectangle_opacity
-            radius: mm.rectangle_radius
-            z: -1
-        }
     }
 
-    Item {
+    Pane {
         id: table
-
-        visible: !isWide
 
         Layout.preferredHeight: 400
         Layout.preferredWidth: Math.min(parent.width, parent.height/1.8)
         Layout.fillHeight: true
         Layout.alignment: defaultAlignment
 
-        Layout.topMargin: topBar.height / 3
-        Layout.bottomMargin: topBar.height / 3
+        Layout.topMargin: topBar.height / 4
+        Layout.bottomMargin: Layout.topMargin
 
         property int lineHeight: height / 100
 
-        Rectangle {
-            anchors.fill: parent
-            color: Material.backgroundColor
-            opacity: mm.rectangle_opacity
-            radius: mm.rectangle_radius
-            z: -1
-        }
+        Material.elevation: mm.pane_elevation
 
         ColumnLayout {
             anchors.fill: parent
@@ -61,16 +42,15 @@ ColumnLayout {
                 prayerId: Adhan.adhan.Prayer.Fajr
                 athanTime: mm.fajr
                 Layout.preferredHeight: 60
-                Layout.topMargin: 10
             }
-
-            Line {}
 
             PrayerRow {
                 id: sunrise
+                Layout.topMargin: -20
                 prayerId: Adhan.adhan.Prayer.Sunrise
                 athanTime: mm.srise
-                Layout.preferredHeight: 60
+                Layout.preferredHeight: 30
+                //color: "red"
             }
 
             Line {}
@@ -108,10 +88,6 @@ ColumnLayout {
                 athanTime: mm.isha
                 Layout.preferredHeight: 60
             }
-
-            Line {
-                Layout.bottomMargin: 10
-            }
         }
     }
 
@@ -123,19 +99,10 @@ ColumnLayout {
 
         text: mm.timeLeftStr
         Layout.preferredHeight: 40
-        //Layout.preferredWidth: Math.min(parent.width, parent.height / 1.8)
+        Layout.preferredWidth: Math.min(parent.width, parent.height / 1.8)
         Layout.alignment: defaultAlignment
 
-        Rectangle {
-            anchors.fill: parent
-            color: Material.backgroundColor
-            opacity: mm.rectangle_opacity
-            radius: mm.rectangle_radius
-            z: -1
-        }
-
-         RoundButton {
-             visible: !isWide
+         Button {
              icon.source: "qrc:/img/settings.png"
              opacity: mm.content_opacity
              flat: true

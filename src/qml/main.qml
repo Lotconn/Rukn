@@ -14,7 +14,8 @@ ApplicationWindow {
     id: mainWindow
 
     Material.theme: Material.System
-    Material.accent: Material.Grey
+    Material.accent: Material.Red
+    Material.primary: Material.Brown
 
     width: 400
     height: 600
@@ -100,23 +101,20 @@ ApplicationWindow {
     }
 
     Image {
-        anchors.fill: parent
         id: blurImg
-        source: "qrc:/img/bg" + i + ".jpg"
+        //visible:false
+        anchors.fill: parent
+        mirror: Qt.application.layoutDirection === Qt.RightToLeft
+        source: parent.source = "qrc:/img/bg/" + (mm.currentPrayer) + ".jpg"
         fillMode: Image.PreserveAspectCrop
 
-        // Delete below or keep for testing
-
-        property int i: 2 //Math.floor(Math.random() * 10)
+        property int i: mm.currentPrayer
 
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                parent.i = (parent.i + 1) % 24
-                console.log("parent.i: ", parent.i)
-                parent.source = "qrc:/img/bg" + parent.i + ".jpg"
-                //parent.source = "file:///home/aa/Pictures/bg/bg" + parent.i + ".jpg"
-                //mainWindow.width = mainWindow.width
+                parent.i = (parent.i + 1) % 6
+                parent.source = "qrc:/img/bg/" + parent.i + ".jpg"
             }
         }
     }
@@ -195,7 +193,7 @@ ApplicationWindow {
 
         x: (parent.width - width) / 2
         y: (parent.height - height) / 2
-        width: parent.width * .9 //Math.min(parent.width * .9, parent.height / 1.8)
+        width: mainPage.width
         height: parent.height * 0.8
 
         SettingsPage {
@@ -294,9 +292,13 @@ ApplicationWindow {
                 console.debug('athan triggered: ', new Date(), ' id: ', id)
 
                 mm.refreshTable()
-                athan.volume = mm.prayerConfig[mm.currentPrayer].volume
+                athan.audioOutput.volume = mm.prayerConfig[mm.currentPrayer].volume
 
-                if(athan.volume > 0 && !athan.muted) {
+                console.debug("athan.audioOutput.volume:", athan.audioOutput.volume)
+                console.debug("athan.audioOutput.muted:", athan.audioOutput.muted)
+
+                if(athan.audioOutput.volume > 0 && !athan.audioOutput.muted) {
+                    console.debug("Will play")
                     athan.play()
                 }
 
@@ -331,8 +333,10 @@ ApplicationWindow {
         function onClosing(close) {
             if(mm.hideOnClose) {
                 console.debug('"Hide on close" enabled, will hide window instead of closing it.')
-                close.accepted = false
+                close.accepted = true
                 mainWindow.hide()
+            } else {
+                Qt.quit()
             }
         }
     }

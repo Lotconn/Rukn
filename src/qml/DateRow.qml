@@ -3,7 +3,7 @@ import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.Layouts
 
-Item {
+Pane {
 
     Component.onCompleted: forceActiveFocus() // Hack to force focus
 
@@ -15,6 +15,8 @@ Item {
     Keys.onDownPressed: currentDate()
 
     property bool buttonsVisible: true
+
+    Material.elevation: mm.pane_elevation
 
     Grid {
         columns: 3
@@ -52,14 +54,12 @@ Item {
             Text {
                 id: dateText
                 anchors.fill: parent
-                anchors.margins: 10
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 font.bold: true
-                font.pixelSize: parent.height / 3
+                font.pixelSize: parent.height / 1.5
                 color: Material.secondaryTextColor
                 elide: Text.ElideRight
-                fontSizeMode: Text.Fit
                 text: mm.currentDateStr
 
                 MouseArea {
@@ -83,7 +83,7 @@ Item {
         Item {
             height: parent.height
             width: parent.colCellWidth / 2
-            visible: parent.columns == 3
+            visible: parent.columns === 3
 
             RoundButton {
                 visible: buttonsVisible

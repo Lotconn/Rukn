@@ -38,7 +38,7 @@ QtObject {
 
     onCurrentDateChanged: invalidate()
 
-    property string currentDateStr: Qt.formatDate(currentDate, Locale.LongFormat)
+    property string currentDateStr: Qt.formatDate(currentDate, "dd-MM-yyyy") + " | " + engine.getHijriDate(currentDate, 0)
 
     property bool locationNotSet: latitude == 0 || longitude == 0
 
@@ -46,11 +46,12 @@ QtObject {
     property bool showOnAthan: false
     property bool hideOnClose: false
 
-    property int bg_img_blur: 32
+    property int    bg_img_blur: 32
     property double rectangle_opacity: 0.8
     property double content_opacity: 1.0
-    property int rectangle_radius: 20
+    property int    rectangle_radius: 3
     property double page_margins_p: 0.02
+    property int    pane_elevation: 6
 
     //    property bool checkForUpdates:  true
 
@@ -89,8 +90,8 @@ QtObject {
             var mins = Math.floor(totalMins % 60)
 
             mm.timeLeftStr = ''
-            if(hrs)     mm.timeLeftStr += qsTr("%L1").arg(hrs) + qsTr("h ")
-            if(mins)    mm.timeLeftStr += qsTr("%L1").arg(mins) + qsTr("m ")
+            if(hrs)     mm.timeLeftStr += qsTr("%L1").arg(hrs) + " " + qsTr("h ")
+            if(mins)    mm.timeLeftStr += qsTr("%L1").arg(mins) + " " + qsTr("m ")
 
             if(mm.timeLeftStr) {
                 mm.timeLeftStr += qsTr("until ")

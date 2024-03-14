@@ -6,26 +6,26 @@ import QtQuick.Layouts 1.15
 
 import "qrc:/data/Adhan.js" as Adhan
 
-Item {
+Pane {
     Layout.preferredWidth: parent.width
     Layout.fillHeight: true
 
     property alias text: timeLeftLabel.text
+
+    Material.elevation: mm.pane_elevation
 
     ProgressBar {
         id: progressBar
 
         Material.accent: timeLeftLabel.color
         visible: mm.currentPrayer !== 6 && mm.nextPrayer !== 6
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: parent.height / 10
+        anchors.top: parent.bottom
+        anchors.bottomMargin: 0//parent.height / 20
         anchors.horizontalCenter: parent.horizontalCenter
         from: if(mm.timeForCurrentPrayer) mm.timeForCurrentPrayer.getTime(); else 0
         to: if(mm.timeForNextPrayer) mm.timeForNextPrayer.getTime(); else 0
         value: mm.currentTime.getTime()
         width: parent.width / 2
-        height: parent.height / 10
-        opacity: mm.rectangle_opacity
     }
 
     Text {
@@ -34,11 +34,8 @@ Item {
         anchors.fill: parent
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
-        font.italic: true
-        font.pixelSize: parent.height / 2.5
         color: Material.secondaryTextColor
         elide: Text.ElideRight
-        fontSizeMode: Text.Fit
 
         Image {
             id: athanStopBtn
