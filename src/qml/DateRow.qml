@@ -56,7 +56,7 @@ Pane {
                 anchors.fill: parent
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
-                font.bold: true
+                font.weight: Font.DemiBold
                 font.pixelSize: parent.height / 1.5
                 color: Material.secondaryTextColor
                 elide: Text.ElideRight

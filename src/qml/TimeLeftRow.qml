@@ -36,6 +36,7 @@ Pane {
         horizontalAlignment: Text.AlignHCenter
         color: Material.secondaryTextColor
         elide: Text.ElideRight
+        font.weight: Font.DemiBold
 
         Image {
             id: athanStopBtn

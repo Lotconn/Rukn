@@ -29,12 +29,15 @@ Item {
                 //anchors.verticalCenter: parent.verticalCenter
                 //anchors.leftMargin: -50
                 anchors.centerIn: parent
-                font.bold: prayerId === mm.currentPrayer
+                //font.bold: prayerId === mm.currentPrayer
                 font.pixelSize: Math.min(parent.height, parent.width) / pixelDiv
                 elide: Text.ElideRight
+                //color: Material.primaryTextColor
                 color: Material.secondaryTextColor
 
                 visible: !mm.locationNotSet
+
+                font.weight: Font.DemiBold
             }
         }
 
@@ -49,10 +52,11 @@ Item {
                 //x: (parent.width - width + ttt.width) / 6
                 //anchors.verticalCenter: parent.verticalCenter
                 font.pixelSize: Math.min(parent.height, parent.width) / pixelDiv
-                font.bold: prayerLabel.font.bold
+                //font.bold: prayerLabel.font.bold
+                font.weight: prayerLabel.font.weight
                 elide: Text.ElideRight
                 fontSizeMode: Text.Fit
-                color: Material.secondaryTextColor
+                color: prayerLabel.color
                 text: athanTime.substring(5, -5)
 
                 visible: !mm.locationNotSet

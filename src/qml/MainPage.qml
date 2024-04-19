@@ -17,6 +17,8 @@ ColumnLayout {
         Layout.preferredWidth: Math.min(parent.width, parent.height/1.8)
         Layout.fillHeight: true
         Layout.alignment: defaultAlignment
+
+        background.opacity: mm.rectangle_opacity
     }
 
     Pane {
@@ -30,9 +32,11 @@ ColumnLayout {
         Layout.topMargin: topBar.height / 4
         Layout.bottomMargin: Layout.topMargin
 
-        property int lineHeight: height / 100
-
         Material.elevation: mm.pane_elevation
+
+        background.opacity: mm.rectangle_opacity
+
+        property int lineHeight: height / 100
 
         ColumnLayout {
             anchors.fill: parent
@@ -92,15 +96,16 @@ ColumnLayout {
     }
 
     TimeLeftRow {
-
         id: timeLeft
 
-        visible: !mm.locationNotSet
-
-        text: mm.timeLeftStr
         Layout.preferredHeight: 40
         Layout.preferredWidth: Math.min(parent.width, parent.height / 1.8)
         Layout.alignment: defaultAlignment
+
+        visible: !mm.locationNotSet
+        text: mm.timeLeftStr
+
+        background.opacity: mm.rectangle_opacity
 
          Button {
              icon.source: "qrc:/img/settings.png"
