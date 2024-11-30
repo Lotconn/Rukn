@@ -1,13 +1,14 @@
 {
     "app-id": "org.munadi.Munadi",
-    "runtime": "org.freedesktop.Platform",
-    "runtime-version": "23.08",
-    "sdk": "org.freedesktop.Sdk",
+    "runtime": "org.kde.Platform",
+    "runtime-version": "6.8",
+    "sdk": "org.kde.Sdk",
     "command": "munadi",
     "finish-args": [
         "--device=dri",
         "--share=ipc", 
         "--socket=x11",
+        "--socket=fallback-x11",
         "--socket=wayland",
         "--share=network",
         "--socket=pulseaudio",
@@ -16,40 +17,13 @@
     ],
     "modules": [
         {
-            "name": "qt6",
-            "build-options": {
-                "no-debuginfo": true
-            },
-            "buildsystem": "simple",
-            "build-commands": [
-            "./configure -prefix /app -opensource -confirm-license -release -static -qpa wayland -nomake tools -nomake examples -nomake tests -nomake benchmarks -nomake manual-tests -nomake minimal-static-tests -submodules qtbase,qtdeclarative,qtlocation,qtmultimedia,qtpositioning,qtwayland -skip qt3d,qtactiveqt,qtcharts,qtcoap,qtconnectivity,qtdatavis3d,qtdoc,qtgraphs,qtgrpc,qthttpserver,qtimageformats,qtlanguageserver,qtlottie,qtmqtt,qtnetworkauth,qtopcua,qtquick3d,qtquick3dphysics,qtquickeffectmaker,qtquicktimeline,qtremoteobjects,qtscxml,qtsensors,qtserialbus,qtserialport,qtspeech,qtsvg,qttools,qttranslations,qtvirtualkeyboard,qtwebchannel,qtwebengine,qtwebsockets,qtwebview",
-            "cmake --build . --parallel",
-            "cmake --install ."
-            ],
-            "sources": [
-                {
-                    "type": "archive",
-                    "url": "https://download.qt.io/archive/qt/6.6/6.6.1/single/qt-everywhere-src-6.6.1.tar.xz",
-                    "sha256": "dd3668f65645fe270bc615d748bd4dc048bd17b9dc297025106e6ecc419ab95d"
-                }
-            ]
-        },
-        {
             "name": "munadi",
-            "build-options": {
-                "strip": true
-            },
             "buildsystem": "cmake-ninja",
             "config-opts": ["-DCMAKE_BUILD_TYPE=Release"],
             "sources": [
                 {
-                    "type": "git",
-                    "url": "https://gitlab.com/munadi/munadi.git",
-                    "branch": "shrink"
-                },
-                {
-                    "type": "file",
-                    "path": "../../CMakeLists.txt"
+                    "type": "dir",
+                    "path": "../.."
                 }
             ]
         }
