@@ -2,19 +2,31 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.Layouts
-import Qt.labs.settings
+import QtCore
 
 ColumnLayout {
     id: component
 
-    ComboBox {
+    TabBar {
         id: selectedPrayerCB
+
         Layout.fillWidth: true
-        model: mm.prayerNames
+        width: parent.width
+
+        Repeater {
+            model: mm.prayerNames
+            TabButton {
+                text: modelData
+            }
+        }
+
+        Component.onCompleted: itemAt(1).width = 0 // Hide sunrise tab
     }
 
     GridLayout {
+
         columns: 3
+
         Text {
             id: volText
             text: qsTr("Volume")
@@ -29,7 +41,6 @@ ColumnLayout {
 
             onMoved: {
                 mm.prayerConfig[selectedPrayerCB.currentIndex].volume = value
-                mm.prayerConfig = mm.prayerConfig // Workaround for Android
             }
         }
         Text {
@@ -59,7 +70,6 @@ ColumnLayout {
 
             onMoved: {
                 mm.prayerConfig[selectedPrayerCB.currentIndex].adjustment = value
-                mm.prayerConfig = mm.prayerConfig // Workaround for Android
                 mm.invalidate()
             }
 
@@ -71,5 +81,24 @@ ColumnLayout {
             text: mins.value >= 0 ? qsTr("+ %L1").arg(Math.abs(mins.value.toFixed()))
                                   : qsTr("- %L1").arg(Math.abs(mins.value.toFixed()))
         }
+
+        Text {
+            text: qsTr("Athan")
+            color: Material.secondaryTextColor
+        }
+        ComboBox {
+            model: mm.audioList
+            Layout.fillWidth: true
+            textRole: "name"
+            enabled: selectedPrayerCB.currentIndex !== 1
+
+            currentIndex: mm.prayerConfig[selectedPrayerCB.currentIndex].athan_idx
+
+            onActivated: {
+                mm.prayerConfig[selectedPrayerCB.currentIndex].athan_idx = currentIndex
+            }
+        }
+
+        Item {}
     }
 }

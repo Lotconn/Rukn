@@ -16,7 +16,7 @@ ColumnLayout {
         Layout.preferredHeight: 40
         Layout.preferredWidth: Math.min(parent.width, parent.height/1.8)
         Layout.fillHeight: true
-        Layout.alignment: defaultAlignment
+        Layout.alignment: parent.defaultAlignment
 
         background.opacity: mm.rectangle_opacity
     }
@@ -27,7 +27,7 @@ ColumnLayout {
         Layout.preferredHeight: 400
         Layout.preferredWidth: Math.min(parent.width, parent.height/1.8)
         Layout.fillHeight: true
-        Layout.alignment: defaultAlignment
+        Layout.alignment: parent.defaultAlignment
 
         Layout.topMargin: topBar.height / 4
         Layout.bottomMargin: Layout.topMargin
@@ -107,15 +107,6 @@ ColumnLayout {
 
         background.opacity: mm.rectangle_opacity
 
-         Button {
-             icon.source: "qrc:/img/settings.png"
-             opacity: mm.content_opacity
-             flat: true
-             anchors.verticalCenter: parent.verticalCenter
-             //anchors.horizontalCenter: parent.horizontalCenter
-             anchors.left: parent.left
-             //anchors.bottom: parent.bottom
-             onClicked: settingsPopup.open()
-         }
+
     }
 }

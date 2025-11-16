@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.Layouts
-import Qt.labs.settings
+import QtCore
 import QtPositioning
 import QtQuick.Dialogs
 
@@ -81,25 +81,7 @@ Page {
                         mm.themeListIndex = currentIndex
                     }
 
-                    onCurrentIndexChanged: {
-                        switch(currentIndex) {
-                        case 0:
-                            mainWindow.Material.theme = Material.System
-                            break
-                        case 1:
-                            mainWindow.Material.theme = Material.Light
-                            break
-                        case 2:
-                            mainWindow.Material.theme = Material.Dark
-                            break
-                        }
-                    }
-
                     model: mm.themeList
-                }
-                Settings {
-                    category: "App"
-                    property alias themeChoiceIndex: themeChoice.currentIndex
                 }
             }
 

@@ -1,0 +1,181 @@
+{
+    "id": "org.munadi.Munadi-Static",
+    "runtime": "org.freedesktop.Platform",
+    "runtime-version": "24.08",
+    "sdk": "org.freedesktop.Sdk",
+    "command": "munadi",
+    "finish-args": [
+        "--device=dri",
+        "--socket=wayland",
+        "--share=network",
+        "--socket=pulseaudio",
+        "--talk-name=org.freedesktop.Notifications",
+        "--talk-name=org.kde.StatusNotifierWatcher"
+    ],
+    "modules": [
+        {
+            "name": "qtbase",
+            "build-options": {
+                "no-debuginfo": true
+            },
+            "buildsystem": "simple",
+            "cleanup": ["/*"],
+            "build-commands": [
+            "./configure -ccache -prefix /app -opensource -confirm-license -release -static -qpa wayland -nomake tools -nomake examples -nomake tests -nomake benchmarks -nomake manual-tests -nomake minimal-static-tests",
+            "cmake --build . --parallel",
+            "cmake --install ."
+            ],
+            "sources": [
+
+                {
+                    "type": "archive",
+                    "url": "https://download.qt.io/archive/qt/6.8/6.8.2/submodules/qtbase-everywhere-src-6.8.2.tar.xz",
+                    "md5": "34dbe2e14f406b9b9d96ec2cb4a010b2"
+                }
+            ]
+        },
+        {
+            "name": "qtshadertools",
+            "build-options": {
+                "strip": true
+            },
+            "buildsystem": "cmake-ninja",
+            "cleanup": ["/*"],
+            "config-opts": ["-DCMAKE_BUILD_TYPE=Release"],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.qt.io/archive/qt/6.8/6.8.2/submodules/qtshadertools-everywhere-src-6.8.2.tar.xz",
+                    "md5": "fd0da96102ae33ed41caa8da33cafcab"
+                }
+            ]
+        },
+        {
+            "name": "qtdeclarative",
+            "build-options": {
+                "strip": true
+            },
+            "buildsystem": "cmake-ninja",
+            "cleanup": ["/*"],
+            "config-opts": ["-DCMAKE_BUILD_TYPE=Release"],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.qt.io/archive/qt/6.8/6.8.2/submodules/qtdeclarative-everywhere-src-6.8.2.tar.xz",
+                    "md5": "404cbc0049a4f2241c19b80c1228cfc6"
+                }
+            ]
+        },
+        {
+            "name": "qtmultimedia",
+            "build-options": {
+                "strip": true
+            },
+            "buildsystem": "cmake-ninja",
+            "cleanup": ["/*"],
+            "config-opts": ["-DCMAKE_BUILD_TYPE=Release"],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.qt.io/archive/qt/6.8/6.8.2/submodules/qtmultimedia-everywhere-src-6.8.2.tar.xz",
+                    "md5": "c93f544bcb9a771a4379e32ef3e2b5b6"
+                }
+            ]
+        },
+        {
+            "name": "qtpositioning",
+            "build-options": {
+                "strip": true
+            },
+            "buildsystem": "cmake-ninja",
+            "cleanup": ["/*"],
+            "config-opts": ["-DCMAKE_BUILD_TYPE=Release"],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.qt.io/archive/qt/6.8/6.8.2/submodules/qtpositioning-everywhere-src-6.8.2.tar.xz",
+                    "md5": "32394cbb599e06cae877312a3d090517"
+                }
+            ]
+        },
+        {
+            "name": "qtlocation",
+            "build-options": {
+                "strip": true
+            },
+            "buildsystem": "cmake-ninja",
+            "cleanup": ["/*"],
+            "config-opts": ["-DCMAKE_BUILD_TYPE=Release"],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.qt.io/archive/qt/6.8/6.8.2/submodules/qtlocation-everywhere-src-6.8.2.tar.xz",
+                    "md5": "eee7059f5eb19c13939c8d01f1180d40"
+                }
+            ]
+        },
+        {
+            "name": "qtwayland",
+            "build-options": {
+                "strip": true
+            },
+            "buildsystem": "cmake-ninja",
+            "cleanup": ["/*"],
+            "config-opts": ["-DCMAKE_BUILD_TYPE=Release"],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.qt.io/archive/qt/6.8/6.8.2/submodules/qtwayland-everywhere-src-6.8.2.tar.xz",
+                    "md5": "210dce413cdbce89cefa235ba2273e84"
+                }
+            ]
+        },
+        {
+            "name": "qtsvg",
+            "build-options": {
+                "strip": true
+            },
+            "buildsystem": "cmake-ninja",
+            "cleanup": ["/*"],
+            "config-opts": ["-DCMAKE_BUILD_TYPE=Release"],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.qt.io/archive/qt/6.8/6.8.2/submodules/qtsvg-everywhere-src-6.8.2.tar.xz",
+                    "md5": "e2c5b9a92d9bfdd4f84cc4f3ba58cc42"
+                }
+            ]
+        },
+        {
+            "name": "qtvirtualkeyboard",
+            "build-options": {
+                "strip": true
+            },
+            "buildsystem": "cmake-ninja",
+            "cleanup": ["/*"],
+            "config-opts": ["-DCMAKE_BUILD_TYPE=Release"],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.qt.io/archive/qt/6.8/6.8.2/submodules/qtvirtualkeyboard-everywhere-src-6.8.2.tar.xz",
+                    "md5": "62a80052e48d198b762db9ec56f14b80"
+                }
+            ]
+        },
+        {
+            "name": "munadi-static",
+            "build-options": {
+                "strip": true
+            },
+            "buildsystem": "cmake-ninja",
+            "cleanup": ["/lib", "/include"],
+            "config-opts": ["-DCMAKE_BUILD_TYPE=Release"],
+            "sources": [
+                {
+                    "type": "dir",
+                    "path": "../.."
+                }
+            ]
+        }
+    ]
+}

@@ -12,6 +12,7 @@ RowLayout {
         audioOutput: AudioOutput {
             volume: 1.0
         }
+        source: mm.audioList[audioListCb.currentIndex].path
     }
 
     FileDialog {
@@ -20,14 +21,12 @@ RowLayout {
         folder: StandardPaths.writableLocation(StandardPaths.DocumentsLocation)
 
         onAccepted: {
-            console.log("fff", fileDialog.file)
             var name = fileDialog.file.toString().split('/').slice(-1)[0]
             mm.audioList.push({
                                   "name": name,
                                   "path": fileDialog.file                              })
-            mm.audioListIndex = mm.audioList.length - 1
             audioListCb.model = mm.audioList
-            audioListCb.currentIndex = mm.audioListIndex
+            mm.audioList = mm.audioList
         }
     }
 
@@ -36,22 +35,6 @@ RowLayout {
         model: mm.audioList
         Layout.fillWidth: true
         textRole: "name"
-
-        Component.onCompleted: {
-            currentIndex = mm.audioListIndex
-        }
-
-        Component.onDestruction: {
-            mm.audioListIndex = currentIndex
-        }
-
-        onCurrentIndexChanged: {
-            athanPreview.source = mm.audioList[currentIndex]["path"]
-        }
-
-        onActivated: {
-            mm.audioListIndex = currentIndex
-        }
     }
 
     Button {
@@ -68,11 +51,9 @@ RowLayout {
         implicitWidth: height
 
         onClicked: {
-            if (mm.audioListIndex > 0) {
-                mm.audioList.splice(mm.audioListIndex, 1)
-                mm.audioListIndex -= 1
+            if (audioListCb.currentIndex > 0) {
+                mm.audioList.splice(audioListCb.currentIndex , 1)
                 audioListCb.model = mm.audioList
-                audioListCb.currentIndex = mm.audioListIndex
             }
         }
     }

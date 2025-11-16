@@ -15,12 +15,11 @@ configure_file(src/cpp/version.h.in version.h)
 
 find_package(Qt6
     COMPONENTS
-        Core Gui Widgets Quick QuickControls2 Multimedia Location Positioning WaylandClient REQUIRED)
+        Core Gui Widgets Quick QuickControls2 Multimedia Location Positioning )
 
 find_package(Threads)
 
 qt_standard_project_setup()
-
 
 if(LINUX)
     find_package(Qt6 COMPONENTS DBus REQUIRED)
@@ -29,7 +28,6 @@ if(LINUX)
     set(KDSingleApplication_STATIC ON)
     add_subdirectory(libs/KDSingleApplication)
 endif()
-
 
 set(TS_FILES
     src/i18n/munadi_ar.ts)
@@ -53,7 +51,6 @@ else()
     qt6_add_resources(QRC_FILES src/qml.qrc src/rc.qrc)
 endif()
 
-
 if(ANDROID)
     qt_add_executable(${PROJECT_NAME}
         src/android/AndroidManifest.xml
@@ -61,8 +58,6 @@ if(ANDROID)
         ${SOURCES}
         ${TS_FILES}
         ${QRC_FILES})
-
-
 else()
     qt_add_executable(${PROJECT_NAME}
         ${HEADERS}
@@ -82,14 +77,40 @@ if(ANDROID)
     add_android_openssl_libraries(${PROJECT_NAME})
 endif()
 
-qt6_import_plugins(INCLUDE_BY_TYPE wayland-shell-integration)
+
+# if(DEFINED ENV{FLATPAK_ID})
+#     find_package(PkgConfig REQUIRED)
+#     pkg_check_modules(AVCODEC     REQUIRED IMPORTED_TARGET libavcodec)
+#     pkg_check_modules(AVFORMAT    REQUIRED IMPORTED_TARGET libavformat)
+#     pkg_check_modules(AVFILTER    REQUIRED IMPORTED_TARGET libavfilter)
+#     pkg_check_modules(AVDEVICE    REQUIRED IMPORTED_TARGET libavdevice)
+#     pkg_check_modules(AVUTIL      REQUIRED IMPORTED_TARGET libavutil)
+#     pkg_check_modules(SWRESAMPLE  REQUIRED IMPORTED_TARGET libswresample)
+#     pkg_check_modules(SWSCALE     REQUIRED IMPORTED_TARGET libswscale)
+
+#     add_library(FFmpeg INTERFACE IMPORTED GLOBAL)
+
+#     target_link_libraries(FFmpeg INTERFACE
+#         PkgConfig::AVCODEC
+#         PkgConfig::AVFORMAT
+#         PkgConfig::AVFILTER
+#         PkgConfig::AVDEVICE
+#         PkgConfig::AVUTIL
+#         PkgConfig::SWRESAMPLE
+#         PkgConfig::SWSCALE
+#     )
+
+#     find_package(Qt6 COMPONENTS WaylandClient)
+
+#     target_link_libraries(${PROJECT_NAME} PUBLIC Qt::WaylandClient FFmpeg)
+# endif()
 
 target_compile_definitions(${PROJECT_NAME}
     PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
 
 target_link_libraries(${PROJECT_NAME}
-    PUBLIC Qt6::Core Qt6::Widgets Qt6::Quick Qt6::QuickControls2 Qt6::Multimedia Qt6::Location
-    Qt6::Positioning Qt6::WaylandClient Threads::Threads )
+    PUBLIC Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Quick Qt6::QuickControls2 Qt6::Multimedia Qt6::Location
+    Qt6::Positioning Threads::Threads  )
 
 if(LINUX)
     target_link_libraries(${PROJECT_NAME} PUBLIC Qt6::DBus kdsingleapplication)

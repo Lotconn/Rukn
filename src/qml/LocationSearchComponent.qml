@@ -29,7 +29,7 @@ Item {
     LocationService {
         id: locationService
 
-        onSearchResults: {
+        onSearchResults: (locations) => {
             locationsComboBox.model.clear()
 
             for (var i = 0; i < locations.count; i++) {

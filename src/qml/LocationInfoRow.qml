@@ -37,7 +37,7 @@ Item {
 
         cursorShape: Qt.PointingHandCursor
 
-        onClicked: popup.open()
+        onClicked: { locationPopup.open(); settingsPopup.close(); }
         onHoveredChanged: textId.font.underline = containsMouse
     }
 }

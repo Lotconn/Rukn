@@ -1,19 +1,17 @@
 import QtQuick
 import QtQuick.Window
-import Qt.labs.settings
+import QtCore
 import QtQuick.Controls
 import QtQuick.Controls.Material
-import QtPositioning
-import QtLocation
 import QtMultimedia
 import Qt.labs.platform
+//import QtQuick.VirtualKeyboard
 
 import "qrc:/data/Adhan.js" as Adhan
 
 ApplicationWindow {
     id: mainWindow
 
-    Material.theme: Material.System
     Material.accent: Material.Red
     Material.primary: Material.Brown
 
@@ -21,10 +19,21 @@ ApplicationWindow {
     height: 600
     color: Material.dialogColor
     LayoutMirroring.childrenInherit: true
-    LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft  // Proper way
-                             || qsTr("QT_LAYOUT_DIRECTION", "QGuiApplication") === "RTL"    // Old Qt version, Snap!
 
     Component.onCompleted: {
+
+        try {
+            mm.prayerConfig = JSON.parse(prayerConfigSettings.value("prayerConfig", mm.prayerConfig))
+        } catch(_) {
+            mm.prayerConfig = prayerConfigSettings.value("prayerConfig", mm.prayerConfig)
+        }
+
+        try {
+            mm.audioList = JSON.parse(audioListSettings.value("audioList", mm.audioList))
+        } catch(_) {
+            mm.audioList = audioListSettings.value("audioList", mm.audioList)
+        }
+
         if (engine.autostart_hidden()) {
             hide()
         } else {
@@ -45,7 +54,8 @@ ApplicationWindow {
     }
 
     Component.onDestruction: {
-        mm.prayerConfig = mm.prayerConfig
+        prayerConfigSettings.setValue("prayerConfig", JSON.stringify(mm.prayerConfig))
+        audioListSettings.setValue("audioList", JSON.stringify(mm.audioList))
     }
 
     onVisibilityChanged: {
@@ -56,6 +66,8 @@ ApplicationWindow {
         mm.set_60s_ticker()
         mm.refreshTable()
     }
+
+
 
     Theme {
         id: theme
@@ -71,6 +83,16 @@ ApplicationWindow {
         property bool isOn: playbackState === MediaPlayer.PlayingState
     }
 
+    Settings {
+        id: audioListSettings
+        property string audioList
+    }
+
+    Settings {
+        id: prayerConfigSettings
+        property string prayerConfig
+    }
+
     // Below used for variables worth remembering only
     Settings {
         property alias cityName:            mm.cityName
@@ -80,11 +102,9 @@ ApplicationWindow {
         property alias calcMethodIndex:     mm.calcMethodIndex
         property alias madhab:              mm.madhab
         property alias overrideOffsetBy:    mm.overrideOffsetBy
-        property alias prayerConfig:        mm.prayerConfig
-        property alias audioList:           mm.audioList
-        property alias audioListIndex:      mm.audioListIndex
         property alias opacity:             mm.rectangle_opacity
         property alias blur:                mm.bg_img_blur
+        property alias themeListIndex:      mm.themeListIndex
     }
 
     LocationService {
@@ -105,18 +125,18 @@ ApplicationWindow {
         //visible:false
         anchors.fill: parent
         mirror: Qt.application.layoutDirection === Qt.RightToLeft
-        source: parent.source = "qrc:/img/bg/" + (mm.currentPrayer) + ".jpg"
+        source: parent.source = "qrc:/img/bg/" + (mm.currentPrayer % 6) + ".jpg"
         fillMode: Image.PreserveAspectCrop
 
         property int i: mm.currentPrayer
 
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {
-                parent.i = (parent.i + 1) % 6
-                parent.source = "qrc:/img/bg/" + parent.i + ".jpg"
-            }
-        }
+        // MouseArea {
+        //     anchors.fill: parent
+        //     onClicked: {
+        //         parent.i = (parent.i + 1) % 6
+        //         parent.source = "qrc:/img/bg/" + parent.i + ".jpg"
+        //     }
+        // }
     }
 
     MainPage {
@@ -130,11 +150,22 @@ ApplicationWindow {
         anchors.fill: parent
     }
 
+    // InputPanel {
+    //     id: inputPanel;
+
+    //     parent: Overlay.overlay
+    //     visible: active
+
+    //     width: parent.width
+    //     y: active ? parent.height - inputPanel.height : -inputPanel.height  // If not active move it off screen, else it'll block clicks that dismiss popups!
+    // }
+
     Popup {
         id: whatsNewPopup
 
-        parent: ApplicationWindow.overlay
+        parent: Overlay.overlay
         modal: true
+        focus: true
 
         property alias text: textArea.text
 
@@ -143,7 +174,9 @@ ApplicationWindow {
         width: Math.min(parent.width, parent.height)
         height: parent.height * 0.8
 
-        onClosed: popup.open()
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+        onClosed: locationPopup.open()
 
         Flickable {
             id: flickable
@@ -161,15 +194,15 @@ ApplicationWindow {
     }
 
     Popup {
-        id: popup
+        id: locationPopup
 
-        parent: ApplicationWindow.overlay
+        parent: Overlay.overlay
         modal: true
+        focus: true
 
         x: (parent.width - width) / 2
         y: (parent.height - height) / 4
         width: parent.width * .9 //Math.min(parent.width * .9, parent.height / 1.8)
-        //height: parent.height * 0.8
 
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
@@ -178,7 +211,7 @@ ApplicationWindow {
         LocationSearchComponent {
             Component.onCompleted: {
                 if (mm.locationNotSet && !whatsNewPopup.visible) {
-                    popup.open()
+                    locationPopup.open()
                 }
             }
         }
@@ -187,7 +220,7 @@ ApplicationWindow {
     Popup {
         id: settingsPopup
 
-        parent: ApplicationWindow.overlay
+        parent: Overlay.overlay
         modal: true
         focus: true
 
@@ -196,7 +229,19 @@ ApplicationWindow {
         width: mainPage.width
         height: parent.height * 0.8
 
-        SettingsPage {
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+        onAboutToShow: spLoader.sourceComponent = settingsPage
+
+        Component {
+            id: settingsPage
+            SettingsPage {
+                anchors.fill: parent
+            }
+        }
+
+        Loader {
+            id: spLoader
             anchors.fill: parent
         }
     }
@@ -292,6 +337,9 @@ ApplicationWindow {
                 console.debug('athan triggered: ', new Date(), ' id: ', id)
 
                 mm.refreshTable()
+
+                var athan_idx = mm.prayerConfig[mm.currentPrayer].athan_idx
+                athan.source = mm.audioList[athan_idx]["path"]
                 athan.audioOutput.volume = mm.prayerConfig[mm.currentPrayer].volume
 
                 console.debug("athan.audioOutput.volume:", athan.audioOutput.volume)

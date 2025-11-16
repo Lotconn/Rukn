@@ -1,5 +1,6 @@
 import QtQuick
-import Qt.labs.settings
+import QtCore
+import QtQuick.Controls.Material
 import "qrc:/data/Adhan.js" as Adhan
 
 QtObject {
@@ -63,6 +64,11 @@ QtObject {
     function refreshTable() {
         console.debug('refreshTable()')
         currentPrayer =         prayerTimes.currentPrayer()
+
+        if(currentPrayer === Adhan.Prayer.None) {
+            currentPrayer = Adhan.Prayer.Isha
+        }
+
         nextPrayer =            prayerTimes.nextPrayer()
         timeForCurrentPrayer =  prayerTimes.timeForPrayer(currentPrayer)
         timeForNextPrayer =     prayerTimes.timeForPrayer(nextPrayer)
@@ -90,8 +96,8 @@ QtObject {
             var mins = Math.floor(totalMins % 60)
 
             mm.timeLeftStr = ''
-            if(hrs)     mm.timeLeftStr += qsTr("%L1").arg(hrs) + " " + qsTr("h ")
-            if(mins)    mm.timeLeftStr += qsTr("%L1").arg(mins) + " " + qsTr("m ")
+            if(hrs)     mm.timeLeftStr += qsTr("%L1").arg(hrs) + "" + qsTr("h ")
+            if(mins)    mm.timeLeftStr += qsTr("%L1").arg(mins) + "" + qsTr("m ")
 
             if(mm.timeLeftStr) {
                 mm.timeLeftStr += qsTr("until ")
@@ -126,6 +132,11 @@ QtObject {
     onPrayerTimesChanged: {
         alarms.clear("athan")
 
+        // var testAthan = new Date();
+        // testAthan.setSeconds(testAthan.getSeconds() + 3)
+        // console.debug("testAthan", testAthan)
+        // alarms.add("athan", testAthan)
+
         alarms.add("athan", prayerTimes.fajr)
         alarms.add("athan", prayerTimes.dhuhr)
         alarms.add("athan", prayerTimes.asr)
@@ -147,14 +158,13 @@ QtObject {
         qsTr("Fajr"), qsTr("Sunrise"), qsTr("Dhuhr"), qsTr("Asr"), qsTr("Maghrib"), qsTr("Isha")]
 
     property var prayerConfig: [
-        {"adjustment": 0, "volume": 0.2},
-        {"adjustment": 0, "volume": 0.0},
-        {"adjustment": 0, "volume": 1.0},
-        {"adjustment": 0, "volume": 1.0},
-        {"adjustment": 0, "volume": 1.0},
-        {"adjustment": 0, "volume": 0.5}]
+        {"adjustment": 0, "volume": 0.2, "athan_idx": 0 },
+        {"adjustment": 0, "volume": 0.0, "athan_idx": 0 },
+        {"adjustment": 0, "volume": 1.0, "athan_idx": 0 },
+        {"adjustment": 0, "volume": 1.0, "athan_idx": 0 },
+        {"adjustment": 0, "volume": 1.0, "athan_idx": 0 },
+        {"adjustment": 0, "volume": 0.5, "athan_idx": 0 }]
 
-    property int audioListIndex: 0
     property var audioList: [{
             "name": qsTr("Makkah (built-in)"),
             "path": "qrc:/data/athan.ogg"
@@ -162,6 +172,20 @@ QtObject {
 
     property int themeListIndex: 0
     property var themeList: [qsTr("System"), qsTr("Light"), qsTr("Dark")]
+
+    onThemeListIndexChanged: {
+        switch(themeListIndex) {
+        case 0:
+            mainWindow.Material.theme = Material.System
+            break
+        case 1:
+            mainWindow.Material.theme = Material.Light
+            break
+        case 2:
+            mainWindow.Material.theme = Material.Dark
+            break
+        }
+    }
 
     property int calcMethodIndex: 0
     onCalcMethodIndexChanged: invalidate()

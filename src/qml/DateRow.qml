@@ -53,13 +53,15 @@ Pane {
 
             Text {
                 id: dateText
+
+                width: parent.width
                 anchors.fill: parent
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 font.weight: Font.DemiBold
-                font.pixelSize: parent.height / 1.5
+                //font.pixelSize: parent.height / 1.5
+                fontSizeMode: Text.Fit
                 color: Material.secondaryTextColor
-                elide: Text.ElideRight
                 text: mm.currentDateStr
 
                 MouseArea {
