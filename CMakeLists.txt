@@ -78,32 +78,32 @@ if(ANDROID)
 endif()
 
 
-# if(DEFINED ENV{FLATPAK_ID})
-#     find_package(PkgConfig REQUIRED)
-#     pkg_check_modules(AVCODEC     REQUIRED IMPORTED_TARGET libavcodec)
-#     pkg_check_modules(AVFORMAT    REQUIRED IMPORTED_TARGET libavformat)
-#     pkg_check_modules(AVFILTER    REQUIRED IMPORTED_TARGET libavfilter)
-#     pkg_check_modules(AVDEVICE    REQUIRED IMPORTED_TARGET libavdevice)
-#     pkg_check_modules(AVUTIL      REQUIRED IMPORTED_TARGET libavutil)
-#     pkg_check_modules(SWRESAMPLE  REQUIRED IMPORTED_TARGET libswresample)
-#     pkg_check_modules(SWSCALE     REQUIRED IMPORTED_TARGET libswscale)
+ if(DEFINED ENV{FLATPAK_ID})
+     find_package(PkgConfig REQUIRED)
+     pkg_check_modules(AVCODEC     REQUIRED IMPORTED_TARGET libavcodec)
+     pkg_check_modules(AVFORMAT    REQUIRED IMPORTED_TARGET libavformat)
+     pkg_check_modules(AVFILTER    REQUIRED IMPORTED_TARGET libavfilter)
+     pkg_check_modules(AVDEVICE    REQUIRED IMPORTED_TARGET libavdevice)
+     pkg_check_modules(AVUTIL      REQUIRED IMPORTED_TARGET libavutil)
+     pkg_check_modules(SWRESAMPLE  REQUIRED IMPORTED_TARGET libswresample)
+     pkg_check_modules(SWSCALE     REQUIRED IMPORTED_TARGET libswscale)
 
-#     add_library(FFmpeg INTERFACE IMPORTED GLOBAL)
+     add_library(FFmpeg INTERFACE IMPORTED GLOBAL)
 
-#     target_link_libraries(FFmpeg INTERFACE
-#         PkgConfig::AVCODEC
-#         PkgConfig::AVFORMAT
-#         PkgConfig::AVFILTER
-#         PkgConfig::AVDEVICE
-#         PkgConfig::AVUTIL
-#         PkgConfig::SWRESAMPLE
-#         PkgConfig::SWSCALE
-#     )
+     target_link_libraries(FFmpeg INTERFACE
+         PkgConfig::AVCODEC
+         PkgConfig::AVFORMAT
+         PkgConfig::AVFILTER
+         PkgConfig::AVDEVICE
+         PkgConfig::AVUTIL
+         PkgConfig::SWRESAMPLE
+         PkgConfig::SWSCALE
+     )
 
-#     find_package(Qt6 COMPONENTS WaylandClient)
+     find_package(Qt6 COMPONENTS WaylandClient)
 
-#     target_link_libraries(${PROJECT_NAME} PUBLIC Qt::WaylandClient FFmpeg)
-# endif()
+     target_link_libraries(${PROJECT_NAME} PUBLIC Qt::WaylandClient FFmpeg)
+ endif()
 
 target_compile_definitions(${PROJECT_NAME}
     PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
