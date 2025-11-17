@@ -7,8 +7,11 @@
     "finish-args": [
         "--device=dri",
         "--socket=wayland",
-        "--share=network",
         "--socket=pulseaudio",
+        "--socket=system-bus",
+        "--socket=session-bus",
+        "--socket=inherit-wayland-socket",
+        "--share=network",
         "--talk-name=org.freedesktop.Notifications",
         "--talk-name=org.kde.StatusNotifierWatcher"
     ],

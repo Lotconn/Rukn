@@ -26,7 +26,7 @@ RowLayout {
                                   "name": name,
                                   "path": fileDialog.file                              })
             audioListCb.model = mm.audioList
-            mm.audioList = mm.audioList
+            audioListCb.currentIndex = mm.audioList.length - 1
         }
     }
 
@@ -52,8 +52,14 @@ RowLayout {
 
         onClicked: {
             if (audioListCb.currentIndex > 0) {
-                mm.audioList.splice(audioListCb.currentIndex , 1)
+                var rmIdx = audioListCb.currentIndex
+                mm.audioList.splice(rmIdx , 1)
                 audioListCb.model = mm.audioList
+                mm.audioList = mm.audioList
+
+                for(var i = 0; i < 6; i++) {
+                    mm.prayerConfig[i].athan_idx = 0
+                }
             }
         }
     }

@@ -8,7 +8,7 @@ ColumnLayout {
     id: component
 
     TabBar {
-        id: selectedPrayerCB
+        id: selectedPrayerIdx
 
         Layout.fillWidth: true
         width: parent.width
@@ -21,6 +21,8 @@ ColumnLayout {
         }
 
         Component.onCompleted: itemAt(1).width = 0 // Hide sunrise tab
+
+        onCurrentIndexChanged: console.debug("selectedPrayerIdx: currentIndex: ", currentIndex)
     }
 
     GridLayout {
@@ -35,12 +37,12 @@ ColumnLayout {
         Slider {
             id: volume
             stepSize: 0.05
-            enabled: selectedPrayerCB.currentIndex !== 1 // Skip sunrise tab
+            enabled: selectedPrayerIdx.currentIndex !== 1 // Skip sunrise tab
             Layout.fillWidth: true
-            value: mm.prayerConfig[selectedPrayerCB.currentIndex].volume
+            value: mm.prayerConfig[selectedPrayerIdx.currentIndex].volume
 
             onMoved: {
-                mm.prayerConfig[selectedPrayerCB.currentIndex].volume = value
+                mm.prayerConfig[selectedPrayerIdx.currentIndex].volume = value
             }
         }
         Text {
@@ -56,7 +58,7 @@ ColumnLayout {
             id: mins
             Layout.fillWidth: true
             stepSize: 1
-            value: mm.prayerConfig[selectedPrayerCB.currentIndex].adjustment
+            value: mm.prayerConfig[selectedPrayerIdx.currentIndex].adjustment
             from: -10
             to: 30
 
@@ -69,7 +71,7 @@ ColumnLayout {
             }
 
             onMoved: {
-                mm.prayerConfig[selectedPrayerCB.currentIndex].adjustment = value
+                mm.prayerConfig[selectedPrayerIdx.currentIndex].adjustment = value
                 mm.invalidate()
             }
 
@@ -90,12 +92,14 @@ ColumnLayout {
             model: mm.audioList
             Layout.fillWidth: true
             textRole: "name"
-            enabled: selectedPrayerCB.currentIndex !== 1
+            enabled: selectedPrayerIdx.currentIndex !== 1
 
-            currentIndex: mm.prayerConfig[selectedPrayerCB.currentIndex].athan_idx
+            currentIndex: mm.prayerConfig[selectedPrayerIdx.currentIndex].athan_idx
+
+            onPressedChanged: model = mm.audioList
 
             onActivated: {
-                mm.prayerConfig[selectedPrayerCB.currentIndex].athan_idx = currentIndex
+                mm.prayerConfig[selectedPrayerIdx.currentIndex].athan_idx = currentIndex
             }
         }
 

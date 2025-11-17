@@ -85,52 +85,63 @@ Page {
                 }
             }
 
-            Slider {
-                id: blur
-                Layout.fillWidth: true
-                stepSize: 1
-                value: mm.bg_img_blur
-                from: 0
-                to: 64
+            GridLayout {
+                rows: 2
+                columns: 2
 
-                onPressedChanged: {
-                    if(pressed) {
-                        settingsPopup.opacity = 0
-                        settingsPopup.modal = false
-                    } else {
-                        settingsPopup.opacity = 1
-                        settingsPopup.modal = true
+                Text {
+                    color: Material.secondaryTextColor
+                    text: qsTr("Blur")
+                }
+                Slider {
+                    id: blur
+                    Layout.fillWidth: true
+                    stepSize: 1
+                    value: mm.bg_img_blur
+                    from: 0
+                    to: 64
+
+                    onPressedChanged: {
+                        if(pressed) {
+                            settingsPopup.opacity = 0
+                            settingsPopup.modal = false
+                        } else {
+                            settingsPopup.opacity = 1
+                            settingsPopup.modal = true
+                        }
+                    }
+
+                    onMoved: {
+                        mm.bg_img_blur = value
+                    }
+
+                }
+                Text {
+                    color: Material.secondaryTextColor
+                    text: qsTr("Opacity")
+                }
+                Slider {
+                    id: opacity
+                    Layout.fillWidth: true
+                    stepSize: .01
+                    value: mm.rectangle_opacity
+                    from: 0
+                    to: 1
+
+                    onPressedChanged: {
+                        if(pressed) {
+                            settingsPopup.opacity = 0
+                            settingsPopup.modal = false
+                        } else {
+                            settingsPopup.opacity = 1
+                            settingsPopup.modal = true
+                        }
+                    }
+
+                    onMoved: {
+                        mm.rectangle_opacity = value
                     }
                 }
-
-                onMoved: {
-                    mm.bg_img_blur = value
-                }
-
-            }
-
-            Slider {
-                id: opacity
-                Layout.fillWidth: true
-                stepSize: .01
-                value: mm.rectangle_opacity
-                from: 0
-                to: 1
-
-                onPressedChanged: {
-                    if(pressed) {
-                        settingsPopup.opacity = 0
-                        settingsPopup.modal = false
-                    } else {
-                        settingsPopup.opacity = 1
-                        settingsPopup.modal = true
-                    }
-                }
-
-                onMoved: {
-                    mm.rectangle_opacity = value
-                }
-
             }
 
             RowLayout {

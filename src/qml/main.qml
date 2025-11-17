@@ -5,6 +5,7 @@ import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtMultimedia
 import Qt.labs.platform
+import QtQuick.Effects
 //import QtQuick.VirtualKeyboard
 
 import "qrc:/data/Adhan.js" as Adhan
@@ -16,23 +17,21 @@ ApplicationWindow {
     Material.primary: Material.Brown
 
     width: 400
-    height: 600
+    height: 800
     color: Material.dialogColor
     LayoutMirroring.childrenInherit: true
 
     Component.onCompleted: {
 
+        var prayerConfig = settings.value("prayerConfig", JSON.stringify(mm.prayerConfig))
         try {
-            mm.prayerConfig = JSON.parse(prayerConfigSettings.value("prayerConfig", mm.prayerConfig))
-        } catch(_) {
-            mm.prayerConfig = prayerConfigSettings.value("prayerConfig", mm.prayerConfig)
-        }
+            mm.prayerConfig = JSON.parse(prayerConfig)
+        } catch(_) {}
 
+        var audioList = settings.value("audioList", JSON.stringify(mm.audioList))
         try {
-            mm.audioList = JSON.parse(audioListSettings.value("audioList", mm.audioList))
-        } catch(_) {
-            mm.audioList = audioListSettings.value("audioList", mm.audioList)
-        }
+            mm.audioList = JSON.parse(audioList)
+        } catch(_) {}
 
         if (engine.autostart_hidden()) {
             hide()
@@ -54,8 +53,8 @@ ApplicationWindow {
     }
 
     Component.onDestruction: {
-        prayerConfigSettings.setValue("prayerConfig", JSON.stringify(mm.prayerConfig))
-        audioListSettings.setValue("audioList", JSON.stringify(mm.audioList))
+        settings.setValue("prayerConfig", JSON.stringify(mm.prayerConfig))
+        settings.setValue("audioList", JSON.stringify(mm.audioList))
     }
 
     onVisibilityChanged: {
@@ -83,18 +82,9 @@ ApplicationWindow {
         property bool isOn: playbackState === MediaPlayer.PlayingState
     }
 
-    Settings {
-        id: audioListSettings
-        property string audioList
-    }
-
-    Settings {
-        id: prayerConfigSettings
-        property string prayerConfig
-    }
-
     // Below used for variables worth remembering only
     Settings {
+        id: settings
         property alias cityName:            mm.cityName
         property alias countryName:         mm.countryName
         property alias latitude:            mm.latitude
@@ -121,22 +111,19 @@ ApplicationWindow {
     }
 
     Image {
-        id: blurImg
-        //visible:false
+        id: bgImg
         anchors.fill: parent
         mirror: Qt.application.layoutDirection === Qt.RightToLeft
         source: parent.source = "qrc:/img/bg/" + (mm.currentPrayer % 6) + ".jpg"
         fillMode: Image.PreserveAspectCrop
+    }
 
-        property int i: mm.currentPrayer
-
-        // MouseArea {
-        //     anchors.fill: parent
-        //     onClicked: {
-        //         parent.i = (parent.i + 1) % 6
-        //         parent.source = "qrc:/img/bg/" + parent.i + ".jpg"
-        //     }
-        // }
+    MultiEffect {
+        source: bgImg
+        anchors.fill: bgImg
+        blurEnabled: true
+        blurMax: mm.bg_img_blur
+        blur: 1.0
     }
 
     MainPage {
