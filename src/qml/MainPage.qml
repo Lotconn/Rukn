@@ -29,7 +29,7 @@ ColumnLayout {
         Layout.fillHeight: true
         Layout.alignment: parent.defaultAlignment
 
-        Layout.topMargin: topBar.height / 4
+        Layout.topMargin: 20
         Layout.bottomMargin: Layout.topMargin
 
         Material.elevation: mm.pane_elevation
@@ -54,7 +54,6 @@ ColumnLayout {
                 prayerId: Adhan.adhan.Prayer.Sunrise
                 athanTime: mm.srise
                 Layout.preferredHeight: 30
-                //color: "red"
             }
 
             Line {}
@@ -100,13 +99,12 @@ ColumnLayout {
 
         Layout.preferredHeight: 40
         Layout.preferredWidth: Math.min(parent.width, parent.height / 1.8)
+        Layout.fillHeight: true
         Layout.alignment: defaultAlignment
 
         visible: !mm.locationNotSet
         text: mm.timeLeftStr
 
         background.opacity: mm.rectangle_opacity
-
-
     }
 }

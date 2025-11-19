@@ -21,8 +21,6 @@ ColumnLayout {
         }
 
         Component.onCompleted: itemAt(1).width = 0 // Hide sunrise tab
-
-        onCurrentIndexChanged: console.debug("selectedPrayerIdx: currentIndex: ", currentIndex)
     }
 
     GridLayout {

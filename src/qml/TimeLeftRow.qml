@@ -7,63 +7,71 @@ import QtQuick.Layouts
 import "qrc:/data/Adhan.js" as Adhan
 
 Pane {
-    Layout.preferredWidth: parent.width
-    Layout.fillHeight: true
-
     property alias text: timeLeftLabel.text
 
     Material.elevation: mm.pane_elevation
 
-    Column {
+    RowLayout {
         anchors.fill: parent
 
-        Text {
-            id: timeLeftLabel
+        Item {
+            Layout.fillHeight: true
+            Layout.minimumWidth: parent.height
 
-            width: parent.width
-            height: parent.height / 2
-            visible: progressBar.visible || athan.isOn
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
-            color: Material.secondaryTextColor
-            elide: Text.ElideRight
-            font.weight: Font.DemiBold
+            RoundButton {
+                anchors.centerIn: parent
+                flat: true
+                opacity: 0.5
+                icon.source: "qrc:/img/settings.png"
+                onClicked: settingsPopup.open()
+            }
         }
 
-        ProgressBar {
-            id: progressBar
+        ColumnLayout {
+            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignCenter
 
-            Material.accent: timeLeftLabel.color
-            visible: mm.currentPrayer !== Adhan.Prayer.None && mm.nextPrayer !== Adhan.Prayer.None && !athan.isOn
-            anchors.top: parent.bottom
-            height: timeLeftLabel.height
-            anchors.horizontalCenter: parent.horizontalCenter
-            from: if(mm.timeForCurrentPrayer) mm.timeForCurrentPrayer.getTime(); else 0
-            to: if(mm.timeForNextPrayer) mm.timeForNextPrayer.getTime(); else 0
-            value: mm.currentTime.getTime()
-            width: parent.width / 2
+            Text {
+                id: timeLeftLabel
+
+                Layout.alignment: Qt.AlignCenter
+                visible: progressBar.visible || athan.isOn
+                color: Material.secondaryTextColor
+                elide: Text.ElideRight
+                font.weight: Font.DemiBold
+                fontSizeMode: Text.Fit
+            }
+
+            ProgressBar {
+                id: progressBar
+
+                Layout.alignment: Qt.AlignCenter
+                Material.accent: timeLeftLabel.color
+                visible: mm.currentPrayer !== Adhan.Prayer.None && mm.nextPrayer !== Adhan.Prayer.None && !athan.isOn
+                from: if(mm.timeForCurrentPrayer) mm.timeForCurrentPrayer.getTime(); else 0
+                to: if(mm.timeForNextPrayer) mm.timeForNextPrayer.getTime(); else 0
+                value: mm.currentTime.getTime()
+
+            }
         }
-    }
 
-    RoundButton {
-        flat: true
-        opacity: 0.5
-        visible: athan.isOn
-        icon.source: "qrc:/img/stop.png"
-        icon.height: timeLeft.height / 2
-        anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
+        Item {
+            Layout.fillHeight: true
+            Layout.minimumWidth: parent.height
 
-        onClicked: athan.stop()
-    }
+            RoundButton {
+                anchors.centerIn: parent
+                flat: true
+                opacity: 0.5
+                visible: athan.isOn
+                icon.source: "qrc:/img/stop.png"
 
-    RoundButton {
-        flat: true
-        opacity: 0.5
-        icon.source: "qrc:/img/settings.png"
-        icon.height: timeLeft.height/2
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.left: parent.left
-        onClicked: settingsPopup.open()
+                onClicked: athan.stop()
+            }
+        }
+
+
+
+
     }
 }
