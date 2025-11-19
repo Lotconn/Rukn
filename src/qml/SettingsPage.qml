@@ -169,6 +169,28 @@ Page {
             RowLayout {
                 ColumnLayout {
                     SettingTitle {
+                        text: qsTr("24-Hour Format")
+                    }
+
+                    SettingSubtitle {
+                        text: qsTr("Show clock times in 24-hour format.")
+                    }
+                }
+
+                Switch {
+                    id: isoc
+                    checked: false
+                    onCheckedChanged: {
+                        mm.isoClock = isoc.checked
+                    }
+                }
+                enabled: engine.ff() === "d"
+                visible: enabled
+            }
+
+            RowLayout {
+                ColumnLayout {
+                    SettingTitle {
                         text: qsTr("Show on Athan")
                     }
 
@@ -234,7 +256,8 @@ Page {
                 //property alias checkForUpdates: cfu.checked
                 property alias showOnAthan: soa.checked
                 property alias hideOnClose: hoc.checked
-
+                property alias isoClock:   isoc.checked
+                
                 onAutoStartUpChanged: {
                     engine.autostart(asu.checked)
                 }
