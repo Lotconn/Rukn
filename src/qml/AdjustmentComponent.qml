@@ -60,7 +60,7 @@ ColumnLayout {
             stepSize: 1
             value: mm.prayerConfig[selectedPrayerIdx.currentIndex].adjustment
             from: -10
-            to: 30
+            to: 60
 
             onPressedChanged: {
                 if(pressed) {
