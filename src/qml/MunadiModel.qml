@@ -46,6 +46,7 @@ QtObject {
     property bool stickerMode: false
     property bool showOnAthan: false
     property bool hideOnClose: false
+    property bool isoClock:    false
 
     property int    bg_img_blur: 32
     property double rectangle_opacity: 0.8
@@ -147,12 +148,12 @@ QtObject {
 
     property var params: new Adhan.adhan.CalculationMethod.MuslimWorldLeague()
 
-    property string fajr:   Qt.formatTime(prayerTimes.fajr,     "hh:mm ap")
-    property string srise:  Qt.formatTime(prayerTimes.sunrise,  "hh:mm ap")
-    property string duhr:   Qt.formatTime(prayerTimes.dhuhr,    "hh:mm ap")
-    property string asr:    Qt.formatTime(prayerTimes.asr,      "hh:mm ap")
-    property string mgrb:   Qt.formatTime(prayerTimes.maghrib,  "hh:mm ap")
-    property string isha:   Qt.formatTime(prayerTimes.isha,     "hh:mm ap")
+    property string fajr:   Qt.formatTime(prayerTimes.fajr,     isoClock   ?  "hh:mm" : "hh:mm ap")
+    property string srise:  Qt.formatTime(prayerTimes.sunrise,  isoClock   ?  "hh:mm" : "hh:mm ap")
+    property string duhr:   Qt.formatTime(prayerTimes.dhuhr,    isoClock   ?  "hh:mm" : "hh:mm ap")
+    property string asr:    Qt.formatTime(prayerTimes.asr,      isoClock   ?  "hh:mm" : "hh:mm ap")
+    property string mgrb:   Qt.formatTime(prayerTimes.maghrib,  isoClock   ?  "hh:mm" : "hh:mm ap")
+    property string isha:   Qt.formatTime(prayerTimes.isha,     isoClock   ?  "hh:mm" : "hh:mm ap")
 
     property var prayerNames: [
         qsTr("Fajr"), qsTr("Sunrise"), qsTr("Dhuhr"), qsTr("Asr"), qsTr("Maghrib"), qsTr("Isha")]
