@@ -110,6 +110,13 @@ ApplicationWindow {
         property alias y: mainWindow.y
     }
 
+    Settings {
+        category: "App"
+        property alias hideOnClose: mm.hideOnClose
+        property alias isoClock:    mm.isoClock
+        property alias showOnAthan: mm.showOnAthan
+    }
+
     Image {
         id: bgImg
         anchors.fill: parent
@@ -368,7 +375,7 @@ ApplicationWindow {
         function onClosing(close) {
             if(mm.hideOnClose) {
                 console.debug('"Hide on close" enabled, will hide window instead of closing it.')
-                close.accepted = true
+                close.accepted = false
                 mainWindow.hide()
             } else {
                 Qt.quit()
