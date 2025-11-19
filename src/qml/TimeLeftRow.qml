@@ -27,25 +27,33 @@ Pane {
             }
         }
 
-        ColumnLayout {
+        Item {
             Layout.fillWidth: true
+            Layout.fillHeight: true
             Layout.alignment: Qt.AlignCenter
 
             Text {
                 id: timeLeftLabel
 
-                Layout.alignment: Qt.AlignCenter
+                anchors.fill: parent
                 visible: progressBar.visible || athan.isOn
                 color: Material.secondaryTextColor
                 elide: Text.ElideRight
                 font.weight: Font.DemiBold
                 fontSizeMode: Text.Fit
+
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
             }
 
             ProgressBar {
                 id: progressBar
 
-                Layout.alignment: Qt.AlignCenter
+                width: parent.width / 1.5
+
+                anchors.top: timeLeftLabel.bottom
+                anchors.topMargin: 2
+                anchors.horizontalCenter: parent.horizontalCenter
                 Material.accent: timeLeftLabel.color
                 visible: mm.currentPrayer !== Adhan.Prayer.None && mm.nextPrayer !== Adhan.Prayer.None && !athan.isOn
                 from: if(mm.timeForCurrentPrayer) mm.timeForCurrentPrayer.getTime(); else 0
@@ -69,9 +77,5 @@ Pane {
                 onClicked: athan.stop()
             }
         }
-
-
-
-
     }
 }

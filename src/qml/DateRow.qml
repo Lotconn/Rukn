@@ -13,11 +13,10 @@ Pane {
 
     RowLayout {
         anchors.fill: parent
-        anchors.leftMargin: 20
-        anchors.rightMargin: 20
 
         Item {
-            height: parent.height
+            Layout.fillHeight: true
+            Layout.minimumWidth: parent.height
 
             RoundButton {
                 opacity: 0.5
@@ -32,23 +31,42 @@ Pane {
         }
 
         Item {
-            height: parent.height
+            Layout.fillHeight: true
             Layout.fillWidth: true
 
             Text {
                 id: dateText
+
                 anchors.fill: parent
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
-                font.weight: Font.DemiBold
-                fontSizeMode: Text.VerticalFit
                 color: Material.secondaryTextColor
                 text: mm.currentDateStr
+                elide: Text.ElideMiddle
+                font.weight: Font.DemiBold
+                fontSizeMode: Text.Fit
+
+                MouseArea {
+                    id: mouseArea
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onHoveredChanged: containsMouse ? dateText.font.underline
+                                                      = true : dateText.font.underline = false
+                    onPressed: currentDate();
+                    onWheel: {
+                        if (wheel.angleDelta.x < 0 || wheel.angleDelta.y > 0)
+                            nextDate()
+                        else
+                            prevDate()
+                    }
+                }
             }
         }
 
         Item {
-            height: parent.height
+            Layout.fillHeight: true
+            Layout.minimumWidth: parent.height
 
             RoundButton {
                 opacity: 0.5
