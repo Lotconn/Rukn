@@ -6,13 +6,16 @@
     "command": "munadi",
     "finish-args": [
         "--device=dri",
-        "--share=ipc", 
-        "--socket=wayland",
         "--share=network",
+        "--socket=wayland",
         "--socket=pulseaudio",
+        "--socket=system-bus",
+        "--socket=session-bus",
+        "--socket=inherit-wayland-socket",
         "--talk-name=org.freedesktop.Notifications",
         "--talk-name=org.kde.StatusNotifierWatcher"
     ],
+
     "modules": [
         {
             "name": "munadi",
