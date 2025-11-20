@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2022 AA <aa@hak.pw> -->
+<!-- Copyright 2025 AA <aa@hak.pw> -->
 <component type="desktop-application">
     <id>org.munadi.Munadi</id>
     <metadata_license>CC0-1.0</metadata_license>
@@ -80,6 +80,22 @@
     </screenshots>
 
     <releases>
+        <release version="24.08" date="2025-11-29">
+            <description>
+                <p>Back again with some long awaited and nice features!</p>
+                <ul>
+                    <li>New theme with time-of-day wallpaper!</li>
+                    <li>System theme integration</li>
+                    <li>Prayer-time window opacity adjustment</li>
+                    <li>Background blur adjustment</li>
+                    <li>24-Hour time format</li>
+                    <li>Time offset adjustments upto -30 to +60 minutes</li>
+                    <li>Ability to choose separate custom adhan for each prayer</li>
+                    <li>[Flatpak] Statically linked libraries</li>
+                    <li>Fixed bugs</li>
+                </ul>
+            </description>
+        </release>
         <release version="22.04" date="2022-03-31">
             <description>
                 <p>Ramadan Kareem, some gifts:</p>
