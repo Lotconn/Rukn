@@ -57,7 +57,7 @@ ColumnLayout {
             Layout.fillWidth: true
             stepSize: 1
             value: mm.prayerConfig[selectedPrayerIdx.currentIndex].adjustment
-            from: -10
+            from: -30
             to: 60
 
             onPressedChanged: {
