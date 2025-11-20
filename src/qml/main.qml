@@ -16,7 +16,7 @@ ApplicationWindow {
     Material.accent: Material.Red
     Material.primary: Material.Brown
 
-    width: 400
+    width: 450
     height: 800
     color: Material.dialogColor
     LayoutMirroring.childrenInherit: true
