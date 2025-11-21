@@ -66,7 +66,11 @@ ApplicationWindow {
         mm.refreshTable()
     }
 
-
+    Shortcut {
+        sequence: StandardKey.Quit
+        context: Qt.ApplicationShortcut
+        onActivated: Qt.quit()
+    }
 
     Theme {
         id: theme
@@ -112,25 +116,32 @@ ApplicationWindow {
 
     Settings {
         category: "App"
+        property alias bgImage:     mm.bgImage
         property alias hideOnClose: mm.hideOnClose
         property alias isoClock:    mm.isoClock
         property alias showOnAthan: mm.showOnAthan
     }
 
-    Image {
-        id: bgImg
+    Item {
+        id: todw
+        visible: mm.bgImage
         anchors.fill: parent
-        mirror: Qt.application.layoutDirection === Qt.RightToLeft
-        source: parent.source = "qrc:/img/bg/" + (mm.currentPrayer % 6) + ".jpg"
-        fillMode: Image.PreserveAspectCrop
-    }
 
-    MultiEffect {
-        source: bgImg
-        anchors.fill: bgImg
-        blurEnabled: true
-        blurMax: mm.bg_img_blur
-        blur: 1.0
+        Image {
+            id: bgImg
+            anchors.fill: parent
+            mirror: Qt.application.layoutDirection === Qt.RightToLeft
+            source: "qrc:/img/bg/" + (mm.currentPrayer % 6) + ".jpg"
+            fillMode: Image.PreserveAspectCrop
+        }
+
+        MultiEffect {
+            source: bgImg
+            anchors.fill: bgImg
+            blurEnabled: mm.bgImage
+            blurMax: mm.bg_img_blur
+            blur: 1.0
+        }
     }
 
     MainPage {
@@ -381,12 +392,6 @@ ApplicationWindow {
                 Qt.quit()
             }
         }
-    }
-
-    Shortcut {
-        sequence: StandardKey.Quit
-        context: Qt.ApplicationShortcut
-        onActivated: Qt.quit()
     }
 
     //    Connections {

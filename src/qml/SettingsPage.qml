@@ -147,6 +147,28 @@ Page {
             RowLayout {
                 ColumnLayout {
                     SettingTitle {
+                        text: qsTr("Background Images")
+                    }
+
+                    SettingSubtitle {
+                        text: qsTr("Show time-of-the-day wallpapers.")
+                    }
+                }
+
+                Switch {
+                    id: bgi
+                    checked: true
+                    onCheckedChanged: {
+                        mm.bgImage = bgi.checked
+                    }
+                }
+                enabled: engine.ff() === "d"
+                visible: enabled
+            }
+
+            RowLayout {
+                ColumnLayout {
+                    SettingTitle {
                         text: qsTr("Hide on close")
                     }
 
@@ -253,11 +275,12 @@ Page {
             Settings {
                 category: "App"
                 property alias autoStartUp: asu.checked
+                property alias bgImage:     bgi.checked
                 //property alias checkForUpdates: cfu.checked
                 property alias showOnAthan: soa.checked
                 property alias hideOnClose: hoc.checked
                 property alias isoClock:   isoc.checked
-                
+
                 onAutoStartUpChanged: {
                     engine.autostart(asu.checked)
                 }
