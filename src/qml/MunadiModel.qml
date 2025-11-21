@@ -47,6 +47,7 @@ QtObject {
     property bool showOnAthan: false
     property bool hideOnClose: false
     property bool isoClock:    false
+    property bool bgImage:     true
 
     property int    bg_img_blur: 32
     property double rectangle_opacity: 0.8

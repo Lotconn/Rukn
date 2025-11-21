@@ -1,0 +1,194 @@
+<h1>Munadi 25.11</h1>
+<p>Back again with some long awaited and nice features!</p>
+<ul>
+<li>New theme with time-of-day wallpaper!</li>
+<li>System theme integration</li>
+<li>Prayer-time window opacity adjustment</li>
+<li>Background blur adjustment</li>
+<li>24-Hour time format</li>
+<li>Time offset adjustments upto -30 to +60 minutes</li>
+<li>Ability to choose separate custom adhan for each prayer</li>
+<li>[Flatpak] Statically linked libraries</li>
+<li>Fixed bugs</li>
+</ul>
+
+</br>
+
+<h1>Munadi 22.04</h1>
+<p>Ramadan Kareem, some gifts:</p>
+<ul>
+<li>Dark mode!</li>
+<li>Major UI changes</li>
+<li>Better tray UI and usability</li>
+<li>Flatpak integration (autostart, background and hidden autostart)</li>
+</ul>
+
+</br>
+
+<h1>Munadi 21.12</h1>
+<p>This release contains a number of fixes and a new features:</p>
+<ul>
+<li>Option to hide window when closed (run in background)</li>
+<li>Reworked alarm code, it now detects sleeps and changes to time</li>
+<li>Flag as ready for mobile Linux, e.g. Phoc, Plasma Mobile</li>
+</ul>
+
+</br>
+
+<h1>Munadi 21.04.1</h1>
+<p>Fix broken progress bar/time left</p>
+
+</br>
+
+<h1>Munadi 21.04</h1>
+<p>This release contains a large number of changes:</p>
+<ul>
+<li>UI enhancement</li>
+<li>Reworked alarm code</li>
+<li>Upgraded Adhan.js lib to v3</li>
+<li>Restored Android support (coming soon)</li>
+<li>Fixed bug with no sound under Ubuntu</li>
+<li>Restored ability to navigate to previous or next day (scroll over or click the date)</li>
+</ul>
+
+</br>
+
+<h1>Munadi 21.02</h1>
+<p>This release fixes some bugs:</p>
+<ul>
+<li>Prayer times are now correct for countries with n.5 hours offset from UTC</li>
+<li>Everything, including date and time, are now localised correctly</li>
+<li>Hijir is disabled temporarily due to not being localised</li>
+</ul>
+
+</br>
+
+<h1>Munadi 20.10</h1>
+<p>This release adds tray icon support:</p>
+<ul>
+<li>Click (or double click) the tray icon to hide/show Munadi</li>
+<li>Right click the tray icon for context menu</li>
+<li>Clicking on "time left" will stop currently playing Athan</li>
+</ul>
+<p>Note: Not all desktop environments support tray icons or behave consistently!</p>
+
+</br>
+
+<h1>Munadi 20.09.1</h1>
+<p>This release fixes some minor RTL issues and provides Snap improvements:</p>
+<ul>
+<li>Behind the scene improvements to RTL</li>
+<li>Enabled perviously disabled window switching using dragging</li>
+<li>Switched to core20 and cmake, which means supporting Snap going forward is possible</li>
+</ul>
+
+</br>
+
+<h1>Munadi 20.09</h1>
+<p>This release adds some requested features:</p>
+<ul>
+<li>Added support for RTL languages</li>
+<li>Added Arabic translation, thanks to Damascene</li>
+<li>Some other minor enhancements</li>
+</ul>
+
+</br>
+
+<h1>Munadi 20.07</h1>
+<p>This release adds some requested features:</p>
+<ul>
+<li>Added more calculation methods</li>
+<li>Ability to add custom Athans</li>
+</ul>
+
+<p>Note: Flatpak is now the preferred packaging method, this might be the last Snap release</p>
+
+</br>
+
+<h1>Munadi 19.12</h1>
+<p>This is a minor release, mainly adding support for Snap packaging:</p>
+<ul>
+<li>Removed about page and merged it with settings page</li>
+<li>Added support for Snap</li>
+<li>Minor UI changes</li>
+</ul>
+
+</br>
+
+<h1>Munadi 18.12</h1>
+<p>This is a minor release, some features were removed, and new ones added:</p>
+
+<ul>
+<li>Removed: Date can now go forward and backwards</li>
+<li>Athan volumes can be configured individually</li>
+<li>Added support for Android and Flatpack</li>
+<li>UI enhancements</li>
+</ul>
+
+</br>
+
+<h1>Munadi 17.02</h1>
+<p>This release added requested features made by many of you,
+some features were removed, and of course some UI enhancements:</p>
+
+<ul>
+<li>Brand new UI, using the latest and greatest from Qt</li>
+<li>You can now toggle between Hijri date and Miladi</li>
+<li>Mundadi will use system's proxy by default</li>
+<li>Munadi is now almost three times lighter!</li>
+<li>Date can now go forward and backwards</li>
+<li>Removed Iqama functionality, sorry!</li>
+<li>Added keyboard shortcuts, see help</li>
+<li>Many issues fixed</li>
+</ul>
+
+</br>
+
+<h1>Munadi 15.05</h1>
+<p>There are many exciting changes in this release,
+including changes to the user interface, functionality, speed and many more, see below:</p>
+
+<ol>
+
+<li>
+<h3>Iqama Time (Experimental)</h3>
+<ul>
+<li>Get Iqama time from any Mosque</li>
+<li>Add Mosques to your favourite</li>
+<li>Add Mosques to Munadi's datase</li>
+<li>Add monthly timetable to any Mosque</li>
+<li>Edit Mosque's details</li>
+<li>Edit Mosque's timetable</li>
+<li>Note: Please be responsible, we can't validate every Mosque out there</li>
+</ul>
+</li>
+
+</br>
+
+<li>
+<h3>User Interface</h3>
+<ul>
+<li>Added animation</li>
+<li>Changed font and colour</li>
+<li>Everything should be speedier</li>
+</ul>
+</li>
+
+</br>
+
+<li>
+<h3>Other changes</h3>
+<ul>
+<li>Integrated help</li>
+<li>Automatically detect DST</li>
+<li>New calculation methods</li>
+<li>You now search for your city instead of menu selection</li>
+<li>Many other changes behind the scenes</li>
+</ul>
+</li>
+
+</ol>
+
+<p>Please visit Munadi.org and contact us for feedback</p>
+<p>We now have a Twitter handle (@munadi_org) and a YouTube channel (see help section),
+they'll be used for updates, news and help on using Munadi's new features.</p>
