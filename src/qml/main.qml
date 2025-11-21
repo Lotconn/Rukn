@@ -99,6 +99,8 @@ ApplicationWindow {
         property alias opacity:             mm.rectangle_opacity
         property alias blur:                mm.bg_img_blur
         property alias themeListIndex:      mm.themeListIndex
+        property alias hijriDateOffset:     mm.hijriDateOffset
+        property alias calendarPreference:  mm.calendarPreference
     }
 
     LocationService {

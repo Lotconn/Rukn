@@ -34,12 +34,21 @@ QtObject {
     property double longitude
     property double overrideOffsetBy
 
+    onCurrentDateChanged: invalidate()
+
     property date currentDate
     property date currentTime
 
-    onCurrentDateChanged: invalidate()
+    property int hijriDateOffset: 0
+    property string calendarPreference: "Both"
+    property string gregorianDateStr: Qt.formatDate(currentDate, "dd-MM-yyyy")
+    property string hijriDateStr: engine.getHijriDate(currentDate, hijriDateOffset)
 
-    property string currentDateStr: Qt.formatDate(currentDate, "dd-MM-yyyy") + " | " + engine.getHijriDate(currentDate, 0)
+    property string currentDateStr: {
+        if(calendarPreference === "Both") return gregorianDateStr + " | " + hijriDateStr;
+        if(calendarPreference === "Hijri") return hijriDateStr;
+        if(calendarPreference === "Gregorian") return gregorianDateStr;
+    }
 
     property bool locationNotSet: latitude == 0 || longitude == 0
 

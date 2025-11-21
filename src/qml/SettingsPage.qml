@@ -382,12 +382,59 @@ Page {
                     textRole: 'name'
                     model: mm.calcMethod
                 }
+
+                Text {
+                    color: Material.secondaryTextColor
+                    text: qsTr("Calendar")
+                }
+                RowLayout {
+                    ComboBox {
+                        id: calendar
+                        Layout.fillWidth: true
+
+                        onCurrentIndexChanged: {
+                            mm.calendarPreference = model.get(currentIndex).text
+                        }
+
+                        model: ListModel {
+                            ListElement {
+                                text: qsTr("Both")
+                            }
+                            ListElement {
+                                text: qsTr("Hijri")
+                            }
+                            ListElement {
+                                text: qsTr("Gregorian")
+                            }
+                        }
+                    }
+
+                    Slider {
+                        id: hijriSlider
+                        Layout.fillWidth: true
+                        from: -4
+                        to: 4
+                        stepSize: 1
+                        snapMode: Slider.SnapAlways
+
+                        onValueChanged: mm.hijriDateOffset = value
+                    }
+
+                    Text {
+                        color: Material.secondaryTextColor
+                        text: hijriSlider.value >= 0 ? qsTr("+ %L1").arg(hijriSlider.value.toFixed())
+                                                     : qsTr("- %L1").arg(Math.abs(hijriSlider.value.toFixed()))
+                    }
+                }
             }
 
             Settings {
                 category: "Other"
                 property alias mathhabCbIndex: mathhab.currentIndex
                 property alias calcMethodCbIndex: algo.currentIndex
+                property alias calendarCbIndex: calendar.currentIndex
+                property alias hijriAdjustment: hijriSlider.value
+
             }
 
             RowLayout {}
