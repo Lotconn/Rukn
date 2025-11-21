@@ -383,6 +383,12 @@ ApplicationWindow {
         }
     }
 
+    Shortcut {
+        sequence: StandardKey.Quit
+        context: Qt.ApplicationShortcut
+        onActivated: Qt.quit()
+    }
+
     //    Connections {
     //        target: updater
     //        onUpdateAvailable: {
