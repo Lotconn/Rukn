@@ -5,10 +5,6 @@ import QtQuick.Layouts
 
 Pane {
 
-    Keys.onLeftPressed: prevDate()
-    Keys.onRightPressed: nextDate()
-    Keys.onDownPressed: currentDate()
-
     Material.elevation: mm.pane_elevation
 
     RowLayout {
@@ -26,7 +22,7 @@ Pane {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
 
-                onPressed: prevDate()
+                onPressed: mm.prevDate()
             }
         }
 
@@ -53,7 +49,7 @@ Pane {
                     cursorShape: Qt.PointingHandCursor
                     onHoveredChanged: containsMouse ? dateText.font.underline
                                                       = true : dateText.font.underline = false
-                    onPressed: currentDate();
+                    onPressed: mm.todayDate();
                     onWheel: {
                         if (wheel.angleDelta.x < 0 || wheel.angleDelta.y > 0)
                             nextDate()
@@ -76,27 +72,8 @@ Pane {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
 
-                onPressed: nextDate()
+                onPressed: mm.nextDate()
             }
         }
-    }
-
-    function currentDate() {
-        console.debug(new Date(), ': currentDate()')
-        mm.currentDate = new Date()
-    }
-
-    function prevDate() {
-        console.debug(new Date(), ': prevDate()')
-        var prevDate = mm.currentDate
-        prevDate.setDate(prevDate.getDate() - 1)
-        mm.currentDate = prevDate
-    }
-
-    function nextDate() {
-        console.debug(new Date(), ': nextDate()')
-        var nextDate = mm.currentDate
-        nextDate.setDate(nextDate.getDate() + 1)
-        mm.currentDate = nextDate
     }
 }

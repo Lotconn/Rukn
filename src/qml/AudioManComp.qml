@@ -19,6 +19,7 @@ RowLayout {
         id: fileDialog
         title: qsTr("Please choose an audio file")
         folder: StandardPaths.writableLocation(StandardPaths.DocumentsLocation)
+        nameFilters: ["Audio files (*.mp3 *.ogg *.wav)"]
 
         onAccepted: {
             var name = fileDialog.file.toString().split('/').slice(-1)[0]

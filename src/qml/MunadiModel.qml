@@ -39,6 +39,10 @@ QtObject {
     property date currentDate
     property date currentTime
 
+    // To track if we're looking at different date than today
+    property int dateNavOffset: 0
+    property int isToday: dateNavOffset === 0
+
     property int hijriDateOffset: 0
     property string calendarPreference: "Both"
     property string gregorianDateStr: Qt.formatDate(currentDate, "dd-MM-yyyy")
@@ -134,6 +138,28 @@ QtObject {
         alarms.add("60s_tick", min, 60)
     }
 
+    function todayDate() {
+        console.debug(new Date(), ': currentDate()')
+        currentDate = new Date()
+        dateNavOffset = 0;
+    }
+
+    function prevDate() {
+        console.debug(new Date(), ': prevDate()')
+        var prevDate = mm.currentDate
+        prevDate.setDate(prevDate.getDate() - 1)
+        currentDate = prevDate
+        dateNavOffset--;
+    }
+
+    function nextDate() {
+        console.debug(new Date(), ': nextDate()')
+        var nextDate = mm.currentDate
+        nextDate.setDate(nextDate.getDate() + 1)
+        currentDate = nextDate
+        dateNavOffset++;
+    }
+
     property string timeLeftStr
 
     property int madhab: Adhan.adhan.Madhab.Shafi
@@ -143,16 +169,12 @@ QtObject {
     onPrayerTimesChanged: {
         alarms.clear("athan")
 
-        // var testAthan = new Date();
-        // testAthan.setSeconds(testAthan.getSeconds() + 3)
-        // console.debug("testAthan", testAthan)
-        // alarms.add("athan", testAthan)
-
         alarms.add("athan", prayerTimes.fajr)
         alarms.add("athan", prayerTimes.dhuhr)
         alarms.add("athan", prayerTimes.asr)
         alarms.add("athan", prayerTimes.maghrib)
         alarms.add("athan", prayerTimes.isha)
+
         refreshTable()
     }
 

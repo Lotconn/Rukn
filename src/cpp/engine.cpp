@@ -33,12 +33,22 @@ QString Engine::getHijriDate(const QDate &date, const int offset)
 
 void Engine::autostart_hidden(bool flag)
 {
-    hidden = flag;
+    _hidden = flag;
 }
 
 bool Engine::autostart_hidden()
 {
-    return hidden;
+    return _hidden;
+}
+
+void Engine::fullscreen(bool flag)
+{
+    _fullscreen = flag;
+}
+
+bool Engine::fullscreen()
+{
+    return _fullscreen;
 }
 
 namespace
