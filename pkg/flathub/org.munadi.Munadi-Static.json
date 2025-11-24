@@ -1,17 +1,17 @@
 {
-    "id": "org.munadi.Munadi-Static",
+    "id": "org.munadi.Munadi",
     "runtime": "org.freedesktop.Platform",
     "runtime-version": "25.08",
     "sdk": "org.freedesktop.Sdk",
     "command": "munadi",
     "finish-args": [
         "--device=dri",
+        "--share=ipc",
+        "--share=network",
         "--socket=wayland",
         "--socket=pulseaudio",
-        "--socket=system-bus",
-        "--socket=session-bus",
+        "--socket=fallback-x11",
         "--socket=inherit-wayland-socket",
-        "--share=network",
         "--talk-name=org.freedesktop.Notifications",
         "--talk-name=org.kde.StatusNotifierWatcher"
     ],
@@ -166,7 +166,7 @@
             ]
         },
         {
-            "name": "munadi-static",
+            "name": "munadi",
             "build-options": {
                 "strip": true
             },
@@ -175,8 +175,10 @@
             "config-opts": ["-DCMAKE_BUILD_TYPE=Release"],
             "sources": [
                 {
-                    "type": "dir",
-                    "path": "../.."
+                    "type": "git",
+                    "url": "https://gitlab.com/munadi/munadi.git",
+                    "tag": "25.11",
+                    "commit": "b87bcae8c9a5c17285cc5b748197285acccd4cc6"
                 }
             ]
         }
