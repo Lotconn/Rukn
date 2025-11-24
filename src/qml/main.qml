@@ -413,9 +413,12 @@ ApplicationWindow {
         sequences: [StandardKey.Cancel]
         context: Qt.WindowShortcut
         onActivated: {
-            if (mainWindow.visibility === ApplicationWindow.FullScreen) {
+            if(!mm.isToday) {
+                mm.todayDate()
+            }
+            else if (mainWindow.visibility === ApplicationWindow.FullScreen) {
                 mainWindow.visibility = ApplicationWindow.Windowed
-            } else mm.todayDate()
+            }
         }
     }
 
@@ -432,7 +435,7 @@ ApplicationWindow {
     }
 
     Shortcut {
-        sequence: StandardKey.FullScreen
+        sequences: [StandardKey.FullScreen]
         onActivated: {
             mainWindow.visibility = mainWindow.visibility === ApplicationWindow.FullScreen
                                 ? ApplicationWindow.Windowed
