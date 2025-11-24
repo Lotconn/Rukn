@@ -53,30 +53,52 @@
     <screenshots>
         <screenshot type="default">
             <caption>Main page - dark mode</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2204/1_main_dark.png</image>
-    
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/01_main_window.png</image>
+        </screenshot>
+        <screenshot>
+            <caption>Main page - dark mode</caption>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/02_main_window.png</image>
         </screenshot>
         <screenshot>
             <caption>Main page - light mode</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2204/2_main_light.png</image>
-    
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/03_main_window.png</image>
+        </screenshot>
+        <screenshot>
+            <caption>Main page - light mode</caption>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/04_main_window.png</image>
+        </screenshot>
+        <screenshot>
+            <caption>Main page - light mode</caption>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/05_main_window.png</image>
         </screenshot>
         <screenshot>
             <caption>Settings page</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2204/3_settings.png</image>
-
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/06_settings_page.png</image>
+        </screenshot>
+        <screenshot>
+            <caption>Settings page</caption>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/07_settings_page.png</image>
+        </screenshot>
+        <screenshot>
+            <caption>Settings page</caption>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/08_settings_page.png</image>
+        </screenshot>
+        <screenshot>
+            <caption>Settings page</caption>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/09_settings_page.png</image>
         </screenshot>
         <screenshot>
             <caption>Tray menu</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2204/4_tray.png</image>
-
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/10_tray_menu.png</image>
+        </screenshot>
+        <screenshot>
+            <caption>Tray menu</caption>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/11_tray_menu.png</image>
         </screenshot>
         <screenshot>
             <caption>Location search</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2204/5_location_search.png</image>
-
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/12_location_search.png</image>
         </screenshot>
-  
     </screenshots>
 
     <releases>
