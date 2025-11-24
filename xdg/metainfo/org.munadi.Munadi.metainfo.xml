@@ -7,7 +7,9 @@
     <name>Munadi</name>
     <summary>Simple Athan App</summary>
     ​<update_contact>aa_AT_hak.pw</update_contact>
-    <developer_name>Munadi Project</developer_name>
+    <developer id="org.munadi">
+        <name>Munadi Project</name>
+    </developer>
     <content_rating type="oars-1.1"/>
     <url type="homepage">https://munadi.org/</url>
     <url type="bugtracker">https://gitlab.com/munadi/munadi/</url>
@@ -18,10 +20,6 @@
         <control>pointing</control>
         <control>touch</control>
     </recommends>
-    
-    <requires>
-        <display_length compare="ge">small</display_length>
-    </requires>
 
     <provides>
         <binary>munadi</binary>
