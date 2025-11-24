@@ -1,16 +1,22 @@
 <h1>Munadi 25.11</h1>
 <p>Back again with some long awaited and nice features!</p>
 <ul>
-<li>New theme with time-of-day wallpaper!</li>
+<li>New theme with time-of-the-day wallpapers!</li>
 <li>System theme integration</li>
 <li>Prayer-time window opacity adjustment</li>
 <li>Background blur adjustment</li>
 <li>24-Hour time format</li>
-<li>Time offset adjustments upto -30 to +60 minutes</li>
+<li>Time offset adjustments from -30 to +60 minutes</li>
 <li>Ability to choose separate custom adhan for each prayer</li>
+<li>Show either Hijri, Gregorian or both dates</li>
+<li>Hijri date offset adjustments</li>
+<li>Better keyboard navigation</li>
 <li>[Flatpak] Statically linked libraries</li>
 <li>Fixed bugs</li>
+<li>Slimmed code base</li>
 </ul>
+
+<p>Special thanks to [Hasan Esa](https://gitlab.com/HasanEsa/) for the contributions and motivation, more will follow as a result inshallah.</p>
 
 </br>
 

@@ -28,7 +28,7 @@ QString Engine::getHijriDate(const QDate &date, const int offset)
 {
     const QDate &d = date.addDays(offset);
     QCalendar q(QCalendar::System::Gregorian);
-    return q.dateFromParts(d.year(), d.month(), d.day()).toString(QString("dd-MM-yyyy"), QCalendar(QCalendar::System::IslamicCivil));
+    return q.dateFromParts(d.year(), d.month(), d.day()).toString(QString("dd-MMM-yyyy"), QCalendar(QCalendar::System::IslamicCivil));
 }
 
 void Engine::autostart_hidden(bool flag)
