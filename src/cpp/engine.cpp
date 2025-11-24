@@ -1,6 +1,5 @@
 #include "engine.h"
-#include "libitl/hijri.h"
-#include "updater.h"
+//#include "updater.h"
 
 #include <QTime>
 #include <QSettings>
@@ -27,19 +26,29 @@ Engine::Engine()
 
 QString Engine::getHijriDate(const QDate &date, const int offset)
 {
-
+    const QDate &d = date.addDays(offset);
     QCalendar q(QCalendar::System::Gregorian);
-    return q.dateFromParts(date.year(), date.month(), date.day() +  offset).toString(QString("dd-MM-yyyy"), QCalendar(QCalendar::System::IslamicCivil));
+    return q.dateFromParts(d.year(), d.month(), d.day()).toString(QString("dd-MM-yyyy"), QCalendar(QCalendar::System::IslamicCivil));
 }
 
 void Engine::autostart_hidden(bool flag)
 {
-    hidden = flag;
+    _hidden = flag;
 }
 
 bool Engine::autostart_hidden()
 {
-    return hidden;
+    return _hidden;
+}
+
+void Engine::fullscreen(bool flag)
+{
+    _fullscreen = flag;
+}
+
+bool Engine::fullscreen()
+{
+    return _fullscreen;
 }
 
 namespace
@@ -151,7 +160,7 @@ void Engine::autostart(bool set)
 QString Engine::getWhatsNew()
 {
     QFile whats_new(":/data/whatsnew.html");
-    whats_new.open(QFile::ReadOnly | QFile::Text);
+    std::ignore = whats_new.open(QFile::ReadOnly | QFile::Text);
     QTextStream ts(&whats_new);
 
     QString out = ts.readAll();

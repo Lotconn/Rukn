@@ -9,11 +9,7 @@
 
 #define MUNADI_API_URL "https://munadi.org/"
 
-extern "C" {
-#include "libitl/hijri.h"
-}
-
-#include "updater.h"
+//#include "updater.h"
 
 #ifdef Q_OS_ANDROID
 #include <QtPositioning/QGeoCoordinate>
@@ -48,12 +44,16 @@ public:
     }
 
     //Updater * updater;
-    void autostart_hidden(bool flag);
+    void autostart_hidden(bool);
     Q_INVOKABLE bool autostart_hidden();
+
+    void fullscreen(bool);
+    Q_INVOKABLE bool fullscreen();
 
 private:
 
-    bool hidden = false;
+    bool _hidden = false;
+    bool _fullscreen = false;
 
     bool init();
 };

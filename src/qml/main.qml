@@ -36,8 +36,7 @@ ApplicationWindow {
         if (engine.autostart_hidden()) {
             hide()
         } else {
-            show()
-            //showFullScreen()
+            engine.fullscreen() ? showFullScreen() : show();
         }
         //        if(mm.checkForUpdates) {
         //            updater.check()
@@ -64,12 +63,6 @@ ApplicationWindow {
 
         mm.set_60s_ticker()
         mm.refreshTable()
-    }
-
-    Shortcut {
-        sequence: StandardKey.Quit
-        context: Qt.ApplicationShortcut
-        onActivated: Qt.quit()
     }
 
     Theme {
@@ -99,6 +92,8 @@ ApplicationWindow {
         property alias opacity:             mm.rectangle_opacity
         property alias blur:                mm.bg_img_blur
         property alias themeListIndex:      mm.themeListIndex
+        property alias hijriDateOffset:     mm.hijriDateOffset
+        property alias calendarPreference:  mm.calendarPreference
     }
 
     LocationService {
@@ -140,6 +135,7 @@ ApplicationWindow {
             anchors.fill: bgImg
             blurEnabled: mm.bgImage
             blurMax: mm.bg_img_blur
+            autoPaddingEnabled: false
             blur: 1.0
         }
     }
@@ -392,6 +388,30 @@ ApplicationWindow {
                 Qt.quit()
             }
         }
+    }
+
+    Shortcut {
+        sequences: [StandardKey.Quit]
+        context: Qt.ApplicationShortcut
+        onActivated: Qt.quit()
+    }
+
+    Shortcut {
+        sequences: [StandardKey.MoveToNextPage]
+        context: Qt.WindowShortcut
+        onActivated: mm.nextDate()
+    }
+
+    Shortcut {
+        sequences: [StandardKey.MoveToPreviousPage]
+        context: Qt.WindowShortcut
+        onActivated: mm.prevDate()
+    }
+
+    Shortcut {
+        sequences: [StandardKey.Cancel]
+        context: Qt.WindowShortcut
+        onActivated: mm.todayDate()
     }
 
     //    Connections {

@@ -34,12 +34,25 @@ QtObject {
     property double longitude
     property double overrideOffsetBy
 
+    onCurrentDateChanged: invalidate()
+
     property date currentDate
     property date currentTime
 
-    onCurrentDateChanged: invalidate()
+    // To track if we're looking at different date than today
+    property int dateNavOffset: 0
+    property int isToday: dateNavOffset === 0
 
-    property string currentDateStr: Qt.formatDate(currentDate, "dd-MM-yyyy") + " | " + engine.getHijriDate(currentDate, 0)
+    property int hijriDateOffset: 0
+    property string calendarPreference: "Both"
+    property string gregorianDateStr: Qt.formatDate(currentDate, "dd-MM-yyyy")
+    property string hijriDateStr: engine.getHijriDate(currentDate, hijriDateOffset)
+
+    property string currentDateStr: {
+        if(calendarPreference === "Both") return gregorianDateStr + " | " + hijriDateStr;
+        if(calendarPreference === "Hijri") return hijriDateStr;
+        if(calendarPreference === "Gregorian") return gregorianDateStr;
+    }
 
     property bool locationNotSet: latitude == 0 || longitude == 0
 
@@ -125,6 +138,28 @@ QtObject {
         alarms.add("60s_tick", min, 60)
     }
 
+    function todayDate() {
+        console.debug(new Date(), ': currentDate()')
+        currentDate = new Date()
+        dateNavOffset = 0;
+    }
+
+    function prevDate() {
+        console.debug(new Date(), ': prevDate()')
+        var prevDate = mm.currentDate
+        prevDate.setDate(prevDate.getDate() - 1)
+        currentDate = prevDate
+        dateNavOffset--;
+    }
+
+    function nextDate() {
+        console.debug(new Date(), ': nextDate()')
+        var nextDate = mm.currentDate
+        nextDate.setDate(nextDate.getDate() + 1)
+        currentDate = nextDate
+        dateNavOffset++;
+    }
+
     property string timeLeftStr
 
     property int madhab: Adhan.adhan.Madhab.Shafi
@@ -134,16 +169,12 @@ QtObject {
     onPrayerTimesChanged: {
         alarms.clear("athan")
 
-        // var testAthan = new Date();
-        // testAthan.setSeconds(testAthan.getSeconds() + 3)
-        // console.debug("testAthan", testAthan)
-        // alarms.add("athan", testAthan)
-
         alarms.add("athan", prayerTimes.fajr)
         alarms.add("athan", prayerTimes.dhuhr)
         alarms.add("athan", prayerTimes.asr)
         alarms.add("athan", prayerTimes.maghrib)
         alarms.add("athan", prayerTimes.isha)
+
         refreshTable()
     }
 

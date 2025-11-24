@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
     }
 #endif
 
+    app.setWindowIcon(QIcon(":/img/munadi.png"));
     app.setOrganizationDomain("munadi.org");
     app.setApplicationName("Munadi");
 
@@ -52,10 +53,12 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine qae;
 
-    if(argc > 1 && strcmp(argv[1], "--hidden") == 0)
+    if(argc > 1)
     {
-        engine.autostart_hidden(true);
-
+        if(strcmp(argv[1], "--hidden") == 0)
+            engine.autostart_hidden(true);
+        else if(strcmp(argv[1], "--fullscreen") == 0)
+                engine.fullscreen(true);
     }
 
     qae.rootContext()->setContextProperty("engine", &engine);

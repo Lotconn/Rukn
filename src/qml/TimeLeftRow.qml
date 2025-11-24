@@ -22,6 +22,7 @@ Pane {
                 anchors.centerIn: parent
                 flat: true
                 opacity: 0.5
+                icon.width: parent.width
                 icon.source: "qrc:/img/settings.png"
                 onClicked: settingsPopup.open()
             }
@@ -55,11 +56,10 @@ Pane {
                 anchors.topMargin: 2
                 anchors.horizontalCenter: parent.horizontalCenter
                 Material.accent: timeLeftLabel.color
-                visible: mm.currentPrayer !== Adhan.Prayer.None && mm.nextPrayer !== Adhan.Prayer.None && !athan.isOn
+                visible: mm.currentPrayer !== Adhan.Prayer.None && mm.nextPrayer !== Adhan.Prayer.None && !athan.isOn && mm.isToday
                 from: if(mm.timeForCurrentPrayer) mm.timeForCurrentPrayer.getTime(); else 0
                 to: if(mm.timeForNextPrayer) mm.timeForNextPrayer.getTime(); else 0
                 value: mm.currentTime.getTime()
-
             }
         }
 
