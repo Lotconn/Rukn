@@ -16,6 +16,8 @@
 <li>Slimmed code base</li>
 </ul>
 
+<p>Special thanks to [Hasan Esa](https://gitlab.com/HasanEsa/) for the contributions and motivation, more will follow as a result inshallah.</p>
+
 </br>
 
 <h1>Munadi 22.04</h1>
