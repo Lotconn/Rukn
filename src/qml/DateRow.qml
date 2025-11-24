@@ -52,9 +52,9 @@ Pane {
                     onPressed: mm.todayDate();
                     onWheel: {
                         if (wheel.angleDelta.x < 0 || wheel.angleDelta.y > 0)
-                            nextDate()
+                            mm.nextDate()
                         else
-                            prevDate()
+                            mm.prevDate()
                     }
                 }
             }

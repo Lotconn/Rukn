@@ -45,7 +45,7 @@ QtObject {
 
     property int hijriDateOffset: 0
     property string calendarPreference: "Both"
-    property string gregorianDateStr: Qt.formatDate(currentDate, "dd-MM-yyyy")
+    property string gregorianDateStr: Qt.formatDate(currentDate, "dd-MMM-yyyy")
     property string hijriDateStr: engine.getHijriDate(currentDate, hijriDateOffset)
 
     property string currentDateStr: {

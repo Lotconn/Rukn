@@ -257,6 +257,7 @@ ApplicationWindow {
         visible: true
         icon.mask: true
         icon.source: "qrc:/img/munadi.png"
+        tooltip: qsTr("Munadi") + (mm.timeLeftStr ? "\n" + mm.timeLeftStr : "")
 
         onActivated: {
             switch(reason) {
@@ -411,7 +412,32 @@ ApplicationWindow {
     Shortcut {
         sequences: [StandardKey.Cancel]
         context: Qt.WindowShortcut
-        onActivated: mm.todayDate()
+        onActivated: {
+            if (mainWindow.visibility === ApplicationWindow.FullScreen) {
+                mainWindow.visibility = ApplicationWindow.Windowed
+            } else mm.todayDate()
+        }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.BackButton
+
+        onClicked: {
+            if (mouse.button === Qt.BackButton) {
+                mm.todayDate()
+                mouse.accepted = true
+            }
+        }
+    }
+
+    Shortcut {
+        sequence: StandardKey.FullScreen
+        onActivated: {
+            mainWindow.visibility = mainWindow.visibility === ApplicationWindow.FullScreen
+                                ? ApplicationWindow.Windowed
+                                : ApplicationWindow.FullScreen
+        }
     }
 
     //    Connections {
