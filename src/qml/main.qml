@@ -49,6 +49,10 @@ ApplicationWindow {
             news.newsVersion = engine.getVersionNo()
         }
         mm.set_24h_ticker()
+
+        if (mm.themeListIndex === 0) {
+            mm.applySystemTheme()
+        }
     }
 
     Component.onDestruction: {

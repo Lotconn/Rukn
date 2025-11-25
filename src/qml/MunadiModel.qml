@@ -206,10 +206,14 @@ QtObject {
     property int themeListIndex: 0
     property var themeList: [qsTr("System"), qsTr("Light"), qsTr("Dark")]
 
+    function applySystemTheme() {
+        mainWindow.Material.theme = Material.System
+    }
+
     onThemeListIndexChanged: {
         switch(themeListIndex) {
         case 0:
-            mainWindow.Material.theme = Material.System
+            applySystemTheme()
             break
         case 1:
             mainWindow.Material.theme = Material.Light
