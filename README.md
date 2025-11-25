@@ -15,33 +15,25 @@ There are many other ways one can build Munadi from source, here are some, inclu
 
   - Debian: `sudo apt install git flatpak flatpak-builder`
   - Fedora: `sudo dnf install git flatpak flatpak-builder`
-
-3 - Install KDE's Flatpak Platform and Sdk:
-
-  - `flatpak install org.kde.{Sdk,Platform}//6.10`
   
-3.1 - For the statically linked version, install Freedesktop platform and Sdk:
-
-  - `flatpak install org.freedesktop.{Sdk,Platform}//25.08`
-
 > Note: The commands below are executed **_outside_** the checkout "munadi" folder.\
 > It is not required but recommended.
 
-4 - _To build Munadi:_
+3 - _To build Munadi:_
 
-- `flatpak-builder --force-clean --ccache ./build/ ./munadi/pkg/flathub/org.munadi.Munadi.json`
+- `flatpak-builder --install-deps-from=flathub --force-clean --ccache ./build/ ./munadi/pkg/flathub/org.munadi.Munadi.json`
 
-4.1 - _To build Munadi static:_
+3.1 - _To build Munadi runtimes:_
 
-- `flatpak-builder --force-clean --ccache ./build-static/ ./munadi/pkg/flathub/org.munadi.Munadi-Static.json`
+- `flatpak-builder --install-deps-from=flathub --force-clean --ccache ./build-runtimes/ ./munadi/pkg/flathub/org.munadi.Munadi-runtimes.json`
 
-5 - _To run what you've just built:_
+4 - _To run what you've just built:_
   
 - `flatpak-builder --run --env=WAYLAND_DISPLAY="$WAYLAND_DISPLAY" ./build/ ./munadi/pkg/flathub/org.munadi.Munadi.json munadi`
 
   OR
   
-- `flatpak-builder --run --env=WAYLAND_DISPLAY="$WAYLAND_DISPLAY" ./build-static/ ./munadi/pkg/flathub/org.munadi.Munadi-Static.json munadi`
+- `flatpak-builder --run --env=WAYLAND_DISPLAY="$WAYLAND_DISPLAY" ./build-runtimes/ ./munadi/pkg/flathub/org.munadi.Munadi-runtimes.json munadi`
 
 
 ### Qt.io
