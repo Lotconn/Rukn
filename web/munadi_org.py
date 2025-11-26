@@ -7,7 +7,7 @@ import json, time, datetime
 
 app = Flask(__name__)
 mail = Mail()
-app.config.from_object('config')
+#app.config.from_object('config')
 mail.init_app(app)
 
 
