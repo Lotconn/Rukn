@@ -40,7 +40,7 @@ Pane {
                 text: mm.currentDateStr
                 elide: Text.ElideMiddle
                 font.weight: Font.DemiBold
-                fontSizeMode: Text.Fit
+                font.pixelSize: height / 2
 
                 MouseArea {
                     id: mouseArea

@@ -8,7 +8,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 configure_file(src/cpp/version.h.in version.h)
@@ -53,7 +53,6 @@ endif()
 
 if(ANDROID)
     qt_add_executable(${PROJECT_NAME}
-        src/android/AndroidManifest.xml
         ${HEADERS}
         ${SOURCES}
         ${TS_FILES}
@@ -66,14 +65,17 @@ else()
         ${QRC_FILES})
 endif()
 
-if(ANDROID)
-    include(${CMAKE_CURRENT_SOURCE_DIR}/libs/android/openssl/android_openssl.cmake)
-    #set(QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/android")
-
-    set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY
-        QT_ANDROID_PACKAGE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/android
+if (ANDROID)
+    include(FetchContent)
+    FetchContent_Declare(
+        android_openssl
+        DOWNLOAD_EXTRACT_TIMESTAMP true
+        URL https://github.com/KDAB/android_openssl/archive/refs/heads/master.zip
     )
+    FetchContent_MakeAvailable(android_openssl)
+    include(${android_openssl_SOURCE_DIR}/android_openssl.cmake)
 
+    set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/android)
     add_android_openssl_libraries(${PROJECT_NAME})
 endif()
 
@@ -114,9 +116,8 @@ target_link_libraries(${PROJECT_NAME}
 
 if(LINUX)
     target_link_libraries(${PROJECT_NAME} PUBLIC Qt6::DBus kdsingleapplication)
+    target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_BINARY_DIR}")
+
+    install(TARGETS ${PROJECT_NAME})
+    install(DIRECTORY xdg/icons xdg/metainfo xdg/applications TYPE DATA)
 endif()
-
-target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_BINARY_DIR}")
-
-install(TARGETS ${PROJECT_NAME})
-install(DIRECTORY xdg/icons xdg/metainfo xdg/applications TYPE DATA)

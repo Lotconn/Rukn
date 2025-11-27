@@ -21,6 +21,28 @@ ApplicationWindow {
     color: Material.dialogColor
     LayoutMirroring.childrenInherit: true
 
+    background: Item {
+        id: todw
+        visible: mm.bgImage
+
+        Image {
+            id: bgImg
+            anchors.fill: parent
+            mirror: Qt.application.layoutDirection === Qt.RightToLeft
+            source: "qrc:/img/bg/" + (mm.currentPrayer % 6) + ".jpg"
+            fillMode: Image.PreserveAspectCrop
+        }
+
+        MultiEffect {
+            source: bgImg
+            anchors.fill: bgImg
+            blurEnabled: mm.bgImage
+            blurMax: mm.bg_img_blur
+            autoPaddingEnabled: false
+            blur: 1.0
+        }
+    }
+
     Component.onCompleted: {
 
         var prayerConfig = settings.value("prayerConfig", JSON.stringify(mm.prayerConfig))
@@ -119,29 +141,6 @@ ApplicationWindow {
         property alias hideOnClose: mm.hideOnClose
         property alias isoClock:    mm.isoClock
         property alias showOnAthan: mm.showOnAthan
-    }
-
-    Item {
-        id: todw
-        visible: mm.bgImage
-        anchors.fill: parent
-
-        Image {
-            id: bgImg
-            anchors.fill: parent
-            mirror: Qt.application.layoutDirection === Qt.RightToLeft
-            source: "qrc:/img/bg/" + (mm.currentPrayer % 6) + ".jpg"
-            fillMode: Image.PreserveAspectCrop
-        }
-
-        MultiEffect {
-            source: bgImg
-            anchors.fill: bgImg
-            blurEnabled: mm.bgImage
-            blurMax: mm.bg_img_blur
-            autoPaddingEnabled: false
-            blur: 1.0
-        }
     }
 
     MainPage {
