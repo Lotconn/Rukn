@@ -11,7 +11,7 @@ Item {
     property alias prayerLabel: prayerLabel.text
     property string athanTime
     //property alias iqamaTime: iqamaLabel.text
-    property double pixelDiv: 2.5
+    property double pixelDiv: 3
 
     property var prayerId
 
@@ -25,18 +25,13 @@ Item {
             Text {
                 id: prayerLabel
                 text: mm.prayerNames[prayerId]
-                //anchors.left: parent.left
-                //anchors.verticalCenter: parent.verticalCenter
-                //anchors.leftMargin: -50
                 anchors.centerIn: parent
-                //font.bold: prayerId === mm.currentPrayer
+                font.bold: prayerId === mm.currentPrayer
                 font.pixelSize: Math.min(parent.height, parent.width) / pixelDiv
                 elide: Text.ElideRight
                 //color: Material.primaryTextColor
                 color: Material.secondaryTextColor
-
                 visible: !mm.locationNotSet
-
                 font.weight: Font.DemiBold
             }
         }

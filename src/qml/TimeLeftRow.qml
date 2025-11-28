@@ -41,7 +41,7 @@ Pane {
                 color: Material.secondaryTextColor
                 elide: Text.ElideRight
                 font.weight: Font.DemiBold
-                fontSizeMode: Text.Fit
+                font.pixelSize: height / 2
 
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
