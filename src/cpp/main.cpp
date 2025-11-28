@@ -12,6 +12,7 @@
 int main(int argc, char *argv[])
 {
     //qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
+    qputenv("QT_QPA_PLATFORMTHEME", QByteArray("gnome"));
 
     QApplication app(argc, argv);
     Engine engine;
