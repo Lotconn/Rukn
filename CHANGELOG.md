@@ -16,7 +16,7 @@
 <li>Slimmed code base</li>
 </ul>
 
-<p>Special thanks to [Hasan Esa](https://gitlab.com/HasanEsa/) for the contributions and motivation, more will follow as a result inshallah.</p>
+<p>Special thanks to <text><a href="https://gitlab.com/HasanEsa">Hasan Esa</a></text> for the contributions and motivation, more will follow as a result inshallah.</p>
 
 </br>
 

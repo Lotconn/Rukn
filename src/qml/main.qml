@@ -85,7 +85,7 @@ ApplicationWindow {
     onVisibilityChanged: {
         alarms.clear("60s_tick")
 
-        if(mainWindow.visibility === ApplicationWindow.Hidden) return
+        // if(mainWindow.visibility === ApplicationWindow.Hidden) return
 
         mm.set_60s_ticker()
         mm.refreshTable()
@@ -324,7 +324,7 @@ ApplicationWindow {
         target: alarms
 
         function onTrigger(id) {
-            console.log("onTrigger(",id,")")
+            console.debug("onTrigger(",id,")")
 
             switch(id) {
             case "24h_tick":
