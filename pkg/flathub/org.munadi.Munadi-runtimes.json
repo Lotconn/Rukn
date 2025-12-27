@@ -5,13 +5,13 @@
     "sdk": "org.kde.Sdk",
     "command": "munadi",
     "finish-args": [
-       "--device=dri",
+        "--device=dri",
+        "--filesystem=xdg-music:ro",
         "--share=ipc",
         "--share=network",
         "--socket=wayland",
         "--socket=pulseaudio",
         "--socket=fallback-x11",
-        "--socket=inherit-wayland-socket",
         "--talk-name=org.freedesktop.Notifications",
         "--talk-name=org.kde.StatusNotifierWatcher"
     ],
