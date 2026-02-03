@@ -56,15 +56,17 @@ RowLayout {
         implicitWidth: height
 
         onClicked: {
-            if (audioListCb.currentIndex > 0) {
+            if (audioListCb.currentIndex > 2) {
                 var rmIdx = audioListCb.currentIndex
                 mm.audioList.splice(rmIdx , 1)
                 audioListCb.model = mm.audioList
                 mm.audioList = mm.audioList
 
-                for(var i = 0; i < 6; i++) {
-                    mm.prayerConfig[i].athan_idx = 0
-                }
+                if ( mm.prayerConfig[0].athan_idx == rmIdx) mm.prayerConfig[0].athan_idx = 2;
+                if ( mm.prayerConfig[2].athan_idx == rmIdx) mm.prayerConfig[2].athan_idx = 0;
+                if ( mm.prayerConfig[3].athan_idx == rmIdx) mm.prayerConfig[3].athan_idx = 0;
+                if ( mm.prayerConfig[4].athan_idx == rmIdx) mm.prayerConfig[4].athan_idx = 1;
+                if ( mm.prayerConfig[5].athan_idx == rmIdx) mm.prayerConfig[5].athan_idx = 0;
             }
         }
     }

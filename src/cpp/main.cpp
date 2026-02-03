@@ -1,6 +1,7 @@
 #include <QQmlContext>
 #include <QApplication>
 #include <QQmlApplicationEngine>
+#include <QStyleFactory>
 
 #ifndef ANDROID
 #include <kdsingleapplication.h>
@@ -12,12 +13,12 @@
 int main(int argc, char *argv[])
 {
     //qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
-    qputenv("QT_QPA_PLATFORMTHEME", QByteArray("gnome"));
 
     QApplication app(argc, argv);
     Engine engine;
     Alarms alarms;
 
+    QApplication::setStyle(QStyleFactory::create("gnome"));
 #ifndef ANDROID
     KDSingleApplication sapp;
 
@@ -30,7 +31,7 @@ int main(int argc, char *argv[])
 #endif
 
     app.setWindowIcon(QIcon(":/img/munadi.png"));
-    app.setOrganizationDomain("munadi.org");
+    app.setOrganizationDomain("munadi");
     app.setApplicationName("Munadi");
 
     QFontDatabase::addApplicationFont(":/data/NotoNaskhArabicUI-Regular.ttf");
@@ -44,8 +45,8 @@ int main(int argc, char *argv[])
     auto locale = QLocale::system().name();
     qDebug() << "Locale: " << locale;
 
-    if(locale.startsWith("en")) // Work around for Android
-        QLocale::setDefault(QLocale::English);
+    // if(locale.startsWith("en")) // Work around for Android
+    QLocale::setDefault(QLocale::English);
 
     QTranslator translator;
     // look up e.g. :/i18n/munadi_ar.qm
@@ -59,7 +60,11 @@ int main(int argc, char *argv[])
         if(strcmp(argv[1], "--hidden") == 0)
             engine.autostart_hidden(true);
         else if(strcmp(argv[1], "--fullscreen") == 0)
-                engine.fullscreen(true);
+            engine.fullscreen(true);
+        else if(strcmp(argv[1], "--help") == 0) {
+            printf("%s", qPrintable(engine.show_help(true)));
+            exit(0);
+        }
     }
 
     qae.rootContext()->setContextProperty("engine", &engine);
@@ -67,7 +72,7 @@ int main(int argc, char *argv[])
 #ifndef ANDROID
     qae.rootContext()->setContextProperty("sapp", &sapp);
 #endif
-    //qae.rootContext()->setContextProperty("updater", engine.updater);
+    qae.rootContext()->setContextProperty("updater", engine.updater);
     qae.load(QUrl(QLatin1String("qrc:/qml/main.qml")));
 
     return app.exec();

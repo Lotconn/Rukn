@@ -251,32 +251,33 @@ Page {
                 visible: enabled
             }
 
-            //                RowLayout {
-            //                    ColumnLayout {
-            //                        SettingTitle {
-            //                            text: qsTr("Check for updates")
-            //                        }
+            RowLayout {
+               ColumnLayout {
+                   SettingTitle {
+                       text: qsTr("Check for updates")
+                   }
 
-            //                        SettingSubtitle {
-            //                            text: qsTr("Munadi will check for updates when it first starts.")
-            //                        }
-            //                    }
+                   SettingSubtitle {
+                       text: qsTr("Munadi will check for updates when it first starts.")
+                   }
+               }
 
-            //                    Switch {
-            //                        id: cfu
-            //                        checked: true
-            //                        onCheckedChanged: {
-            //                            mm.checkForUpdates = checked
-            //                        }
-            //                    }
-            //                    enabled: engine.ff() === "d"
-            //                    visible: enabled
-            //                }
+               Switch {
+                   id: cfu
+                   checked: true
+                   onCheckedChanged: {
+                       mm.checkForUpdates = checked
+                   }
+               }
+               enabled: engine.ff() === "d"
+               visible: enabled
+            }
+
             Settings {
                 category: "App"
                 property alias autoStartUp: asu.checked
                 property alias bgImage:     bgi.checked
-                //property alias checkForUpdates: cfu.checked
+                property alias checkForUpdates: cfu.checked
                 property alias showOnAthan: soa.checked
                 property alias hideOnClose: hoc.checked
                 property alias isoClock:   isoc.checked

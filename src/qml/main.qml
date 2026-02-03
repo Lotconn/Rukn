@@ -45,12 +45,12 @@ ApplicationWindow {
 
     Component.onCompleted: {
 
-        var prayerConfig = settings.value("prayerConfig", JSON.stringify(mm.prayerConfig))
+        var prayerConfig = settings.value("prayerConfigV2", JSON.stringify(mm.prayerConfig))
         try {
             mm.prayerConfig = JSON.parse(prayerConfig)
         } catch(_) {}
 
-        var audioList = settings.value("audioList", JSON.stringify(mm.audioList))
+        var audioList = settings.value("audioListV2", JSON.stringify(mm.audioList))
         try {
             mm.audioList = JSON.parse(audioList)
         } catch(_) {}
@@ -60,9 +60,10 @@ ApplicationWindow {
         } else {
             engine.fullscreen() ? showFullScreen() : show();
         }
-        //        if(mm.checkForUpdates) {
-        //            updater.check()
-        //        }
+
+        if(mm.checkForUpdates) {
+            updater.check()
+        }
 
         // Only display what's new once
         if (news.newsVersion !== engine.getVersionNo()) {
@@ -78,8 +79,8 @@ ApplicationWindow {
     }
 
     Component.onDestruction: {
-        settings.setValue("prayerConfig", JSON.stringify(mm.prayerConfig))
-        settings.setValue("audioList", JSON.stringify(mm.audioList))
+        settings.setValue("prayerConfigV2", JSON.stringify(mm.prayerConfig))
+        settings.setValue("audioListV2", JSON.stringify(mm.audioList))
     }
 
     onVisibilityChanged: {
@@ -108,18 +109,20 @@ ApplicationWindow {
     // Below used for variables worth remembering only
     Settings {
         id: settings
+        property alias athanMuted:          athan.audioOutput.muted
+        property alias blur:                mm.bg_img_blur
+        property alias calcMethodIndex:     mm.calcMethodIndex
+        property alias calendarPreference:  mm.calendarPreference
+        property alias checkForUpdates:     mm.checkForUpdates
         property alias cityName:            mm.cityName
         property alias countryName:         mm.countryName
+        property alias hijriDateOffset:     mm.hijriDateOffset
         property alias latitude:            mm.latitude
         property alias longitude:           mm.longitude
-        property alias calcMethodIndex:     mm.calcMethodIndex
         property alias madhab:              mm.madhab
-        property alias overrideOffsetBy:    mm.overrideOffsetBy
         property alias opacity:             mm.rectangle_opacity
-        property alias blur:                mm.bg_img_blur
+        property alias overrideOffsetBy:    mm.overrideOffsetBy
         property alias themeListIndex:      mm.themeListIndex
-        property alias hijriDateOffset:     mm.hijriDateOffset
-        property alias calendarPreference:  mm.calendarPreference
     }
 
     LocationService {
@@ -180,7 +183,7 @@ ApplicationWindow {
 
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
-        onClosed: locationPopup.open()
+        onClosed:  if(mm.locationNotSet) locationPopup.open()
 
         Flickable {
             id: flickable
@@ -206,14 +209,24 @@ ApplicationWindow {
 
         x: (parent.width - width) / 2
         y: (parent.height - height) / 4
-        width: parent.width * .9 //Math.min(parent.width * .9, parent.height / 1.8)
+        width: parent.width * .9
 
-        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-
-        onClosed: if(mm.locationNotSet) open()
+        closePolicy: mm.locationNotSet ? Popup.NoAutoClose : (Popup.CloseOnEscape | Popup.CloseOnPressOutside)
 
         LocationSearchComponent {
+            focus: true
+            Keys.onPressed: (event) => {
+                if (event.key === Qt.Key_Escape) {
+                    if (mm.locationNotSet && mainWindow.visibility === ApplicationWindow.FullScreen) {
+                        mainWindow.visibility = ApplicationWindow.Windowed
+                        event.accepted = true
+                        return
+                    }
+                }
+            }
+
             Component.onCompleted: {
+                forceActiveFocus()
                 if (mm.locationNotSet && !whatsNewPopup.visible) {
                     locationPopup.open()
                 }
@@ -259,7 +272,7 @@ ApplicationWindow {
     SystemTrayIcon {
         visible: true
         icon.mask: true
-        icon.source: "qrc:/img/munadi.png"
+        icon.source: "qrc:/img/munadi-symbolic.svg"
         tooltip: qsTr("Munadi") + (mm.timeLeftStr ? "\n" + mm.timeLeftStr : "")
 
         onActivated: {
@@ -446,11 +459,12 @@ ApplicationWindow {
         }
     }
 
-    //    Connections {
-    //        target: updater
-    //        onUpdateAvailable: {
-    //            whatsNewPopup.text = info
-    //            whatsNewPopup.open()
-    //        }
-    //    }
+   Connections {
+       target: updater
+
+       function onUpdateAvailable(info) {
+           whatsNewPopup.text = info
+           whatsNewPopup.open()
+       }
+   }
 }

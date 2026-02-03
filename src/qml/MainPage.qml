@@ -46,6 +46,9 @@ ColumnLayout {
                 prayerId: Adhan.adhan.Prayer.Fajr
                 athanTime: mm.fajr
                 Layout.preferredHeight: 60
+                Layout.fillWidth: true
+                Layout.leftMargin: 15
+                Layout.rightMargin: 25
             }
 
             PrayerRow {
@@ -54,6 +57,9 @@ ColumnLayout {
                 prayerId: Adhan.adhan.Prayer.Sunrise
                 athanTime: mm.srise
                 Layout.preferredHeight: 30
+                Layout.fillWidth: true
+                Layout.leftMargin: 15
+                Layout.rightMargin: 25
             }
 
             Line {}
@@ -63,6 +69,9 @@ ColumnLayout {
                 prayerId: Adhan.adhan.Prayer.Dhuhr
                 athanTime: mm.duhr
                 Layout.preferredHeight: 60
+                Layout.fillWidth: true
+                Layout.leftMargin: 15
+                Layout.rightMargin: 25
             }
 
             Line {}
@@ -72,6 +81,9 @@ ColumnLayout {
                 prayerId: Adhan.adhan.Prayer.Asr
                 athanTime: mm.asr
                 Layout.preferredHeight: 60
+                Layout.fillWidth: true
+                Layout.leftMargin: 15
+                Layout.rightMargin: 25
             }
 
             Line {}
@@ -81,6 +93,9 @@ ColumnLayout {
                 prayerId: Adhan.adhan.Prayer.Maghrib
                 athanTime: mm.mgrb
                 Layout.preferredHeight: 60
+                Layout.fillWidth: true
+                Layout.leftMargin: 15
+                Layout.rightMargin: 25
             }
 
             Line {}
@@ -90,6 +105,9 @@ ColumnLayout {
                 prayerId: Adhan.adhan.Prayer.Isha
                 athanTime: mm.isha
                 Layout.preferredHeight: 60
+                Layout.fillWidth: true
+                Layout.leftMargin: 15
+                Layout.rightMargin: 25
             }
         }
     }

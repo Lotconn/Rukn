@@ -69,7 +69,7 @@ QtObject {
     property double page_margins_p: 0.02
     property int    pane_elevation: 6
 
-    //    property bool checkForUpdates:  true
+    property bool checkForUpdates:  true
 
     property var currentPrayer
     property var nextPrayer
@@ -191,16 +191,24 @@ QtObject {
         qsTr("Fajr"), qsTr("Sunrise"), qsTr("Dhuhr"), qsTr("Asr"), qsTr("Maghrib"), qsTr("Isha")]
 
     property var prayerConfig: [
-        {"adjustment": 0, "volume": 0.2, "athan_idx": 0 },
+        {"adjustment": 0, "volume": 0.2, "athan_idx": 2 },
         {"adjustment": 0, "volume": 0.0, "athan_idx": 0 },
         {"adjustment": 0, "volume": 1.0, "athan_idx": 0 },
         {"adjustment": 0, "volume": 1.0, "athan_idx": 0 },
-        {"adjustment": 0, "volume": 1.0, "athan_idx": 0 },
+        {"adjustment": 0, "volume": 1.0, "athan_idx": 1 },
         {"adjustment": 0, "volume": 0.5, "athan_idx": 0 }]
 
     property var audioList: [{
             "name": qsTr("Makkah (built-in)"),
-            "path": "qrc:/data/athan.ogg"
+            "path": "qrc:/data/athan-makkah.ogg"
+        },
+        {
+            "name": qsTr("Ar-Rashid (built-in)"),
+            "path": "qrc:/data/athan-arRashid.ogg"
+        },
+        {
+            "name": qsTr("Fajr (built-in)"),
+            "path": "qrc:/data/fajr-athan.ogg"
         }]
 
     property int themeListIndex: 0
