@@ -1,5 +1,5 @@
 #include "engine.h"
-//#include "updater.h"
+#include "updater.h"
 
 #include <QTime>
 #include <QSettings>
@@ -29,6 +29,15 @@ QString Engine::getHijriDate(const QDate &date, const int offset)
     const QDate &d = date.addDays(offset);
     QCalendar q(QCalendar::System::Gregorian);
     return q.dateFromParts(d.year(), d.month(), d.day()).toString(QString("dd-MMM-yyyy"), QCalendar(QCalendar::System::IslamicCivil));
+}
+
+QString Engine::show_help(bool flag)
+{
+    return "\nUsage: munadi [options]\n"
+    "Options:\n"
+    "  --hidden        Start minimized to system tray\n"
+    "  --fullscreen    Start in fullscreen mode\n"
+    "  --help          Show this help message and exit\n\n";
 }
 
 void Engine::autostart_hidden(bool flag)
@@ -70,13 +79,8 @@ namespace
         }
     }
 #elif defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
-    void autostart_snap(bool set)
+    void autostart_linux(bool set)
     {
-        if(!QDir("/snap").exists())
-        {
-            return;
-        }
-
         QDir autostartDir = QDir::homePath() + QDir::separator() + ".config/autostart";
 
         if(!autostartDir.exists())
@@ -84,7 +88,17 @@ namespace
             if(!autostartDir.mkpath(autostartDir.path())) return;
         }
 
-        QFile desktopFile("/snap/munadi/current/usr/share/applications/org.munadi.Munadi.desktop");
+        QString desktopPath;
+        QString localPath = QDir::homePath() + "/.local/share/applications/org.munadi.Munadi.desktop";
+        QString systemPath = "/usr/local/share/applications/org.munadi.Munadi.desktop";
+
+        if (QFile::exists(localPath)) {
+            desktopPath = localPath;
+        } else {
+            desktopPath = systemPath;
+        }
+        QFile desktopFile(desktopPath);
+
         QFile autostartDesktopFile(autostartDir.filePath("org.munadi.Munadi.desktop"));
 
         if(set)
@@ -101,11 +115,9 @@ namespace
                      return;
             }
 
-            QTextStream in(&desktopFile);
-            QString data = in.readAll();
-            data.replace("Exec=munadi", "Exec=munadi --hidden");
-            QTextStream out(&autostartDesktopFile);
-            out << data;
+            QString data = QTextStream(&desktopFile).readAll();
+            data.replace("bin/munadi", "bin/munadi --hidden");
+            QTextStream(&autostartDesktopFile) << data;
         }
         else
         {
@@ -118,7 +130,6 @@ namespace
         QDBusInterface portal("org.freedesktop.portal.Desktop",
                               "/org/freedesktop/portal/desktop",
                               "org.freedesktop.portal.Background");
-#endif
 
         QList<QString> commandline = {"munadi", "--hidden"};
 
@@ -126,7 +137,6 @@ namespace
         params.insert("reason", "Background Athan.");
         params.insert("autostart", set);
         params.insert("commandline", QVariant(commandline));
-#ifndef ANDROID
         portal.call("RequestBackground", "", params);
 #endif
     }
@@ -146,9 +156,10 @@ void Engine::autostart(bool set)
 
 #elif defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
 
-    // Can't tell if we're on Snap, Flatpak or otherwise, so do all!
-    autostart_snap(set);
-    autostart_flatpak(set);
+    if(qEnvironmentVariableIsSet("FLATPAK_ID"))
+        autostart_flatpak(set);
+    else
+        autostart_linux(set);
 
 #elif defined(Q_OS_MAC)
 
@@ -170,7 +181,7 @@ QString Engine::getWhatsNew()
 
 bool Engine::init()
 {
-    //updater = new Updater();
+    updater = new Updater();
 
     return true;
 }

@@ -9,7 +9,7 @@
 
 #define MUNADI_API_URL "https://munadi.org/"
 
-//#include "updater.h"
+#include "updater.h"
 
 #ifdef Q_OS_ANDROID
 #include <QtPositioning/QGeoCoordinate>
@@ -31,6 +31,7 @@ public:
 
     Q_INVOKABLE QString getVersionNo() { return APP_VERSION; }
     Q_INVOKABLE QString getWhatsNew();
+    QString show_help(bool);
 
     Q_INVOKABLE void autostart(bool set);
 
@@ -43,7 +44,7 @@ public:
 #endif
     }
 
-    //Updater * updater;
+    Updater * updater;
     void autostart_hidden(bool);
     Q_INVOKABLE bool autostart_hidden();
 

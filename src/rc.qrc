@@ -5,11 +5,14 @@
         <file>img/compass.png</file>
         <file>img/info.png</file>
         <file>img/munadi.png</file>
+        <file>img/munadi-symbolic.svg</file>
         <file>img/arrow.png</file>
         <file>img/stop.png</file>
         <file>img/about.png</file>
         <file>data/whatsnew.html</file>
-        <file>data/athan.ogg</file>
+        <file>data/athan-makkah.ogg</file>
+        <file>data/athan-arRashid.ogg</file>
+        <file>data/fajr-athan.ogg</file>
         <file>data/Adhan.js</file>
         <file>data/timezones.tsv</file>
         <file>img/start.png</file>

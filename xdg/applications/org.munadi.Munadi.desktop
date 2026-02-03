@@ -1,11 +1,16 @@
 [Desktop Entry]
-Name=Munadi
+Categories=Utility;
+Comment[ar]=برنامج اذان بسيط
+Comment[bn_BD]=সাধারন আযান অ্যাপ
+Comment[en_US]=Simple Athan App
+Comment=Simple Athan App
 Exec=munadi
 Icon=org.munadi.Munadi
-Type=Application
-Categories=Utility;
-Terminal=false
-Comment=Simple Athan App
-
 Name[ar]=منادي
-Comment[ar]=برنامج اذان بسيط
+Name[bn_BD]=মুনাদি
+Name[en_US]=Munadi
+Name=Munadi
+SingleMainWindow=true
+StartupNotify=true
+Terminal=false
+Type=Application

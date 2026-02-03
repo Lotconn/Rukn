@@ -2,3 +2,6 @@
 	path = libs/android/openssl
 	url = https://github.com/KDAB/android_openssl
 
+[submodule "pkg/makeself/makeself"]
+	path = pkg/makeself/makeself
+	url = https://github.com/megastep/makeself

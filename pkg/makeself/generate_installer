@@ -1,8 +1,34 @@
-#!/bin/sh
+#!/bin/bash
+
+set -e
 
 # makeself.sh /home/joe/mysoft mysoft.sh "Joe's Nice Software Package" ./setup 
 # e.g. makeself.sh [args] archive_dir file_name label startup_script [script_args]
 
+VER=26.02
+FILES=('build/Release/munadi' 'LICENSE' 'pkg/makeself/install'
+'pkg/makeself/uninstall' 'xdg/applications/org.munadi.Munadi.desktop'
+'xdg/icons' 'xdg/metainfo/org.munadi.Munadi.metainfo.xml')
+
+cd ../../
+find "${FILES[@]}" -type f -exec bash -c 'commit_time=$(TZ=UTC0 git log -1 \
+  --format=tformat:%cd --date=format:%Y-%m-%dT%H:%M:%SZ "$0");
+  [[ -n $commit_time ]] && touch -md $commit_time "$0"' {} \;
+
+cd - > /dev/null
+trap 'rm -rf ./files/' ERR EXIT ABRT INT QUIT SEGV TERM
+mkdir -m 0755 ./files
+cp -prt ./files "${FILES[@]/#/../../}"
+find ./files -depth -type d -exec sh -c \
+  'touch -r "$0/$(ls -At "$0" | head -n1)" "$0"' {} \;
 strip ./files/munadi
-chmod +x -R ./files/
-makeself --xz --nox11 ./files install_munadi.sh "Munadi 17.02 Installer" ./install.sh
+
+makeself/makeself.sh \
+  --header ./makeself-header.sh --sha256 --nomd5 \
+  --zstd --complevel 19 --tar-format posix --tar-extra "
+    --numeric-owner --owner 0 --group 0 --mode=go+u,go-w
+    --posix --pax-option=exthdr.name=%d/PaxHeaders/%f \
+    --pax-option=delete=atime,delete=ctime" \
+  ./files Munadi-${VER}.run "Munadi $VER Installer" ./install
+
+exit 0
