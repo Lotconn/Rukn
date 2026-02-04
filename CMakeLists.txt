@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.31)
 
 project(munadi LANGUAGES CXX C)
-set(APP_VERSION 25.11)
+set(APP_VERSION 26.02)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -35,15 +35,13 @@ set(TS_FILES
 set(HEADERS
     src/cpp/alarms.h
     src/cpp/engine.h
-    src/cpp/updater.h
-    src/cpp/libitl/hijri.h)
+    src/cpp/updater.h)
 
 set(SOURCES
     src/cpp/alarms.cpp
     src/cpp/engine.cpp
     src/cpp/updater.cpp
-    src/cpp/main.cpp
-    src/cpp/libitl/hijri.c)
+    src/cpp/main.cpp)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
     qt6_add_resources(QRC_FILES src/qml.qrc src/rc.qrc)
@@ -79,34 +77,6 @@ if (ANDROID)
     add_android_openssl_libraries(${PROJECT_NAME})
 endif()
 
-
- if(DEFINED ENV{FLATPAK_ID})
-     find_package(PkgConfig REQUIRED)
-     pkg_check_modules(AVCODEC     REQUIRED IMPORTED_TARGET libavcodec)
-     pkg_check_modules(AVFORMAT    REQUIRED IMPORTED_TARGET libavformat)
-     pkg_check_modules(AVFILTER    REQUIRED IMPORTED_TARGET libavfilter)
-     pkg_check_modules(AVDEVICE    REQUIRED IMPORTED_TARGET libavdevice)
-     pkg_check_modules(AVUTIL      REQUIRED IMPORTED_TARGET libavutil)
-     pkg_check_modules(SWRESAMPLE  REQUIRED IMPORTED_TARGET libswresample)
-     pkg_check_modules(SWSCALE     REQUIRED IMPORTED_TARGET libswscale)
-
-     add_library(FFmpeg INTERFACE IMPORTED GLOBAL)
-
-     target_link_libraries(FFmpeg INTERFACE
-         PkgConfig::AVCODEC
-         PkgConfig::AVFORMAT
-         PkgConfig::AVFILTER
-         PkgConfig::AVDEVICE
-         PkgConfig::AVUTIL
-         PkgConfig::SWRESAMPLE
-         PkgConfig::SWSCALE
-     )
-
-     find_package(Qt6 COMPONENTS WaylandClient)
-
-     target_link_libraries(${PROJECT_NAME} PUBLIC Qt::WaylandClient FFmpeg)
- endif()
-
 target_compile_definitions(${PROJECT_NAME}
     PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
 
@@ -115,8 +85,10 @@ target_link_libraries(${PROJECT_NAME}
     Qt6::Positioning Threads::Threads  )
 
 if(LINUX)
-    target_link_libraries(${PROJECT_NAME} PUBLIC Qt6::DBus kdsingleapplication)
-    target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_BINARY_DIR}")
+    find_package(Qt6 COMPONENTS WaylandClient)
+
+    target_link_libraries(${PROJECT_NAME} PUBLIC Qt::WaylandClient Qt6::DBus kdsingleapplication)
+    #target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_BINARY_DIR}")
 
     install(TARGETS ${PROJECT_NAME})
     install(DIRECTORY xdg/icons xdg/metainfo xdg/applications TYPE DATA)
