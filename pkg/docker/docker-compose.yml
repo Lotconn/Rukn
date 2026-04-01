@@ -1,0 +1,4 @@
+services:
+  man:
+    build: .
+    image: munadi.org:rocky10-builder

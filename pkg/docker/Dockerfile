@@ -1,13 +1,12 @@
-FROM rockylinux/rockylinux:10-ubi AS builder
+FROM rockylinux/rockylinux:10-ubi
 
 RUN dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm
 RUN dnf dsync -y
 RUN dnf config-manager --set-enabled crb
-RUN dnf -y install bash-color-prompt bash-completion ccache cmake extra-cmake-modules gcc gcc-c++ git libglvnd-devel libinput-devel libXrandr-devel libxkbcommon-devel nasm ninja-build openssl-devel pkgconf pulseaudio-libs-devel python3 rootfiles wayland-devel zstd
-RUN dnf reinstall -y rootfiles
-RUN rpm --restore rootfiles
+RUN dnf install -y bash-color-prompt bash-completion ccache cmake extra-cmake-modules gcc gcc-c++ git libglvnd-devel libinput-devel libXrandr-devel libxkbcommon-devel nasm ninja-build openssl-devel pkgconf pulseaudio-libs-devel python3 wayland-devel zstd
 RUN dnf clean all
 RUN rm -rf /var/cache/dnf/*
+RUN cp /usr/share/rootfiles/.* /root
 
 RUN git config --system --add safe.directory /src
 
