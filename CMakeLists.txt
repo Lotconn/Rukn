@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.31)
+cmake_minimum_required(VERSION 3.30)
 
 project(munadi LANGUAGES CXX C)
-set(APP_VERSION 26.02)
+set(APP_VERSION 26.04)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 

@@ -100,6 +100,33 @@
     </screenshots>
 
     <releases>
+        <release version="26.04" date="2026-04-01">
+            <description>
+                <p>Bug fixes and minor UI changes
+                <ul>
+                    Notable bug fixes
+                    <li>Resolve few typos in `install` and `uninstall` scripts, also simplify couple of stuffs</li>
+                    <li>Fix tooltip "Time Left" string not updated if started hidden or woken from sleep</li>
+                    <li>Show time left to next date's fajr after Isha onwards rather than only after date change past 23:59</li>
+                    <li>Prevent prayer labels running into the time next to it and elide if parent width is too short</li>
+                </ul>
+                <ul>
+                    Improvements
+                    <li>Upgrade to Qt 6.11</li>
+                    <li>Make the Prayer Times table labels left aligned</li>
+                    <li>Only show "Time Left" string on current date</li>
+                    <li>Do not calculate time left to next prayer if it's not today</li>
+                </ul>
+                <ul>
+                    Others
+                    <li>Use Rocky Linux as base image for munadi builder (current version 10.1)</li>
+                    <li>Use `/tmp` for creating the archive instead of cwd</li>
+                    <li>Simplify approach on object aligning for the Prayer Times table</li>
+                    <li>Allow hyperlinks on the What's New page to be clickable</li>
+                </ul>
+                </p>
+            </description>
+        </release>
         <release version="26.02" date="2026-02-03">
             <description>
                 <p>Bug fixes, minor UI changes and new installer</p>

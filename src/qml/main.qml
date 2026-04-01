@@ -49,6 +49,7 @@ ApplicationWindow {
         try {
             mm.prayerConfig = JSON.parse(prayerConfig)
         } catch(_) {}
+        mm.invalidate()
 
         var audioList = settings.value("audioListV2", JSON.stringify(mm.audioList))
         try {
@@ -72,6 +73,8 @@ ApplicationWindow {
             news.newsVersion = engine.getVersionNo()
         }
         mm.set_24h_ticker()
+        mm.set_60s_ticker()
+        mm.refreshTable()
 
         if (mm.themeListIndex === 0) {
             mm.applySystemTheme()
@@ -86,10 +89,10 @@ ApplicationWindow {
     onVisibilityChanged: {
         alarms.clear("60s_tick")
 
-        // if(mainWindow.visibility === ApplicationWindow.Hidden) return
-
-        mm.set_60s_ticker()
-        mm.refreshTable()
+        if(mainWindow.visibility !== ApplicationWindow.Hidden) {
+            mm.set_60s_ticker()
+            mm.refreshTable()
+        }
     }
 
     Theme {
@@ -194,6 +197,12 @@ ApplicationWindow {
                 readOnly: true
                 wrapMode: TextArea.Wrap
                 textFormat: TextArea.RichText
+                onLinkActivated: (link) => Qt.openUrlExternally(link)
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.NoButton
+                    cursorShape: parent.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
+                }
             }
 
             ScrollBar.vertical: ScrollBar {}

@@ -17,7 +17,7 @@ _arch=x86_64
 _errout="${TMPROOT:-/tmp}/munadi-stderr.$RANDOM"
 _logfile="${TMPROOT:-/tmp}/munadi-$_script-$RANDOM.log"
 _v_args=''
-_ver=26.02
+_ver=26.04
 _trapexec=( 'rm -f "$_errout"' )
 
 trap 'for handler in "${_trapexec[@]}"; do eval "$handler"; done' \
@@ -150,20 +150,17 @@ _trapexec+=( 'warn_print "A log file is available at "$_logfile""' )
   #+++++++++++++++++++++++++++++++++++++++++++++++++++
   # Know what EUID we are. Also detect additional installations
 
-  declare -n _euid=EUID
-  declare -n _nuid=USER
-
   debug_print 'Checking UID and GID...'
-  debug_print "Effective UID is $_euid ($_nuid)"
-  if (( _euid == 0 )); then
+  debug_print "Effective UID is $EUID ($USER)"
+  if (( EUID == 0 )); then
     warn_print 'Script is running with superuser privilege.'
     _prefix=/opt/munadi
     _priv=1
     # Check all user installations
     for home in /home/* ; do
       debug_print "Checking $home/.local/libexec/munadi/munadi.version ..."
-      _old_ver=$(sed -r '/^_ver=/s/^.*=(.*)/\1/g' \
-                "$home/.local/libexec/munadi/munadi.version" 2>/dev/null || :)
+      _old_ver=$(sed -n 's/^_ver=//p' \
+                "$home/.local/libexec/munadi/munadi.version" 2>/dev/null || _old_ver='')
       if [[ -z "$_old_ver" ]]; then
         debug_print "Earlier installation not detected in $home."
       else
@@ -178,7 +175,7 @@ _trapexec+=( 'warn_print "A log file is available at "$_logfile""' )
     _priv=0
     # Check system-wide installation
     debug_print "Checking /opt/munadi/libexec/munadi/munadi.version ..."
-    _old_ver=$(sed -r '/^_ver=/s/^.*=(.*)/\1/g' \
+    _old_ver=$(sed -n 's/^_ver=//p' \
                   /opt/munadi/libexec/munadi/munadi.version 2>/dev/null || true)
     if [[ -z "$_old_ver" ]]; then
       debug_print "Earlier installation not detected in /opt/munadi"
@@ -194,7 +191,7 @@ _trapexec+=( 'warn_print "A log file is available at "$_logfile""' )
   # Previous installation detection
 
   debug_print "Checking $_prefix/libexec/munadi/munadi.version ..."
-  _old_ver=$(sed -r '/^_ver=/s/^.*=(.*)/\1/g' \
+  _old_ver=$(sed -n 's/^_ver=//p' \
                     "$_prefix/libexec/munadi/munadi.version" 2>/dev/null || :)
   if [[ -z "$_old_ver" ]]; then
     warn_print "Could not detect previous installation under $_prefix."

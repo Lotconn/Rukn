@@ -47,8 +47,6 @@ ColumnLayout {
                 athanTime: mm.fajr
                 Layout.preferredHeight: 60
                 Layout.fillWidth: true
-                Layout.leftMargin: 15
-                Layout.rightMargin: 25
             }
 
             PrayerRow {
@@ -58,8 +56,6 @@ ColumnLayout {
                 athanTime: mm.srise
                 Layout.preferredHeight: 30
                 Layout.fillWidth: true
-                Layout.leftMargin: 15
-                Layout.rightMargin: 25
             }
 
             Line {}
@@ -70,8 +66,6 @@ ColumnLayout {
                 athanTime: mm.duhr
                 Layout.preferredHeight: 60
                 Layout.fillWidth: true
-                Layout.leftMargin: 15
-                Layout.rightMargin: 25
             }
 
             Line {}
@@ -82,8 +76,6 @@ ColumnLayout {
                 athanTime: mm.asr
                 Layout.preferredHeight: 60
                 Layout.fillWidth: true
-                Layout.leftMargin: 15
-                Layout.rightMargin: 25
             }
 
             Line {}
@@ -94,8 +86,6 @@ ColumnLayout {
                 athanTime: mm.mgrb
                 Layout.preferredHeight: 60
                 Layout.fillWidth: true
-                Layout.leftMargin: 15
-                Layout.rightMargin: 25
             }
 
             Line {}
@@ -106,8 +96,6 @@ ColumnLayout {
                 athanTime: mm.isha
                 Layout.preferredHeight: 60
                 Layout.fillWidth: true
-                Layout.leftMargin: 15
-                Layout.rightMargin: 25
             }
         }
     }

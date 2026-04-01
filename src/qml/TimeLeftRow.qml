@@ -56,7 +56,7 @@ Pane {
                 anchors.topMargin: 2
                 anchors.horizontalCenter: parent.horizontalCenter
                 Material.accent: timeLeftLabel.color
-                visible: mm.currentPrayer !== Adhan.Prayer.None && mm.nextPrayer !== Adhan.Prayer.None && !athan.isOn && mm.dateNavOffset < 2
+                visible: mm.currentPrayer !== Adhan.Prayer.None && mm.nextPrayer !== Adhan.Prayer.None && !athan.isOn && mm.dateNavOffset === 0
                 from: if(mm.timeForCurrentPrayer) mm.timeForCurrentPrayer.getTime(); else 0
                 to: if(mm.timeForNextPrayer) mm.timeForNextPrayer.getTime(); else 0
                 value: mm.currentTime.getTime()

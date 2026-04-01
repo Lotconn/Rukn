@@ -17,7 +17,7 @@ _arch=x86_64
 _errout="${TMPROOT:-/tmp}/munadi-stderr.$RANDOM"
 _logfile="${TMPROOT:-/tmp}/munadi-$_script-$RANDOM.log"
 _v_args=''
-_ver=26.02
+_ver=26.04
 _trapexec=( 'rm -f "$_errout"' )
 
 trap 'for handler in "${_trapexec[@]}"; do eval "$handler"; done' \
@@ -127,19 +127,17 @@ _trapexec+=( 'warn_print "A log file is available at "$_logfile""' )
   # Know what EUID and EGID we are. We don't accept normal users
   # having system GID
 
-  declare -n _euid=EUID
-  declare -n _nuid=USER
   declare -i _egid=$(id -g)
   _ngid=$(id -gn)
 
   debug_print 'Checking UID and GID...'
-  debug_print "Effective UID is $_euid ($_nuid)"
+  debug_print "Effective UID is $EUID ($USER)"
   debug_print "Effective GID is $_egid ($_ngid)"
-  if (( _euid == 0 )); then
+  if (( EUID == 0 )); then
     warn_print 'Script is running with superuser privilege.'
     _prefix=/opt/munadi
     _priv=1
-  elif (( _euid >= 1000 )) && \
+  elif (( EUID >= 1000 )) && \
     { (( _egid >= 1000 )) || [[ "$_ngid" = "users" ]] ;}; then
     info_print 'Script is running with normal privilege.'
     _prefix=$HOME/.local
@@ -170,7 +168,7 @@ _trapexec+=( 'warn_print "A log file is available at "$_logfile""' )
       debug_print "dbus-send\t$(hash -t dbus-send)"
       if dbus-send --system --print-reply=literal \
           --dest=org.freedesktop.DBus \
-          / org.freedesktop.DBus.ListNames &> /dev/null; then
+          / org.freedesktop.DBus.ListNames &> "$_errout"; then
         debug_print 'DBus system bus is operational.'
       else
         warn_print "No reply received. DBus system bus may not be operational."
@@ -247,7 +245,7 @@ _trapexec+=( 'warn_print "A log file is available at "$_logfile""' )
     do
       if [[ -z "$_syslibs" ]]; then
         _out="$(find -O3 -H /lib /lib64 /usr/lib /usr/lib64 \
-          '( -type l -o -type f )' -iname "$lib*" -print -quit 2>/dev/null)" ||:
+          \( -type l -o -type f \) -iname "$lib*" -print -quit 2>/dev/null)" ||:
         [[ -n "$_out" ]] && debug_print "$lib found at $_out" && continue
 
       else

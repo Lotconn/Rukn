@@ -17,6 +17,8 @@ Item {
 
     RowLayout {
         anchors.fill: parent
+        anchors.leftMargin: 20
+        spacing: 10
 
         Item {
             Layout.preferredWidth: parent.width / 2
@@ -24,8 +26,10 @@ Item {
 
             Text {
                 id: prayerLabel
+                width: parent.width
                 text: mm.prayerNames[prayerId]
-                anchors.centerIn: parent
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
                 font.bold: prayerId === mm.currentPrayer
                 font.pixelSize: Math.min(parent.height, parent.width) / pixelDiv
                 elide: Text.ElideRight
@@ -40,31 +44,27 @@ Item {
             Layout.preferredWidth: parent.width / 2
             Layout.preferredHeight: parent.height
 
-            Text {
-                id: athanLabel
-
+            Row {
                 anchors.centerIn: parent
-                //x: (parent.width - width + ttt.width) / 6
-                //anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: Math.min(parent.height, parent.width) / pixelDiv
-                //font.bold: prayerLabel.font.bold
-                font.weight: prayerLabel.font.weight
-                elide: Text.ElideRight
-                fontSizeMode: Text.Fit
-                color: prayerLabel.color
-                text: athanTime.substring(5, -5)
-
+                anchors.verticalCenter: parent.verticalCenter
                 visible: !mm.locationNotSet
+                spacing: 1
 
                 Text {
+                    id: athanLabel
+                    font.pixelSize: Math.min(parent.parent.height,
+                                             parent.parent.width) / pixelDiv
+                    font.weight: prayerLabel.font.weight
+                    color: prayerLabel.color
+                    text: athanTime.substring(0, 5)
+                }
+                Text {
                     id: ttt
-                    anchors.bottom: parent.bottom
-                    anchors.left: parent.right
-                    text: "" + athanTime.substring(5)
-                    //font.italic: true
-                    font.bold: parent.font.bold
-                    color: parent.color
-                    font.pixelSize: parent.font.pixelSize / 2
+                    anchors.baseline: athanLabel.baseline
+                    text: athanTime.substring(5)
+                    font.bold: athanLabel.font.bold
+                    color: athanLabel.color
+                    font.pixelSize: athanLabel.font.pixelSize / 2
                 }
             }
         }
