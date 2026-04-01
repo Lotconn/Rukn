@@ -1,0 +1,58 @@
+stages:
+  - build
+  - package
+
+variables:
+  DOCKER_HOST: "tcp://docker:2375"
+  DOCKER_TLS_CERTDIR: ""
+
+build-static:
+  stage: build
+  image: docker:27
+  services:
+    - name: docker:27-dind
+      alias: docker
+  before_script:
+    - docker info
+  script:
+    # Build the builder Docker image
+    - docker build -t munadi.org:rocky10-builder -f pkg/docker/Dockerfile pkg/docker/
+    # Build the app inside the container
+    - docker run --rm \
+        -v "$CI_PROJECT_DIR:/src" \
+        munadi.org:rocky10-builder \
+        bash -c "cmake -S . -B build -G'Ninja Multi-Config' -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release --parallel"
+  artifacts:
+    paths:
+      - build/Release/munadi
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_TAG
+
+create-installer:
+  stage: package
+  image: docker:27
+  services:
+    - name: docker:27-dind
+      alias: docker
+  before_script:
+    - docker info
+  script:
+    # Build the builder Docker image
+    - docker build -t munadi.org:rocky10-builder -f pkg/docker/Dockerfile pkg/docker/
+    # Build the app inside the container
+    - docker run --rm \
+        -v "$CI_PROJECT_DIR:/src" \
+        munadi.org:rocky10-builder \
+        bash -c "cmake -S . -B build -G'Ninja Multi-Config' -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release --parallel"
+    # Create the makeself installer
+    - docker run --rm \
+        -v "$CI_PROJECT_DIR:/src" \
+        munadi.org:rocky10-builder \
+        bash -c "cd pkg/makeself && ./generate_installer"
+  artifacts:
+    paths:
+      - pkg/makeself/Munadi-*.run
+    expire_in: never
+  rules:
+    - if: $CI_COMMIT_TAG
