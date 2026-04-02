@@ -6,6 +6,7 @@ stages:
 variables:
   BUILDER_IMAGE: "$CI_REGISTRY_IMAGE/builder:rocky10"
   GIT_DEPTH: 0
+  GIT_SUBMODULE_STRATEGY: recursive
 
 workflow:
   rules:
