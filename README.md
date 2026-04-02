@@ -16,11 +16,11 @@ Munadi is a lightweight, privacy-focused prayer time application for Linux and A
 |:--:|:--:|:--:|:--:|:--:|
 | Fajr Prayer Time | Dhuhr Prayer Time | Asr Prayer Time | Maghrib Prayer Time | Isha Prayer Time |
 
-| ![Material Light Theme](screenshots/2604/06_main_page_material_light.png) | ![Material Dark Theme](screenshots/2604/07_main_page_material_dark.png) | ![Location Search](screenshots/2604/08_location_search.png) | ![Settings Page 1](screenshots/2604/09_settings_page.png) | ![Settings Page 2](screenshots/2604/10_settings_page.png) | ![Settings Page 3](screenshots/2604/11_settings_page.png) |
+| ![Material Light Theme](screenshots/2604/06_main_page_material_light.png) | ![Material Dark Theme](screenshots/2604/07_main_page_material_dark.png) | ![Location Search](screenshots/2604/08_location_search.png) | ![Settings Page 1](screenshots/2511/06_settings_page.png) | ![Settings Page 2](screenshots/2511/07_settings_page.png) | ![Settings Page 3](screenshots/2511/08_settings_page.png) |
 |:--:|:--:|:--:|:--:|:--:|:--:|
 | Material Light Theme | Material Dark Theme | Location Search | Prayer Times Settings | General Settings | Appearance Settings |
 
-| ![Tray Menu](screenshots/2604/13_tray_menu.png) | ![Tray Tooltip](screenshots/2604/14_tray_tooltip.png) |
+| ![Tray Menu](screenshots/2511/10_tray_menu.png) | ![Tray Tooltip](screenshots/2511/11_tray_menu.png) |
 |:--:|:--:|
 | System Tray Menu | Tooltip Display |
 
