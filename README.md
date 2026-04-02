@@ -32,7 +32,9 @@ Munadi is a lightweight, privacy-focused prayer time application for Linux and A
 
 ### Primary Release
 
-**Munadi 26.04 - Self-Extracting Installer**
+[![Latest Release](https://gitlab.com/HasanEsa/munadi/-/badges/release.svg)](https://gitlab.com/HasanEsa/munadi/-/releases)
+
+**Munadi Self-Extracting Installer**
 
 (No dependencies required - just run & install)
 

@@ -81,16 +81,9 @@ create-release:
     tag_name: $CI_COMMIT_TAG
     name: "Munadi $CI_COMMIT_TAG"
     description: |
-      Static x86_64 self-extracting installer for Munadi $CI_COMMIT_TAG.
-      No external dependencies required — just download, mark executable, and run.
-
-      **Quick install**
-      ```sh
-      curl -JLO $CI_PROJECT_URL/-/releases/$CI_COMMIT_TAG/downloads/Munadi-$CI_COMMIT_TAG.run
-      sh Munadi-$CI_COMMIT_TAG.run
-      ```
-
       See [CHANGELOG]($CI_PROJECT_URL/-/blob/$CI_COMMIT_TAG/CHANGELOG.md) for what's new.
+
+      [Full changelog]($CI_PROJECT_URL/compare/$CI_COMMIT_TAG^..$CI_COMMIT_TAG)
     assets:
       links:
         - name: "Munadi-$CI_COMMIT_TAG.run"
