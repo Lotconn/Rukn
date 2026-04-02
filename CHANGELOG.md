@@ -26,6 +26,10 @@ All notable changes to this project will be documented in this file.
 - Use `/tmp` for archive creation instead of CWD
 - Simplify Prayer Times table object alignment approach
 - Enable clickable hyperlinks on What's New page
+- Add CI/CD pipeline configuration
+- Munadi-builder docker image for app development now available at the project's registry
+- Polish README.md for user and developer facing briefing
+- Update screenshots
 
 ---
 
