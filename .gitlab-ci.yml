@@ -16,6 +16,8 @@ workflow:
 
 build-image:
   stage: build-image
+  tags:
+    - saas-linux-medium-amd64
   image: docker:27
   services:
     - docker:27-dind
