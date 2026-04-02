@@ -1,58 +1,90 @@
 stages:
+  - build-image
   - build
-  - package
+  - release
 
 variables:
-  DOCKER_HOST: "tcp://docker:2375"
+  BUILDER_IMAGE: "$CI_REGISTRY_IMAGE/builder:rocky10"
+  BUILDER_CACHE: "$CI_REGISTRY_IMAGE/builder:buildcache"
+  DOCKER_HOST: tcp://docker:2375
   DOCKER_TLS_CERTDIR: ""
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^\d{2}\.\d{2}(\.\d+)?$/
+
+build-image:
+  stage: build-image
+  image: docker:27
+  services:
+    - docker:27-dind
+  interruptible: true
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - docker buildx create --use --driver docker-container --name ci-builder
+  script:
+    - env | grep CI_REGISTRY
+    - |
+      docker buildx build \
+        --cache-from "type=registry,ref=$BUILDER_CACHE" \
+        --cache-to   "type=registry,ref=$BUILDER_CACHE,mode=max" \
+        --tag  "$BUILDER_IMAGE" \
+        --file pkg/docker/Dockerfile \
+        --push \
+        pkg/docker/
+  after_script:
+    - docker buildx rm ci-builder 2>/dev/null || true
 
 build-static:
   stage: build
-  image: docker:27
-  services:
-    - name: docker:27-dind
-      alias: docker
+  image: $BUILDER_IMAGE
+  needs:
+    - build-image
+  interruptible: true
+  variables:
+    GIT_DEPTH: 0
   before_script:
-    - docker info
+    - |
+      SCRIPT_VER=$(grep '^VER=' pkg/makeself/generate_installer | cut -d= -f2)
+      if [ "$SCRIPT_VER" != "$CI_COMMIT_TAG" ]; then
+        echo "ERROR: Git tag '$CI_COMMIT_TAG' does not match" \
+             "VER='$SCRIPT_VER' in pkg/makeself/generate_installer." \
+             "Bump the version before tagging."
+        exit 1
+      fi
   script:
-    # Build the builder Docker image
-    - docker build -t munadi.org:rocky10-builder -f pkg/docker/Dockerfile pkg/docker/
-    # Build the app inside the container
-    - docker run --rm \
-        -v "$CI_PROJECT_DIR:/src" \
-        munadi.org:rocky10-builder \
-        bash -c "cmake -S . -B build -G'Ninja Multi-Config' -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release --parallel"
+    - cmake -S . -B build -G "Ninja Multi-Config" -DCMAKE_BUILD_TYPE=Release
+    - cmake --build build --config Release --parallel
+    - cd pkg/makeself && ./generate_installer
   artifacts:
-    paths:
-      - build/Release/munadi
-    expire_in: 1 week
-  rules:
-    - if: $CI_COMMIT_TAG
-
-create-installer:
-  stage: package
-  image: docker:27
-  services:
-    - name: docker:27-dind
-      alias: docker
-  before_script:
-    - docker info
-  script:
-    # Build the builder Docker image
-    - docker build -t munadi.org:rocky10-builder -f pkg/docker/Dockerfile pkg/docker/
-    # Build the app inside the container
-    - docker run --rm \
-        -v "$CI_PROJECT_DIR:/src" \
-        munadi.org:rocky10-builder \
-        bash -c "cmake -S . -B build -G'Ninja Multi-Config' -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release --parallel"
-    # Create the makeself installer
-    - docker run --rm \
-        -v "$CI_PROJECT_DIR:/src" \
-        munadi.org:rocky10-builder \
-        bash -c "cd pkg/makeself && ./generate_installer"
-  artifacts:
+    name: "Munadi-${CI_COMMIT_TAG}-x86_64"
     paths:
       - pkg/makeself/Munadi-*.run
     expire_in: never
-  rules:
-    - if: $CI_COMMIT_TAG
+
+create-release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  needs:
+    - build-static
+  script:
+    - echo "Creating GitLab release for Munadi $CI_COMMIT_TAG"
+  release:
+    tag_name: $CI_COMMIT_TAG
+    name: "Munadi $CI_COMMIT_TAG"
+    description: |
+      Static x86_64 self-extracting installer for Munadi $CI_COMMIT_TAG.
+      No external dependencies required — just download, mark executable, and run.
+
+      **Quick install**
+      ```sh
+      curl -JLO $CI_PROJECT_URL/-/releases/$CI_COMMIT_TAG/downloads/Munadi-$CI_COMMIT_TAG.run
+      sh Munadi-$CI_COMMIT_TAG.run
+      ```
+
+      See [CHANGELOG]($CI_PROJECT_URL/-/blob/$CI_COMMIT_TAG/CHANGELOG.md) for what's new.
+    assets:
+      links:
+        - name: "Munadi-$CI_COMMIT_TAG.run"
+          url: "$CI_PROJECT_URL/-/jobs/artifacts/$CI_COMMIT_TAG/raw/pkg/makeself/Munadi-$CI_COMMIT_TAG.run?job=build-static"
+          link_type: package
