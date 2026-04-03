@@ -127,8 +127,6 @@
                 </ul>
                 <ul>
                     Others
-                    <li>Use Rocky Linux as base image for munadi builder (current version 10.1)</li>
-                    <li>Use `/tmp` for creating the archive instead of cwd</li>
                     <li>Simplify approach on object aligning for the Prayer Times table</li>
                     <li>Allow hyperlinks on the What's New page to be clickable</li>
                 </ul>
