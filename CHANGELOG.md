@@ -76,6 +76,8 @@ Long-awaited features and enhancements:
 - Fixed bugs
 - Slimmed codebase
 
+Special thanks to [Hasan Esa](https://gitlab.com/HasanEsa) for the contributions and motivation, more will follow as a result insha-allah.
+
 ---
 
 ## [22.04](#munadi-2204) — 2022-03-31
@@ -224,7 +226,7 @@ Long-awaited features and enhancements:
 
 ## Get in Touch
 
-Visit [Munadi.org](https://munadi.org) for feedback and support.
+Visit [our homepage](https://munadi.org).
 
 Follow us on social media for updates, news, and tutorials:
 
@@ -233,4 +235,4 @@ Follow us on social media for updates, news, and tutorials:
 
 ---
 
-*For full commit history, see [GitHub](https://github.com/hasanesa/munadi) or [GitLab](https://gitlab.com/munadi/munadi).*
+*For full commit history, see [GitLab](https://gitlab.com/munadi/munadi/-/commits/master).*
