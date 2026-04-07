@@ -54,13 +54,7 @@ and follow instructions.
 ### Other Sources
 <div align="center">
   <a href='https://flathub.org/apps/details/org.munadi.Munadi'>
-    <img width='240' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/>
-  </a>
-</div>
-
-<div align="center">
-  <a href="https://snapcraft.io/munadi">
-    <img alt="Get it from the Snap Store" src="https://snapcraft.io/static/images/badges/en/snap-store-black.svg" />
+    <img height='64' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/>
   </a>
 </div>
 
@@ -196,7 +190,7 @@ flatpak-builder --install-deps-from=flathub --force-clean --ccache ./build-stati
 flatpak-builder --run --env=WAYLAND_DISPLAY="$WAYLAND_DISPLAY" ./build-static/ ./pkg/flathub/org.munadi.Munadi-static.json munadi
 
 # Optional: Run outside sandbox for debugging
-./build/files/bin/munadi
+./build-static/files/bin/munadi
 ```
 
 ### Known Issues:
@@ -243,7 +237,7 @@ gen_whatsnew          # What's New front page python updater from metainfo
 
 ### Versioning
 
-Version format follows `YY.MM` convention (e.g., 26.04 for April 2026). Subsequent releases within same month may contain `YY.MM.m` convention (.g., 26.04.1 for another release on April 2026).
+Version format follows `YY.MM` convention (e.g., 26.04 for April 2026). Subsequent releases within same month may contain `YY.MM.m` convention (e.g., 26.04.1 for another release on April 2026).
 
 ---
 
@@ -251,17 +245,17 @@ Version format follows `YY.MM` convention (e.g., 26.04 for April 2026). Subseque
 
 | Platform | Architecture | Status | Packaging |
 |----------|--------------|--------|-----------|
-| Linux | x86_64 | Stable | makeself (primary), Flatpak, Snap |
-| Linux | aarch64 | Stable | makeself (primary), Flatpak, Snap |
+| Linux | x86_64 | Stable | makeself (primary), Flatpak |
+| Linux | aarch64 | Stable | makeself (primary), Flatpak |
 | Android | arm64-v8a | Alpha | APK (build included) |
 
-**Note**: The self-extracting makeself installer is the recommended distribution method. Flatpak and Snap are available but deprecated for production use.
+**Note**: The self-extracting makeself installer is the recommended distribution method. Flatpak is available but deprecated.
 
 ---
 
 ## Bug Reports
 
-First of all, see if the issue you're facing is already existent on the issue board. If not, follow these workflow before reporting bugs:
+First of all, see if the issue you're facing already exists on the issue board. If not, follow these workflow before reporting bugs:
 
 ***If using self-extracting installer***
 
