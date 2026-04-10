@@ -17,7 +17,9 @@ ApplicationWindow {
     Material.primary: Material.Brown
 
     width: 450
+    minimumWidth: 350
     height: 800
+    minimumHeight: 350
     color: Material.dialogColor
     LayoutMirroring.childrenInherit: true
 
@@ -252,7 +254,7 @@ ApplicationWindow {
 
         x: (parent.width - width) / 2
         y: (parent.height - height) / 2
-        width: mainPage.width
+        width: Math.min(mainPage.width, 770.0)
         height: parent.height * 0.8
 
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
