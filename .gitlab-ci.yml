@@ -48,7 +48,7 @@ build-static:
   stage: build
   image:
     name: $BUILDER_IMAGE
-    pull_policy: always
+    pull_policy: if-not-present
   needs: []
   interruptible: true
   before_script:
@@ -61,7 +61,7 @@ build-static:
         exit 1
       fi
   script:
-    - cmake -S . -B build -G "Ninja Multi-Config" -DCMAKE_BUILD_TYPE=Release
+    - cmake -S . -B build -G "Ninja Multi-Config" -DCMAKE_BUILD_TYPE=Release --fresh
     - cmake --build build --config Release --parallel
     - cd pkg/makeself && ./generate_installer
   artifacts:
