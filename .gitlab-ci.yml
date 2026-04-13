@@ -4,7 +4,7 @@ stages:
   - release
 
 variables:
-  BUILDER_IMAGE: "$CI_REGISTRY_IMAGE/builder:rocky10"
+  BUILDER_IMAGE: "$CI_REGISTRY_IMAGE/static-builder:latest"
   GIT_DEPTH: 0
   GIT_SUBMODULE_STRATEGY: recursive
 
