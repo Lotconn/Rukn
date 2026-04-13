@@ -1,26 +1,77 @@
-FROM rockylinux/rockylinux:10-ubi
+FROM rockylinux/rockylinux:10.1-ubi AS builder
 
-RUN dnf install -y \
+RUN mkdir -p /mnt/rootfs
+
+RUN \
+    dnf install -y --installroot=/mnt/rootfs --releasever=10.1 \
+        --setopt=install_weak_deps=False --nodocs --nogpgcheck  \
+        rocky-release && \
+    rpm --root=/mnt/rootfs --import \
+        /mnt/rootfs/etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-10
+
+RUN \
+    dnf install -y --installroot=/mnt/rootfs --releasever=10.1 \
+        --setopt=install_weak_deps=False --nodocs \
+        --setopt=reposdir=/etc/yum.repos.d/ \
+        coreutils-single glibc-minimal-langpack
+RUN \
+    dnf install -y --setopt=install_weak_deps=False --nodocs \
+        --setopt=reposdir=/etc/yum.repos.d/ \
     https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm && \
-    dnf dsync -y && \
-    dnf config-manager --set-enabled crb && \
-    dnf install -y bash-color-prompt bash-completion ccache cmake \
-        extra-cmake-modules gcc gcc-c++ git  libglvnd-devel libinput-devel \
-        libXrandr-devel libxkbcommon-devel nasm ninja-build openssl-devel \
-        pkgconf pulseaudio-libs-devel python3 wayland-devel zstd && \
-    dnf clean all && \
-    rm -rf /var/cache/dnf/* /root/.cache && \
-    cp /usr/share/rootfiles/.* /root && \
-    echo "cmake -S . -B build -G'Ninja Multi-Config' -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release --parallel" >> /root/.bash_history && \
-    echo "cd pkg/makeself && ./generate_installer" >> /root/.bash_history && \
-    git config --system --add safe.directory /src
+    sed -i -r '/^\[crb\]/,/^\[/ s/(enabled\s*=\s*)0/\11/g' \
+        /etc/yum.repos.d/rocky.repo && \
+    dnf dsync -y --installroot=/mnt/rootfs --releasever=10.1 \
+        --setopt=install_weak_deps=False --nodocs \
+        --setopt=reposdir=/etc/yum.repos.d/ && \
+    dnf install -y --installroot=/mnt/rootfs --releasever=10.1 \
+        --setopt=install_weak_deps=False --nodocs \
+        --setopt=reposdir=/etc/yum.repos.d/ \
+        dnf epel-release ccache cmake diffutils gcc-c++ nasm ninja-build \
+        libglvnd-devel libxkbcommon-devel libXrandr-devel \
+        openssl-devel pipewire-devel wayland-devel && \
+    dnf install -y --installroot=/mnt/rootfs --releasever=10.1 \
+         --setopt=install_weak_deps=False --nodocs \
+         --setopt=reposdir=/etc/yum.repos.d/ \
+         bash-color-prompt bash-completion git procps-ng rootfiles \
+         shellcheck tar vim xdg-utils zstd && \
+    dnf --installroot /mnt/rootfs clean all && \
+    rm -rf /mnt/rootfs/var/cache/* /mnt/rootfs/var/log/dnf* \
+        /mnt/rootfs/var/log/yum.*
+
+FROM scratch
+LABEL maintainer="Munadi.org"
+LABEL vendor="Munadi.org"
+LABEL url="https://gitlab.com/munadi/munadi/container_registry"
+LABEL com.redhat.component="munadi-static-builder"
+LABEL name="munadi/builder"
+LABEL version="10.1"
+LABEL cpe="cpe:/o:rocky:rocky:10::baseos"
+LABEL distribution-scope="public"
+
+LABEL summary="Munadi static app builder image"
+LABEL description="Dev image for app development tasks (static building + packaging)"
+LABEL io.k8s.description="Dev image for app development tasks (static building + packaging)"
+
+LABEL io.k8s.display-name="Munadi static app builder image"
+LABEL io.openshift.expose-services=""
+
+COPY --from=builder /mnt/rootfs/ /
+COPY --from=builder /etc/yum.repos.d/*.repo /etc/yum.repos.d/
 
 WORKDIR /tmp
 COPY CMakeLists.txt .
-RUN --mount=type=cache,target=/root/.ccache \
+RUN \
+    --mount=type=cache,target=/root/.ccache \
     --mount=type=cache,target=/root/.cache,sharing=locked \
-    cmake . -GNinja -DBUILD_STATIC=ON && \
+    cmake . -GNinja && \
     cmake --build . --parallel --config Release && \
     rm -rf /tmp/*
 
+RUN \
+    cp /usr/share/rootfiles/.* /root && \
+    echo "cmake -S . -B build -G'Ninja Multi-Config' -DCMAKE_BUILD_TYPE=Release --fresh && cmake --build build --config Release --parallel" >> /root/.bash_history && \
+    echo "cd pkg/makeself && ./generate_installer" >> /root/.bash_history && \
+    git config --system --add safe.directory /src
+
 WORKDIR /src
+ENTRYPOINT ["/bin/bash", "-l"]

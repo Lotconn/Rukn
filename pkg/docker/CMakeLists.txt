@@ -9,26 +9,74 @@ ProcessorCount(NPROC)
 
 set(QT_V 6.11)
 set(QT_VV 6.11.0)
-set(FFMPEG_V 8.0.1)
+set(FFMPEG_V 7.1.3)
 set(INSTALL_PREFIX /usr)
+
+set(FFMPEG_CONF
+    ./configure
+
+    # Standard options:
+    --prefix=${INSTALL_PREFIX}
+
+    # Licensing:
+    --enable-version3
+
+    # Configuration options:
+    --disable-all
+
+    # Component options:
+    --enable-avcodec
+    --enable-avformat
+    --enable-swresample
+    --enable-swscale
+
+    # Individual component options:
+    --enable-decoder=aac,ac3,alac,eac3,amrnb,amrwb,flac,mp3,opus,vorbis
+    --enable-decoder=pcm_s16le,pcm_s24le,pcm_s32le,pcm_f32le,pcm_u8,pcm_alaw,pcm_mulaw
+
+    --enable-demuxer=aac,ac3,alac,amr,asf,au,flac,matroska,mov
+    --enable-demuxer=mp3,mpegps,mpegts,ogg,wav
+
+    --disable-v4l2-m2m
+
+    --enable-parser=aac,aac_latm,ac3,amr,flac,mpegaudio,opus,vorbis
+
+    --enable-protocol=cache,fd,file,http,https,pipe,tls,unix
+
+    # External library support:
+    --enable-openssl
+    --disable-iconv
+
+    # Toolchain options:
+    --enable-lto
+
+    # Developer options:
+    --disable-debug
+)
 
 set(QT_CONF
     ./configure
     -prefix ${INSTALL_PREFIX}
-    -ccache
     -opensource
     -confirm-license
 
     # Build options:
     -release
     -static
+    -no-sbom
+    -reduce-exports
+    -reduce-relocations
     -dbus-linked
+    -ccache
+    -ltcg
 
+    QT_BUILD_TOOLS_BY_DEFAULT=OFF
     -nomake examples
     -nomake tests
     -nomake benchmarks
     -nomake manual-tests
     -nomake minimal-static-tests
+    -nomake doc-snippets
 
     # Core options:
     -qt-doubleconversion
@@ -43,7 +91,7 @@ set(QT_CONF
     -ssl -openssl-linked
     -no-system-proxies
 
-    #Gui, printing, widget options:
+    # Gui, printing, widget options:
     -no-cups
     -no-fontconfig
     -qt-freetype
@@ -59,6 +107,7 @@ set(QT_CONF
     -no-gbm
     -no-kms
     -no-linuxfb
+    -no-xcb
 
     # Input backends:
     -no-libudev
@@ -78,13 +127,34 @@ set(QT_CONF
     -qt-sqlite
 )
 
+# Flags passed to every sub-module cmake invocation.
+set(QT_SUBMODULE_CMAKE_ARGS
+    "-DCMAKE_INSTALL_PREFIX:STRING=${INSTALL_PREFIX}"
+    -DCMAKE_BUILD_TYPE=Release
+    -DCMAKE_C_COMPILER_LAUNCHER=ccache
+    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+    -DCMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE=ON
+    -DQT_BUILD_BENCHMARKS=OFF
+    -DQT_BUILD_DOC_SNIPPETS=FALSE
+    -DQT_BUILD_EXAMPLES=OFF
+    -DQT_BUILD_MANUAL_TESTS=OFF
+    -DQT_BUILD_MINIMAL_STATIC_TESTS=FALSE
+    -DQT_BUILD_TESTS=OFF
+    -DQT_BUILD_TOOLS_BY_DEFAULT=OFF
+    -DQT_GENERATE_SBOM=OFF
+    -DQT_QPA_DEFAULT_PLATFORM=wayland
+    -DQT_QPA_PLATFORMS=wayland
+    -DQT_USE_CCACHE=ON
+    -GNinja
+)
+
 # FFmpeg
 ExternalProject_Add(
 ffmpeg
 URL https://www.ffmpeg.org/releases/ffmpeg-${FFMPEG_V}.tar.xz
-URL_HASH SHA256=05ee0b03119b45c0bdb4df654b96802e909e0a752f72e4fe3794f487229e5a41
+URL_HASH SHA256=f0bf043299db9e3caacb435a712fc541fbb07df613c4b893e8b77e67baf3adbe
 BUILD_IN_SOURCE 1
-CONFIGURE_COMMAND ./configure --prefix=${INSTALL_PREFIX}
+CONFIGURE_COMMAND ${FFMPEG_CONF}
 BUILD_COMMAND make -j${NPROC}
 INSTALL_COMMAND make install
 )
@@ -126,7 +196,7 @@ while(QT_SRC)
         URL https://download.qt.io/archive/qt/${QT_V}/${QT_VV}/submodules/${QT_LIB_NAME}-everywhere-src-${QT_VV}.tar.xz
         URL_HASH SHA256=${QT_LIB_HASH}
         BUILD_IN_SOURCE 1
-        CONFIGURE_COMMAND cmake . -GNinja "-DCMAKE_INSTALL_PREFIX:STRING=${INSTALL_PREFIX}" -DCMAKE_BUILD_TYPE=Release
+        CONFIGURE_COMMAND cmake . ${QT_SUBMODULE_CMAKE_ARGS}
         BUILD_COMMAND cmake --build . --parallel --config Release
         INSTALL_COMMAND cmake --install .
         DEPENDS ${DEPENDS_ON}

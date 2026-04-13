@@ -2,22 +2,24 @@
 <p>Bug fixes and minor UI changes
                 <ul>
                     Notable bug fixes
-                    <li>Resolve few typos in `install` and `uninstall` scripts, also simplify couple of stuffs</li>
-                    <li>Fix tooltip "Time Left" string not updated if started hidden or woken from sleep</li>
-                    <li>Show time left to next date's fajr after Isha onwards rather than only after date change past 23:59</li>
-                    <li>Prevent prayer labels running into the time next to it and elide if parent width is too short</li>
+                    <li>Resolve typos in `install` and `uninstall` scripts, simplify few code</li>
+                    <li>Fix tooltip "Time Left" not updating when started hidden or after sleep</li>
+                    <li>Show time left to next date's Fajr after Isha instead of waiting for 23:59</li>
+                    <li>Prevent prayer labels running into adjacent time values; elide if parent too narrow</li>
                 </ul>
                 <ul>
                     Improvements
-                    <li>Upgrade to Qt 6.11</li>
-                    <li>Make the Prayer Times table labels left aligned</li>
-                    <li>Only show "Time Left" string on current date</li>
-                    <li>Do not calculate time left to next prayer if it's not today</li>
+                    <li>Upgrade to Qt 6.11 (SFX standalone installer only)</li>
+                    <li>Left-align Prayer Times table labels</li>
+                    <li>Show "Time Left" string only on current date</li>
+                    <li>Clamp the Settings page width if parent window is too wide</li>
+                    <li>Limit smallest resizable window size</li>
                 </ul>
                 <ul>
                     Others
-                    <li>Simplify approach on object aligning for the Prayer Times table</li>
-                    <li>Allow hyperlinks on the What's New page to be clickable</li>
+                    <li>Simplify Prayer Times table object alignment approach</li>
+                    <li>Enable clickable hyperlinks on What's New page</li>
+                    <li>Publish "Munadi static app builder" image to project's registry</li>
                 </ul>
                 </p>
             
