@@ -1,59 +1,27 @@
 stages:
-  - build-image
   - build
   - release
 
-variables:
-  BUILDER_IMAGE: "$CI_REGISTRY_IMAGE/static-builder:latest"
-  GIT_DEPTH: 0
-  GIT_SUBMODULE_STRATEGY: recursive
+default:
+  image:
+    name: $CI_REGISTRY_IMAGE/static-builder:latest
+    pull_policy: always
+    entrypoint: [""]
 
 workflow:
   rules:
     - if: $CI_COMMIT_TAG =~ /^\d{2}\.\d{2}(\.\d+)?$/
 
-build-image:
-  stage: build-image
-  rules:
-    - when: never
-  tags:
-    - saas-linux-medium-amd64
-  image: docker:27
-  services:
-    - docker:27-dind
-  interruptible: true
-  variables:
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
-    DOCKER_DRIVER: overlay2
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
-    - docker buildx create --use --driver docker-container --name ci-builder
-    - docker system prune -a
-    - docker buildx prune -a
-  script:
-    - df -h
-    - df -i
-    - env | grep CI_REGISTRY
-    - |
-      docker build \
-        --cache-from "type=registry,ref=$BUILDER_CACHE" \
-        --cache-to   "type=registry,ref=$BUILDER_CACHE,mode=max" \
-        --tag "$BUILDER_IMAGE" \
-        --file pkg/docker/Dockerfile \
-        pkg/docker/
-    - docker push "$BUILDER_IMAGE"
-
 build-static:
   stage: build
-  image:
-    name: $BUILDER_IMAGE
-    pull_policy: if-not-present
   needs: []
   interruptible: true
+  variables:
+    GIT_DEPTH: 1
+    GIT_SUBMODULE_STRATEGY: recursive
   before_script:
     - |
-      SCRIPT_VER=$(grep '^VER=' pkg/makeself/generate_installer | cut -d= -f2)
+      SCRIPT_VER=$(sed -n 's/^VER=//p' pkg/makeself/generate_installer)
       if [ "$SCRIPT_VER" != "$CI_COMMIT_TAG" ]; then
         echo "ERROR: Git tag '$CI_COMMIT_TAG' does not match" \
              "VER='$SCRIPT_VER' in pkg/makeself/generate_installer." \
@@ -61,14 +29,14 @@ build-static:
         exit 1
       fi
   script:
-    - cmake -S . -B build -G "Ninja Multi-Config" -DCMAKE_BUILD_TYPE=Release --fresh
+    - cmake -S . -B build -G"Ninja Multi-Config" -DCMAKE_BUILD_TYPE=Release --fresh
     - cmake --build build --config Release --parallel
     - cd pkg/makeself && ./generate_installer
   artifacts:
-    name: "Munadi-${CI_COMMIT_TAG}-x86_64"
+    name: "Munadi-${CI_COMMIT_TAG}"
     paths:
       - pkg/makeself/Munadi-*.run
-    expire_in: never
+    expire_in: 1 year
 
 create-release:
   stage: release
@@ -83,7 +51,7 @@ create-release:
     description: |
       See [CHANGELOG]($CI_PROJECT_URL/-/blob/$CI_COMMIT_TAG/CHANGELOG.md) for what's new.
 
-      [Full changelog]($CI_PROJECT_URL/compare/$CI_COMMIT_TAG^..$CI_COMMIT_TAG)
+      [Full changelog]($CI_PROJECT_URL/compare/${CI_COMMIT_TAG}^..$CI_COMMIT_TAG)
     assets:
       links:
         - name: "Munadi-$CI_COMMIT_TAG.run"
