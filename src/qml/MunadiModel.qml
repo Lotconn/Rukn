@@ -78,13 +78,13 @@ QtObject {
 
     function refreshTable() {
         console.debug('refreshTable()')
-        currentPrayer =         prayerTimes.currentPrayer(currentDate)
+        currentPrayer =         prayerTimes.currentPrayer()
 
         if(currentPrayer === Adhan.Prayer.None) {
             currentPrayer = Adhan.Prayer.Isha
         }
 
-        nextPrayer =            prayerTimes.nextPrayer(currentDate)
+        nextPrayer =            prayerTimes.nextPrayer()
         timeForCurrentPrayer =  prayerTimes.timeForPrayer(currentPrayer)
 
         if (nextPrayer === Adhan.Prayer.None && dateNavOffset === 0) {

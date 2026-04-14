@@ -279,39 +279,39 @@ MS_Preextract() {
   _syslibs=''
 
   log() {
-      MS_Printf "\$(date -Ins):munadi:pre-extract:\$*\n" >> "\$_logfile"
+      MS_Printf "\$(date -Ins):munadi:pre-extract:\$*\n" >> "\$_logfile" 2>&1
   }
 
   debug_print()
   {
     if [ "\$debug" = 1 ]; then
       MS_Printf "\\e[0;34mmunadi:pre-extract:debug::\\t\$1\e[0;m\\n" >&2
-      log "debug:: \$1"
     fi
+    log "debug:: \$1"
   }
 
   error_print()
   {
     if [ "\$quiet" = n ]; then
       MS_Printf "\\e[0;31mmunadi:pre-extract:error::\\t\$1\e[0;m\\n" >&2
-      log "error:: \$1"
     fi
+    log "error:: \$1"
   }
 
   warn_print()
   {
     if [ "\$quiet" = n ]; then
       MS_Printf "\\e[0;33mmunadi:pre-extract:warn::\\t\$1\\e[0;m\\n" >&2
-      log "warn:: \$1"
     fi
+    log "warn:: \$1"
   }
 
   info_print()
   {
     if [ "\$verbose" = y ]; then
       MS_Printf "munadi:pre-extract:info::\\t\$1\\n"
-      log "info:: \$1"
     fi
+    log "info:: \$1"
   }
 
   #+++++++++++++++++++++++++++++++++++++++++++++++++++

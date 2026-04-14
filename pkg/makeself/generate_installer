@@ -25,7 +25,10 @@ strip /tmp/files/munadi
 
 makeself/makeself.sh \
   --header ./makeself-header.sh --sha256 --nomd5 \
-  --zstd --complevel 19 --tar-format posix --tar-extra "
+  --zstd --complevel 22 \
+  --comp-extra "--row-match-finder --ultra --compress-literals" \
+  --threads 0 \
+  --tar-format posix --tar-extra "
     --numeric-owner --owner 0 --group 0 --mode=go+u,go-w
     --posix --pax-option=exthdr.name=%d/PaxHeaders/%f \
     --pax-option=delete=atime,delete=ctime" \
