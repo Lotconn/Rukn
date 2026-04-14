@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
 - Show time left to next date's Fajr after Isha instead of waiting for 23:59
 - Prevent prayer labels running into adjacent time values; elide if parent too narrow
 
-### Improvements
+### App Improvements
 
 - Upgrade to Qt 6.11 (static build only)
 - Left-align Prayer Times table labels
@@ -21,9 +21,12 @@ All notable changes to this project will be documented in this file.
 - Skip time-left calculations for non-today prayers
 - Clamp the Settings page width to 770.0 px if parent window is too wide
 - Limit smallest resizable window size to 350x350 px
+- Simplify Prayer Times table object alignment approach
+- Enable clickable hyperlinks on What's New page
 
 ### Build & Infrastructure
 
+#### Static libs building
 - Downgrade FFmpeg to Qt 6.11 recommended version (n7.1.3)
 - Compact builds by trimming unused libraries, program & components other than the app's purpose, use whitelisting to allow only what's necessary
 - Enable link-time optimization at the cost of building time
@@ -31,6 +34,8 @@ All notable changes to this project will be documented in this file.
 - Further ensure no X dependencies (still hard to avoid anyway)
 - Build other Qt modules with similar build options as qtbase
 - Replace pulseaudio libs with pipewire
+
+#### Builder image
 - Rename Dockerfile more generically as Containerfile; keep it symlinked to Containerfile
 - Switch to Rocky Linux 10.1 as builder base image
 - Build a trimmed, from-scratch image bundled with only necessary files & programs. This however, doesn't shrink the built image's size but helps to provide a custom image in a truer sense.
@@ -38,14 +43,21 @@ All notable changes to this project will be documented in this file.
 - Add various labels to describe this custom image
 - Simplify web server image; use the official gunicorn image instead of building from python-core image. Significantly reduces image size.
 
-- Use `/tmp` for archive creation instead of CWD
-- Simplify Prayer Times table object alignment approach
-- Enable clickable hyperlinks on What's New page
-
+#### Gitlab CI/CD
 - Add CI/CD pipeline configuration
 - Publish "Munadi static app builder" image to the project's registry
 - Don't include built archives anymore, those should be available on "Releases" from now on
+
+#### makeself archive
+- Use `/tmp` for archive creation instead of CWD
+- Level-up compression
+- Log more consistently according to log-level
+- Various logging improvements
+- Show `uninstall` script output if invoked in `install` script with same verbosity level
+
+#### Project misc
 - Polish README.md for user and developer facing briefing & organize CHANGELOG.md
+- Add AI contribution policy for the project
 - Append -static to the flatpak static manifest again
 - Update screenshots
 

@@ -32,21 +32,21 @@ Munadi is a lightweight, privacy-focused prayer time application for Linux and A
 
 ### Primary Release
 
-[![Latest Release](https://gitlab.com/HasanEsa/munadi/-/badges/release.svg)](https://gitlab.com/HasanEsa/munadi/-/releases)
+[![Latest Release](https://gitlab.com/munadi/munadi/-/badges/release.svg)](https://gitlab.com/munadi/munadi/-/releases)
 
 **Munadi Self-Extracting Installer**
 
 (No dependencies required - just run & install)
 
 ```bash
-$ curl -JLO https://munadi.org/get/26.04 && bash Munadi-26.04.run -q
+$ curl -JLO https://munadi.org/get/26.04 && sh Munadi-26.04.run -q
 ```
 
 Alternatively:
 
 ```bash
 $ curl -JLO https://munadi.org/get/26.04
-$ bash ./Munadi-26.04.run
+$ sh ./Munadi-26.04.run
 ```
 
 and follow instructions.
@@ -81,72 +81,111 @@ Clone the repo:
 git clone --recursive --depth 1 https://gitlab.com/munadi/munadi.git ./munadi_munadi && cd ./munadi_munadi
 ```
 
-## 1. Static Build via Docker Image (Recommended)
+## 1. Static Build via Builder Image (Recommended)
 
-The recommended production build method is a static build in Docker:
+The recommended method is to build a statically-linked app in the static-builder container:
 
+**Docker:**
 ```bash
 docker run \
   --name munadi-builder \
   --rm -it \
-  -v ./:/src:Z \
-  registry.gitlab.com/munadi/munadi/builder:rocky10
+  -v ./:/src:z \
+  registry.gitlab.com/munadi/munadi/static-builder:latest
+```
+
+**Podman:**
+```bash
+podman run \
+  --name munadi-builder \
+  --rm -it \
+  -v ./:/src:z \
+  registry.gitlab.com/munadi/munadi/static-builder:latest
 ```
 
 <details><summary>Further Developer Notes (Click to expand)</summary>
 
-To build docker image locally:
+To build the image locally:
+
+**Docker:**
 ```bash
-docker build -t munadi-builder -f pkg/docker/Dockerfile pkg/docker
+# From project root
+docker build -t munadi-builder pkg/docker/
 docker run \
   --name munadi-builder \
-  -it -v ./:/src:Z \
+  -it -v ./:/src:z \
   munadi-builder
 ```
 
-This builds upon a Rocky Linux 10.1 UBI with all the necessary dependencies needed for building static Qt and FFmpeg binaries to be installed under `/usr`.
+**Podman:**
+```bash
+# From project root
+podman build -t munadi-builder pkg/docker/
+podman run \
+  --name munadi-builder \
+  -it -v ./:/src:z \
+  munadi-builder
+```
 
-For the following steps, the built binary remains available under `build/Release`. To test standalone, execute from the host (outside docker container):
+This builds a custom image upon Rocky 10.1 UBI with necessary dependencies needed for building static Qt and FFmpeg libraries to-be-installed under `/usr`.
+
+***WARNING!!!*** Keep at least 50GB space free in your `/var/lib/containers` (`/var/tmp` or `$TMPDIR` if using podman) before building the image.
+
+</details>
+
+Then from inside the container:
+```bash
+#rm -rf ./build  # recommended housekeeping
+cmake -S . -B build -G'Ninja Multi-Config' -DCMAKE_BUILD_TYPE=Release --fresh \
+  && cmake --build build --parallel --config Release
+cd pkg/makeself && ./generate_installer
+
+# Pro tip: press up-arrow key to find these commands in history ;) 
+```
+A self-extracting archive named `Munadi-<ver>.run` with the built binary will be available under `pkg/makeself`. 
+
+***For development purposes***: the built binary remains available under `build/Release`. To test standalone, execute from the host (outside container):
 ```bash
 ./build/Release/munadi
 ```
-</details>
 
-Then from inside docker:
-```bash
-#rm -rf ./build  # recommended housekeeping
-cmake -S . -B build -G'Ninja Multi-Config' -DCMAKE_BUILD_TYPE=Release && cmake --build build --parallel --config Release
-cd pkg/makeself && ./generate_installer
-```
-A self-extracting archive named `Munadi-<ver>.run` with the built binary will be available under `pkg/makeself`.
-
-For healthy practices, it is recommended to clean `~/.cache/Munadi` and `~/.config/munadi` folders across subsequent builds.
+As a healthy practice, always clean `~/.cache/Munadi` and `~/.config/munadi` folders across subsequent builds.
 
 ## 2. Dynamic Build as Flatpak
 
 ### Prerequisites
 
 **Build tools:**
-- CMake 3.30+
-- Ninja build system
-- ccache (optional, for faster rebuilds)
+- `ccache` (optional, for faster rebuilds)
+- `cmake >= 3.30`
+- `gcc-c++` or `clang++`
+- `nasm`
+- `ninja-build`
+- `tar`
+- `zstd`
 
-**Qt 6.11 packages:**
-- `qtbase-6.11` (Core, Gui, Widgets, Quick, QuickControls2)
-- `qtmultimedia-6.11`
-- `qtlocation-6.11`
-- `qtpositioning-6.11`
+**Libs: <pkg>-devel or <pkg>-dev**
 
-**System libraries:**
-- `wayland-devel`
-- `libx11-devel`
-- `pulseaudio-libs-devel`
-- `dbus-devel`
-- `libxkbcommon-devel`
+> Qt versions older than 6.9 may not be compatible. Build with project's latest tracking Qt version before filing bugs. Alternatively, [test build statically](#1-static-build-via-builder-image-recommended).
+
+- `qtbase`
+- `qtshadertools`
+- `qtdeclarative`
+- `qtmultimedia`
+- `qtpositioning`
+- `qtsvg`
+- `qtwayland`
+- `qtlocation`
+- `qtvirtualkeyboard`
+
 - `libglvnd-devel`
-- `libinput-devel`
+- `libxkbcommon`
+- `libXrandr`
+- `openssl`
+- `pipewire`
+- `wayland`
 
-The recommended method is to use `org.flatpak.Builder`.
+The recommended method is to use `org.flatpak.Builder`:
 ```bash
 # on project root
 curl -fsORL https://github.com/flathub/org.munadi.Munadi/raw/refs/heads/master/org.munadi.Munadi.json
@@ -200,8 +239,9 @@ flatpak-builder --run --env=WAYLAND_DISPLAY="$WAYLAND_DISPLAY" ./build-static/ .
 
 ## 3. Qt Creator
 
-Qt Creator can be used for debugging and developing standalone builds. It's especially powerful for UI developments.
+Qt Creator can be used for debugging and developing the app standalone. It's especially powerful for UI developments.
 
+- Ensure [required libraries are present](#prerequisites)
 - Install Qt Creator
 - Open CMakeLists.txt in Qt Creator and build
 
@@ -213,31 +253,41 @@ Qt Creator can be used for debugging and developing standalone builds. It's espe
 
 ```
 .
-├── src/              # Application source code
-│   ├── cpp/          # C++ backends (alarms, engine, main)
-│   └── qml/          # QML UI components
-├── pkg/              # Packaging configurations
-│   ├── flathub/      # Flatpak manifest and build config
-│   ├── snap/         # Snapcraft configuration
-│   ├── makeself/     # Self-extracting installer scripts
-│   └── docker/       # Dockerfile for munadi builder image
-├── xdg/              # Linux desktop integration
-│   ├── icons/        # Application icons
-│   ├── metainfo/     # AppStream metadata
-│   └── applications/ # Desktop entry files
-├── libs/             # Third-party dependencies
-└── screenshots/      # Release screenshots by version
-README.md             # Project README
-CHANGELOG.md          # Tracked version histories
-CMakeLists.txt        # App builder cmake config
-gen_whatsnew          # What's New front page python updater from metainfo
+./
+├── android/                    # Android-specific build files
+├── libs/                       # External libraries required for Munadi
+│   ├── KDSingleApplication/
+│   └── SFML-2.4.0/
+├── pkg/                        # Configs and manifests for packaging and tool building
+│   ├── android/                  # Android apk
+│   ├── docker/                   # Builder images
+│   ├── flathub/                  # Flatpak manifests
+│   ├── makeself/                 # Makeself SFX archive
+│   └── snap/                     # Snap manifest
+├── screenshots/                # App Screenshots
+├── src/                        # App source files
+│   ├── cpp/                      # C++ libs, engine, plugins and backends
+│   ├── data/                     # Various resources
+│   ├── i18n/                     # Translations
+│   ├── img/                      # Image resources
+│   ├── qml/                      # QML frontend
+│   └── <redacted>                # Various other config files and icons
+├── web/                        # Everything related to the homepage website
+├── xdg/                        # XDG manifests, desktop files and icons
+├── CHANGELOG.md                # Main tracked changes file
+├── CMakeLists.txt              # App builder CMakeLists.txt
+├── .gitlab-ci.yml              # CI/CD config
+├── .gitmodules                 # List of project submodules
+├── LICENSE                     # License
+└── README.md                   # Read this first!!!!
+
 ```
 
 ## Build Guidelines
 
 ### Versioning
 
-Version format follows `YY.MM` convention (e.g., 26.04 for April 2026). Subsequent releases within same month may contain `YY.MM.m` convention (e.g., 26.04.1 for another release on April 2026).
+Version format follows `YY.MM` convention (e.g., 26.04 for April 2026). Subsequent releases within same month follows `YY.MM.m` convention (e.g., 26.04.1 for another release on April 2026).
 
 ---
 
@@ -246,7 +296,7 @@ Version format follows `YY.MM` convention (e.g., 26.04 for April 2026). Subseque
 | Platform | Architecture | Status | Packaging |
 |----------|--------------|--------|-----------|
 | Linux | x86_64 | Stable | makeself (primary), Flatpak |
-| Linux | aarch64 | Stable | makeself (primary), Flatpak |
+| Linux | aarch64 | Stable | Flatpak |
 | Android | arm64-v8a | Alpha | APK (build included) |
 
 **Note**: The self-extracting makeself installer is the recommended distribution method. Flatpak is available but deprecated.
@@ -261,7 +311,7 @@ First of all, see if the issue you're facing already exists on the issue board. 
 
 1. Install the app using the self-extracting archive:
 ```bash
-MUNADI_DEBUG=1 bash Munadi-<ver>.run
+MUNADI_DEBUG=1 sh Munadi-<ver>.run
 ```
 Note the log location printed after (hopefully) successful installation. Retain it to a good place.
 2. Remove old configs and caches:
@@ -271,7 +321,7 @@ mv ~/.config/munadi{,.bak}
 ```
 3. Do
 ```bash
-QT_DEBUG_PLUGINS=1 munadi &> munadi.log
+QT_DEBUG_PLUGINS=1 munadi > munadi.log 2>&1
 ```
 and try reproducing the issues
 
@@ -284,7 +334,7 @@ mv ~/.var/app/org.munadi.Munadi{,.bak}
 ```
 3. Run from terminal:
 ```bash
-flatpak run --command=munadi --env=QT_DEBUG_PLUGINS=1 org.munadi.Munadi &> munadi-log.txt
+flatpak run --command=munadi --env=QT_DEBUG_PLUGINS=1 org.munadi.Munadi > munadi-log.txt 2>&1
 ```
 and try reproducing the issues.
 
@@ -294,12 +344,15 @@ If issues persist, [open an issue](https://gitlab.com/munadi/munadi/-/issues) wi
 
 ## Contributing
 
-- Develop in a feature branch
-- Test in both static build and dynamic. Use docker image for reproducible environments.
+- Test in both static build and dynamic. Use builder image for reproducible environments.
 - Test packaging (static -> makeself, dynamic -> flatpak)
 - Update `CHANGELOG.md` and xdg metainfo with notable changes. Use `./gen_whatsnew` to also update What's new front page.
 - Maintain versioning scheme
 - Submit merge request to GitLab
+
+## AI Contribution Policy
+
+We try to be as clear as possible with AI agents and bots contributing to the project. AI-assisted contributions by humans are welcome, any other autonomous AI contributions will be rejected. This includes any variants of "Signed-off by `<a human>`".
 
 ---
 
