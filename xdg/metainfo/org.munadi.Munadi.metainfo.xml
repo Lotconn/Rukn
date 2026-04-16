@@ -110,7 +110,7 @@
     <releases>
         <release version="26.04" date="2026-04-01">
             <description>
-                <p>Bug fixes and minor UI changes
+                <p>Bug fixes and minor UI changes</p>
                 <ul>
                     Notable bug fixes
                     <li>Resolve typos in `install` and `uninstall` scripts, simplify few code</li>
@@ -133,7 +133,6 @@
                     <li>Enable clickable hyperlinks on What's New page</li>
                     <li>Publish "Munadi static app builder" image to project's registry</li>
                 </ul>
-                </p>
             </description>
         </release>
         <release version="26.02" date="2026-02-03">
