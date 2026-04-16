@@ -23,6 +23,7 @@ All notable changes to this project will be documented in this file.
 - Limit smallest resizable window size to 350x350 px
 - Simplify Prayer Times table object alignment approach
 - Enable clickable hyperlinks on What's New page
+- Update KDSingleApplication to v1.2.0
 
 ### Build & Infrastructure
 
@@ -34,6 +35,7 @@ All notable changes to this project will be documented in this file.
 - Further ensure no X dependencies (still hard to avoid anyway)
 - Build other Qt modules with similar build options as qtbase
 - Replace pulseaudio libs with pipewire
+- Add few optimization and performance cost-free hardening to Qt and FFmpeg build
 
 #### Builder image
 - Rename Dockerfile more generically as Containerfile; keep it symlinked to Containerfile
@@ -42,6 +44,7 @@ All notable changes to this project will be documented in this file.
 - Add various linting & validation utils in the image for comprehensive development tasks. Only SFX installer related tools now, more will be added soon. Other tools can be installed after container creation with `dnf` if necessary.
 - Add various labels to describe this custom image
 - Simplify web server image; use the official gunicorn image instead of building from python-core image. Significantly reduces image size.
+- Add few optimization and performance cost-free hardening during app building
 
 #### Gitlab CI/CD
 - Add CI/CD pipeline configuration
@@ -60,6 +63,11 @@ All notable changes to this project will be documented in this file.
 - Add AI contribution policy for the project
 - Append -static to the flatpak static manifest again
 - Update screenshots
+- Rename `pkg/flathub` to more generic `pkg/flatpak`
+- Convert `libs/KDSingleApplication` to a git submodule
+- Remove unneeded `libs/SFML-2.4.0`
+
+Full Changelog: [26.02...26.04](https://gitlab.com/munadi/munadi/-/compare/26.02...26.04)
 
 ---
 
@@ -86,6 +94,8 @@ Munadi can now be installed using a self-extracting installer. No need to downlo
 
 > Latest installer: [pkg/makeself](https://munadi.org/get/26.02)
 
+Full Changelog: [25.11...26.02](https://gitlab.com/munadi/munadi/-/compare/25.11...26.02)
+
 ---
 
 ## [25.11](#munadi-2511) — 2025-11-24
@@ -108,6 +118,8 @@ Long-awaited features and enhancements:
 
 Special thanks to [Hasan Esa](https://gitlab.com/HasanEsa) for the contributions and motivation, more will follow as a result insha-allah.
 
+Full Changelog: [22.04...25.11](https://gitlab.com/munadi/munadi/-/compare/22.04...25.11)
+
 ---
 
 ## [22.04](#munadi-2204) — 2022-03-31
@@ -119,6 +131,8 @@ Special thanks to [Hasan Esa](https://gitlab.com/HasanEsa) for the contributions
 - Improved tray UI and usability
 - Flatpak integration (autostart, background, hidden autostart)
 
+Full Changelog: [21.12...22.04](https://gitlab.com/munadi/munadi/-/compare/21.12...22.04)
+
 ---
 
 ## [21.12](#munadi-2112) — 2021-12-01
@@ -127,11 +141,15 @@ Special thanks to [Hasan Esa](https://gitlab.com/HasanEsa) for the contributions
 - Reworked alarm code with sleep and time change detection
 - Flag as ready for mobile Linux (Phoc, Plasma Mobile)
 
+Full Changelog: [21.04.1...21.12](https://gitlab.com/munadi/munadi/-/compare/21.04.1...21.12)
+
 ---
 
 ## [21.04.1](#munadi-21041) — 2021-04-28
 
 - Fixed broken progress bar/time left display
+
+Full Changelog: [21.04...21.04.1](https://gitlab.com/munadi/munadi/-/compare/21.04...21.04.1)
 
 ---
 
@@ -144,6 +162,8 @@ Special thanks to [Hasan Esa](https://gitlab.com/HasanEsa) for the contributions
 - Fixed no sound issue on Ubuntu
 - Restored date navigation (scroll or click date for previous/next day)
 
+Full Changelog: [21.02...21.04](https://gitlab.com/munadi/munadi/-/compare/21.02...21.04)
+
 ---
 
 ## [21.02](#munadi-2102) — 2021-02-01
@@ -151,6 +171,8 @@ Special thanks to [Hasan Esa](https://gitlab.com/HasanEsa) for the contributions
 - Prayer times now correct for countries with n.5 hours UTC offset
 - Full localization of date, time, and UI
 - Hijri disabled temporarily (localization not available)
+
+Full Changelog: [20.10...21.02](https://gitlab.com/munadi/munadi/-/compare/20.10...21.02)
 
 ---
 
@@ -164,6 +186,8 @@ Special thanks to [Hasan Esa](https://gitlab.com/HasanEsa) for the contributions
 
 > **Note:** Not all desktop environments support tray icons consistently.
 
+Full Changelog: [20.09.1...20.10](https://gitlab.com/munadi/munadi/-/compare/20.09.1...20.10)
+
 ---
 
 ## [20.09.1](#munadi-20091) — 2020-09-26
@@ -173,6 +197,8 @@ Special thanks to [Hasan Esa](https://gitlab.com/HasanEsa) for the contributions
 - Behind-the-scenes RTL improvements
 - Re-enabled window switching via dragging
 - Switched to core20 and CMake for forward-compatible Snap support
+
+Full Changelog: [20.09...20.09.1](https://gitlab.com/munadi/munadi/-/compare/20.09...20.09.1)
 
 ---
 
@@ -184,6 +210,8 @@ Special thanks to [Hasan Esa](https://gitlab.com/HasanEsa) for the contributions
 - Added Arabic translation (thanks to Damascene)
 - Minor enhancements
 
+Full Changelog: [20.07...20.09](https://gitlab.com/munadi/munadi/-/compare/20.07...20.09)
+
 ---
 
 ## [20.07](#munadi-2007) — 2020-07-01
@@ -192,6 +220,8 @@ Special thanks to [Hasan Esa](https://gitlab.com/HasanEsa) for the contributions
 - Ability to add custom Athans
 
 > **Note:** Flatpak is now the preferred packaging method. This may be the last Snap release.
+
+Full Changelog: [19.12...20.07](https://gitlab.com/munadi/munadi/-/compare/19.12...20.07)
 
 ---
 
@@ -202,6 +232,8 @@ Special thanks to [Hasan Esa](https://gitlab.com/HasanEsa) for the contributions
 - Removed about page (merged into settings)
 - Added Snap support
 - Minor UI changes
+
+Full Changelog: [18.12...19.12](https://gitlab.com/munadi/munadi/-/compare/17.02...19.12)
 
 ---
 

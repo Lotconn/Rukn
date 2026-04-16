@@ -87,18 +87,16 @@ The recommended method is to build a statically-linked app in the static-builder
 
 **Docker:**
 ```bash
-docker run \
+docker run --rm -it \
   --name munadi-builder \
-  --rm -it \
-  -v ./:/src:z \
+  -v ./:/src:z,shared \
   registry.gitlab.com/munadi/munadi/static-builder:latest
 ```
 
 **Podman:**
 ```bash
-podman run \
+podman run --rm -it \
   --name munadi-builder \
-  --rm -it \
   -v ./:/src:z \
   registry.gitlab.com/munadi/munadi/static-builder:latest
 ```
@@ -111,9 +109,9 @@ To build the image locally:
 ```bash
 # From project root
 docker build -t munadi-builder pkg/docker/
-docker run \
+docker run --rm -it \
   --name munadi-builder \
-  -it -v ./:/src:z \
+  -v ./:/src:z,shared \
   munadi-builder
 ```
 
@@ -121,9 +119,9 @@ docker run \
 ```bash
 # From project root
 podman build -t munadi-builder pkg/docker/
-podman run \
+podman run --rm -it \
   --name munadi-builder \
-  -it -v ./:/src:z \
+  -v ./:/src:z \
   munadi-builder
 ```
 
@@ -136,9 +134,12 @@ This builds a custom image upon Rocky 10.1 UBI with necessary dependencies neede
 Then from inside the container:
 ```bash
 #rm -rf ./build  # recommended housekeeping
-cmake -S . -B build -G'Ninja Multi-Config' -DCMAKE_BUILD_TYPE=Release --fresh \
-  && cmake --build build --parallel --config Release
-cd pkg/makeself && ./generate_installer
+cmake -S . -B build \
+  --fresh \
+  -G'Ninja Multi-Config' \
+  -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel --config Release
+cd pkg/makeself && ./generate_installer && cd -
 
 # Pro tip: press up-arrow key to find these commands in history ;) 
 ```
@@ -256,13 +257,13 @@ Qt Creator can be used for debugging and developing the app standalone. It's esp
 ./
 ├── android/                    # Android-specific build files
 ├── libs/                       # External libraries required for Munadi
-│   ├── KDSingleApplication/
-│   └── SFML-2.4.0/
+│   └── KDSingleApplication/      # KDAB/KDSingleApplication submodule
 ├── pkg/                        # Configs and manifests for packaging and tool building
 │   ├── android/                  # Android apk
 │   ├── docker/                   # Builder images
 │   ├── flathub/                  # Flatpak manifests
 │   ├── makeself/                 # Makeself SFX archive
+│   │   └── makeself/               # megastep/makeself submodule
 │   └── snap/                     # Snap manifest
 ├── screenshots/                # App Screenshots
 ├── src/                        # App source files
@@ -352,13 +353,13 @@ If issues persist, [open an issue](https://gitlab.com/munadi/munadi/-/issues) wi
 
 ## AI Contribution Policy
 
-We try to be as clear as possible with AI agents and bots contributing to the project. AI-assisted contributions by humans are welcome, any other autonomous AI contributions will be rejected. This includes any variants of "Signed-off by `<a human>`".
+We try to be as clear as possible on AI agents, LLMs and bots contributions to the project. AI-assisted contributions by humans are welcome, any other autonomous AI contributions including merge/pull requests, issues & comments will be rejected. This includes any variants of "Signed-off by `<agent's operator>`" i.e. human-operated agentic requests. We encourage (human) contributors to include "Assisted by: " footer whenever presenting any contributions on the project if using any assistances by AIs & LLMs.
 
 ---
 
 ## License
 
-This project is licensed under the AGPL-3.0-or-later license. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the AGPL-3.0-or-later license. FFmpeg is built on the default LGPL license. Licenses apply to individual tools used in this project. See the [LICENSE](LICENSE) file for details.
 
 ---
 

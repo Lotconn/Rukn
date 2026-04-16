@@ -1,7 +1,6 @@
-[submodule "libs/android/openssl"]
-	path = libs/android/openssl
-	url = https://github.com/KDAB/android_openssl
-
 [submodule "pkg/makeself/makeself"]
 	path = pkg/makeself/makeself
 	url = https://github.com/megastep/makeself
+[submodule "libs/KDSingleApplication"]
+	path = libs/KDSingleApplication
+	url = https://github.com/KDAB/KDSingleApplication

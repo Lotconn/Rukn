@@ -69,8 +69,8 @@ RUN \
 
 RUN \
     cp /usr/share/rootfiles/.* /root && \
-    echo "cmake -S . -B build -G'Ninja Multi-Config' -DCMAKE_BUILD_TYPE=Release --fresh && cmake --build build --config Release --parallel" >> /root/.bash_history && \
-    echo "cd pkg/makeself && ./generate_installer" >> /root/.bash_history && \
+    echo "cmake -S . -B build --fresh -G'Ninja Multi-Config' -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release --parallel" >> /root/.bash_history && \
+    echo "cd pkg/makeself && ./generate_installer && cd -" >> /root/.bash_history && \
     git config --system --add safe.directory /src
 
 WORKDIR /src

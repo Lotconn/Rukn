@@ -10,6 +10,8 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "-march=native -fomit-frame-pointer -fstack-clash-protection")
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
 
 configure_file(src/cpp/version.h.in version.h)
 
@@ -24,8 +26,8 @@ qt_standard_project_setup()
 if(LINUX)
     find_package(Qt6 COMPONENTS DBus REQUIRED)
 
-    set(KDSingleApplication_QT6 ON)
-    set(KDSingleApplication_STATIC ON)
+    set(KDSingleApplication_EXAMPLES OFF CACHE BOOL "Build the examples")
+    set(KDSingleApplication_STATIC ON CACHE BOOL "Build lib as static")
     add_subdirectory(libs/KDSingleApplication)
 endif()
 
@@ -81,13 +83,14 @@ target_compile_definitions(${PROJECT_NAME}
     PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
 
 target_link_libraries(${PROJECT_NAME}
-    PUBLIC Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Quick Qt6::QuickControls2 Qt6::Multimedia Qt6::Location
-    Qt6::Positioning Threads::Threads  )
+    PUBLIC Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Quick Qt6::QuickControls2
+    Qt6::Multimedia Qt6::Location Qt6::Positioning Threads::Threads)
 
 if(LINUX)
     find_package(Qt6 COMPONENTS WaylandClient)
 
-    target_link_libraries(${PROJECT_NAME} PUBLIC Qt::WaylandClient Qt6::DBus kdsingleapplication)
+    target_link_libraries(${PROJECT_NAME} PUBLIC
+    Qt::WaylandClient Qt6::DBus kdsingleapplication)
     #target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_BINARY_DIR}")
 
     install(TARGETS ${PROJECT_NAME})

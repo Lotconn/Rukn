@@ -12,14 +12,15 @@ set(QT_VV 6.11.0)
 set(FFMPEG_V 7.1.3)
 set(INSTALL_PREFIX /usr)
 
+set(COMMON_FLAGS
+    "-DCMAKE_CXX_FLAGS='-march=native -fomit-frame-pointer -fstack-clash-protection'"
+)
+
 set(FFMPEG_CONF
     ./configure
 
     # Standard options:
     --prefix=${INSTALL_PREFIX}
-
-    # Licensing:
-    --enable-version3
 
     # Configuration options:
     --disable-all
@@ -50,6 +51,9 @@ set(FFMPEG_CONF
     # Toolchain options:
     --enable-lto
 
+    # Advanced options:
+    --extra-cxxflags="-fstack-clash-protection -march=native -fomit-frame-pointer"
+
     # Developer options:
     --disable-debug
 )
@@ -70,7 +74,10 @@ set(QT_CONF
     -ccache
     -ltcg
 
+    # Build environment
     QT_BUILD_TOOLS_BY_DEFAULT=OFF
+
+    # Component selection:
     -nomake examples
     -nomake tests
     -nomake benchmarks
@@ -129,6 +136,7 @@ set(QT_CONF
 
 # Flags passed to every sub-module cmake invocation.
 set(QT_SUBMODULE_CMAKE_ARGS
+    ${COMMON_FLAGS}
     "-DCMAKE_INSTALL_PREFIX:STRING=${INSTALL_PREFIX}"
     -DCMAKE_BUILD_TYPE=Release
     -DCMAKE_C_COMPILER_LAUNCHER=ccache
@@ -167,7 +175,7 @@ qtbase
 URL https://download.qt.io/archive/qt/${QT_V}/${QT_VV}/submodules/qtbase-everywhere-src-${QT_VV}.tar.xz
 URL_HASH SHA256=231ad85979864d914dc9568a1b71c91d6cf20d7b2021d059103bf0eb51cb755e
 BUILD_IN_SOURCE 1
-CONFIGURE_COMMAND ${QT_CONF}
+CONFIGURE_COMMAND ${QT_CONF} -- ${COMMON_FLAGS}
 BUILD_COMMAND cmake --build . --parallel --config Release
 INSTALL_COMMAND cmake --install .
 DEPENDS ffmpeg
