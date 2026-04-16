@@ -17,7 +17,9 @@ ApplicationWindow {
     Material.primary: Material.Brown
 
     width: 450
+    minimumWidth: 350
     height: 800
+    minimumHeight: 350
     color: Material.dialogColor
     LayoutMirroring.childrenInherit: true
 
@@ -49,6 +51,7 @@ ApplicationWindow {
         try {
             mm.prayerConfig = JSON.parse(prayerConfig)
         } catch(_) {}
+        mm.invalidate()
 
         var audioList = settings.value("audioListV2", JSON.stringify(mm.audioList))
         try {
@@ -72,6 +75,8 @@ ApplicationWindow {
             news.newsVersion = engine.getVersionNo()
         }
         mm.set_24h_ticker()
+        mm.set_60s_ticker()
+        mm.refreshTable()
 
         if (mm.themeListIndex === 0) {
             mm.applySystemTheme()
@@ -86,10 +91,10 @@ ApplicationWindow {
     onVisibilityChanged: {
         alarms.clear("60s_tick")
 
-        // if(mainWindow.visibility === ApplicationWindow.Hidden) return
-
-        mm.set_60s_ticker()
-        mm.refreshTable()
+        if(mainWindow.visibility !== ApplicationWindow.Hidden) {
+            mm.set_60s_ticker()
+            mm.refreshTable()
+        }
     }
 
     Theme {
@@ -194,6 +199,12 @@ ApplicationWindow {
                 readOnly: true
                 wrapMode: TextArea.Wrap
                 textFormat: TextArea.RichText
+                onLinkActivated: (link) => Qt.openUrlExternally(link)
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.NoButton
+                    cursorShape: parent.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
+                }
             }
 
             ScrollBar.vertical: ScrollBar {}
@@ -243,7 +254,7 @@ ApplicationWindow {
 
         x: (parent.width - width) / 2
         y: (parent.height - height) / 2
-        width: mainPage.width
+        width: Math.min(mainPage.width, 770.0)
         height: parent.height * 0.8
 
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside

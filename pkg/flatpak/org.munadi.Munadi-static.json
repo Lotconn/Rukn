@@ -1,0 +1,185 @@
+{
+    "id": "org.munadi.Munadi",
+    "runtime": "org.freedesktop.Platform",
+    "runtime-version": "25.08",
+    "sdk": "org.freedesktop.Sdk",
+    "command": "munadi",
+    "finish-args": [
+        "--device=dri",
+        "--filesystem=xdg-music:ro",
+        "--share=ipc",
+        "--share=network",
+        "--socket=wayland",
+        "--socket=pulseaudio",
+        "--socket=fallback-x11",
+        "--talk-name=org.freedesktop.Notifications",
+        "--talk-name=org.kde.StatusNotifierWatcher",
+        "--env=QT_QPA_PLATFORMTHEME=gnome"
+    ],
+    "modules": [
+        {
+            "name": "qtbase",
+            "build-options": {
+                "no-debuginfo": true
+            },
+            "buildsystem": "simple",
+            "cleanup": ["/*"],
+            "build-commands": [
+            "./configure -ccache -prefix /app -opensource -confirm-license -release -static -qpa wayland -nomake tools -nomake examples -nomake tests -nomake benchmarks -nomake manual-tests -nomake minimal-static-tests",
+            "cmake --build . --parallel",
+            "cmake --install ."
+            ],
+            "sources": [
+
+                {
+                    "type": "archive",
+                    "url": "https://download.qt.io/archive/qt/6.11/6.11.0/submodules/qtbase-everywhere-src-6.11.0.tar.xz",
+                    "sha256": "231ad85979864d914dc9568a1b71c91d6cf20d7b2021d059103bf0eb51cb755e"
+                }
+            ]
+        },
+        {
+            "name": "qtshadertools",
+            "build-options": {
+                "strip": true
+            },
+            "buildsystem": "cmake-ninja",
+            "cleanup": ["/*"],
+            "config-opts": ["-DCMAKE_BUILD_TYPE=Release"],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.qt.io/archive/qt/6.11/6.11.0/submodules/qtshadertools-everywhere-src-6.11.0.tar.xz",
+                    "sha256": "e43cb1ae8809b2a858281ee269f98da59d0fc1bcf958ca5510c81f7ad3d2e14a"
+                }
+            ]
+        },
+        {
+            "name": "qtdeclarative",
+            "build-options": {
+                "strip": true
+            },
+            "buildsystem": "cmake-ninja",
+            "cleanup": ["/*"],
+            "config-opts": ["-DCMAKE_BUILD_TYPE=Release"],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.qt.io/archive/qt/6.11/6.11.0/submodules/qtdeclarative-everywhere-src-6.11.0.tar.xz",
+                    "sha256": "4eece569431ddf8324e7d322fa27001916570b23df535f8fb28aba445eedfde9"
+                }
+            ]
+        },
+        {
+            "name": "qtmultimedia",
+            "build-options": {
+                "strip": true
+            },
+            "buildsystem": "cmake-ninja",
+            "cleanup": ["/*"],
+            "config-opts": ["-DCMAKE_BUILD_TYPE=Release"],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.qt.io/archive/qt/6.11/6.11.0/submodules/qtmultimedia-everywhere-src-6.11.0.tar.xz",
+                    "sha256": "90c4cac0a7a983b68d1b0873d0714e7873b9a493403fa8593e8a4eea3ea26040"
+                }
+            ]
+        },
+        {
+            "name": "qtpositioning",
+            "build-options": {
+                "strip": true
+            },
+            "buildsystem": "cmake-ninja",
+            "cleanup": ["/*"],
+            "config-opts": ["-DCMAKE_BUILD_TYPE=Release"],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.qt.io/archive/qt/6.11/6.11.0/submodules/qtpositioning-everywhere-src-6.11.0.tar.xz",
+                    "sha256": "d61fd0985ede513ec34d2d1c1e92f383eb8eb46678ca9da805cf795cccb796e9"
+                }
+            ]
+        },
+        {
+            "name": "qtlocation",
+            "build-options": {
+                "strip": true
+            },
+            "buildsystem": "cmake-ninja",
+            "cleanup": ["/*"],
+            "config-opts": ["-DCMAKE_BUILD_TYPE=Release"],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.qt.io/archive/qt/6.11/6.11.0/submodules/qtlocation-everywhere-src-6.11.0.tar.xz",
+                    "sha256": "89b8386a8ae9e0b40a43fad398ac344f93a3b0d22f09bec4631f25d79135abef"
+                }
+            ]
+        },
+        {
+            "name": "qtwayland",
+            "build-options": {
+                "strip": true
+            },
+            "buildsystem": "cmake-ninja",
+            "cleanup": ["/*"],
+            "config-opts": ["-DCMAKE_BUILD_TYPE=Release"],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.qt.io/archive/qt/6.11/6.11.0/submodules/qtwayland-everywhere-src-6.11.0.tar.xz",
+                    "sha256": "e710e6e760f92922b86e4dd68f6bbe94ef6510919519d1b0068e874b5ad84d37"
+                }
+            ]
+        },
+        {
+            "name": "qtsvg",
+            "build-options": {
+                "strip": true
+            },
+            "buildsystem": "cmake-ninja",
+            "cleanup": ["/*"],
+            "config-opts": ["-DCMAKE_BUILD_TYPE=Release"],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.qt.io/archive/qt/6.11/6.11.0/submodules/qtsvg-everywhere-src-6.11.0.tar.xz",
+                    "sha256": "dfa8d653be07087d9407ed4a4ebae847f8953e0b7abd829f089803ab652a30e6"
+                }
+            ]
+        },
+        {
+            "name": "qtvirtualkeyboard",
+            "build-options": {
+                "strip": true
+            },
+            "buildsystem": "cmake-ninja",
+            "cleanup": ["/*"],
+            "config-opts": ["-DCMAKE_BUILD_TYPE=Release"],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.qt.io/archive/qt/6.11/6.11.0/submodules/qtvirtualkeyboard-everywhere-src-6.11.0.tar.xz",
+                    "sha256": "d88a4b1713a313e3ac06c32837b5d00724d1dcf7b44c2594f1029f7c74a8e686"
+                }
+            ]
+        },
+        {
+            "name": "munadi",
+            "build-options": {
+                "strip": true
+            },
+            "buildsystem": "cmake-ninja",
+            "cleanup": ["/lib", "/include"],
+            "config-opts": ["-DCMAKE_BUILD_TYPE=Release"],
+            "sources": [
+                {
+                    "type": "dir",
+                    "path": "../.."
+                }
+            ]
+        }
+    ]
+}

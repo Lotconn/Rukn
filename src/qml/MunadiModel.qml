@@ -86,10 +86,22 @@ QtObject {
 
         nextPrayer =            prayerTimes.nextPrayer()
         timeForCurrentPrayer =  prayerTimes.timeForPrayer(currentPrayer)
-        timeForNextPrayer =     prayerTimes.timeForPrayer(nextPrayer)
-    }
 
-    onTimeForNextPrayerChanged: refreshTimeLeft()
+        if (nextPrayer === Adhan.Prayer.None && dateNavOffset === 0) {
+            var tomorrow = new Date()
+            tomorrow.setDate(tomorrow.getDate() + 1)
+            var tomorrowPT = new Adhan.adhan.PrayerTimes(
+                new Adhan.adhan.Coordinates(latitude, longitude),
+                tomorrow,
+                params)
+            nextPrayer = Adhan.Prayer.Fajr
+            timeForNextPrayer = tomorrowPT.fajr
+        } else {
+            timeForNextPrayer = prayerTimes.timeForPrayer(nextPrayer)
+        }
+
+        refreshTimeLeft()
+    }
 
     function refreshTimeLeft() {
         console.debug('refreshTimeLeft()')
@@ -106,6 +118,11 @@ QtObject {
             var now = new Date()
             mm.currentTime = now
             var totalMins = Math.ceil((mm.timeForNextPrayer.getTime() - now) / 60000)
+
+            if (totalMins <= 0) {
+                mm.timeLeftStr = ""
+                return
+            }
 
             var hrs = Math.floor(totalMins / 60)
             var mins = Math.floor(totalMins % 60)
@@ -140,24 +157,24 @@ QtObject {
 
     function todayDate() {
         console.debug(new Date(), ': currentDate()')
-        currentDate = new Date()
         dateNavOffset = 0;
+        currentDate = new Date()
     }
 
     function prevDate() {
         console.debug(new Date(), ': prevDate()')
         var prevDate = mm.currentDate
         prevDate.setDate(prevDate.getDate() - 1)
-        currentDate = prevDate
         dateNavOffset--;
+        currentDate = prevDate
     }
 
     function nextDate() {
         console.debug(new Date(), ': nextDate()')
         var nextDate = mm.currentDate
         nextDate.setDate(nextDate.getDate() + 1)
-        currentDate = nextDate
         dateNavOffset++;
+        currentDate = nextDate
     }
 
     property string timeLeftStr

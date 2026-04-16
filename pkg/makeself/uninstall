@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+set -o pipefail
 
 declare -i _debug=${MUNADI_DEBUG:-0}  # bool
 declare -i _noask=0       # bool
@@ -17,46 +18,53 @@ _arch=x86_64
 _errout="${TMPROOT:-/tmp}/munadi-stderr.$RANDOM"
 _logfile="${TMPROOT:-/tmp}/munadi-$_script-$RANDOM.log"
 _v_args=''
-_ver=26.02
+_ver=26.04
 _trapexec=( 'rm -f "$_errout"' )
 
 trap 'for handler in "${_trapexec[@]}"; do eval "$handler"; done' \
   ERR EXIT ABRT INT QUIT SEGV TERM
 
 log() {
-  echo -e "$(date --rfc-3339 ns):munadi:$_script:$*" >> "$_logfile"
+  echo -e "$(date --rfc-3339 ns):munadi:$_script:$*" &>> "$_logfile"
 }
 
 debug_print()
 {
   if (( _debug )); then
-    echo -e "\e[0;34mmunadi:$_script:debug::\t$1\e[0;m" >&2
-    log "debug:: $1"
+    echo -e "\e[0;34mmunadi:$_script:debug::\t$*\e[0;m" >&2
+    log "debug:: $*"
   fi
 }
 
 error_print()
 {
   if (( ! _quiet )); then
-    echo -e "\e[0;31mmunadi:$_script:error::\t$1\e[0;m" >&2
-    log "error:: $1"
+    echo -e "\e[0;31mmunadi:$_script:error::\t$*\e[0;m" >&2
   fi
+  log "error:: $*"
 }
 
 warn_print()
 {
   if (( ! _quiet )); then
-    echo -e "\e[0;33mmunadi:$_script:warn::\t$1\e[0;m" >&2
-    log "warn:: $1"
+    echo -e "\e[0;33mmunadi:$_script:warn::\t$*\e[0;m" >&2
   fi
+  log "warn:: $*"
 }
 
 info_print()
 {
   if (( _verbose )); then
-    echo -e "munadi:$_script:info::\t$1"
-    log "info:: $1"
+    echo -e "munadi:$_script:info::\t$*"
   fi
+  log "info:: $*"
+}
+
+log_cmd()
+{
+  while read line; do
+    info_print "$line"
+  done
 }
 
 show_help()
@@ -150,20 +158,17 @@ _trapexec+=( 'warn_print "A log file is available at "$_logfile""' )
   #+++++++++++++++++++++++++++++++++++++++++++++++++++
   # Know what EUID we are. Also detect additional installations
 
-  declare -n _euid=EUID
-  declare -n _nuid=USER
-
   debug_print 'Checking UID and GID...'
-  debug_print "Effective UID is $_euid ($_nuid)"
-  if (( _euid == 0 )); then
+  debug_print "Effective UID is $EUID ($USER)"
+  if (( EUID == 0 )); then
     warn_print 'Script is running with superuser privilege.'
     _prefix=/opt/munadi
     _priv=1
     # Check all user installations
     for home in /home/* ; do
       debug_print "Checking $home/.local/libexec/munadi/munadi.version ..."
-      _old_ver=$(sed -r '/^_ver=/s/^.*=(.*)/\1/g' \
-                "$home/.local/libexec/munadi/munadi.version" 2>/dev/null || :)
+      _old_ver=$(sed -n 's/^_ver=//p' \
+                "$home/.local/libexec/munadi/munadi.version" 2>/dev/null || _old_ver='')
       if [[ -z "$_old_ver" ]]; then
         debug_print "Earlier installation not detected in $home."
       else
@@ -178,7 +183,7 @@ _trapexec+=( 'warn_print "A log file is available at "$_logfile""' )
     _priv=0
     # Check system-wide installation
     debug_print "Checking /opt/munadi/libexec/munadi/munadi.version ..."
-    _old_ver=$(sed -r '/^_ver=/s/^.*=(.*)/\1/g' \
+    _old_ver=$(sed -n 's/^_ver=//p' \
                   /opt/munadi/libexec/munadi/munadi.version 2>/dev/null || true)
     if [[ -z "$_old_ver" ]]; then
       debug_print "Earlier installation not detected in /opt/munadi"
@@ -194,7 +199,7 @@ _trapexec+=( 'warn_print "A log file is available at "$_logfile""' )
   # Previous installation detection
 
   debug_print "Checking $_prefix/libexec/munadi/munadi.version ..."
-  _old_ver=$(sed -r '/^_ver=/s/^.*=(.*)/\1/g' \
+  _old_ver=$(sed -n 's/^_ver=//p' \
                     "$_prefix/libexec/munadi/munadi.version" 2>/dev/null || :)
   if [[ -z "$_old_ver" ]]; then
     warn_print "Could not detect previous installation under $_prefix."
@@ -239,7 +244,7 @@ _trapexec+=( 'warn_print "A log file is available at "$_logfile""' )
   debug_print 'Uninstall phase in progress...'
 
   if [[ -d "$_prefix" || -L "$_prefix" ]]; then
-    cd "$_prefix"
+    cd "$_prefix" |& log_cmd
     debug_print "====== BEGIN from $(hash -t rm) ======"
 
     rm -f $_v_args \
@@ -247,14 +252,15 @@ _trapexec+=( 'warn_print "A log file is available at "$_logfile""' )
       ./libexec/munadi/install \
       ./libexec/munadi/munadi.version \
       ./libexec/munadi/uninstall \
-      ./share/licenses/munadi/LICENSE || :
+      ./share/licenses/munadi/LICENSE |& log_cmd || :
 
     if (( _priv )); then
-      rm -f $_v_args /usr/share/metainfo/org.munadi.Munadi.metainfo.xml
+      rm -f $_v_args /usr/share/metainfo/org.munadi.Munadi.metainfo.xml |& \
+                                                                        log_cmd
     else
       rm -f $_v_args \
         ./share/metainfo/org.munadi.Munadi.metainfo.xml \
-        "$HOME/.config/autostart/org.munadi.Munadi.desktop"
+        "$HOME/.config/autostart/org.munadi.Munadi.desktop" |& log_cmd
     fi
     debug_print "======== END from $(hash -t rm) ======"
 
@@ -265,10 +271,9 @@ _trapexec+=( 'warn_print "A log file is available at "$_logfile""' )
       "./libexec/munadi" \
       "./share/licenses/munadi" \
       "./share/metainfo" \
-      "/usr/share/metainfo" 2>"$_errout" || :
-    info_print "\n$( < $_errout)"
+      "/usr/share/metainfo" |& log_cmd  || :
     debug_print "======== END from $(hash -t rmdir) ======"
-    cd - > /dev/null
+    cd - |& log_cmd
   else
     warn_print \
       "$_prefix doesn't exist, not a directory or a valid symbolic link, or doesn't have sufficient permissions."
@@ -281,14 +286,15 @@ _trapexec+=( 'warn_print "A log file is available at "$_logfile""' )
 
   (( XDG_UTILS_DEBUG_LEVEL = _debug ? 3 : ( _verbose ? 1 : 0 ) )) || :
   debug_print "====== BEGIN from $(hash -t xdg-desktop-menu) ======"
-  xdg-desktop-menu uninstall org.munadi.Munadi.desktop
+  xdg-desktop-menu uninstall org.munadi.Munadi.desktop |& log_cmd
   debug_print "======== END from $(hash -t xdg-desktop-menu) ======"
 
   debug_print "====== BEGIN from $(hash -t xdg-icon-resource) ======"
   for size in 16 22 24 32 36 48 64 72 96 128 192 256 512; do
-    xdg-icon-resource uninstall --noupdate --size $size org.munadi.Munadi
+    xdg-icon-resource uninstall --noupdate --size $size org.munadi.Munadi |& \
+                                                                        log_cmd
   done
-  xdg-icon-resource forceupdate
+  xdg-icon-resource forceupdate |& log_cmd
   debug_print "======== END from $(hash -t xdg-icon-resource) ======"
 #---------------------------------------------------
 
@@ -300,7 +306,7 @@ _trapexec+=( 'warn_print "A log file is available at "$_logfile""' )
     # Terminate all instances of the program
     (( _verbose )) && _v_args=' --echo '
     debug_print "====== BEGIN from $(hash -t pkill) ======"
-    pkill $_v_args --exact --signal SIGTERM munadi || \
+    pkill $_v_args --exact --signal SIGTERM munadi |& log_cmd || \
       debug_print 'No other instances of munadi found.' && :
     debug_print "======== END from $(hash -t pkill) ======"
   fi

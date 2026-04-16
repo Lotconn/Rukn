@@ -13,7 +13,7 @@ SHA="$SHAsum"
 SIGNATURE="$Signature"
 TMPROOT=\${TMPDIR:=/tmp}
 USER_PWD="\$PWD"
-VER=26.02
+VER=26.04
 
 
 debug="\$MUNADI_DEBUG"
@@ -213,8 +213,8 @@ MS_Verify_Sig()
     LC_ALL=C "\$GPG_PATH" --verify "\$temp_sig" - 2>&1)
   gpg_res=\$?
   rm -f "\$temp_sig"
-  if test "\$gpg_res -eq 0 && \\
-      test \$(echo \$gpg_output | grep -c Good)" -eq 1; then
+  if test "\$gpg_res" -eq 0 && \\
+      test "\$(echo \$gpg_output | grep -c Good)" -eq 1; then
     if test "\$(echo \$gpg_output | grep -c \$sig_key)" -eq 1; then
       test "\$quiet" = n && echo "GPG signature is good" >&2
     else
@@ -279,39 +279,39 @@ MS_Preextract() {
   _syslibs=''
 
   log() {
-      MS_Printf "\$(date -Ins):munadi:pre-extract:\$*\n" >> "\$_logfile"
+      MS_Printf "\$(date -Ins):munadi:pre-extract:\$*\n" >> "\$_logfile" 2>&1
   }
 
   debug_print()
   {
     if [ "\$debug" = 1 ]; then
       MS_Printf "\\e[0;34mmunadi:pre-extract:debug::\\t\$1\e[0;m\\n" >&2
-      log "debug:: \$1"
     fi
+    log "debug:: \$1"
   }
 
   error_print()
   {
     if [ "\$quiet" = n ]; then
       MS_Printf "\\e[0;31mmunadi:pre-extract:error::\\t\$1\e[0;m\\n" >&2
-      log "error:: \$1"
     fi
+    log "error:: \$1"
   }
 
   warn_print()
   {
     if [ "\$quiet" = n ]; then
       MS_Printf "\\e[0;33mmunadi:pre-extract:warn::\\t\$1\\e[0;m\\n" >&2
-      log "warn:: \$1"
     fi
+    log "warn:: \$1"
   }
 
   info_print()
   {
     if [ "\$verbose" = y ]; then
       MS_Printf "munadi:pre-extract:info::\\t\$1\\n"
-      log "info:: \$1"
     fi
+    log "info:: \$1"
   }
 
   #+++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -428,7 +428,7 @@ MS_Preextract() {
   do
     if [ -z "\$_syslibs" ]; then
     _out="\$(find -H /lib /lib64 /usr/lib /usr/lib64 \\
-        '( -type l -o -type f )' -iname "\$lib*" -print -quit 2>/dev/null)" ||:
+        \\( -type l -o -type f \\) -iname "\$lib*" -print -quit 2>/dev/null)" ||:
       [ -n "\$_out" ] && { debug_print "\$lib found at \$_out"; continue; }
     else
       case " \$_syslibs " in
@@ -451,6 +451,7 @@ MS_Preextract() {
   fi
   #---------------------------------------------------
 
+  rm -f "\$_errout"
   # Exit if one or more sanity checks fail
   [ "\$_sane" = 0 ] && error_print 'Pre-check failed!' && exit 1
   info_print 'All checks succeeded.'
@@ -614,7 +615,7 @@ fi
 
 case "\$copy" in
   copy )
-    tmpdir="\$(mktemp "\$TMPROOT/makeself.XXXXXX.\$(date +'%y%m%d%H%M%S')" || \\
+    tmpdir="\$(mktemp -d "\$TMPROOT/makeself.XXXXXX" || \\
       exit 1)"
     SCRIPT_COPY="\$tmpdir/makeself"
     echo "Copying to a temporary location..." >&2

@@ -50,56 +50,92 @@
 
     <screenshots>
         <screenshot type="default">
-            <caption>Main page - dark mode</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/01_main_window.png</image>
+            <caption>Main page showing Fajr prayer time</caption>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2604/01_main_page_fajr.png</image>
         </screenshot>
         <screenshot>
-            <caption>Main page - dark mode</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/02_main_window.png</image>
+            <caption>Main page showing Dhuhr prayer time</caption>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2604/02_main_page_dhuhr.png</image>
         </screenshot>
         <screenshot>
-            <caption>Main page - light mode</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/03_main_window.png</image>
+            <caption>Main page showing Asr prayer time</caption>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2604/03_main_page_asr.png</image>
         </screenshot>
         <screenshot>
-            <caption>Main page - light mode</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/04_main_window.png</image>
+            <caption>Main page showing Maghrib prayer time</caption>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2604/04_main_page_maghrib.png</image>
         </screenshot>
         <screenshot>
-            <caption>Main page - light mode</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/05_main_window.png</image>
+            <caption>Main page showing Isha prayer time</caption>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2604/05_main_page_isha.png</image>
+        </screenshot>
+        <screenshot>
+            <caption>Main page with Material Light theme</caption>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2604/06_main_page_material_light.png</image>
+        </screenshot>
+        <screenshot>
+            <caption>Main page with Material Dark theme</caption>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2604/07_main_page_material_dark.png</image>
+        </screenshot>
+        <screenshot>
+            <caption>Location search feature</caption>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2604/08_location_search.png</image>
         </screenshot>
         <screenshot>
             <caption>Settings page</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/06_settings_page.png</image>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2604/09_settings_page.png</image>
         </screenshot>
         <screenshot>
             <caption>Settings page</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/07_settings_page.png</image>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2604/10_settings_page.png</image>
         </screenshot>
         <screenshot>
             <caption>Settings page</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/08_settings_page.png</image>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2604/11_settings_page.png</image>
         </screenshot>
         <screenshot>
             <caption>Settings page</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/09_settings_page.png</image>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2604/12_settings_page.png</image>
         </screenshot>
         <screenshot>
             <caption>Tray menu</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/10_tray_menu.png</image>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2604/13_tray_menu.png</image>
         </screenshot>
         <screenshot>
-            <caption>Tray menu</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/11_tray_menu.png</image>
-        </screenshot>
-        <screenshot>
-            <caption>Location search</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/12_location_search.png</image>
+            <caption>Tray tooltip showing time left</caption>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2604/14_tray_tooltip.png</image>
         </screenshot>
     </screenshots>
 
     <releases>
+        <release version="26.04" date="2026-04-01">
+            <description>
+                <p>Bug fixes and minor UI changes
+                <ul>
+                    Notable bug fixes
+                    <li>Resolve typos in `install` and `uninstall` scripts, simplify few code</li>
+                    <li>Fix tooltip "Time Left" not updating when started hidden or after sleep</li>
+                    <li>Show time left to next date's Fajr after Isha instead of waiting for 23:59</li>
+                    <li>Prevent prayer labels running into adjacent time values; elide if parent too narrow</li>
+                </ul>
+                <ul>
+                    Improvements
+                    <li>Upgrade to Qt 6.11 (SFX standalone installer only)</li>
+                    <li>Left-align Prayer Times table labels</li>
+                    <li>Show "Time Left" string only on current date</li>
+                    <li>Clamp the Settings page width if parent window is too wide</li>
+                    <li>Limit smallest resizable window size</li>
+                    <li>Update underlying libs</li>
+                </ul>
+                <ul>
+                    Others
+                    <li>Simplify Prayer Times table object alignment approach</li>
+                    <li>Enable clickable hyperlinks on What's New page</li>
+                    <li>Publish "Munadi static app builder" image to project's registry</li>
+                </ul>
+                </p>
+            </description>
+        </release>
         <release version="26.02" date="2026-02-03">
             <description>
                 <p>Bug fixes, minor UI changes and new installer</p>

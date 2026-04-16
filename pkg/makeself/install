@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+set -o pipefail
 
 declare -i _debug=${MUNADI_DEBUG:-0}  # bool
 declare -i _noask=0       # bool
@@ -17,46 +18,53 @@ _arch=x86_64
 _errout="${TMPROOT:-/tmp}/munadi-stderr.$RANDOM"
 _logfile="${TMPROOT:-/tmp}/munadi-$_script-$RANDOM.log"
 _v_args=''
-_ver=26.02
+_ver=26.04
 _trapexec=( 'rm -f "$_errout"' )
 
 trap 'for handler in "${_trapexec[@]}"; do eval "$handler"; done' \
   ERR EXIT ABRT INT QUIT SEGV TERM
 
 log() {
-  echo -e "$(date --rfc-3339 ns):munadi:$_script:$*" >> "$_logfile"
+  echo -e "$(date --rfc-3339 ns):munadi:$_script:$*" &>> "$_logfile"
 }
 
 debug_print()
 {
   if (( _debug )); then
-    echo -e "\e[0;34mmunadi:$_script:debug::\t$1\e[0;m" >&2
-    log "debug:: $1"
+    echo -e "\e[0;34mmunadi:$_script:debug::\t$*\e[0;m" >&2
+    log "debug:: $*"
   fi
 }
 
 error_print()
 {
   if (( ! _quiet )); then
-    echo -e "\e[0;31mmunadi:$_script:error::\t$1\e[0;m" >&2
-    log "error:: $1"
+    echo -e "\e[0;31mmunadi:$_script:error::\t$*\e[0;m" >&2
   fi
+  log "error:: $*"
 }
 
 warn_print()
 {
   if (( ! _quiet )); then
-    echo -e "\e[0;33mmunadi:$_script:warn::\t$1\e[0;m" >&2
-    log "warn:: $1"
+    echo -e "\e[0;33mmunadi:$_script:warn::\t$*\e[0;m" >&2
   fi
+  log "warn:: $*"
 }
 
 info_print()
 {
   if (( _verbose )); then
-    echo -e "munadi:$_script:info::\t$1"
-    log "info:: $1"
+    echo -e "munadi:$_script:info::\t$*"
   fi
+  log "info:: $*"
+}
+
+log_cmd()
+{
+  while read line; do
+    info_print "$line"
+  done
 }
 
 show_help()
@@ -127,19 +135,17 @@ _trapexec+=( 'warn_print "A log file is available at "$_logfile""' )
   # Know what EUID and EGID we are. We don't accept normal users
   # having system GID
 
-  declare -n _euid=EUID
-  declare -n _nuid=USER
   declare -i _egid=$(id -g)
   _ngid=$(id -gn)
 
   debug_print 'Checking UID and GID...'
-  debug_print "Effective UID is $_euid ($_nuid)"
+  debug_print "Effective UID is $EUID ($USER)"
   debug_print "Effective GID is $_egid ($_ngid)"
-  if (( _euid == 0 )); then
+  if (( EUID == 0 )); then
     warn_print 'Script is running with superuser privilege.'
     _prefix=/opt/munadi
     _priv=1
-  elif (( _euid >= 1000 )) && \
+  elif (( EUID >= 1000 )) && \
     { (( _egid >= 1000 )) || [[ "$_ngid" = "users" ]] ;}; then
     info_print 'Script is running with normal privilege.'
     _prefix=$HOME/.local
@@ -170,7 +176,7 @@ _trapexec+=( 'warn_print "A log file is available at "$_logfile""' )
       debug_print "dbus-send\t$(hash -t dbus-send)"
       if dbus-send --system --print-reply=literal \
           --dest=org.freedesktop.DBus \
-          / org.freedesktop.DBus.ListNames &> /dev/null; then
+          / org.freedesktop.DBus.ListNames &> "$_errout"; then
         debug_print 'DBus system bus is operational.'
       else
         warn_print "No reply received. DBus system bus may not be operational."
@@ -247,7 +253,7 @@ _trapexec+=( 'warn_print "A log file is available at "$_logfile""' )
     do
       if [[ -z "$_syslibs" ]]; then
         _out="$(find -O3 -H /lib /lib64 /usr/lib /usr/lib64 \
-          '( -type l -o -type f )' -iname "$lib*" -print -quit 2>/dev/null)" ||:
+          \( -type l -o -type f \) -iname "$lib*" -print -quit 2>/dev/null)" ||:
         [[ -n "$_out" ]] && debug_print "$lib found at $_out" && continue
 
       else
@@ -317,32 +323,35 @@ _trapexec+=( 'warn_print "A log file is available at "$_logfile""' )
   debug_print 'Install phase in progress...'
 
   debug_print "Changing mode of munadi.desktop to 0755"
-  chmod $_v_args 0755 ./org.munadi.Munadi.desktop
+  chmod $_v_args 0755 ./org.munadi.Munadi.desktop |& log_cmd
 
   debug_print "Attempting to uninstall previous installation"
   hash -p "$_prefix/libexec/munadi/uninstall" uninstall_old
   debug_print "Invoking uninstall script $(hash -t uninstall_old)"
-  uninstall_old --assumeyes --quiet --noscript 2>/dev/null || {
+  { (( _verbose )) && _arg='--verbose'; } || _arg=''
+  uninstall_old --assumeyes $_arg --noscript &> $_errout || {
     debug_print "Previous uninstall script not found or some error occured."
     debug_print "Continuing without uninstalling."
   }
+  info_print "\n$(<"$_errout")"
 
   debug_print "====== BEGIN from $(hash -t install) ======"
   # (( _debug )) && _v_args+=" --debug "   # Doesn't work on many systems
   _trapexec+=( 'if (( $? )); then ./uninstall -qs; fi' )
-  install $_v_args -D --mode 0755 --strip ./munadi --target "$_prefix/bin"
+  install $_v_args -D --mode 0755 --strip ./munadi \
+                                              --target "$_prefix/bin" |& log_cmd
   install $_v_args -D --mode 0755 ./{,un}install \
-                                              --target "$_prefix/libexec/munadi"
+                                   --target "$_prefix/libexec/munadi" |& log_cmd
   install $_v_args -D --mode 0444 ./munadi.version \
-                                              --target "$_prefix/libexec/munadi"
+                                   --target "$_prefix/libexec/munadi" |& log_cmd
   install $_v_args -D --mode 0644 ./LICENSE \
-                                       --target "$_prefix/share/licenses/munadi"
+                            --target "$_prefix/share/licenses/munadi" |& log_cmd
   if (( _priv )); then
     install $_v_args -D --mode 0644 ./org.munadi.Munadi.metainfo.xml \
-                                                  --target "/usr/share/metainfo"
+                                       --target "/usr/share/metainfo" |& log_cmd
   else
     install $_v_args -D --mode 0644 ./org.munadi.Munadi.metainfo.xml \
-                                              --target "$_prefix/share/metainfo"
+                                   --target "$_prefix/share/metainfo" |& log_cmd
   fi
   debug_print "======== END from $(hash -t install) ======"
 
@@ -354,15 +363,15 @@ _trapexec+=( 'warn_print "A log file is available at "$_logfile""' )
   sed -i -r "/^Exec/c\Exec=$_prefix/bin/munadi" ./org.munadi.Munadi.desktop
   echo -e "\n[Desktop Action Remove]\nName=Uninstall Munadi\nExec=$_prefix/libexec/munadi/uninstall" >> ./org.munadi.Munadi.desktop
   debug_print "====== BEGIN from $(hash -t xdg-desktop-menu) ======"
-  xdg-desktop-menu install --novendor ./org.munadi.Munadi.desktop
+  xdg-desktop-menu install --novendor ./org.munadi.Munadi.desktop |& log_cmd
   debug_print "======== END from $(hash -t xdg-desktop-menu) ======"
   debug_print "====== BEGIN from $(hash -t xdg-icon-resource) ======"
   for size in 16 22 24 32 36 48 64 72 96 128 192 256 512; do
     xdg-icon-resource install --noupdate --novendor --size $size \
       ./icons/hicolor/${size}x${size}/apps/org.munadi.Munadi.png \
-      org.munadi.Munadi
+      org.munadi.Munadi |& log_cmd
   done
-  xdg-icon-resource forceupdate
+  xdg-icon-resource forceupdate |& log_cmd
   debug_print "======== END from $(hash -t xdg-icon-resource) ======"
 #---------------------------------------------------
 
@@ -374,7 +383,7 @@ _trapexec+=( 'warn_print "A log file is available at "$_logfile""' )
     # Terminate all instances of the program
     (( _verbose )) && _v_args=' --echo '
     debug_print "====== BEGIN from $(hash -t pkill) ======"
-    pkill $_v_args --exact --signal SIGTERM munadi || \
+    pkill $_v_args --exact --signal SIGTERM munadi |& log_cmd || \
       debug_print 'No other instances of munadi found.' && :
     debug_print "======== END from $(hash -t pkill) ======"
   fi
