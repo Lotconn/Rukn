@@ -83,34 +83,34 @@
         </screenshot>
         <screenshot>
             <caption>Settings page</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2604/09_settings_page.png</image>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/06_settings_page.png</image>
         </screenshot>
         <screenshot>
             <caption>Settings page</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2604/10_settings_page.png</image>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/07_settings_page.png</image>
         </screenshot>
         <screenshot>
             <caption>Settings page</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2604/11_settings_page.png</image>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/08_settings_page.png</image>
         </screenshot>
         <screenshot>
             <caption>Settings page</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2604/12_settings_page.png</image>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/09_settings_page.png</image>
         </screenshot>
         <screenshot>
             <caption>Tray menu</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2604/13_tray_menu.png</image>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/10_tray_menu.png</image>
         </screenshot>
         <screenshot>
             <caption>Tray tooltip showing time left</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2604/14_tray_tooltip.png</image>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2511/11_tray_menu.png</image>
         </screenshot>
     </screenshots>
 
     <releases>
-        <release version="26.04" date="2026-04-01">
+        <release version="26.04" date="2026-04-18">
             <description>
-                <p>Bug fixes and minor UI changes
+                <p>Bug fixes and minor UI changes</p>
                 <ul>
                     Notable bug fixes
                     <li>Resolve typos in `install` and `uninstall` scripts, simplify few code</li>
@@ -133,7 +133,6 @@
                     <li>Enable clickable hyperlinks on What's New page</li>
                     <li>Publish "Munadi static app builder" image to project's registry</li>
                 </ul>
-                </p>
             </description>
         </release>
         <release version="26.02" date="2026-02-03">
