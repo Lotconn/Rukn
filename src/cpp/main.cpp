@@ -3,12 +3,22 @@
 #include <QQmlApplicationEngine>
 #include <QStyleFactory>
 
-#ifndef ANDROID
+#ifdef Q_OS_LINUX
 #include <kdsingleapplication.h>
 #endif
 
+#include <QQuickWindow>
+
 #include "engine.h"
 #include "alarms.h"
+
+#ifdef Q_OS_MACOS
+#include "macos_window.h"
+#endif
+
+#ifndef Q_OS_LINUX
+#include "dummysapp.h"
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -16,10 +26,10 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
     Engine engine;
-    Alarms alarms;
+    auto *alarms = createAlarms(&app);
 
     QApplication::setStyle(QStyleFactory::create("gnome"));
-#ifndef ANDROID
+#ifdef Q_OS_LINUX
     KDSingleApplication sapp;
 
     if (!sapp.isPrimaryInstance()) {
@@ -68,12 +78,20 @@ int main(int argc, char *argv[])
     }
 
     qae.rootContext()->setContextProperty("engine", &engine);
-    qae.rootContext()->setContextProperty("alarms", &alarms);
-#ifndef ANDROID
+    qae.rootContext()->setContextProperty("alarms", alarms);
+#ifdef Q_OS_LINUX
     qae.rootContext()->setContextProperty("sapp", &sapp);
+#else
+    DummySapp dummySapp;
+    qae.rootContext()->setContextProperty("sapp", &dummySapp);
 #endif
     qae.rootContext()->setContextProperty("updater", engine.updater);
     qae.load(QUrl(QLatin1String("qrc:/qml/main.qml")));
+
+#ifdef Q_OS_MACOS
+    if(auto *window = qobject_cast<QQuickWindow *>(qae.rootObjects().first()))
+        makeTitleBarTransparent(window);
+#endif
 
     return app.exec();
 }

@@ -37,7 +37,7 @@ public:
 
     Q_INVOKABLE QString ff()    // Form factor
     {
-#if defined Q_OS_WIN || defined Q_OS_OSX || (defined Q_OS_LINUX && !defined Q_OS_ANDROID)
+#if defined Q_OS_WIN || defined Q_OS_MACOS || (defined Q_OS_LINUX && !defined Q_OS_ANDROID)
     return "d";
 #else
     return "m";

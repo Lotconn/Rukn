@@ -10,7 +10,9 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "-march=native -fomit-frame-pointer -fstack-clash-protection")
+if(LINUX)
+    set(CMAKE_CXX_FLAGS "-march=native -fomit-frame-pointer -fstack-clash-protection")
+endif()
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
 
 configure_file(src/cpp/version.h.in version.h)
@@ -36,14 +38,21 @@ set(TS_FILES
 
 set(HEADERS
     src/cpp/alarms.h
+    src/cpp/dummysapp.h
     src/cpp/engine.h
+    src/cpp/macos_window.h
     src/cpp/updater.h)
 
 set(SOURCES
-    src/cpp/alarms.cpp
     src/cpp/engine.cpp
     src/cpp/updater.cpp
     src/cpp/main.cpp)
+
+if(APPLE)
+    list(APPEND SOURCES src/cpp/alarms_macos.cpp src/cpp/macos_window.mm)
+else()
+    list(APPEND SOURCES src/cpp/alarms_linux.cpp)
+endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
     qt6_add_resources(QRC_FILES src/qml.qrc src/rc.qrc)
@@ -85,6 +94,10 @@ target_compile_definitions(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     PUBLIC Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Quick Qt6::QuickControls2
     Qt6::Multimedia Qt6::Location Qt6::Positioning Threads::Threads)
+
+if(APPLE)
+    target_link_libraries(${PROJECT_NAME} PUBLIC "-framework AppKit")
+endif()
 
 if(LINUX)
     find_package(Qt6 COMPONENTS WaylandClient)

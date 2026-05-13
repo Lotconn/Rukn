@@ -156,9 +156,9 @@ ApplicationWindow {
 
         property double marg: Math.max(mainWindow.width, mainWindow.height) * mm.page_margins_p
         anchors.topMargin: marg
-        anchors.bottomMargin: anchors.topMargin
+        anchors.bottomMargin: marg
         anchors.leftMargin: marg
-        anchors.rightMargin: anchors.leftMargin
+        anchors.rightMargin: marg
         anchors.fill: parent
     }
 

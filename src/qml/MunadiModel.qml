@@ -143,12 +143,14 @@ QtObject {
     }
 
     function set_24h_ticker() {
+        alarms.clear("24h_tick")
         var midnight = new Date()
         midnight.setHours(24,0,0,0)
         alarms.add("24h_tick", midnight, 24*60*60)
     }
 
     function set_60s_ticker() {
+        alarms.clear("60s_tick")
         var min = new Date()
         min.setSeconds(60)
         min.setMilliseconds(0)
