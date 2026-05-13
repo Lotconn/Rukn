@@ -143,18 +143,18 @@ QtObject {
     }
 
     function set_24h_ticker() {
-        alarms.clear("24h_tick")
+        alarm.clear("24h_tick")
         var midnight = new Date()
         midnight.setHours(24,0,0,0)
-        alarms.add("24h_tick", midnight, 24*60*60)
+        alarm.add("24h_tick", midnight, 24*60*60)
     }
 
     function set_60s_ticker() {
-        alarms.clear("60s_tick")
+        alarm.clear("60s_tick")
         var min = new Date()
         min.setSeconds(60)
         min.setMilliseconds(0)
-        alarms.add("60s_tick", min, 60)
+        alarm.add("60s_tick", min, 60)
     }
 
     function todayDate() {
@@ -186,13 +186,13 @@ QtObject {
 
     property var prayerTimes
     onPrayerTimesChanged: {
-        alarms.clear("athan")
+        alarm.clear("athan")
 
-        alarms.add("athan", prayerTimes.fajr)
-        alarms.add("athan", prayerTimes.dhuhr)
-        alarms.add("athan", prayerTimes.asr)
-        alarms.add("athan", prayerTimes.maghrib)
-        alarms.add("athan", prayerTimes.isha)
+        alarm.add("athan", prayerTimes.fajr)
+        alarm.add("athan", prayerTimes.dhuhr)
+        alarm.add("athan", prayerTimes.asr)
+        alarm.add("athan", prayerTimes.maghrib)
+        alarm.add("athan", prayerTimes.isha)
 
         refreshTable()
     }

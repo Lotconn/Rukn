@@ -8,9 +8,9 @@
 #include <map>
 #include <thread>
 
-#include "alarms.h"
+#include "alarm.h"
 
-class AlarmsLinux : public Alarms
+class AlarmLinux : public Alarm
 {
     int epoll_fd = -1;
 
@@ -23,7 +23,7 @@ class AlarmsLinux : public Alarms
     std::thread event_loop;
 
 public:
-    AlarmsLinux(QObject *parent) : Alarms(parent)
+    AlarmLinux(QObject *parent) : Alarm(parent)
     {
         epoll_fd = epoll_create1(0);
         if(epoll_fd == -1)
@@ -70,7 +70,7 @@ public:
         event_loop.detach();
     }
 
-    ~AlarmsLinux() override
+    ~AlarmLinux() override
     {
         clear_all();
         close(epoll_fd);
@@ -148,7 +148,7 @@ public:
     }
 };
 
-Alarms *createAlarms(QObject *parent)
+Alarm *createAlarm(QObject *parent)
 {
-    return new AlarmsLinux(parent);
+    return new AlarmLinux(parent);
 }

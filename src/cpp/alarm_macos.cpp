@@ -11,9 +11,9 @@
 #include <map>
 #include <thread>
 
-#include "alarms.h"
+#include "alarm.h"
 
-class AlarmsMacos : public Alarms
+class AlarmMacos : public Alarm
 {
     int kq_fd = -1;
     uint64_t next_ident = 1;
@@ -27,7 +27,7 @@ class AlarmsMacos : public Alarms
     std::thread event_loop;
 
 public:
-    AlarmsMacos(QObject *parent) : Alarms(parent)
+    AlarmMacos(QObject *parent) : Alarm(parent)
     {
         kq_fd = kqueue();
         if(kq_fd == -1)
@@ -102,7 +102,7 @@ public:
         event_loop.detach();
     }
 
-    ~AlarmsMacos() override
+    ~AlarmMacos() override
     {
         clear_all();
         close(kq_fd);
@@ -167,7 +167,7 @@ public:
     }
 };
 
-Alarms *createAlarms(QObject *parent)
+Alarm *createAlarm(QObject *parent)
 {
-    return new AlarmsMacos(parent);
+    return new AlarmMacos(parent);
 }

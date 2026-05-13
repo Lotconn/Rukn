@@ -89,7 +89,7 @@ ApplicationWindow {
     }
 
     onVisibilityChanged: {
-        alarms.clear("60s_tick")
+        alarm.clear("60s_tick")
 
         if(mainWindow.visibility !== ApplicationWindow.Hidden) {
             mm.set_60s_ticker()
@@ -345,7 +345,7 @@ ApplicationWindow {
     }
 
     Connections {
-        target: alarms
+        target: alarm
 
         function onTrigger(id) {
             console.debug("onTrigger(",id,")")

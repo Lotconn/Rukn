@@ -37,7 +37,7 @@ set(TS_FILES
     src/i18n/munadi_ar.ts)
 
 set(HEADERS
-    src/cpp/alarms.h
+    src/cpp/alarm.h
     src/cpp/dummysapp.h
     src/cpp/engine.h
     src/cpp/macos_window.h
@@ -49,9 +49,9 @@ set(SOURCES
     src/cpp/main.cpp)
 
 if(APPLE)
-    list(APPEND SOURCES src/cpp/alarms_macos.cpp src/cpp/macos_window.mm)
+    list(APPEND SOURCES src/cpp/alarm_macos.cpp src/cpp/macos_window.mm)
 else()
-    list(APPEND SOURCES src/cpp/alarms_linux.cpp)
+    list(APPEND SOURCES src/cpp/alarm_linux.cpp)
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")

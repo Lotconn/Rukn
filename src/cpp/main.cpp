@@ -10,7 +10,7 @@
 #include <QQuickWindow>
 
 #include "engine.h"
-#include "alarms.h"
+#include "alarm.h"
 
 #ifdef Q_OS_MACOS
 #include "macos_window.h"
@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
     Engine engine;
-    auto *alarms = createAlarms(&app);
+    auto *alarm = createAlarm(&app);
 
     QApplication::setStyle(QStyleFactory::create("gnome"));
 #ifdef Q_OS_LINUX
@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
     }
 
     qae.rootContext()->setContextProperty("engine", &engine);
-    qae.rootContext()->setContextProperty("alarms", alarms);
+    qae.rootContext()->setContextProperty("alarm", alarm);
 #ifdef Q_OS_LINUX
     qae.rootContext()->setContextProperty("sapp", &sapp);
 #else
