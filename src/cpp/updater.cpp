@@ -19,7 +19,7 @@ void Updater::check()
     QUrlQuery jadidParams;
 #if defined Q_OS_WIN
     jadidParams.addQueryItem("os","win");
-#elif defined Q_OS_OSX
+#elif defined Q_OS_MACOS
     jadidParams.addQueryItem("os","osx");
 #elif defined Q_OS_ANDROID
     jadidParams.addQueryItem("os","android");

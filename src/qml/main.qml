@@ -89,7 +89,7 @@ ApplicationWindow {
     }
 
     onVisibilityChanged: {
-        alarms.clear("60s_tick")
+        alarm.clear("60s_tick")
 
         if(mainWindow.visibility !== ApplicationWindow.Hidden) {
             mm.set_60s_ticker()
@@ -156,9 +156,9 @@ ApplicationWindow {
 
         property double marg: Math.max(mainWindow.width, mainWindow.height) * mm.page_margins_p
         anchors.topMargin: marg
-        anchors.bottomMargin: anchors.topMargin
+        anchors.bottomMargin: marg
         anchors.leftMargin: marg
-        anchors.rightMargin: anchors.leftMargin
+        anchors.rightMargin: marg
         anchors.fill: parent
     }
 
@@ -345,7 +345,7 @@ ApplicationWindow {
     }
 
     Connections {
-        target: alarms
+        target: alarm
 
         function onTrigger(id) {
             console.debug("onTrigger(",id,")")
