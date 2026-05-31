@@ -445,17 +445,21 @@ Page {
                     text: link
                     onClicked: Qt.openUrlExternally(link)
                 }
-                Text {
-                    text: qsTr("Contact")
-                    color: Material.secondaryTextColor
-
-                    font.italic: true
-                }
-                TextButton {
-                    property string link: "https://munadi.org/contact"
-                    text: link
-                    onClicked: Qt.openUrlExternally(link)
-                }
+                ///////////////////////////////////////////////////////////////
+                // FIXME: Contact doesn't work
+                ///////////////////////////////////////////////////////////////
+                // Text {
+                //     text: qsTr("Contact")
+                //     color: Material.secondaryTextColor
+                //
+                //     font.italic: true
+                // }
+                // TextButton {
+                //     property string link: "https://munadi.org/contact"
+                //     text: link
+                //     onClicked: Qt.openUrlExternally(link)
+                // }
+                ///////////////////////////////////////////////////////////////
                 Text {
                     text: qsTr("Support")
                     color: Material.secondaryTextColor
@@ -463,7 +467,7 @@ Page {
                     font.italic: true
                 }
                 TextButton {
-                    property string link: "https://gitlab.com/munadi/munadi/-/issues"
+                    property string link: "https://gitlab.com/munadi/munadi/-/work_items"
                     text: link
                     Layout.fillWidth: true
                     onClicked: Qt.openUrlExternally(link)

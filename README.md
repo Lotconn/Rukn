@@ -1,14 +1,29 @@
 # Munadi
 
-## Simple Athan App
+## Your Simple and Beautiful Athan App
 
-Munadi is a lightweight, privacy-focused prayer time application for Linux and Android. It provides accurate prayer times with customizable athan (call to prayer) options, dual calendar support (Hijri/Gregorian), and a clean modern interface.
+Munadi is a simple yet powerful Athan app designed to be a companion in your daily life. It offers a clean, beautiful interface free from advertisements and tracking, delivering precise prayer alerts for any city worldwide. The app includes dual calendar support (Gregorian & Hijri), multiple calculation methods, and the ability to view prayer schedules for any date—past or future. A range of thoughtful settings allows you to tailor the experience to your personal needs.
+
+**Features:**
+- Prayer times for nearly any city around the globe
+- Lightweight design with no advertisements or tracking
+- Countdown to the next prayer, visible in tooltips
+- View prayer times for past or future dates
+- Automatic switching between Dark and Light themes
+- Customizable UI visual effects
+- Dynamic wallpapers that reflect the time of prayer
+- Convenient system-tray support
+- Flexible time format options
+- Individual control to enable, mute, or adjust Athan volumes
+- Option to assign a unique Athan for each prayer
+- Fine-tune prayer times and Hijri date offsets
+- Support for various global calculation methods
 
 ---
 
 ## Screenshots
 
-### Version 26.04
+### Version 26.06
 
 <div style="overflow-x: auto; white-space: nowrap;">
 
@@ -32,7 +47,7 @@ Munadi is a lightweight, privacy-focused prayer time application for Linux and A
 
 | Packaging | Platform | Status |
 |-----------|----------|:--:|
-| Makeself  | linux/x86_64                  | [![pipeline status](https://gitlab.com/munadi/munadi/badges/26.04/pipeline.svg)](https://gitlab.com/munadi/munadi/-/commits/26.04)                                                |
+| Makeself  | linux/x86_64                  | [![pipeline status](https://gitlab.com/munadi/munadi/badges/26.06/pipeline.svg)](https://gitlab.com/munadi/munadi/-/commits/26.06)                                                |
 | Flatpak   | linux/x86_64<br>linux/aarch64 | [![Build pipeline](https://github.com/flathub-infra/vorarbeiter/actions/workflows/build.yml/badge.svg)](https://github.com/flathub-infra/vorarbeiter/actions/workflows/build.yml) |
 | APK       | android/arm64-v8a             | Alpha                                                                                                                                                                            |
 
@@ -52,7 +67,7 @@ Munadi is a lightweight, privacy-focused prayer time application for Linux and A
 No dependencies required - just download & install:
 
 ```bash
-# Replace VER with the file's version, e.g. Munadi-26.04.run
+# Replace VER with the file's version, e.g. Munadi-26.06.run
 $ sh Munadi-<VER>.run -q
 ```
 

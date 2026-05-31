@@ -27,8 +27,8 @@ modules:
       - cmake --install .
     sources:
       - type: archive
-        url: https://download.qt.io/archive/qt/6.11/6.11.0/submodules/qtbase-everywhere-src-6.11.0.tar.xz
-        sha256: 231ad85979864d914dc9568a1b71c91d6cf20d7b2021d059103bf0eb51cb755e
+        url: https://download.qt.io/archive/qt/6.11/6.11.1/submodules/qtbase-everywhere-src-6.11.1.tar.xz
+        sha256: d9594a31228aa23ad6b531719a29b45f0f3989fe6c136d45767ea179f233c1ac
   - name: qtshadertools
     build-options:
       strip: true
@@ -53,8 +53,8 @@ modules:
       - -DQT_USE_CCACHE=ON
     sources:
       - type: archive
-        url: https://download.qt.io/archive/qt/6.11/6.11.0/submodules/qtshadertools-everywhere-src-6.11.0.tar.xz
-        sha256: e43cb1ae8809b2a858281ee269f98da59d0fc1bcf958ca5510c81f7ad3d2e14a
+        url: https://download.qt.io/archive/qt/6.11/6.11.1/submodules/qtshadertools-everywhere-src-6.11.1.tar.xz
+        sha256: 2075052f9b23bcf9de045bbd180037084942f82cce870aab14a1454902c982fc
   - name: qtdeclarative
     build-options:
       strip: true
@@ -79,8 +79,8 @@ modules:
       - -DQT_USE_CCACHE=ON
     sources:
       - type: archive
-        url: https://download.qt.io/archive/qt/6.11/6.11.0/submodules/qtdeclarative-everywhere-src-6.11.0.tar.xz
-        sha256: 4eece569431ddf8324e7d322fa27001916570b23df535f8fb28aba445eedfde9
+        url: https://download.qt.io/archive/qt/6.11/6.11.1/submodules/qtdeclarative-everywhere-src-6.11.1.tar.xz
+        sha256: 52e670f670b0304f534b24f98c47ceb8a41bb710464414ebc9527ec71cc86aa4
   - name: qtmultimedia
     build-options:
       strip: true
@@ -105,8 +105,8 @@ modules:
       - -DQT_USE_CCACHE=ON
     sources:
       - type: archive
-        url: https://download.qt.io/archive/qt/6.11/6.11.0/submodules/qtmultimedia-everywhere-src-6.11.0.tar.xz
-        sha256: 90c4cac0a7a983b68d1b0873d0714e7873b9a493403fa8593e8a4eea3ea26040
+        url: https://download.qt.io/archive/qt/6.11/6.11.1/submodules/qtmultimedia-everywhere-src-6.11.1.tar.xz
+        sha256: 390f8e52ddee3aca5c4de7eead900c84c4fa61ff6d1f0ebea9c7543365c09b0a
   - name: qtpositioning
     build-options:
       strip: true
@@ -131,60 +131,8 @@ modules:
       - -DQT_USE_CCACHE=ON
     sources:
       - type: archive
-        url: https://download.qt.io/archive/qt/6.11/6.11.0/submodules/qtpositioning-everywhere-src-6.11.0.tar.xz
-        sha256: d61fd0985ede513ec34d2d1c1e92f383eb8eb46678ca9da805cf795cccb796e9
-  - name: qtlocation
-    build-options:
-      strip: true
-    buildsystem: cmake-ninja
-    cleanup:
-      - /*
-    config-opts:
-      - -DCMAKE_BUILD_TYPE=Release
-      - -DCMAKE_C_COMPILER_LAUNCHER=ccache
-      - -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
-      - -DCMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE=ON
-      - -DQT_BUILD_BENCHMARKS=OFF
-      - -DQT_BUILD_DOC_SNIPPETS=FALSE
-      - -DQT_BUILD_EXAMPLES=OFF
-      - -DQT_BUILD_MANUAL_TESTS=OFF
-      - -DQT_BUILD_MINIMAL_STATIC_TESTS=FALSE
-      - -DQT_BUILD_TESTS=OFF
-      - -DQT_BUILD_TOOLS_BY_DEFAULT=OFF
-      - -DQT_GENERATE_SBOM=OFF
-      - -DQT_QPA_DEFAULT_PLATFORM=wayland
-      - -DQT_QPA_PLATFORMS=wayland
-      - -DQT_USE_CCACHE=ON
-    sources:
-      - type: archive
-        url: https://download.qt.io/archive/qt/6.11/6.11.0/submodules/qtlocation-everywhere-src-6.11.0.tar.xz
-        sha256: 89b8386a8ae9e0b40a43fad398ac344f93a3b0d22f09bec4631f25d79135abef
-  - name: qtwayland
-    build-options:
-      strip: true
-    buildsystem: cmake-ninja
-    cleanup:
-      - /*
-    config-opts:
-      - -DCMAKE_BUILD_TYPE=Release
-      - -DCMAKE_C_COMPILER_LAUNCHER=ccache
-      - -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
-      - -DCMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE=ON
-      - -DQT_BUILD_BENCHMARKS=OFF
-      - -DQT_BUILD_DOC_SNIPPETS=FALSE
-      - -DQT_BUILD_EXAMPLES=OFF
-      - -DQT_BUILD_MANUAL_TESTS=OFF
-      - -DQT_BUILD_MINIMAL_STATIC_TESTS=FALSE
-      - -DQT_BUILD_TESTS=OFF
-      - -DQT_BUILD_TOOLS_BY_DEFAULT=OFF
-      - -DQT_GENERATE_SBOM=OFF
-      - -DQT_QPA_DEFAULT_PLATFORM=wayland
-      - -DQT_QPA_PLATFORMS=wayland
-      - -DQT_USE_CCACHE=ON
-    sources:
-      - type: archive
-        url: https://download.qt.io/archive/qt/6.11/6.11.0/submodules/qtwayland-everywhere-src-6.11.0.tar.xz
-        sha256: e710e6e760f92922b86e4dd68f6bbe94ef6510919519d1b0068e874b5ad84d37
+        url: https://download.qt.io/archive/qt/6.11/6.11.1/submodules/qtpositioning-everywhere-src-6.11.1.tar.xz
+        sha256: d5e6b91801ae286e7630016caea3bdc5e1978b4291d6741d0d64c125650f78f5
   - name: qtsvg
     build-options:
       strip: true
@@ -209,8 +157,60 @@ modules:
       - -DQT_USE_CCACHE=ON
     sources:
       - type: archive
-        url: https://download.qt.io/archive/qt/6.11/6.11.0/submodules/qtsvg-everywhere-src-6.11.0.tar.xz
-        sha256: dfa8d653be07087d9407ed4a4ebae847f8953e0b7abd829f089803ab652a30e6
+        url: https://download.qt.io/archive/qt/6.11/6.11.1/submodules/qtsvg-everywhere-src-6.11.1.tar.xz
+        sha256: 7f3cf02f4824bf03c2c5859ea6db173bf1482a1daf24e6cdf7bc78cfa26a8a94
+  - name: qtwayland
+    build-options:
+      strip: true
+    buildsystem: cmake-ninja
+    cleanup:
+      - /*
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DCMAKE_C_COMPILER_LAUNCHER=ccache
+      - -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+      - -DCMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE=ON
+      - -DQT_BUILD_BENCHMARKS=OFF
+      - -DQT_BUILD_DOC_SNIPPETS=FALSE
+      - -DQT_BUILD_EXAMPLES=OFF
+      - -DQT_BUILD_MANUAL_TESTS=OFF
+      - -DQT_BUILD_MINIMAL_STATIC_TESTS=FALSE
+      - -DQT_BUILD_TESTS=OFF
+      - -DQT_BUILD_TOOLS_BY_DEFAULT=OFF
+      - -DQT_GENERATE_SBOM=OFF
+      - -DQT_QPA_DEFAULT_PLATFORM=wayland
+      - -DQT_QPA_PLATFORMS=wayland
+      - -DQT_USE_CCACHE=ON
+    sources:
+      - type: archive
+        url: https://download.qt.io/archive/qt/6.11/6.11.1/submodules/qtwayland-everywhere-src-6.11.1.tar.xz
+        sha256: 95788aa502f75441d4edf65932b235f76523084e13dbbb7b9ee2d207b32bd9b3
+  - name: qtlocation
+    build-options:
+      strip: true
+    buildsystem: cmake-ninja
+    cleanup:
+      - /*
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DCMAKE_C_COMPILER_LAUNCHER=ccache
+      - -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+      - -DCMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE=ON
+      - -DQT_BUILD_BENCHMARKS=OFF
+      - -DQT_BUILD_DOC_SNIPPETS=FALSE
+      - -DQT_BUILD_EXAMPLES=OFF
+      - -DQT_BUILD_MANUAL_TESTS=OFF
+      - -DQT_BUILD_MINIMAL_STATIC_TESTS=FALSE
+      - -DQT_BUILD_TESTS=OFF
+      - -DQT_BUILD_TOOLS_BY_DEFAULT=OFF
+      - -DQT_GENERATE_SBOM=OFF
+      - -DQT_QPA_DEFAULT_PLATFORM=wayland
+      - -DQT_QPA_PLATFORMS=wayland
+      - -DQT_USE_CCACHE=ON
+    sources:
+      - type: archive
+        url: https://download.qt.io/archive/qt/6.11/6.11.1/submodules/qtlocation-everywhere-src-6.11.1.tar.xz
+        sha256: 3791ce77299e6f600a593d0fbfa5bd32fbcfc2d16104782b84acc489e382e41b
   - name: qtvirtualkeyboard
     build-options:
       strip: true
@@ -235,8 +235,8 @@ modules:
       - -DQT_USE_CCACHE=ON
     sources:
       - type: archive
-        url: https://download.qt.io/archive/qt/6.11/6.11.0/submodules/qtvirtualkeyboard-everywhere-src-6.11.0.tar.xz
-        sha256: d88a4b1713a313e3ac06c32837b5d00724d1dcf7b44c2594f1029f7c74a8e686
+        url: https://download.qt.io/archive/qt/6.11/6.11.1/submodules/qtvirtualkeyboard-everywhere-src-6.11.1.tar.xz
+        sha256: a1c6967b326243b2ca8d50bc7b7f7852c3975d9aa6ce4b186ebdf35bb1007e1c
   - name: munadi
     build-options:
       strip: true

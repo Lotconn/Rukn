@@ -3,7 +3,9 @@
 All notable changes to this project will be documented in this file.
 
 ---
-## [Next](#munadi-next) - 2026-04-19
+
+## [26.06](#munadi-2606) - 2026-06-10
+
 ### Bug Fixes
 
 - Fix tooltip time-left string doesn't handle time jumps.
@@ -28,6 +30,7 @@ All notable changes to this project will be documented in this file.
 - Minor code restructures
 - Lazy-load/save config and make settings changes atomic
 - New file manager backend for improved, robust & stateless store management all while a better experience inside sandboxes (e.g. flatpaks, snap)
+- Upgrade to Qt 6.11.1
 
 ### Build & Infrastructure
 
@@ -53,8 +56,7 @@ All notable changes to this project will be documented in this file.
 - Label following OpenContainer Annotations Spec
 
 #### Docs
-- Update README.md with changes and rephrases
-- Fix workflows for correct behaviors & better readability
+- Update README.md with changes and rephrases, better readability, fix, improve & amend workflows, formatting and references
 - Update CHANGELOG.md
 
 #### Web
@@ -64,13 +66,9 @@ All notable changes to this project will be documented in this file.
 - Symlink redundant icon files across repo to those under `xdg/icons`
 - Move all image building relevant files under `pkg/docker` categorized subfolders 
 
+Full Changelog: [26.04...26.06](https://gitlab.com/munadi/munadi/-/compare/26.04...26.06)
+
 ---
-
-## [Next](#munadi-next)
-
-### Docs
-- Update README.md for better readability, fix, improve & amend workflows, formatting and references
-- Update CHANGELOG.md
 
 ## [26.04](#munadi-2604) — 2026-04-18
 

@@ -18,7 +18,7 @@ _arch=x86_64
 _errout="${TMPROOT:-/tmp}/munadi-stderr.$RANDOM"
 _logfile="${TMPROOT:-/tmp}/munadi-$_script-$RANDOM.log"
 _v_args=''
-_ver=26.04
+_ver=26.06
 _trapexec=( 'rm -f "$_errout"' )
 
 trap 'for handler in "${_trapexec[@]}"; do eval "$handler"; done' \

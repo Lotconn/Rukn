@@ -13,7 +13,7 @@ SHA="$SHAsum"
 SIGNATURE="$Signature"
 TMPROOT=\${TMPDIR:=/tmp}
 USER_PWD="\$PWD"
-VER=26.04
+VER=26.06
 
 
 debug="\$MUNADI_DEBUG"

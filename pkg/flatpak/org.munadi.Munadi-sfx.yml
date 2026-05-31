@@ -27,7 +27,7 @@ modules:
       - install -t ${FLATPAK_DEST}/share/metainfo/ -Dm0644 ./xdg/metainfo/org.munadi.Munadi.metainfo.xml
     sources:
       - type: file
-        url: "https://gitlab.com/munadi/munadi/-/jobs/artifacts/26.04/raw/pkg/makeself/Munadi-26.04.run?job=build-static"
+        url: "https://gitlab.com/munadi/munadi/-/jobs/artifacts/26.06/raw/pkg/makeself/Munadi-26.06.run?job=build-static"
         sha256: e0ffbafb3267da85e781fa467caa67fa9a4ae5eb3eeb90a16e5a2d308c079019
         dest-filename: Munadi.run
         only-arches:
@@ -35,7 +35,7 @@ modules:
 
       - type: git
         url: https://gitlab.com/munadi/munadi.git
-        tag: "26.04"
+        tag: "26.06"
         commit: d54236a1ae3476a5f448dfe35a182cdf952f65ce
         disable-modules: true
       - type: file
