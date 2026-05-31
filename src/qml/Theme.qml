@@ -1,14 +1,22 @@
 import QtQuick
+import QtQuick.Controls.Material
 
 Item {
 
     property string borderColour: "darkgrey"  //"#EDEDED"
     property string fontColour: "#545454"
     // primary and secondary accents from icon
-    property string accentLightColour: "#FFB366"  // warm light orange, dome highlight
-    property string accentDarkColour: "#CC7A33" // muted burnt orange, dome shading
-    property string alterLightColour: "#B3D9F5" // soft sky blue, from center/upper walls
-    property string alterDarkColour: "#4A7C9B"  // muted steel blue, for shadows/arches
+    property string accentLight: "#FFB066"  // warm light orange
+    property var materialAccentLight: Material.color(Material.Orange, Material.ShadeA200)
+    
+    property string accentDark: "#B35900" // muted burnt orange
+    property var materialAccentDark: Material.color(Material.Orange, Material.Shade900)
+
+    property string alterLight: "#AED6F1" // soft sky blue
+    property var materialAlterLight: Material.color(Material.Blue, Material.Shade100)
+
+    property string alterDark: "#5DADE2"  // muted steel blue
+    property var materialAlterDark: Material.color(Material.Blue, Material.Shade300)
 
     property double uiPortraitRatio: 9 / 16
     property double uiLandscapeRatio: 1 / uiPortraitRatio

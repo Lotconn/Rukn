@@ -177,7 +177,7 @@ target_compile_definitions(${PROJECT_NAME}
 )
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 target_compile_options(${PROJECT_NAME} PRIVATE
-  $<$<AND:$<CXX_COMPILER_ID:GNU,Clang>,$<PLATFORM_ID:LINUX>>:
+  $<$<AND:$<CXX_COMPILER_ID:GNU,Clang>,$<PLATFORM_ID:Linux>>:
     -Wp,-D_FORTIFY_SOURCE=3
     -Wp,-D_GLIBCXX_ASSERTIONS
     -fexceptions

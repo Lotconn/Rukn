@@ -14,11 +14,11 @@ import HasanEsa.FileMan
 ApplicationWindow {
     id: mainWindow
 
-    Material.accent: theme.accentLightColour
-    Material.primary: theme.accentDarkColour
+    Material.accent: theme.materialAccentLight
+    Material.primary: theme.materialAccentDark
 
     height: 768
-    width: 444
+    width: 432
     minimumHeight: 350
     minimumWidth: minimumHeight * theme.uiPortraitRatio
     color: Material.dialogColor
