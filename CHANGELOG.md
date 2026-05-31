@@ -66,7 +66,13 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [26.04](#munadi-2604) — 2026-04-01
+## [Next](#munadi-next)
+
+### Docs
+- Update README.md for better readability, fix, improve & amend workflows, formatting and references
+- Update CHANGELOG.md
+
+## [26.04](#munadi-2604) — 2026-04-18
 
 ### Bug Fixes
 
