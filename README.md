@@ -125,7 +125,7 @@ podman run --rm -it \
   munadi-builder
 ```
 
-This builds a custom image upon Rocky 10.1 UBI with necessary dependencies needed for building static Qt and FFmpeg libraries to-be-installed under `/usr`.
+This builds a custom image upon Rocky 10.1 UBI with necessary dependencies needed for building statically-linked Qt and FFmpeg libraries to-be-installed under `/usr`.
 
 ***WARNING!!!*** Keep at least 50GB space free in your `/var/lib/containers` (`/var/tmp` or `$TMPDIR` if using podman) before building the image.
 
@@ -152,7 +152,7 @@ A self-extracting archive named `Munadi-<ver>.run` with the built binary will be
 
 As a healthy practice, always clean `~/.cache/Munadi` and `~/.config/munadi` folders across subsequent builds.
 
-## 2. Dynamic Build as Flatpak
+## 2. Build as Flatpak
 
 ### Prerequisites
 
@@ -165,7 +165,7 @@ As a healthy practice, always clean `~/.cache/Munadi` and `~/.config/munadi` fol
 - `tar`
 - `zstd`
 
-**Libs: <pkg>-devel or <pkg>-dev**
+**Libs: `pkg-devel` or `pkg-dev`**
 
 > Qt versions older than 6.9 may not be compatible. Build with project's latest tracking Qt version before filing bugs. Alternatively, [test build statically](#1-static-build-via-builder-image-recommended).
 
@@ -189,7 +189,7 @@ As a healthy practice, always clean `~/.cache/Munadi` and `~/.config/munadi` fol
 The recommended method is to use `org.flatpak.Builder`:
 ```bash
 # on project root
-curl -fsORL https://github.com/flathub/org.munadi.Munadi/raw/refs/heads/master/org.munadi.Munadi.json
+curl -fsORL https://github.com/flathub/org.munadi.Munadi/raw/refs/heads/master/org.munadi.Munadi.yml
 
 flatpak install -y flathub org.flatpak.Builder
 
@@ -197,7 +197,7 @@ flatpak install -y flathub org.flatpak.Builder
 flatpak remote-add --if-not-exists --user flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
 # Then build the manifest
-flatpak run --command=flathub-build org.flatpak.Builder --install org.munadi.Munadi.json
+flatpak run --command=flathub-build org.flatpak.Builder --install org.munadi.Munadi.yml
 
 # Run the app (provided no previous installation of flatpak munadi is present)
 flatpak run org.munadi.Munadi
@@ -205,36 +205,79 @@ flatpak run org.munadi.Munadi
 
 <details><summary>Further Developer Notes (Click to expand)</summary>
 
-There are two manifests already present under `pkg/flathub`:
-- **`org.munadi.Munadi.json`** — Dynamic build using platform runtimes, closely resembling actual flathub manifest
-- **`org.munadi.Munadi-static.json`** — Static Qt linking for experimental sandbox builds
+There are three manifests already present under `pkg/flatpak`:
+- **`org.munadi.Munadi.yml`** — Regular build using platform runtimes, closely resembling actual flathub manifest
+- **`org.munadi.Munadi-static.yml`** — Statically-linked building from scratch for experimental sandbox builds
+- **`org.munadi.Munadi-sfx.yml`** - Using latest pre-built [SFX archive](#-primary-release)
 
-### Dynamic build
+### Regular build
 ```bash
-# Build dynamic version with runtimes
-flatpak-builder --install-deps-from=flathub --force-clean --ccache ./build/ ./pkg/flathub/org.munadi.Munadi.json
+# Make the manifest available on repo root
+ln -s pkg/flatpak/org.munadi.Munadi.yml
+
+# Build the regular version with platform runtimes
+flatpak-builder \
+--verbose \
+--force-clean \
+--user \
+--install-deps-from=flathub \
+--ccache \
+--repo=./repo ./builddir ./org.munadi.Munadi.yml
 
 # Run the built app
-flatpak-builder --run --env=WAYLAND_DISPLAY="$WAYLAND_DISPLAY" ./build/ ./pkg/flathub/org.munadi.Munadi.json munadi
-
-# Optional: Run outside sandbox for debugging
-./build/files/bin/munadi
+flatpak-builder --run \
+--env=WAYLAND_DISPLAY="$WAYLAND_DISPLAY" \
+./builddir ./org.munadi.Munadi.yml munadi
 ```
 
 ### Static build
 ```bash
+# Make the manifest available on repo root
+ln -s pkg/flatpak/org.munadi.Munadi-static.yml
+
 # Build static version with linked libraries
-flatpak-builder --install-deps-from=flathub --force-clean --ccache ./build-static/ ./pkg/flathub/org.munadi.Munadi-static.json
+flatpak-builder \
+--verbose \
+--force-clean \
+--user \
+--install-deps-from=flathub \
+--ccache \
+--repo=./repo ./builddir ./org.munadi.Munadi-static.yml
 
 # Run the built app
-flatpak-builder --run --env=WAYLAND_DISPLAY="$WAYLAND_DISPLAY" ./build-static/ ./pkg/flathub/org.munadi.Munadi-static.json munadi
+flatpak-builder --run \
+--env=WAYLAND_DISPLAY="$WAYLAND_DISPLAY" \
+./builddir ./org.munadi.Munadi-static.yml munadi
+```
 
-# Optional: Run outside sandbox for debugging
-./build-static/files/bin/munadi
+### SFX archive build
+```bash
+# Make the manifest available on repo root
+ln -s pkg/flatpak/org.munadi.Munadi-sfx.yml
+
+# Build static version with linked libraries
+flatpak-builder \
+--verbose \
+--force-clean \
+--user \
+--install-deps-from=flathub \
+--ccache \
+--repo=./repo ./builddir ./org.munadi.Munadi-sfx.yml
+
+# Run the built app
+flatpak-builder --run \
+--env=WAYLAND_DISPLAY="$WAYLAND_DISPLAY" \
+./builddir ./org.munadi.Munadi-sfx.yml munadi
+```
+
+### [Optional]:
+```bash
+# Run outside sandbox for debugging
+./builddir/files/bin/munadi
 ```
 
 ### Known Issues:
-- Few core features like adding custom adhan doesn't work after app restart due to flatpak sandboxing. Alternatively, use `org.flathub.Builder` for operating the app from a functional sandbox but introduces more clutter.
+- Few core features like adding custom adhan doesn't work after app restart due to flatpak sandboxing. Alternatively, follow the [recommended workflow](#2-build-as-flatpak) for operating the app from a functional sandbox but introduces more clutter.
 
 </details>
 
@@ -261,7 +304,7 @@ Qt Creator can be used for debugging and developing the app standalone. It's esp
 ├── pkg/                        # Configs and manifests for packaging and tool building
 │   ├── android/                  # Android apk
 │   ├── docker/                   # Builder images
-│   ├── flathub/                  # Flatpak manifests
+│   ├── flatpak/                  # Flatpak manifests
 │   ├── makeself/                 # Makeself SFX archive
 │   │   └── makeself/               # megastep/makeself submodule
 │   └── snap/                     # Snap manifest
@@ -345,8 +388,8 @@ If issues persist, [open an issue](https://gitlab.com/munadi/munadi/-/issues) wi
 
 ## Contributing
 
-- Test in both static build and dynamic. Use builder image for reproducible environments.
-- Test packaging (static -> makeself, dynamic -> flatpak)
+- Test in both static and regular builds. Use builder image for reproducible environments.
+- Test packaging (makeself, flatpak)
 - Update `CHANGELOG.md` and xdg metainfo with notable changes. Use `./gen_whatsnew` to also update What's new front page.
 - Maintain versioning scheme
 - Submit merge request to GitLab
