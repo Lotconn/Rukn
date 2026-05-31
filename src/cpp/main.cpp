@@ -1,6 +1,7 @@
-#include <QQmlContext>
 #include <QApplication>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
+#include <QSocketNotifier>
 #include <QStyleFactory>
 
 #ifdef Q_OS_LINUX
@@ -9,15 +10,30 @@
 
 #include <QQuickWindow>
 
-#include "engine.h"
-#include "alarm.h"
+#include <alarm.h>
+#include <engine.h>
 
 #ifdef Q_OS_MACOS
-#include "macos_window.h"
+#include <macos_window.h>
 #endif
 
 #ifndef Q_OS_LINUX
-#include "dummysapp.h"
+#include <dummysapp.h>
+#endif
+
+#ifdef Q_OS_LINUX
+#include <sys/socket.h>
+#include <signal.h>
+#include <unistd.h>
+
+static int sigFd[2] = {-1, -1};
+
+static void unixSignalHandler(int)
+{
+    char a = 'A';
+    [[maybe_unused]] auto trash = ::write(sigFd[1], &a, sizeof(a));
+    // just to avoid compiler warnings
+}
 #endif
 
 int main(int argc, char *argv[])
@@ -29,6 +45,7 @@ int main(int argc, char *argv[])
     auto *alarm = createAlarm(&app);
 
     QApplication::setStyle(QStyleFactory::create("gnome"));
+
 #ifdef Q_OS_LINUX
     KDSingleApplication sapp;
 
@@ -40,14 +57,15 @@ int main(int argc, char *argv[])
     }
 #endif
 
-    app.setWindowIcon(QIcon(":/img/munadi.png"));
+    app.setWindowIcon(QIcon(":/qt/qml/Munadi/img/munadi.png"));
     app.setOrganizationDomain("munadi");
     app.setApplicationName("Munadi");
 
-    QFontDatabase::addApplicationFont(":/data/NotoNaskhArabicUI-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/data/NotoNaskhArabicUI-Bold.ttf");
-    QFontDatabase::addApplicationFont(":/data/NotoSans-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/data/NotoSans-Bold.ttf");
+    QFontDatabase::addApplicationFont(":/qt/qml/Munadi/data/NotoNaskhArabicUI-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/qt/qml/Munadi/data/NotoNaskhArabicUI-Bold.ttf");
+    QFontDatabase::addApplicationFont(":/qt/qml/Munadi/data/NotoSans-ExtraLight.ttf");
+    QFontDatabase::addApplicationFont(":/qt/qml/Munadi/data/NotoSans-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/qt/qml/Munadi/data/NotoSans-Bold.ttf");
 
     QFont font {"Noto Sans, Noto Naskh Arabic UI"};
     app.setFont(font);
@@ -77,8 +95,8 @@ int main(int argc, char *argv[])
         }
     }
 
-    qae.rootContext()->setContextProperty("engine", &engine);
     qae.rootContext()->setContextProperty("alarm", alarm);
+    qae.rootContext()->setContextProperty("engine", &engine);
 #ifdef Q_OS_LINUX
     qae.rootContext()->setContextProperty("sapp", &sapp);
 #else
@@ -86,12 +104,39 @@ int main(int argc, char *argv[])
     qae.rootContext()->setContextProperty("sapp", &dummySapp);
 #endif
     qae.rootContext()->setContextProperty("updater", engine.updater);
-    qae.load(QUrl(QLatin1String("qrc:/qml/main.qml")));
+    qae.load(QUrl(QLatin1String("qrc:/qt/qml/Munadi/qml/main.qml")));
 
 #ifdef Q_OS_MACOS
     if(auto *window = qobject_cast<QQuickWindow *>(qae.rootObjects().first()))
         makeTitleBarTransparent(window);
 #endif
 
-    return app.exec();
+#ifdef Q_OS_LINUX
+    if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sigFd) != 0)
+        qFatal("Failed to create signal socket pair");
+
+    QSocketNotifier sigNotifier(sigFd[0], QSocketNotifier::Read);
+    QObject::connect(&sigNotifier, &QSocketNotifier::activated, &app, [](QSocketDescriptor) {
+        char tmp;
+        [[maybe_unused]] auto trash = ::read(sigFd[0], &tmp, sizeof(tmp));
+        // just to avoid compiler warnings
+        QCoreApplication::quit();
+    });
+
+    struct sigaction sa {};
+    sa.sa_handler = unixSignalHandler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART;
+    sigaction(SIGINT, &sa, nullptr);
+    sigaction(SIGTERM, &sa, nullptr);
+#endif
+
+    int ret = app.exec();
+
+#ifdef Q_OS_LINUX
+    ::close(sigFd[0]);
+    ::close(sigFd[1]);
+#endif
+
+    return ret;
 }

@@ -40,7 +40,7 @@ Page {
             fillMode: Image.PreserveAspectFit
             rotation: engine.ff() === "m" ? 0 : engine.getQibla()
 
-            source: "qrc:/img/arrow.png"
+            source: "qrc:/qt/qml/Munadi/img/arrow.png"
 
             Behavior on rotation {
                 NumberAnimation {

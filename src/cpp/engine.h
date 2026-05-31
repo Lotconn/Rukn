@@ -5,11 +5,11 @@
 #include <QtCore>
 #include <QtDebug>
 
-#include <version.h>
+#include <version.hpp>
 
 #define MUNADI_API_URL "https://munadi.org/"
 
-#include "updater.h"
+#include <updater.h>
 
 #ifdef Q_OS_ANDROID
 #include <QtPositioning/QGeoCoordinate>

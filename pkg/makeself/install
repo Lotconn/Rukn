@@ -349,9 +349,21 @@ _trapexec+=( 'warn_print "A log file is available at "$_logfile""' )
   if (( _priv )); then
     install $_v_args -D --mode 0644 ./org.munadi.Munadi.metainfo.xml \
                                        --target "/usr/share/metainfo" |& log_cmd
+    install $_v_args -D --mode 0644 \
+      ./icons/hicolor/scalable/apps/org.munadi.Munadi-symbolic.svg \
+      --target "/usr/share/icons/hicolor/scalable/apps" |& log_cmd
+    install $_v_args -D --mode 0644 \
+      ./icons/hicolor/symbolic/apps/org.munadi.Munadi-symbolic.svg \
+      --target "/usr/share/icons/hicolor/symbolic/apps" |& log_cmd
   else
     install $_v_args -D --mode 0644 ./org.munadi.Munadi.metainfo.xml \
                                    --target "$_prefix/share/metainfo" |& log_cmd
+    install $_v_args -D --mode 0644 \
+      ./icons/hicolor/scalable/apps/org.munadi.Munadi-symbolic.svg \
+      --target "$_prefix/share/icons/hicolor/scalable/apps" |& log_cmd
+    install $_v_args -D --mode 0644 \
+      ./icons/hicolor/symbolic/apps/org.munadi.Munadi-symbolic.svg \
+      --target "$_prefix/share/icons/hicolor/symbolic/apps" |& log_cmd
   fi
   debug_print "======== END from $(hash -t install) ======"
 
@@ -366,7 +378,7 @@ _trapexec+=( 'warn_print "A log file is available at "$_logfile""' )
   xdg-desktop-menu install --novendor ./org.munadi.Munadi.desktop |& log_cmd
   debug_print "======== END from $(hash -t xdg-desktop-menu) ======"
   debug_print "====== BEGIN from $(hash -t xdg-icon-resource) ======"
-  for size in 16 22 24 32 36 48 64 72 96 128 192 256 512; do
+  for size in 16 22 24 32 36 48 64 72 80 96 128 192 256 480 512; do
     xdg-icon-resource install --noupdate --novendor --size $size \
       ./icons/hicolor/${size}x${size}/apps/org.munadi.Munadi.png \
       org.munadi.Munadi |& log_cmd

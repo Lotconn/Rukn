@@ -1,20 +1,21 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Controls.Material
 
-import "qrc:/data/Adhan.js" as Adhan
+import "qrc:/qt/qml/Munadi/data/Adhan.js" as Adhan
 
 ColumnLayout {
     anchors.fill: parent
 
-    property bool isWide: width > height * 1.2
+    property bool isWide: width > height
     property int defaultAlignment: isWide ? Layout.Left : Layout.Center
 
     DateRow {
         id: topBar
 
         Layout.preferredHeight: 40
-        Layout.preferredWidth: Math.min(parent.width, parent.height/1.8)
+        Layout.preferredWidth: isWide ? parent.height * theme.uiPortraitRatio : parent.width
         Layout.fillHeight: true
         Layout.alignment: parent.defaultAlignment
 
@@ -25,7 +26,7 @@ ColumnLayout {
         id: table
 
         Layout.preferredHeight: 400
-        Layout.preferredWidth: Math.min(parent.width, parent.height/1.8)
+        Layout.preferredWidth: isWide ? parent.height * theme.uiPortraitRatio : parent.width
         Layout.fillHeight: true
         Layout.alignment: parent.defaultAlignment
 
@@ -104,7 +105,7 @@ ColumnLayout {
         id: timeLeft
 
         Layout.preferredHeight: 40
-        Layout.preferredWidth: Math.min(parent.width, parent.height / 1.8)
+        Layout.preferredWidth: isWide ? parent.height * theme.uiPortraitRatio : parent.width
         Layout.fillHeight: true
         Layout.alignment: defaultAlignment
 

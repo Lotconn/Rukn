@@ -17,8 +17,9 @@ Item {
 
     RowLayout {
         anchors.fill: parent
-        anchors.leftMargin: 20
-        spacing: 10
+        anchors.leftMargin: 30
+        anchors.rightMargin: 40
+        spacing: theme.margin
 
         Item {
             Layout.preferredWidth: parent.width / 2
@@ -36,7 +37,7 @@ Item {
                 //color: Material.primaryTextColor
                 color: Material.secondaryTextColor
                 visible: !mm.locationNotSet
-                font.weight: Font.DemiBold
+                font.weight: Font.ExtraLight
             }
         }
 
@@ -45,7 +46,7 @@ Item {
             Layout.preferredHeight: parent.height
 
             Row {
-                anchors.centerIn: parent
+                anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 visible: !mm.locationNotSet
                 spacing: 1
@@ -65,6 +66,7 @@ Item {
                     font.bold: athanLabel.font.bold
                     color: athanLabel.color
                     font.pixelSize: athanLabel.font.pixelSize / 2
+                    font.weight: athanLabel.font.weight
                 }
             }
         }
