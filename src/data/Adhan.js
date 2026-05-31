@@ -1,3 +1,5 @@
+.pragma library
+
 var Prayer = {
     Fajr: 0,
     Sunrise: 1,

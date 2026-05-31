@@ -55,10 +55,12 @@ Item {
 
             TextField {
                 id: tf
+                focus: true
                 Layout.fillWidth: true
                 selectByMouse: true
                 placeholderText: qsTr("Enter city name")
 
+                Component.onCompleted: forceActiveFocus()
                 onAccepted: {
                     locationSearch.search(text)
                 }
@@ -86,6 +88,21 @@ Item {
             Layout.fillWidth: true
 
             model: ListModel {}
+
+
+            onEnabledChanged: {
+                Qt.callLater(() => {
+                    if (enabled && visible) {
+                      forceActiveFocus()
+                      popup.open()
+                    }
+                })
+            }
+
+            popup.onClosed: {
+                if (activeFocus)
+                  tf.forceActiveFocus()
+            }
 
             onModelChanged: {
                 timezonesComboBox.model.clear()

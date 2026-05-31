@@ -1,5 +1,5 @@
-#include "updater.h"
-#include "engine.h"
+#include <updater.h>
+#include <engine.h>
 
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkRequest>

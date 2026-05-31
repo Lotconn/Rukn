@@ -46,7 +46,7 @@ local.properties
 [Dd]ebug/
 [Rr]elease/
 x64/
-build/
+build[dir]/
 [Bb]in/
 [Oo]bj/
 
@@ -226,6 +226,14 @@ pip-log.txt
 *.dll
 *.dylib
 
+# Flatpak
+.flatpak-builder
+repo
+build-*
+builddir
+org.munadi.Munadi*.yml
+org.munadi.Munadi*.json
+
 # Qt-es
 
 *.pro.user
@@ -234,11 +242,16 @@ moc_*.cpp
 qrc_*.cpp
 Makefile
 *-build-*
-.flatpak-builder
 .qmake.stash
 munadi_plugin_import.cpp
 rc_qmlcache.qrc
 *.qmlc
 
+# makeself
+munadi*.log
+
 # Web
 web/config.py
+
+# Kate
+.*.*.bak

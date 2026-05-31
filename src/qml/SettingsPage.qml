@@ -6,14 +6,23 @@ import QtCore
 import QtPositioning
 import QtQuick.Dialogs
 
-import "qrc:/data/Adhan.js" as Adhan
+import "qrc:/qt/qml/Munadi/data/Adhan.js" as Adhan
 
 Page {
+    Component.onCompleted: {
+        mathhab.currentIndex    = mm.madhab - 1
+        algo.currentIndex       = mm.calcMethodIndex
+        hijriSlider.value       = mm.hijriDateOffset
+        calendar.currentIndex   = mm.calendarPreferenceIndex
+    }
+
     Flickable {
         anchors.fill: parent
         focus: true
         clip: true
         boundsBehavior: Flickable.StopAtBounds
+
+
 
         Keys.onUpPressed: scrollBar.decrease()
         Keys.onDownPressed: scrollBar.increase()
@@ -156,11 +165,8 @@ Page {
                 }
 
                 Switch {
-                    id: bgi
-                    checked: true
-                    onCheckedChanged: {
-                        mm.bgImage = bgi.checked
-                    }
+                    checked: mm.bgImage
+                    onCheckedChanged: mm.bgImage = checked
                 }
                 enabled: engine.ff() === "d"
                 visible: enabled
@@ -178,11 +184,8 @@ Page {
                 }
 
                 Switch {
-                    id: hoc
-                    checked: false
-                    onCheckedChanged: {
-                        mm.hideOnClose = hoc.checked
-                    }
+                    checked: mm.hideOnClose
+                    onCheckedChanged: mm.hideOnClose = checked
                 }
                 enabled: engine.ff() === "d"
                 visible: enabled
@@ -200,11 +203,8 @@ Page {
                 }
 
                 Switch {
-                    id: isoc
-                    checked: false
-                    onCheckedChanged: {
-                        mm.isoClock = isoc.checked
-                    }
+                    checked: mm.isoClock
+                    onCheckedChanged: mm.isoClock = checked
                 }
                 enabled: engine.ff() === "d"
                 visible: enabled
@@ -222,11 +222,8 @@ Page {
                 }
 
                 Switch {
-                    id: soa
-                    checked: false
-                    onCheckedChanged: {
-                        mm.showOnAthan = soa.checked
-                    }
+                    checked: mm.showOnAthan
+                    onCheckedChanged: mm.showOnAthan = checked
                 }
                 enabled: engine.ff() === "d"
                 visible: enabled
@@ -244,8 +241,12 @@ Page {
                 }
 
                 Switch {
-                    id: asu
-                    checked: false
+                    checked: mainWindow.autoStartUp
+                    onCheckedChanged: {
+                        if (mainWindow.autoStartUp === checked) return
+                        mainWindow.autoStartUp = checked
+                        engine.autostart(checked)
+                    }
                 }
                 enabled: engine.ff() === "d"
                 visible: enabled
@@ -263,28 +264,11 @@ Page {
                }
 
                Switch {
-                   id: cfu
-                   checked: true
-                   onCheckedChanged: {
-                       mm.checkForUpdates = checked
-                   }
+                   checked: mm.checkForUpdates
+                   onCheckedChanged: mm.checkForUpdates = checked
                }
                enabled: engine.ff() === "d"
                visible: enabled
-            }
-
-            Settings {
-                category: "App"
-                property alias autoStartUp: asu.checked
-                property alias bgImage:     bgi.checked
-                property alias checkForUpdates: cfu.checked
-                property alias showOnAthan: soa.checked
-                property alias hideOnClose: hoc.checked
-                property alias isoClock:   isoc.checked
-
-                onAutoStartUpChanged: {
-                    engine.autostart(asu.checked)
-                }
             }
 
             SettingTitle {
@@ -305,13 +289,12 @@ Page {
                             Layout.fillWidth: true
                         }
                         Switch {
-                            id: muted
-                            onCheckedChanged: athan.audioOutput.muted = muted.checked
+                            checked: mm.athanMuted
+                            onCheckedChanged: {
+                                mm.athanMuted = checked
+                                athan.audioOutput.muted = checked
+                            }
                         }
-                    }
-
-                    Settings {
-                        property alias athanMuted: muted.checked
                     }
                 }
             }
@@ -393,21 +376,13 @@ Page {
                         id: calendar
                         Layout.fillWidth: true
 
-                        onCurrentIndexChanged: {
-                            mm.calendarPreference = model.get(currentIndex).text
+                        onActivated: {
+                            mm.calendarPreferenceIndex = currentIndex
+                            console.debug('calPrefIdx: ', mm.calendarPreferenceIndex)
                         }
 
-                        model: ListModel {
-                            ListElement {
-                                text: qsTr("Both")
-                            }
-                            ListElement {
-                                text: qsTr("Hijri")
-                            }
-                            ListElement {
-                                text: qsTr("Gregorian")
-                            }
-                        }
+                        textRole: 'name'
+                        model: mm.calendarPreference
                     }
 
                     Slider {
@@ -427,15 +402,6 @@ Page {
                                                      : qsTr("- %L1").arg(Math.abs(hijriSlider.value.toFixed()))
                     }
                 }
-            }
-
-            Settings {
-                category: "Other"
-                property alias mathhabCbIndex: mathhab.currentIndex
-                property alias calcMethodCbIndex: algo.currentIndex
-                property alias calendarCbIndex: calendar.currentIndex
-                property alias hijriAdjustment: hijriSlider.value
-
             }
 
             RowLayout {}

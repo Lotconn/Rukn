@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 
 ---
+## [next](#munadi-next) - 2026-04-19
+### Bug Fixes
+
+- Fix tooltip time-left string doesn't handle time jumps.
+- Fix a warning about calling uninitiated handler being deprecated
+- Fix custom audio list becoming stale if was configured for a prayer when a random custom audio is removed
+
+### Improvements
+
+- **New Icon**: Munadi now uses a new material-gradient inspired icon derived from Masjid Al-Aqsa.
+- Use the brand shades for accent color throughout
+- Update the symbolic icon to be a sillohuette of the new icon
+- Add `xdg/icons/hicolor/scalable` for SVGs
+- Add 80px and 480px icons under `xdg/icons`
+- Do not calculate `timeLeftStr` for next fajr past 1100 minutes; handles even the polarmost settlements
+- Improve keyboard navigations on location search popup
+- Let UI stretch freely within 1:1 proportions, snap to left as usual otherwise
+- Use a thinner font stroke on prayer table
+- Right align prayer times on the table
+- Minimum width bounds also follows UI proportions now, despite disrupting settings page view
+- Replace "+" and "-" beside the speaker icon with actual texts to make the buttons' functions obvious. These are more often than not misunderstood for volume control buttons
+- Add a "Video" category option in file dialog to let users add video files as audio files too which is supported natively
+- Minor code restructures
+- Lazy-load/save config and make settings changes atomic
+- New file manager backend for improved, robust & stateless store management all while a better experience inside sandboxes (e.g. flatpaks, snap)
+
+### Build & Infrastructure
+
+#### App build (general)
+- Enable more aggressive optimizations and useful hardenings
+- C++17 standardization instead of C++23
+- Qt 6.9.0 baseline standardization
+- Build system improvements and streamlining
+
+#### makeself archive
+- Register munadi symbolic icon on the execution scripts
+
+#### Repo misc
+- Symlink redundant icon files across repo to those under `xdg/icons`
+
+---
 
 ## [26.04](#munadi-2604) — 2026-04-01
 

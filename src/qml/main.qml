@@ -1,27 +1,36 @@
-import QtQuick
-import QtQuick.Window
 import QtCore
+import QtMultimedia
+import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Material
-import QtMultimedia
-import Qt.labs.platform
 import QtQuick.Effects
+import QtQuick.Window
 //import QtQuick.VirtualKeyboard
+import Qt.labs.platform
 
-import "qrc:/data/Adhan.js" as Adhan
+import "qrc:/qt/qml/Munadi/data/Adhan.js" as Adhan
+import HasanEsa.FileMan
 
 ApplicationWindow {
     id: mainWindow
 
-    Material.accent: Material.Red
-    Material.primary: Material.Brown
+    Material.accent: theme.accentLightColour
+    Material.primary: theme.accentDarkColour
 
-    width: 450
-    minimumWidth: 350
-    height: 800
+    height: 768
+    width: 444
     minimumHeight: 350
+    minimumWidth: minimumHeight * theme.uiPortraitRatio
     color: Material.dialogColor
     LayoutMirroring.childrenInherit: true
+
+    property bool   autoStartUp:    false
+    property string newsVersion:    ""
+
+    function settingsBool(key, defaultValue) {
+        var val = settings.value(key, defaultValue)
+        return typeof val === "boolean" ? val : String(val).toLowerCase() === "true"
+    }
 
     background: Item {
         id: todw
@@ -31,7 +40,7 @@ ApplicationWindow {
             id: bgImg
             anchors.fill: parent
             mirror: Qt.application.layoutDirection === Qt.RightToLeft
-            source: "qrc:/img/bg/" + (mm.currentPrayer % 6) + ".jpg"
+            source: "qrc:/qt/qml/Munadi/img/bg/" + (mm.currentPrayer % 6) + ".jpg"
             fillMode: Image.PreserveAspectCrop
         }
 
@@ -47,16 +56,48 @@ ApplicationWindow {
 
     Component.onCompleted: {
 
-        var prayerConfig = settings.value("prayerConfigV2", JSON.stringify(mm.prayerConfig))
-        try {
-            mm.prayerConfig = JSON.parse(prayerConfig)
-        } catch(_) {}
-        mm.invalidate()
+        settings.category = "App"
+        // [BUG]: values are parsed as strings, not booleans
+        // handle booleans with helper function
+        autoStartUp         = settingsBool("autoStartUp",       false)
+        mm.bgImage          = settingsBool("bgImage",           mm.bgImage)
+        mm.checkForUpdates  = settingsBool("checkForUpdates",   mm.checkForUpdates)
+        mm.hideOnClose      = settingsBool("hideOnClose",       mm.hideOnClose)
+        mm.isoClock         = settingsBool("isoClock",          mm.isoClock)
+        mm.showOnAthan      = settingsBool("showOnAthan",       mm.showOnAthan)
 
-        var audioList = settings.value("audioListV2", JSON.stringify(mm.audioList))
+        mm.bg_img_blur          = settings.value("blur",            mm.bg_img_blur)
+        mm.rectangle_opacity    = settings.value("opacity",         mm.rectangle_opacity)
+        mm.themeListIndex       = settings.value("themeListIndex",  mm.themeListIndex)
+        newsVersion             = settings.value("newsVersion",     "")
+
+        settings.category = "Adhan"
+        var audioList           = settings.value("audioList",         JSON.stringify(mm.audioList))
         try {
             mm.audioList = JSON.parse(audioList)
         } catch(_) {}
+        mm.athanMuted           = settingsBool("athanMuted",            mm.athanMuted)
+        mm.calcMethodIndex      = settings.value("calcMethodIndex",     mm.calcMethodIndex)
+        mm.calendarPreferenceIndex   = settings.value("calendarPreferenceIndex",  mm.calendarPreferenceIndex)
+        mm.cityName             = settings.value("cityName",            mm.cityName)
+        mm.countryName          = settings.value("countryName",         mm.countryName)
+        mm.hijriDateOffset      = settings.value("hijriDateOffset",     mm.hijriDateOffset)
+        mm.latitude             = settings.value("latitude",            mm.latitude)
+        mm.longitude            = settings.value("longitude",           mm.longitude)
+        mm.madhab               = settings.value("madhab",              mm.madhab)
+        mm.overrideOffsetBy     = settings.value("overrideOffsetBy",    mm.overrideOffsetBy)
+        var prayerConfig        = settings.value("prayerConfig",      JSON.stringify(mm.prayerConfig))
+        try {
+            mm.prayerConfig = JSON.parse(prayerConfig)
+        } catch(_) {}
+
+        settings.category = "Window"
+        mainWindow.width    = settings.value("width",   mainWindow.width)
+        mainWindow.height   = settings.value("height",  mainWindow.height)
+        mainWindow.x        = settings.value("x",       mainWindow.x)
+        mainWindow.y        = settings.value("y",       mainWindow.y)
+
+        mm.invalidate()
 
         if (engine.autostart_hidden()) {
             hide()
@@ -69,10 +110,10 @@ ApplicationWindow {
         }
 
         // Only display what's new once
-        if (news.newsVersion !== engine.getVersionNo()) {
+        if (newsVersion !== engine.getVersionNo()) {
             whatsNewPopup.text = engine.getWhatsNew()
             whatsNewPopup.open()
-            news.newsVersion = engine.getVersionNo()
+            newsVersion = engine.getVersionNo()
         }
         mm.set_24h_ticker()
         mm.set_60s_ticker()
@@ -81,18 +122,52 @@ ApplicationWindow {
         if (mm.themeListIndex === 0) {
             mm.applySystemTheme()
         }
+
+        var e = FileMan.storeHouseKeeping()
+        console.debug("FileMan::storeHouseKeeping() return:", e)
     }
 
     Component.onDestruction: {
-        settings.setValue("prayerConfigV2", JSON.stringify(mm.prayerConfig))
-        settings.setValue("audioListV2", JSON.stringify(mm.audioList))
+        settings.category = "App"
+        settings.setValue("autoStartUp",    autoStartUp)
+        settings.setValue("bgImage",        mm.bgImage)
+        settings.setValue("blur",           mm.bg_img_blur)
+        settings.setValue("hideOnClose",    mm.hideOnClose)
+        settings.setValue("isoClock",       mm.isoClock)
+        settings.setValue("newsVersion",    newsVersion)
+        settings.setValue("opacity",        mm.rectangle_opacity)
+        settings.setValue("showOnAthan",    mm.showOnAthan)
+        settings.setValue("themeListIndex", mm.themeListIndex)
+
+        settings.category = "Adhan"
+        settings.setValue("athanMuted",         mm.athanMuted)
+        settings.setValue("audioList",          JSON.stringify(mm.audioList))
+        settings.setValue("calcMethodIndex",    mm.calcMethodIndex)
+        settings.setValue("calendarPreferenceIndex",    mm.calendarPreferenceIndex)
+        settings.setValue("checkForUpdates",    mm.checkForUpdates)
+        settings.setValue("cityName",           mm.cityName)
+        settings.setValue("countryName",        mm.countryName)
+        settings.setValue("hijriDateOffset",    mm.hijriDateOffset)
+        settings.setValue("latitude",           mm.latitude)
+        settings.setValue("longitude",          mm.longitude)
+        settings.setValue("madhab",             mm.madhab)
+        settings.setValue("overrideOffsetBy",   mm.overrideOffsetBy)
+        settings.setValue("prayerConfig",       JSON.stringify(mm.prayerConfig))
+
+        settings.category = "Window"
+        settings.setValue("width",  mainWindow.width)
+        settings.setValue("height", mainWindow.height)
+        settings.setValue("x",      mainWindow.x)
+        settings.setValue("y",      mainWindow.y)
+
+        settings.sync()
     }
 
     onVisibilityChanged: {
         alarm.clear("60s_tick")
 
+        mm.set_60s_ticker()
         if(mainWindow.visibility !== ApplicationWindow.Hidden) {
-            mm.set_60s_ticker()
             mm.refreshTable()
         }
     }
@@ -111,45 +186,8 @@ ApplicationWindow {
         property bool isOn: playbackState === MediaPlayer.PlayingState
     }
 
-    // Below used for variables worth remembering only
-    Settings {
-        id: settings
-        property alias athanMuted:          athan.audioOutput.muted
-        property alias blur:                mm.bg_img_blur
-        property alias calcMethodIndex:     mm.calcMethodIndex
-        property alias calendarPreference:  mm.calendarPreference
-        property alias checkForUpdates:     mm.checkForUpdates
-        property alias cityName:            mm.cityName
-        property alias countryName:         mm.countryName
-        property alias hijriDateOffset:     mm.hijriDateOffset
-        property alias latitude:            mm.latitude
-        property alias longitude:           mm.longitude
-        property alias madhab:              mm.madhab
-        property alias opacity:             mm.rectangle_opacity
-        property alias overrideOffsetBy:    mm.overrideOffsetBy
-        property alias themeListIndex:      mm.themeListIndex
-    }
-
-    LocationService {
-        id: ls
-    }
-
-    // Window content
-    Settings {
-        category: "Window"
-        property alias width: mainWindow.width
-        property alias height: mainWindow.height
-        property alias x: mainWindow.x
-        property alias y: mainWindow.y
-    }
-
-    Settings {
-        category: "App"
-        property alias bgImage:     mm.bgImage
-        property alias hideOnClose: mm.hideOnClose
-        property alias isoClock:    mm.isoClock
-        property alias showOnAthan: mm.showOnAthan
-    }
+    Settings { id: settings }
+    LocationService { id: ls }
 
     MainPage {
         id: mainPage
@@ -274,19 +312,13 @@ ApplicationWindow {
         }
     }
 
-    Settings {
-        id: news
-        category: 'App'
-        property string newsVersion
-    }
-
     SystemTrayIcon {
         visible: true
-        icon.mask: true
-        icon.source: "qrc:/img/munadi-symbolic.svg"
+        icon.name: "org.munadi.Munadi-symbolic"
+        icon.source: "qrc:/qt/qml/Munadi/img/munadi-symbolic.svg"
         tooltip: qsTr("Munadi") + (mm.timeLeftStr ? "\n" + mm.timeLeftStr : "")
 
-        onActivated: {
+        onActivated: (reason) => {
             switch(reason) {
                 case SystemTrayIcon.Trigger:
                     if(mainWindow.visible) {
@@ -359,7 +391,7 @@ ApplicationWindow {
                 break
             case "alarms_reset": // Happens when clock change or wakeup after sleep for e.g.
                 mm.set_24h_ticker()
-                if(visibility !== ApplicationWindow.Hidden) mm.set_60s_ticker()
+                mm.set_60s_ticker()
                 mm.currentDate = new Date() // Recalc
                 break
             case "athan":

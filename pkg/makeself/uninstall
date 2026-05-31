@@ -255,11 +255,16 @@ _trapexec+=( 'warn_print "A log file is available at "$_logfile""' )
       ./share/licenses/munadi/LICENSE |& log_cmd || :
 
     if (( _priv )); then
-      rm -f $_v_args /usr/share/metainfo/org.munadi.Munadi.metainfo.xml |& \
-                                                                        log_cmd
+      rm -f $_v_args \
+        /usr/share/metainfo/org.munadi.Munadi.metainfo.xml \
+        /usr/share/icons/hicolor/scalable/apps/org.munadi.Munadi-symbolic.svg \
+        /usr/share/icons/hicolor/symbolic/apps/org.munadi.Munadi-symbolic.svg \
+        |& log_cmd
     else
       rm -f $_v_args \
         ./share/metainfo/org.munadi.Munadi.metainfo.xml \
+        ./share/icons/hicolor/scalable/apps/org.munadi.Munadi-symbolic.svg \
+        ./share/icons/hicolor/symbolic/apps/org.munadi.Munadi-symbolic.svg \
         "$HOME/.config/autostart/org.munadi.Munadi.desktop" |& log_cmd
     fi
     debug_print "======== END from $(hash -t rm) ======"
@@ -271,7 +276,9 @@ _trapexec+=( 'warn_print "A log file is available at "$_logfile""' )
       "./libexec/munadi" \
       "./share/licenses/munadi" \
       "./share/metainfo" \
-      "/usr/share/metainfo" |& log_cmd  || :
+      "/usr/share/metainfo" \
+      "/usr/share/icons/hicolor/scalable/apps" \
+      "/usr/share/icons/hicolor/symbolic/apps" |& log_cmd  || :
     debug_print "======== END from $(hash -t rmdir) ======"
     cd - |& log_cmd
   else
@@ -290,7 +297,7 @@ _trapexec+=( 'warn_print "A log file is available at "$_logfile""' )
   debug_print "======== END from $(hash -t xdg-desktop-menu) ======"
 
   debug_print "====== BEGIN from $(hash -t xdg-icon-resource) ======"
-  for size in 16 22 24 32 36 48 64 72 96 128 192 256 512; do
+  for size in 16 22 24 32 36 48 64 72 80 96 128 192 256 480 512; do
     xdg-icon-resource uninstall --noupdate --size $size org.munadi.Munadi |& \
                                                                         log_cmd
   done

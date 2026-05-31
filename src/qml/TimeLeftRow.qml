@@ -4,7 +4,7 @@ import QtQuick.Controls.Material
 import QtQuick.Layouts
 
 
-import "qrc:/data/Adhan.js" as Adhan
+import "qrc:/qt/qml/Munadi/data/Adhan.js" as Adhan
 
 Pane {
     property alias text: timeLeftLabel.text
@@ -23,7 +23,7 @@ Pane {
                 flat: true
                 opacity: 0.5
                 icon.width: parent.width
-                icon.source: "qrc:/img/settings.png"
+                icon.source: "qrc:/qt/qml/Munadi/img/settings.png"
                 onClicked: settingsPopup.open()
             }
         }
@@ -72,7 +72,7 @@ Pane {
                 flat: true
                 opacity: 0.5
                 visible: athan.isOn
-                icon.source: "qrc:/img/stop.png"
+                icon.source: "qrc:/qt/qml/Munadi/img/stop.png"
 
                 onClicked: athan.stop()
             }

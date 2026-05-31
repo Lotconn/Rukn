@@ -1,7 +1,7 @@
 import QtQuick
 import QtCore
 import QtQuick.Controls.Material
-import "qrc:/data/Adhan.js" as Adhan
+import "qrc:/qt/qml/Munadi/data/Adhan.js" as Adhan
 
 QtObject {
     id: munadiModel
@@ -44,26 +44,39 @@ QtObject {
     property int isToday: dateNavOffset === 0
 
     property int hijriDateOffset: 0
-    property string calendarPreference: "Both"
     property string gregorianDateStr: Qt.formatDate(currentDate, "dd-MMM-yyyy")
     property string hijriDateStr: engine.getHijriDate(currentDate, hijriDateOffset)
+    property string currentDateStr: calendarPreference[calendarPreferenceIndex]['method']()
 
-    property string currentDateStr: {
-        if(calendarPreference === "Both") return gregorianDateStr + " | " + hijriDateStr;
-        if(calendarPreference === "Hijri") return hijriDateStr;
-        if(calendarPreference === "Gregorian") return gregorianDateStr;
-    }
+    property int calendarPreferenceIndex: 0
+    property var calendarPreference: [{
+        "name": qsTr("Both"),
+        "method": function () {
+            return gregorianDateStr + " | " + hijriDateStr
+        }
+    }, {
+        "name": qsTr("Hijri"),
+        "method": function () {
+            return hijriDateStr
+        }
+    }, {
+        "name": qsTr("Gregorian"),
+        "method": function () {
+            return gregorianDateStr
+        }
+    }]
 
     property bool locationNotSet: latitude == 0 || longitude == 0
 
-    property bool stickerMode: false
-    property bool showOnAthan: false
-    property bool hideOnClose: false
-    property bool isoClock:    false
-    property bool bgImage:     true
+    property bool stickerMode:  false
+    property bool showOnAthan:  false
+    property bool hideOnClose:  false
+    property bool athanMuted:   false
+    property bool isoClock:     false
+    property bool bgImage:      true
 
-    property int    bg_img_blur: 32
-    property double rectangle_opacity: 0.8
+    property int    bg_img_blur: 29
+    property double rectangle_opacity: 0.77
     property double content_opacity: 1.0
     property int    rectangle_radius: 3
     property double page_margins_p: 0.02
@@ -119,7 +132,7 @@ QtObject {
             mm.currentTime = now
             var totalMins = Math.ceil((mm.timeForNextPrayer.getTime() - now) / 60000)
 
-            if (totalMins <= 0) {
+            if (totalMins <= 0 || totalMins > 1100) { // handling extreme polar settlements
                 mm.timeLeftStr = ""
                 return
             }
@@ -219,15 +232,15 @@ QtObject {
 
     property var audioList: [{
             "name": qsTr("Makkah (built-in)"),
-            "path": "qrc:/data/athan-makkah.ogg"
+            "path": "qrc:/qt/qml/Munadi/data/athan-makkah.ogg"
         },
         {
             "name": qsTr("Ar-Rashid (built-in)"),
-            "path": "qrc:/data/athan-arRashid.ogg"
+            "path": "qrc:/qt/qml/Munadi/data/athan-arRashid.ogg"
         },
         {
             "name": qsTr("Fajr (built-in)"),
-            "path": "qrc:/data/fajr-athan.ogg"
+            "path": "qrc:/qt/qml/Munadi/data/fajr-athan.ogg"
         }]
 
     property int themeListIndex: 0

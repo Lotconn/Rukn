@@ -2,7 +2,7 @@
 
 set -e
 
-# makeself.sh /home/joe/mysoft mysoft.sh "Joe's Nice Software Package" ./setup 
+# makeself.sh /home/joe/mysoft mysoft.sh "Joe's Nice Software Package" ./setup
 # e.g. makeself.sh [args] archive_dir file_name label startup_script [script_args]
 
 VER=26.04
