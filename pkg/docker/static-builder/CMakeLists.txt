@@ -13,7 +13,7 @@ set(FFMPEG_V 7.1.3)
 set(INSTALL_PREFIX /usr)
 
 set(COMMON_FLAGS
-    "-DCMAKE_CXX_FLAGS='-march=native -fomit-frame-pointer -fstack-clash-protection'"
+    "-DCMAKE_CXX_FLAGS=' -O3 -pipe -Wl,-z,relro,-z,now -Wl,--as-needed -Wp,-D_FORTIFY_SOURCE=3 -fstack-protector-strong -fcf-protection -fstack-clash-protection -march=native '"
 )
 
 set(FFMPEG_CONF
@@ -42,17 +42,17 @@ set(FFMPEG_CONF
 
     --enable-parser=aac,aac_latm,ac3,amr,flac,mpegaudio,opus,vorbis
 
-    --enable-protocol=cache,fd,file,http,https,pipe,tls,unix
+    --enable-protocol=cache,fd,file,pipe,unix
 
     # External library support:
-    --enable-openssl
     --disable-iconv
 
     # Toolchain options:
     --enable-lto
 
     # Advanced options:
-    --extra-cxxflags="-fstack-clash-protection -march=native -fomit-frame-pointer"
+    --extra-cxxflags=" -O3 -pipe -Wp,-D_FORTIFY_SOURCE=3 -fstack-protector-strong -fcf-protection -fstack-clash-protection -march=native "
+    --extra-ldflags=" -Wl,-z,relro,-z,now -Wl,--as-needed "
 
     # Developer options:
     --disable-debug
@@ -65,17 +65,23 @@ set(QT_CONF
     -confirm-license
 
     # Build options:
+    -dbus-linked
+
     -release
     -static
     -no-sbom
     -reduce-exports
     -reduce-relocations
-    -dbus-linked
-    -ccache
     -ltcg
+    -glibc-fortify-source
+    -stack-protector
+    -stack-clash-protection
+    -relro-now-linker
+    -ccache
 
     # Build environment
     QT_BUILD_TOOLS_BY_DEFAULT=OFF
+    "-DCMAKE_CXX_FLAGS=' -O3 -pipe -march=native '"
 
     # Component selection:
     -nomake examples
@@ -175,7 +181,7 @@ qtbase
 URL https://download.qt.io/archive/qt/${QT_V}/${QT_VV}/submodules/qtbase-everywhere-src-${QT_VV}.tar.xz
 URL_HASH SHA256=231ad85979864d914dc9568a1b71c91d6cf20d7b2021d059103bf0eb51cb755e
 BUILD_IN_SOURCE 1
-CONFIGURE_COMMAND ${QT_CONF} -- ${COMMON_FLAGS}
+CONFIGURE_COMMAND ${QT_CONF}
 BUILD_COMMAND cmake --build . --parallel --config Release
 INSTALL_COMMAND cmake --install .
 DEPENDS ffmpeg

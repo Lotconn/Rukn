@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 ---
-## [next](#munadi-next) - 2026-04-19
+## [Next](#munadi-next) - 2026-04-19
 ### Bug Fixes
 
 - Fix tooltip time-left string doesn't handle time jumps.
@@ -47,6 +47,11 @@ All notable changes to this project will be documented in this file.
 #### makeself archive
 - Register munadi symbolic icon on the execution scripts
 
+#### Builder Images
+- Enable aggresive optimizations and level-up hardening generally
+- Drop network support until Munadi itself starts supporting 
+- Label following OpenContainer Annotations Spec
+
 #### Docs
 - Update README.md with changes and rephrases
 - Fix workflows for correct behaviors & better readability
@@ -55,8 +60,9 @@ All notable changes to this project will be documented in this file.
 #### Web
 - Update verification ID for flathub
 
-#### Repo misc
+#### Project misc
 - Symlink redundant icon files across repo to those under `xdg/icons`
+- Move all image building relevant files under `pkg/docker` categorized subfolders 
 
 ---
 
