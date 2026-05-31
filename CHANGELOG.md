@@ -37,8 +37,23 @@ All notable changes to this project will be documented in this file.
 - Qt 6.9.0 baseline standardization
 - Build system improvements and streamlining
 
+#### Flatpak
+- Migrate manifests to YAML
+- Add another manifest for a variant using SFX archive
+- Update the static manifest to correspond with recent workflow changes
+- Sync `org.munadi.Munadi.yml` with flathub upstream
+- Drop $XDG_MUSIC_HOME permission since it's not needed anymore
+
 #### makeself archive
 - Register munadi symbolic icon on the execution scripts
+
+#### Docs
+- Update README.md with changes and rephrases
+- Fix workflows for correct behaviors & better readability
+- Update CHANGELOG.md
+
+#### Web
+- Update verification ID for flathub
 
 #### Repo misc
 - Symlink redundant icon files across repo to those under `xdg/icons`
