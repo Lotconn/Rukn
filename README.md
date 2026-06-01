@@ -28,15 +28,15 @@ Munadi is a simple yet powerful Athan app designed to be a companion in your dai
 
 <div style="overflow-x: auto; white-space: nowrap;">
 
-| ![Main Page - Fajr](screenshots/2604/01_main_page_fajr.png) | ![Main Page - Dhuhr](screenshots/2604/02_main_page_dhuhr.png) | ![Main Page - Asr](screenshots/2604/03_main_page_asr.png) | ![Main Page - Maghrib](screenshots/2604/04_main_page_maghrib.png) | ![Main Page - Isha](screenshots/2604/05_main_page_isha.png) |
-|:--:|:--:|:--:|:--:|:--:|
-| Fajr | Dhuhr | Asr | Maghrib | Isha |
-
-| ![Material Light Theme](screenshots/2604/06_main_page_material_light.png) | ![Material Dark Theme](screenshots/2604/07_main_page_material_dark.png) | ![Location Search](screenshots/2604/08_location_search.png) | ![Settings Page 1](screenshots/2511/06_settings_page.png) | ![Settings Page 2](screenshots/2511/07_settings_page.png) | ![Settings Page 3](screenshots/2511/08_settings_page.png) |
+| ![Main Page - Fajr](screenshots/2606/01_main_page_fajr.png) | ![Main Page - Sunrise](screenshots/2606/02_main_page_sunrise.png) | ![Main Page - Dhuhr](screenshots/2606/03_main_page_dhuhr.png) | ![Main Page - Asr](screenshots/2606/04_main_page_asr.png) | ![Main Page - Maghrib](screenshots/2606/05_main_page_maghrib.png) | ![Main Page - Isha](screenshots/2606/06_main_page_isha.png) |
 |:--:|:--:|:--:|:--:|:--:|:--:|
-| Material Light | Material Dark | Location Search | Prayer Times Settings | General Settings | Appearance Settings |
+| Fajr | Sunrise | Dhuhr | Asr | Maghrib | Isha |
 
-| ![Tray Menu](screenshots/2511/10_tray_menu.png) | ![Tray Tooltip](screenshots/2511/11_tray_menu.png) |
+| ![Material Light Theme](screenshots/2606/08_main_page_material_light.png) | ![Material Dark Theme](screenshots/2606/07_main_page_material_dark.png) | ![Settings Page - Light](screenshots/2606/09_settings_page_1.png) | ![Settings Page - Dark](screenshots/2606/10_settings_page_2.png) |
+|:--:|:--:|:--:|:--:|
+| Material Light | Material Dark | Settings Page (Dark) | Settings Page (Light) |
+
+| ![Tray Menu](screenshots/2606/11_tray_menu.png) | ![Tray Tooltip](screenshots/2606/12_tray_tooltip.png) |
 |:--:|:--:|
 | Tray Menu | Tooltip |
 
