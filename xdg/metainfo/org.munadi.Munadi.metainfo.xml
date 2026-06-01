@@ -119,7 +119,7 @@
         </screenshot>
     </screenshots>
     <releases>
-        <release version="26.06" date="2026-05-">
+        <release version="26.06" date="2026-05-10">
         <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2606</url>
         <description>
             <p>This release brings some nice UI enhancements and backend improvements to the app. Few itchy bugs were also squashed.</p>
