@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 - Fix tooltip time-left string doesn't handle time jumps.
 - Fix a warning about calling uninitiated handler being deprecated
 - Fix custom audio list becoming stale if was configured for a prayer when a random custom audio is removed
+- "Contacts" link in the settings page is broken
 
 ### Improvements
 
@@ -31,6 +32,7 @@ All notable changes to this project will be documented in this file.
 - Lazy-load/save config and make settings changes atomic
 - New file manager backend for improved, robust & stateless store management all while a better experience inside sandboxes (e.g. flatpaks, snap)
 - Upgrade to Qt 6.11.1
+- Add back arabic support
 
 ### Build & Infrastructure
 
@@ -54,13 +56,17 @@ All notable changes to this project will be documented in this file.
 - Enable aggresive optimizations and level-up hardening generally
 - Drop network support until Munadi itself starts supporting 
 - Label following OpenContainer Annotations Spec
+- Add clang and dependencies/tools
 
 #### Docs
 - Update README.md with changes and rephrases, better readability, fix, improve & amend workflows, formatting and references
 - Update CHANGELOG.md
+- Refresh feature list and put up a better summary/marketing line for the app
 
 #### Web
 - Update verification ID for flathub
+- Add "Acknowledgements" & "Contributors" sections enlisting used libraries and contributors for the whole project
+- Refresh feature list and put up a better summary/marketing line for the app
 
 #### Project misc
 - Symlink redundant icon files across repo to those under `xdg/icons`

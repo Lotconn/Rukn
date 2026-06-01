@@ -26,14 +26,18 @@ RUN \
     dnf install -y --installroot=/mnt/rootfs --releasever=10.1 \
         --setopt=install_weak_deps=False --nodocs \
         --setopt=reposdir=/etc/yum.repos.d/ \
-        dnf epel-release ccache cmake diffutils gcc-c++ nasm ninja-build \
+        # Build utils
+        dnf epel-release ccache clang cmake diffutils \
+        gcc-c++ lld llvm nasm ninja-build \
+        # Required libraries
         libglvnd-devel libxkbcommon-devel libXrandr-devel \
         openssl-devel pipewire-devel wayland-devel && \
     dnf install -y --installroot=/mnt/rootfs --releasever=10.1 \
          --setopt=install_weak_deps=False --nodocs \
          --setopt=reposdir=/etc/yum.repos.d/ \
-         bash-color-prompt bash-completion git procps-ng rootfiles \
-         shellcheck tar vim xdg-utils zstd && \
+         # Other necessary utils
+         bash-color-prompt bash-completion clang-tools-extra git ncurses \
+         procps-ng rootfiles shellcheck tar vim xdg-utils zstd && \
     dnf --installroot /mnt/rootfs clean all && \
     rm -rf /mnt/rootfs/var/cache/* /mnt/rootfs/var/log/dnf* \
         /mnt/rootfs/var/log/yum.*

@@ -2,7 +2,7 @@
 
 ## Your Simple and Beautiful Athan App
 
-Munadi is a simple yet powerful Athan app designed to be a companion in your daily life. It offers a clean, beautiful interface free from advertisements and tracking, delivering precise prayer alerts for any city worldwide. The app includes dual calendar support (Gregorian & Hijri), multiple calculation methods, and the ability to view prayer schedules for any date—past or future. A range of thoughtful settings allows you to tailor the experience to your personal needs.
+Munadi is a simple yet powerful Athan app designed to be a companion in your daily life. It offers a clean, beautiful interface free from advertisements and tracking, delivering precise prayer alerts for any city worldwide. The app includes dual calendar support (Gregorian & Hijri), multiple calculation methods, and the ability to view prayer schedules for any date - past or future. A range of thoughtful settings allows you to tailor the experience to your personal needs.
 
 **Features:**
 - Prayer times for nearly any city around the globe
@@ -18,6 +18,7 @@ Munadi is a simple yet powerful Athan app designed to be a companion in your dai
 - Option to assign a unique Athan for each prayer
 - Fine-tune prayer times and Hijri date offsets
 - Support for various global calculation methods
+- Arabic language support
 
 ---
 
@@ -88,19 +89,6 @@ and follow instructions.
 
 ---
 
-## Features
-
-- Prayer times for cities worldwide with multiple calculation methods
-- Hijri and Gregorian calendar display
-- Customizable athan files and individual prayer volume control
-- System tray integration with window show/hide functionality
-- Time-left countdown to next prayer
-- Time-of-day themed wallpapers
-- Dark and light theme support
-- RTL language support (including Arabic)
-
----
-
 ## Building from Source
 
 Clone the repo:
@@ -111,13 +99,13 @@ git clone --recursive --depth 1 https://gitlab.com/munadi/munadi.git ./munadi_mu
 
 ## 1. Static Build via Builder Image (Recommended)
 
-The recommended method is to build a statically-linked app in the static-builder container:
+The recommended method is to build a statically-linked app in the `static-builder` container. From project root:
 
 **Docker:**
 ```bash
 docker run --rm -it \
   --name munadi-builder \
-  -v ./:/src:z,shared \
+  -v "$(pwd)":/src:z,shared \
   registry.gitlab.com/munadi/munadi/static-builder:latest
 ```
 
@@ -125,7 +113,7 @@ docker run --rm -it \
 ```bash
 podman run --rm -it \
   --name munadi-builder \
-  -v ./:/src:z \
+  -v "$(pwd)":/src:z \
   registry.gitlab.com/munadi/munadi/static-builder:latest
 ```
 
@@ -139,7 +127,7 @@ To build the image locally:
 docker build -t munadi-builder pkg/docker/
 docker run --rm -it \
   --name munadi-builder \
-  -v ./:/src:z,shared \
+  -v "$(pwd)":/src:z,shared \
   munadi-builder
 ```
 
@@ -149,7 +137,7 @@ docker run --rm -it \
 podman build -t munadi-builder pkg/docker/
 podman run --rm -it \
   --name munadi-builder \
-  -v ./:/src:z \
+  -v "$(pwd)":/src:z \
   munadi-builder
 ```
 
@@ -172,6 +160,11 @@ cd pkg/makeself && ./generate_installer && cd -
 
 # Pro tip: press up-arrow key to find these commands in history ;) 
 ```
+
+> [!Note]
+> Building with clang doesn't work inside the container yet
+
+
 A self-extracting archive named `Munadi-<ver>.run` with the built binary will be available under `pkg/makeself`. 
 
 ***For development purposes***: the built binary remains available under `build/Release`. To test standalone, execute from the host (outside container):
@@ -184,43 +177,6 @@ Other build types supported: `Debug`, `RelWithDebInfo`
 As a healthy practice, always clean `~/.cache/Munadi` and `~/.config/munadi` folders across subsequent builds.
 
 ## 2. Build as Flatpak
-
-### Prerequisites
-
-**Build tools:**
-- `ccache` (optional, for faster rebuilds)
-- `cmake >= 3.30`
-- `gcc-c++` or `clang++`
-- `nasm`
-- `ninja-build`
-- `tar`
-- `zstd`
-
-**Libs: `<pkg>-devel` or `<pkg>-dev`**
-
-> [!WARNING]
-> Qt versions older than 6.9 may not be compatible. Build with project's latest tracking Qt version before filing bugs. Alternatively, [test build statically](#1-static-build-via-builder-image-recommended).
-
-> [!NOTE]
-> Generic package names are provided. These may not match on all distributions. Search your distribution's package repository for accurate package names.
-
-
-- `qtbase`
-- `qtshadertools`
-- `qtdeclarative`
-- `qtmultimedia`
-- `qtpositioning`
-- `qtsvg`
-- `qtwayland`
-- `qtlocation`
-- `qtvirtualkeyboard`
-
-- `libglvnd-devel`
-- `libxkbcommon`
-- `libXrandr`
-- `openssl`
-- `pipewire`
-- `wayland`
 
 The recommended method is to use `org.flatpak.Builder`:
 ```bash
@@ -253,17 +209,17 @@ ln -s pkg/flatpak/org.munadi.Munadi.yml
 
 # Build the regular version with platform runtimes
 flatpak-builder \
---verbose \
---force-clean \
---user \
---install-deps-from=flathub \
---ccache \
---repo=./repo ./builddir ./org.munadi.Munadi.yml
+  --verbose \
+  --force-clean \
+  --user \
+  --install-deps-from=flathub \
+  --ccache \
+  --repo=./repo ./builddir ./org.munadi.Munadi.yml
 
 # Run the built app
 flatpak-builder --run \
---env=WAYLAND_DISPLAY="$WAYLAND_DISPLAY" \
-./builddir ./org.munadi.Munadi.yml munadi
+  --env=WAYLAND_DISPLAY="$WAYLAND_DISPLAY" \
+  ./builddir ./org.munadi.Munadi.yml munadi
 ```
 
 ### Static build
@@ -329,13 +285,17 @@ Qt Creator can be used for debugging and developing the app standalone. It's esp
 - `ccache` (recommended, for faster rebuilds)
 - `cmake >= 3.30`
 - `gcc-c++` or `clang++`
+- *If using clang:*
+  - `lld`
+  - `llvm`
+  - `clang-tools-extra`
 - `nasm`
 - `ninja-build`
-- *Optional:* `tar`
-- *Optional:* `zstd`
+- *For packaging:*
+  - `tar`
+  - `zstd`
 
 **Libs: `<pkg>-devel` or `<pkg>-dev`**
-
 
 - `qtbase`
 - `qtshadertools`
@@ -354,7 +314,7 @@ Qt Creator can be used for debugging and developing the app standalone. It's esp
 - `pipewire`
 - `wayland`
 
-After installing the packages, open `CMakeLists.txt` on project root in Qt Creator and build
+After installing the packages, open the main `CMakeLists.txt` on project root in Qt Creator.
 
 ***Tips:*** Build with `Debug` or `RelWithDebInfo` configuration for further debugging.
 
@@ -365,32 +325,36 @@ After installing the packages, open `CMakeLists.txt` on project root in Qt Creat
 ```
 .
 ./
-├── android/                    # Android-specific build files
-├── libs/                       # External libraries required for Munadi
-│   └── KDSingleApplication/      # KDAB/KDSingleApplication submodule
-├── pkg/                        # Configs and manifests for packaging and tool building
-│   ├── android/                  # Android apk
-│   ├── docker/                   # Builder images
-│   ├── flathub/                  # Flatpak manifests
-│   ├── makeself/                 # Makeself SFX archive
-│   │   └── makeself/               # megastep/makeself submodule
-│   └── snap/                     # Snap manifest
-├── screenshots/                # App Screenshots
-├── src/                        # App source files
-│   ├── cpp/                      # C++ libs, engine, plugins and backends
-│   ├── data/                     # Various resources
-│   ├── i18n/                     # Translations
-│   ├── img/                      # Image resources
-│   ├── qml/                      # QML frontend
-│   └── <redacted>                # Various other config files and icons
-├── web/                        # Everything related to the homepage website
-├── xdg/                        # XDG manifests, desktop files and icons
-├── CHANGELOG.md                # Main tracked changes file
-├── CMakeLists.txt              # App builder CMakeLists.txt
-├── .gitlab-ci.yml              # CI/CD config
-├── .gitmodules                 # List of project submodules
-├── LICENSE                     # License
-└── README.md                   # Read this first!!!!
+├── android/                        # Android-specific build files
+├── libs/                           # External libraries required for Munadi
+│   ├── android/openssl/              # KDAB/android-openssl submodule
+│   ├── HasanEsa/FileMan/             # HasanEsa/fileman submodule
+│   └── KDSingleApplication/          # KDAB/KDSingleApplication submodule
+├── pkg/                            # Configs and manifests for packaging and tool building
+│   ├── android/                      # Android apk
+│   ├── docker/                       # Builder images
+│   │   ├── static-builder/             # Spec dir for the static-builder image
+│   │   └── web-server/ -> ../../web    # Spec dir for the webserver
+│   ├── flatpak/                      # Flatpak manifests
+│   ├── makeself/                     # Makeself SFX archive
+│   │   └── makeself/                   # megastep/makeself submodule
+│   └── snap/                         # Snap manifest
+├── screenshots/                   # App Screenshots
+├── src/                           # App source files
+│   ├── cpp/                         # C++ libs, engine, plugins and backends
+│   ├── data/                        # Various resources
+│   ├── i18n/                        # Translations
+│   ├── img/                         # Image resources
+│   ├── qml/                         # QML frontend
+│   └── <redacted>                   # Various other config files and icons
+├── web/                           # Everything related to the homepage website
+├── xdg/                           # XDG manifests, desktop files and icons
+├── CHANGELOG.md                   # Main tracked changes file
+├── CMakeLists.txt                 # Project main CMakeLists.txt
+├── .gitlab-ci.yml                 # CI/CD config
+├── .gitmodules                    # List of project submodules
+├── LICENSE                        # License
+└── README.md                      # Read this first!!!!
 
 ```
 
@@ -412,7 +376,7 @@ First of all, see if the issue you're facing already exists on the issue board. 
 ```bash
 MUNADI_DEBUG=1 sh Munadi-<ver>.run
 ```
-Note the log location printed after (hopefully) successful installation. Retain it to a good place.
+Note the log location printed after (hopefully) successful installation. Retain it on a good place.
 
 2. Remove old configs and caches:
 ```bash
@@ -422,7 +386,7 @@ mv ~/.config/munadi{,.bak}
 
 3. Do
 ```bash
-QT_LOGGING_RULES='*.debug=true;qt.*.debug=false' munadi > munadi.log 2>&1
+QT_LOGGING_RULES='*.debug=true;qt.*.debug=false;qt.qml.import=true' munadi > munadi.log 2>&1
 ```
 
 and try reproducing the issues
@@ -436,11 +400,11 @@ mv ~/.var/app/org.munadi.Munadi{,.bak}
 ```
 3. Run from terminal:
 ```bash
-flatpak run --command=munadi --env=QT_LOGGING_RULES='*.debug=true;qt.*.debug=false;kf.*.debug=false' org.munadi.Munadi > munadi-log.txt 2>&1
+flatpak run --command=munadi --env=QT_LOGGING_RULES='*.debug=true;qt.*.debug=false;kf.*.debug=false;qt.qml.import=true' org.munadi.Munadi > munadi-log.txt 2>&1
 ```
 and try reproducing the issues.
 
-If issues persist, [open an issue](https://gitlab.com/munadi/munadi/-/issues) with `munadi.log`, the install logs you retained earlier and the one in the CWD when installing. Explain as detail as possible with your current app version and relevant distro details.
+If issues persist, [open an issue](https://gitlab.com/munadi/munadi/-/work_items) with `munadi.log`, the install logs you retained earlier and the one in the CWD when installing. Explain as detail as possible with your current app version and relevant distro details.
 
 ---
 
@@ -460,7 +424,7 @@ appstreamcli validate /path/to/your.metainfo.xml
 For flatpaks:
 - Validate your manifest first:
   ```bash
-  flatpak run --command=flatpak-builder-lint org.flatpak.Builder manifest /path/to/your/manifest
+  flatpak run --command=flatpak-builder-lint org.flatpak.Builder manifest /path/to/your/org.munadi.Munadi.metainfo.xml
   ```
 > [!NOTE]
 > Make sure your manifest uses [latest tagged commit of the project](https://gitlab.com/munadi/munadi/-/tags) as the source. Do not use other commits as those are not guaranteed to be stable.
@@ -477,11 +441,11 @@ For flatpaks:
   flatpak run --command=flatpak-builder-lint repo repo
   ```
 
-Contributions are also warmly accepted on [flathub repository](https://github.com/flathub/org.munadi.Munadi).
+Contributions are also warmly accepted on the [flathub repository](https://github.com/flathub/org.munadi.Munadi).
 
 ## AI Contribution Policy
 
-We try to be as clear as possible on AI agent, LLM and bot contributions to the project. AI-assisted contributions by humans are welcome, any other autonomous AI contributions including merge/pull requests, issues & comments will be rejected. This includes any variants of `"Signed-off by <agent's operator>`" i.e. human-operated agentic requests. We encourage both seasoned and new-comer (human) contributors to include `"Assisted by: "` footer whenever presenting any contributions on the project if using any assistances by AIs & LLMs.
+We aim to be transparent about contributions from AI agents, LLMs, and bots. AI-assisted contributions by humans are welcome. Any other autonomous AI contributions — including merge/pull requests, issues, and comments — will be rejected. This includes any "Signed-off-by: `<agent's operator>`" variants, i.e. human-operated agentic submissions. Human contributors are encouraged to include an "Assisted by: " footer in any contribution that involved AI or LLM assistance.
 
 ---
 
@@ -494,6 +458,53 @@ This project is licensed under the AGPL-3.0-or-later license. FFmpeg is built on
 - **Homepage**: [munadi.org](https://munadi.org)
 - **Bug Tracker**: [Issues](https://gitlab.com/munadi/munadi/-/issues) | [Flathub Issues](https://github.com/flathub/org.munadi.Munadi/issues)
 - **Source Code**: [Source](https://gitlab.com/munadi/munadi) | [Flathub](https://github.com/flathub/org.munadi.Munadi)
+
+---
+
+## Acknowledgements
+
+### Libraries used in this project
+
+* **Adhan.js** by Batoul Apps
+  - Project Implementation: Prayer times calculations
+  - License: MIT
+  - Homepage: <https://batoulapps.com/>
+  - Source: <https://github.com/batoulapps/Adhan-js>
+
+* **Android Openssl** by Klarälvdalens Datakonsult AB
+  - Project Implementation: SSL library for Android builds
+  - License: Apache
+  - Source: <https://github.com/KDAB/android_openssl>
+
+* **FileMan** by Hasan Esa
+  - Project Implementation: File management backend
+  - License: MIT
+  - Source: <https://gitlab.com/HasanEsa/fileman>
+
+* **KDSingleApplication** by Klarälvdalens Datakonsult AB
+  - Project Implementation: Single-instance library
+  - License: MIT
+  - Reference: <https://www.kdab.com/kdsingleapplication/>
+  - Source: <https://github.com/KDAB/KDSingleApplication>
+
+* **makeself** by megastep
+  - Project Implementation: Self-extracting installer
+  - License: GPL v2
+  - Homepage: <https://makeself.io/>
+  - Source: <https://github.com/megastep/makeself>
+
+* **Qt** by The Qt Company
+  - Project Implementation: UI and core code
+  - License: GPL v3 and LGPL v3
+  - Homepage: <https://www.qt.io/>
+  - Source: <https://code.qt.io/cgit/>
+
+
+### Contributors
+
+- **Project Author:** AA [@hakpw](https://gitlab.com/hakpw)
+- Hasan Esa [@HasanEsa](https://gitlab.com/HasanEsa)
+- Damascene
 
 ---
 

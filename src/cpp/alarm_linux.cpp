@@ -8,7 +8,7 @@
 #include <map>
 #include <thread>
 
-#include "alarm.h"
+#include <alarm.h>
 
 class AlarmLinux : public Alarm
 {

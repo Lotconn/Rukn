@@ -70,16 +70,21 @@ int main(int argc, char *argv[])
     QFont font {"Noto Sans, Noto Naskh Arabic UI"};
     app.setFont(font);
 
-    auto locale = QLocale::system().name();
-    qDebug() << "Locale: " << locale;
-
-    // if(locale.startsWith("en")) // Work around for Android
-    QLocale::setDefault(QLocale::English);
+    qDebug() << "System Locale: " << QLocale::system().name();
 
     QTranslator translator;
-    // look up e.g. :/i18n/munadi_ar.qm
-    if (translator.load(QLocale(), QLatin1String("munadi"), QLatin1String("_"), QLatin1String(":/i18n")))
-        app.installTranslator(&translator);
+    if(QLocale l(QLocale::system()); l.language() == QLocale::Arabic) {
+        if (translator.load(l,
+                            QLatin1String("munadi"),
+                            QLatin1String("_"),
+                            QLatin1String(":/qt/qml/Munadi/i18n"))) {
+            app.installTranslator(&translator);
+            qDebug() << "Loaded translator file: " << translator.filePath();
+        }
+    } else if (l.name() != QLatin1String("en_US")) {
+        QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
+        qInfo() << "Setting locale to: " << QLocale().name();
+    }
 
     QQmlApplicationEngine qae;
 
