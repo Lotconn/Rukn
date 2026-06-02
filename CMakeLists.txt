@@ -6,7 +6,7 @@ project(munadi
   LANGUAGES   CXX C
 )
 
-set(CMAKE_CXX_STANDARD  17)
+set(CMAKE_CXX_STANDARD  23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION  ON)
@@ -160,13 +160,21 @@ qt_target_qml_sources(${PROJECT_NAME}
 )
 
 if (ANDROID)
+  include(FetchContent)
+  FetchContent_Declare(
+    android_openssl
+    DOWNLOAD_EXTRACT_TIMESTAMP true
+    URL https://github.com/KDAB/android_openssl/archive/refs/heads/master.zip
+  )
+  FetchContent_MakeAvailable(android_openssl)
+  include(${android_openssl_SOURCE_DIR}/android_openssl.cmake)
+
   set_property(TARGET
       ${PROJECT_NAME}
     APPEND
       PROPERTY
         QT_ANDROID_PACKAGE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/android
   )
-  add_subdirectory(libs/android/openssl)
   add_android_openssl_libraries(${PROJECT_NAME})
 endif()
 
@@ -175,7 +183,7 @@ target_compile_definitions(${PROJECT_NAME}
     $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>
     QT_ENABLE_STRICT_MODE_UP_TO=0x060900
 )
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23)
 target_compile_options(${PROJECT_NAME} PRIVATE
   $<$<AND:$<CXX_COMPILER_ID:GNU,Clang>,$<PLATFORM_ID:Linux>>:
     -Wp,-D_FORTIFY_SOURCE=3

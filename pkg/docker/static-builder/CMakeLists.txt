@@ -13,7 +13,7 @@ set(FFMPEG_V 7.1.3)
 set(INSTALL_PREFIX /usr)
 
 set(COMMON_FLAGS
-    "-DCMAKE_CXX_FLAGS=' -O3 -pipe -Wl,-z,relro,-z,now -Wl,--as-needed -Wp,-D_FORTIFY_SOURCE=3 -fstack-protector-strong -fcf-protection -fstack-clash-protection -march=native '"
+    "-DCMAKE_CXX_FLAGS=' -O3 -pipe -Wl,-z,relro,-z,now -Wl,--as-needed -Wp,-D_FORTIFY_SOURCE=3 -fstack-protector-strong -fcf-protection -fstack-clash-protection '"
 )
 
 set(FFMPEG_CONF
@@ -51,7 +51,7 @@ set(FFMPEG_CONF
     --enable-lto
 
     # Advanced options:
-    --extra-cxxflags=" -O3 -pipe -Wp,-D_FORTIFY_SOURCE=3 -fstack-protector-strong -fcf-protection -fstack-clash-protection -march=native "
+    --extra-cxxflags=" -O3 -pipe -Wp,-D_FORTIFY_SOURCE=3 -fstack-protector-strong -fcf-protection -fstack-clash-protection "
     --extra-ldflags=" -Wl,-z,relro,-z,now -Wl,--as-needed "
 
     # Developer options:
@@ -81,7 +81,7 @@ set(QT_CONF
 
     # Build environment
     QT_BUILD_TOOLS_BY_DEFAULT=OFF
-    "-DCMAKE_CXX_FLAGS=' -O3 -pipe -march=native '"
+    "-DCMAKE_CXX_FLAGS=' -O3 -pipe '"
 
     # Component selection:
     -nomake examples
