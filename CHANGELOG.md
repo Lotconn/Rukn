@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 - Fix a warning about calling uninitiated handler being deprecated
 - Fix custom audio list becoming stale if was configured for a prayer when a random custom audio is removed
 - "Contacts" link in the settings page is broken
+- Fix `uninstall` command on SFX archive doesn't uninstall anything
 
 ### Improvements
 
