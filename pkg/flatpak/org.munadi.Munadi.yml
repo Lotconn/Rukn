@@ -16,8 +16,8 @@ finish-args:
 cleanup:
   - /include
   - /lib/cmake
-  - /lib/cmake/HasanEsa
-  - /lib/cmake/qml
+  - /lib/HasanEsa
+  - /lib/qml
   - '*.la'
   - '*.a'
 modules:
