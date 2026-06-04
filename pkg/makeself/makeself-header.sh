@@ -13,7 +13,7 @@ SHA="$SHAsum"
 SIGNATURE="$Signature"
 TMPROOT=\${TMPDIR:=/tmp}
 USER_PWD="\$PWD"
-VER=26.04
+VER=26.06
 
 
 debug="\$MUNADI_DEBUG"
@@ -182,6 +182,7 @@ MS_Help()
   --nochown             Do not give the target folder to the current user
   --keep, -k            Do not erase extract directory after running
                         the embedded script
+  --nocleanup, -N       Do not cleanup app config and data during uninstall
   --nodiskspace         Do not check for available disk space
   --noexec, -n          Do not run embedded script
   --noprogress          Do not show the progress during the decompression
@@ -523,6 +524,7 @@ verbose=n
 cleanup=y
 sig_key=
 noask=n
+nodataclean=n
 noexec=n
 enlist=n
 check=n
@@ -541,6 +543,7 @@ while [ \$# -gt 0 ]; do
     --info | --version ) MS_showInfo; exit 0;;
     --keep ) keep=y; shift ;;
     --list )   enlist=y; shift ;;
+    --nocleanup ) nodataclean=y; shift ;;
     --nodiskspace ) nodiskspace=y; shift ;;
     --nochown ) ownership=n; shift ;;
     --noexec )  noexec=y; shift;;
@@ -574,12 +577,13 @@ while [ \$# -gt 0 ]; do
       ;;
     -*)
       OPTIND=1
-      while getopts :chklnqVvx:y- opt; do
+      while getopts :chklNnqVvx:y- opt; do
         case \$opt in
           c) check=y;;
           h) MS_Help; exit 0;;
           k) keep=y;;
           l) enlist=y;;
+          N) nodataclean=y;;
           n) noexec=y;;
           q) quiet=y; noprogress=y; scriptargs="\$scriptargs -q";;
           V) MS_showInfo; exit 0;;
@@ -600,6 +604,9 @@ done
 [ "\$noexec" = y ] && script=""
 if test "\$quiet" = y -a "\$verbose" = y; then quiet=n; fi
 if test "\$quiet" = y -o "\$noexec" = y; then noask=y; fi
+if test "\$nodataclean" = y -a "\$script" = "./uninstall"; then
+  scriptargs="\$scriptargs -N"
+fi
 
 if test "\$check" = y; then MS_Check "\$0" y; exit 0; fi
 

@@ -4,7 +4,80 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [26.04](#munadi-2604) — 2026-04-01
+## [26.06](#munadi-2606) - 2026-06-05
+
+### Bug Fixes
+
+- Fix tooltip time-left string doesn't handle time jumps.
+- Fix a warning about calling uninitiated handler being deprecated
+- Fix custom audio list becoming stale if was configured for a prayer when a random custom audio is removed
+- "Contacts" link in the settings page is broken
+- Fix `uninstall` command on SFX archive doesn't uninstall anything
+
+### Improvements
+
+- **New Icon**: Munadi now uses a new material-gradient inspired icon derived from Masjid Al-Aqsa.
+- Use the brand shades for accent color throughout
+- Update the symbolic icon to be a sillohuette of the new icon
+- Add `xdg/icons/hicolor/scalable` for SVGs
+- Add 80px and 480px icons under `xdg/icons`
+- Do not calculate `timeLeftStr` for next fajr past 1100 minutes; handles even the polarmost settlements
+- Improve keyboard navigations on location search popup
+- Let UI stretch freely within 1:1 proportions, snap to left as usual otherwise
+- Use a thinner font stroke on prayer table
+- Right align prayer times on the table
+- Minimum width bounds also follows UI proportions now, despite disrupting settings page view
+- Replace "+" and "-" beside the speaker icon with actual texts to make the buttons' functions obvious. These are more often than not misunderstood for volume control buttons
+- Add a "Video" category option in file dialog to let users add video files as audio files too which is supported natively
+- Minor code restructures
+- Lazy-load/save config and make settings changes atomic
+- New file manager backend for improved, robust & stateless store management all while a better experience inside sandboxes (e.g. flatpaks, snap)
+- Upgrade to Qt 6.11.1
+- Add back Arabic support
+
+### Build & Infrastructure
+
+#### App build (general)
+- Enable more aggressive optimizations and useful hardenings
+- C++17 standardization instead of C++23
+- Qt 6.9.0 baseline standardization
+- Build system improvements and streamlining
+
+#### Flatpak
+- Migrate manifests to YAML
+- Add another manifest for a variant using SFX archive
+- Update the static manifest to correspond with recent workflow changes
+- Sync `org.munadi.Munadi.yml` with flathub upstream
+- Drop $XDG_MUSIC_HOME permission since it's not needed anymore
+
+#### makeself archive
+- Register munadi symbolic icon on the execution scripts
+
+#### Builder Images
+- Enable aggresive optimizations and level-up hardening generally
+- Drop network support until Munadi itself starts supporting 
+- Label following OpenContainer Annotations Spec
+- Add clang and dependencies/tools
+
+#### Docs
+- Update README.md with changes and rephrases, better readability, fix, improve & amend workflows, formatting and references
+- Update CHANGELOG.md
+- Refresh feature list and put up a better summary/marketing line for the app
+
+#### Web
+- Update verification ID for flathub
+- Add "Acknowledgements" & "Contributors" sections enlisting used libraries and contributors for the whole project
+- Refresh feature list and put up a better summary/marketing line for the app
+
+#### Project misc
+- Symlink redundant icon files across repo to those under `xdg/icons`
+- Move all image building relevant files under `pkg/docker` categorized subfolders 
+
+Full Changelog: [26.04...26.06](https://gitlab.com/munadi/munadi/-/compare/26.04...26.06)
+
+---
+
+## [26.04](#munadi-2604) — 2026-04-18
 
 ### Bug Fixes
 

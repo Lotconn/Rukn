@@ -1,4 +1,4 @@
-#include "macos_window.h"
+#include <macos_window.h>
 #include <QQuickWindow>
 
 #import <AppKit/NSWindow.h>

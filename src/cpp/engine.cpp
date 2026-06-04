@@ -1,5 +1,5 @@
-#include "engine.h"
-#include "updater.h"
+#include <engine.h>
+#include <updater.h>
 
 #include <QTime>
 #include <QSettings>
@@ -170,7 +170,7 @@ void Engine::autostart(bool set)
 
 QString Engine::getWhatsNew()
 {
-    QFile whats_new(":/data/whatsnew.html");
+    QFile whats_new(":/qt/qml/Munadi/data/whatsnew.html");
     std::ignore = whats_new.open(QFile::ReadOnly | QFile::Text);
     QTextStream ts(&whats_new);
 
