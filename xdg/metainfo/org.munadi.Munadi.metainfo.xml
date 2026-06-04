@@ -95,7 +95,7 @@
         </screenshot>
         <screenshot>
             <caption>Main page with Material Light theme</caption>
-            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2606/08_main_page_material_light.png.png</image>
+            <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2606/08_main_page_material_light.png</image>
         </screenshot>
         <screenshot>
             <caption>Main page with Material Dark theme</caption>
@@ -119,7 +119,7 @@
         </screenshot>
     </screenshots>
     <releases>
-        <release version="26.06" date="2026-05-10">
+        <release version="26.06" date="2026-06-05">
         <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2606</url>
         <description>
             <p>This release brings some nice UI enhancements and backend improvements to the app. Few itchy bugs were also squashed.</p>
@@ -127,7 +127,6 @@
                 Notable Bug Fixes
 
                 <li>Fix tooltip time-left string doesn't handle time jumps</li>
-                <li>Fix a warning about calling uninitiated handler being deprecated</li>
                 <li>Fix custom audio list becoming stale if was configured for a prayer when a custom audio is removed randomly</li>
                 <li>Monochrome tray icon now correctly tracks dark/light theme switches</li>
             </ul>
@@ -146,11 +145,12 @@
                 <li>Lazy-load/save config and make settings changes atomic</li>
                 <li>New file manager backend for improved, robust and stateless store management, improving experience inside sandboxes (e.g. flatpaks, snap)</li>
                 <li>Upgrade to Qt 6.11.1</li>
+                <li>Bring back Arabic support</li>
             </ul>
             <ul>
                 Misc
 
-                <li>Drop $XDG_MUSIC_HOME permission since it's not needed anymore</li>
+                <li>Drop $XDG_MUSIC_HOME permission on flatpak since it's not needed anymore</li>
             </ul>
         </description>
         </release>

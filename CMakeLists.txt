@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16...4.3)
 
 project(munadi
   VERSION     26.06
-  DESCRIPTION "A Simple cross-platoform athan app"
+  DESCRIPTION "Your Simple and Beautiful Athan App"
   LANGUAGES   CXX C
 )
 

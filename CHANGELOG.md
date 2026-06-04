@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [26.06](#munadi-2606) - 2026-06-10
+## [26.06](#munadi-2606) - 2026-06-05
 
 ### Bug Fixes
 
@@ -33,7 +33,7 @@ All notable changes to this project will be documented in this file.
 - Lazy-load/save config and make settings changes atomic
 - New file manager backend for improved, robust & stateless store management all while a better experience inside sandboxes (e.g. flatpaks, snap)
 - Upgrade to Qt 6.11.1
-- Add back arabic support
+- Add back Arabic support
 
 ### Build & Infrastructure
 
