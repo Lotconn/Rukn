@@ -4,405 +4,449 @@
 <context>
     <name>AdjustmentComponent</name>
     <message>
+        <location filename="munadi-master/src/qml/AdjustmentComponent.qml" line="32"/>
         <source>Volume</source>
         <translation>الصوت</translation>
     </message>
     <message>
+        <location filename="munadi-master/src/qml/AdjustmentComponent.qml" line="48"/>
         <source>%L1 %</source>
-        <translation>٪%L1</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>+ %L1</source>
-        <translation>%L1 +</translation>
-    </message>
-    <message>
-        <source>- %L1</source>
-        <translation>%L1 -</translation>
-    </message>
-    <message>
-        <source>%1 %</source>
-        <translation type="vanished">%1 ٪</translation>
-    </message>
-    <message>
-        <source>+ %1</source>
-        <translation type="vanished">+ %1</translation>
-    </message>
-    <message>
-        <source>- %1</source>
-        <translation type="vanished">- %1</translation>
-    </message>
-    <message>
-        <source> %</source>
-        <translation type="vanished"> ٪</translation>
-    </message>
-    <message>
-        <source>+ </source>
-        <translation type="vanished">+ </translation>
-    </message>
-    <message>
-        <source>%L1</source>
-        <translation type="vanished">%L1</translation>
-    </message>
-    <message>
-        <source>- </source>
-        <translation type="vanished">- </translation>
-    </message>
-    <message>
-        <source>%</source>
-        <translation type="vanished">٪</translation>
-    </message>
-    <message>
+        <location filename="munadi-master/src/qml/AdjustmentComponent.qml" line="52"/>
         <source>Minutes</source>
-        <translation>دقائق</translation>
+        <translation>الدقائق</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/AdjustmentComponent.qml" line="81"/>
+        <source>+ %L1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/AdjustmentComponent.qml" line="82"/>
+        <source>- %L1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/AdjustmentComponent.qml" line="86"/>
+        <source>Athan</source>
+        <translation>أذان</translation>
     </message>
 </context>
 <context>
     <name>AudioManComp</name>
     <message>
+        <location filename="munadi-master/src/qml/AudioManComp.qml" line="24"/>
         <source>Please choose an audio file</source>
-        <translation>اختر ملفا صوتياً</translation>
+        <translation>اختر ملف صوتي</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/AudioManComp.qml" line="83"/>
+        <source>Add</source>
+        <translation>اضف</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/AudioManComp.qml" line="89"/>
+        <source>Remove</source>
+        <translation>احذف</translation>
     </message>
 </context>
 <context>
     <name>CompassPage</name>
     <message>
+        <location filename="munadi-master/src/qml/CompassPage.qml" line="12"/>
         <source>Qibla Direction</source>
         <translation>اتجاه القبلة</translation>
     </message>
     <message>
+        <location filename="munadi-master/src/qml/CompassPage.qml" line="88"/>
         <source>%1° with respect to North</source>
-        <translation>%1° إلى الشمال</translation>
+        <translation>%1° مع اتجاه الشمال</translation>
     </message>
 </context>
 <context>
     <name>DateRow</name>
     <message>
+        <location filename="munadi-master/src/qml/DateRow.qml" line="21"/>
         <source>&lt;</source>
-        <translation>&gt;</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="munadi-master/src/qml/DateRow.qml" line="71"/>
         <source>&gt;</source>
-        <translation>&lt;</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>LocationInfoRow</name>
     <message>
+        <location filename="munadi-master/src/qml/LocationInfoRow.qml" line="17"/>
         <source>Set your location ...</source>
-        <translation>حدد مكانك ...</translation>
+        <translation>اختر مكانك</translation>
     </message>
 </context>
 <context>
     <name>LocationSearchComponent</name>
     <message>
+        <location filename="munadi-master/src/qml/LocationSearchComponent.qml" line="61"/>
         <source>Enter city name</source>
-        <translation>أدخل اسم المدينة</translation>
+        <translation>أدخل اسم مدينتك</translation>
     </message>
     <message>
+        <location filename="munadi-master/src/qml/LocationSearchComponent.qml" line="70"/>
         <source>Search</source>
-        <translation>بحث</translation>
-    </message>
-    <message>
-        <source>Location</source>
-        <translation type="vanished">الموقع</translation>
-    </message>
-    <message>
-        <source>Timezone</source>
-        <translation type="vanished">المنطقة الزمنية</translation>
-    </message>
-    <message>
-        <source>Latitude</source>
-        <translation type="vanished">خط عرض</translation>
-    </message>
-    <message>
-        <source>Longitude</source>
-        <translation type="vanished">خط طول</translation>
+        <translation>ابحث</translation>
     </message>
 </context>
 <context>
     <name>MunadiModel</name>
     <message>
-        <source>Makkah (built-in)</source>
-        <translation>مكة (مدمج)</translation>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="53"/>
+        <source>Both</source>
+        <translation>كلاهما</translation>
     </message>
     <message>
-        <source>Muslim World League</source>
-        <translation>رابطة العالم الإسلامي</translation>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="58"/>
+        <source>Hijri</source>
+        <translation>هجري</translation>
     </message>
     <message>
-        <source>Egyptian</source>
-        <translation>مصري</translation>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="63"/>
+        <source>Gregorian</source>
+        <translation>ميلادي</translation>
     </message>
     <message>
-        <source>Karachi</source>
-        <translation>كراتشي</translation>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="123"/>
+        <source>%1 Athan ...</source>
+        <translation>%1 أذان</translation>
     </message>
     <message>
-        <source>Umm AlQura</source>
-        <translation>أم القرى</translation>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="144"/>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="145"/>
+        <source>%L1</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Dubai</source>
-        <translation>دبي</translation>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="144"/>
+        <source>h </source>
+        <translation>ساعة</translation>
     </message>
     <message>
-        <source>Moonsighting Committee</source>
-        <translation>لجنة الرؤية القمرية</translation>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="145"/>
+        <source>m </source>
+        <translation>دقيقة</translation>
     </message>
     <message>
-        <source>North America</source>
-        <translation>أمريكا الشمالية</translation>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="148"/>
+        <source>until </source>
+        <translation>حتي</translation>
     </message>
     <message>
-        <source>Kuwait</source>
-        <translation>الكويت</translation>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="150"/>
+        <source>Seconds until </source>
+        <translation>ثواني حتي</translation>
     </message>
     <message>
-        <source>Qatar</source>
-        <translation>قطر</translation>
-    </message>
-    <message>
-        <source>Singapore</source>
-        <translation>سنغافورة</translation>
-    </message>
-    <message>
-        <source>Turkey</source>
-        <translation>تركيا</translation>
-    </message>
-    <message>
-        <source>Other</source>
-        <translation>اُخرى</translation>
-    </message>
-    <message>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="223"/>
         <source>Fajr</source>
         <translation>الفجر</translation>
     </message>
     <message>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="223"/>
         <source>Sunrise</source>
         <translation>الشروق</translation>
     </message>
     <message>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="223"/>
         <source>Dhuhr</source>
         <translation>الظهر</translation>
     </message>
     <message>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="223"/>
         <source>Asr</source>
         <translation>العصر</translation>
     </message>
     <message>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="223"/>
         <source>Maghrib</source>
         <translation>المغرب</translation>
     </message>
     <message>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="223"/>
         <source>Isha</source>
         <translation>العشاء</translation>
     </message>
     <message>
-        <source>Hijri</source>
-        <translation type="vanished">هجري</translation>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="234"/>
+        <source>Makkah (built-in)</source>
+        <translation>مكة (معد مسبقا)</translation>
     </message>
     <message>
-        <source>%1 Athan ...</source>
-        <translation>أذان %1 ...</translation>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="238"/>
+        <source>Ar-Rashid (built-in)</source>
+        <translation>الرشيد (معد مسبقا)</translation>
     </message>
     <message>
-        <source>%L1</source>
-        <translation>%L1</translation>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="242"/>
+        <source>Fajr (built-in)</source>
+        <translation>الفجر (معد مسبقا)</translation>
     </message>
     <message>
-        <source>h </source>
-        <translation>سـ </translation>
-    </message>
-    <message>
-        <source>m </source>
-        <translation>د </translation>
-    </message>
-    <message>
-        <source>until </source>
-        <translation>حتى </translation>
-    </message>
-    <message>
-        <source>Seconds until </source>
-        <translation>ثواني حتى </translation>
-    </message>
-    <message>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="247"/>
         <source>System</source>
         <translation>النظام</translation>
     </message>
     <message>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="247"/>
         <source>Light</source>
         <translation>فاتح</translation>
     </message>
     <message>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="247"/>
         <source>Dark</source>
-        <translation>داكن</translation>
+        <translation>مظلم</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="271"/>
+        <source>Muslim World League</source>
+        <translation>رابطة العالم الإسلامي</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="276"/>
+        <source>Egyptian</source>
+        <translation>مصري</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="281"/>
+        <source>Karachi</source>
+        <translation>كراتشي</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="286"/>
+        <source>Umm AlQura</source>
+        <translation>أم القري</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="291"/>
+        <source>Dubai</source>
+        <translation>دبي</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="296"/>
+        <source>Moonsighting Committee</source>
+        <translation>لجنة رؤية الهلال</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="301"/>
+        <source>North America</source>
+        <translation>أمريكا الشمالية</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="306"/>
+        <source>Kuwait</source>
+        <translation>الكويت</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="311"/>
+        <source>Qatar</source>
+        <translation>قطر</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="316"/>
+        <source>Singapore</source>
+        <translation>سنغافورة</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="321"/>
+        <source>Turkey</source>
+        <translation>تركيا</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/MunadiModel.qml" line="326"/>
+        <source>Other</source>
+        <translation>أخري</translation>
     </message>
 </context>
 <context>
     <name>SettingsPage</name>
     <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="70"/>
         <source>Application</source>
-        <translation>تطبيق</translation>
+        <translation>التطبيق</translation>
     </message>
     <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="82"/>
+        <source>Theme</source>
+        <translation>المظهر</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="103"/>
+        <source>Blur</source>
+        <translation>تمويه</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="130"/>
+        <source>Opacity</source>
+        <translation>العتامة</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="159"/>
+        <source>Background Images</source>
+        <translation>صور الخلفية</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="163"/>
+        <source>Show time-of-the-day wallpapers.</source>
+        <translation>أظهر خلفيات وقت اليوم</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="178"/>
+        <source>Hide on close</source>
+        <translation>أخف عند الإغلاق</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="182"/>
+        <source>When closing Munadi, hide it instead.</source>
+        <translation>عند إغلاق منادي أخفه بدلا من ذلك</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="197"/>
+        <source>24-Hour Format</source>
+        <translation>صيغة 24 ساعة</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="201"/>
+        <source>Show clock times in 24-hour format.</source>
+        <translation>أظهر الساعة في صيغة 24-ساعة</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="216"/>
         <source>Show on Athan</source>
         <translation>أظهر عند الأذان</translation>
     </message>
     <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="220"/>
         <source>Try to show window on Athan.</source>
-        <translation>حاول إظهار النافذة عند الأذان.</translation>
+        <translation>حاول أظهر النافذة عند الأذان</translation>
     </message>
     <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="235"/>
         <source>Autostart</source>
-        <translation>تشغيل آلي</translation>
+        <translation>ابدأ تلقائيا</translation>
     </message>
     <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="239"/>
         <source>Try to start minimised after login.</source>
-        <translation>حاول البدء مصغراً عند البداية.</translation>
+        <translation>حاول البدء مصغراً عند تسجيل الدخول</translation>
     </message>
     <message>
-        <source>Mute all Athans</source>
-        <translation>أخفت أصوات الأذان</translation>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="258"/>
+        <source>Check for updates</source>
+        <translation>تحقق من التحديثات</translation>
     </message>
     <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="262"/>
+        <source>Munadi will check for updates when it first starts.</source>
+        <translation>سيتحقق منادي من التحديثات عند البدء لأول مرة</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="277"/>
         <source>Athan</source>
-        <translation>الأذان</translation>
+        <translation>أذان</translation>
     </message>
     <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="288"/>
+        <source>Mute all Athans</source>
+        <translation>اكتم كل الأذان</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="310"/>
         <source>Prayer</source>
         <translation>الصلاة</translation>
     </message>
     <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="324"/>
         <source>Other</source>
-        <translation>اُخرى</translation>
+        <translation>أخري</translation>
     </message>
     <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="334"/>
         <source>Mathhab</source>
-        <translation>المذهب</translation>
+        <translation>مذهب</translation>
     </message>
     <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="346"/>
         <source>Majority</source>
         <translation>الجمهور</translation>
     </message>
     <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="349"/>
         <source>Hanafi</source>
         <translation>حنفي</translation>
     </message>
     <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="356"/>
         <source>Algorithm</source>
         <translation>الخوارزمية</translation>
     </message>
     <message>
-        <source>+ %L1</source>
-        <translation type="vanished">+ %L1</translation>
-    </message>
-    <message>
-        <source>- %L1</source>
-        <translation type="vanished">- %L1</translation>
-    </message>
-    <message>
-        <source>Contact</source>
-        <translation>ألتواصل</translation>
-    </message>
-    <message>
-        <source>Support</source>
-        <translation>مساعدة</translation>
-    </message>
-    <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="372"/>
         <source>Calendar</source>
-        <translation type="vanished">التقويم</translation>
+        <translation>التقويم</translation>
     </message>
     <message>
-        <source>Hijri</source>
-        <translation type="vanished">هجري</translation>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="401"/>
+        <source>+ %L1</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Gregorian</source>
-        <translation type="vanished">غريغوري</translation>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="402"/>
+        <source>- %L1</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>+ </source>
-        <translation type="vanished">+ %1</translation>
-    </message>
-    <message>
-        <source>- </source>
-        <translation type="vanished">- </translation>
-    </message>
-    <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="413"/>
         <source>About Munadi</source>
-        <translation>ما هو منادي</translation>
+        <translation>عن منادي</translation>
     </message>
     <message>
-        <source>Website</source>
-        <translation>الموقع</translation>
-    </message>
-    <message>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="425"/>
         <source>Version</source>
         <translation>الإصدار</translation>
     </message>
     <message>
-        <source>Hide on close</source>
-        <translation>إختفي عند الاغلاق</translation>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="438"/>
+        <source>Website</source>
+        <translation>الموقع</translation>
     </message>
     <message>
-        <source>When closing Munadi, hide it instead.</source>
-        <translation>عند إغلاق منادي, إخفيه.</translation>
-    </message>
-    <message>
-        <source>Theme</source>
-        <translation>المظهر</translation>
+        <location filename="munadi-master/src/qml/SettingsPage.qml" line="464"/>
+        <source>Support</source>
+        <translation>الدعم</translation>
     </message>
 </context>
 <context>
     <name>main</name>
     <message>
-        <source> Athan ...</source>
-        <translation type="vanished">أذان 1% ...</translation>
+        <location filename="munadi-master/src/qml/main.qml" line="319"/>
+        <source>Munadi</source>
+        <translation>منادي</translation>
     </message>
     <message>
-        <source>QT_LAYOUT_DIRECTION</source>
-        <comment>QGuiApplication</comment>
-        <translation>RTL</translation>
-    </message>
-    <message>
-        <source>%1 Athan ...</source>
-        <translation type="vanished">أذان %1 ...</translation>
-    </message>
-    <message>
-        <source>h </source>
-        <translation type="vanished">س </translation>
-    </message>
-    <message>
-        <source>%L1</source>
-        <translation type="vanished">%L1</translation>
-    </message>
-    <message>
-        <source>m until </source>
-        <translation type="vanished">د حتى </translation>
-    </message>
-    <message>
-        <source>Fajr</source>
-        <translation type="vanished">الفجر</translation>
-    </message>
-    <message>
-        <source>Home</source>
-        <translation type="vanished">الرئيسية</translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation type="vanished">الإعدادات</translation>
-    </message>
-    <message>
-        <source>Quit</source>
-        <translation>إنهاء</translation>
-    </message>
-    <message>
+        <location filename="munadi-master/src/qml/main.qml" line="369"/>
         <source>Show</source>
-        <translation>إظهار</translation>
+        <translation>أظهر</translation>
     </message>
     <message>
+        <location filename="munadi-master/src/qml/main.qml" line="369"/>
         <source>Hide</source>
-        <translation>إخفاء</translation>
+        <translation>أخف</translation>
+    </message>
+    <message>
+        <location filename="munadi-master/src/qml/main.qml" line="373"/>
+        <source>Quit</source>
+        <translation>أغلق</translation>
     </message>
 </context>
 </TS>
