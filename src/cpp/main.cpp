@@ -1,24 +1,16 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QQuickWindow>
 #include <QSocketNotifier>
 #include <QStyleFactory>
 
-#ifdef Q_OS_LINUX
-#include <kdsingleapplication.h>
-#endif
-
-#include <QQuickWindow>
-
 #include <alarm.h>
 #include <engine.h>
+#include <SingleApplication>
 
 #ifdef Q_OS_MACOS
 #include <macos_window.h>
-#endif
-
-#ifndef Q_OS_LINUX
-#include <dummysapp.h>
 #endif
 
 #ifdef Q_OS_LINUX
@@ -46,16 +38,15 @@ int main(int argc, char *argv[])
 
     QApplication::setStyle(QStyleFactory::create("gnome"));
 
-#ifdef Q_OS_LINUX
-    KDSingleApplication sapp;
-
-    if (!sapp.isPrimaryInstance()) {
-        sapp.sendMessage(nullptr);
-        qDebug() << "Munadi already running!";
-
+    SingleApplication sapp(argc, argv, true);
+    if (sapp.isSecondary()) {
+        sapp.sendMessage( app.arguments().join(' ').toUtf8() );
+        qWarning() << "Munadi is already running.";
+        qDebug() << "Primary instance PID: " << sapp.primaryPid();
+        qDebug() << "Primary instance user: "
+                 << sapp.primaryUser().toLatin1().constData();
         return 0;
     }
-#endif
 
     app.setWindowIcon(QIcon(":/qt/qml/Munadi/img/munadi.png"));
     app.setOrganizationDomain("munadi");
@@ -102,12 +93,7 @@ int main(int argc, char *argv[])
 
     qae.rootContext()->setContextProperty("alarm", alarm);
     qae.rootContext()->setContextProperty("engine", &engine);
-#ifdef Q_OS_LINUX
     qae.rootContext()->setContextProperty("sapp", &sapp);
-#else
-    DummySapp dummySapp;
-    qae.rootContext()->setContextProperty("sapp", &dummySapp);
-#endif
     qae.rootContext()->setContextProperty("updater", engine.updater);
     qae.load(QUrl(QLatin1String("qrc:/qt/qml/Munadi/qml/main.qml")));
 

@@ -430,7 +430,7 @@ ApplicationWindow {
 
     Connections {
         target: sapp
-        function onMessageReceived() {
+        function onReceivedMessage() {
             mainWindow.show()
             mainWindow.raise()
             mainWindow.requestActivate()

@@ -1,12 +1,18 @@
-cmake_minimum_required(VERSION 3.16...4.3)
+cmake_minimum_required(VERSION 3.16...4.4)
 
 project(munadi
-  VERSION     26.06
+  VERSION     26.08
   DESCRIPTION "Your Simple and Beautiful Athan App"
   LANGUAGES   CXX C
 )
 
-set(CMAKE_CXX_STANDARD  23)
+include(FetchContent)
+
+#
+# Setup variables
+#
+
+set(CMAKE_CXX_STANDARD  26)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION  ON)
@@ -16,12 +22,11 @@ set(CMAKE_PROJECT_SPDX_LICENSE "AGPL-3.0-or-later")
 
 configure_file(src/cpp/version.hpp.in version.hpp NO_SOURCE_PERMISSIONS @ONLY)
 
-find_program(CCACHE_PROGRAM ccache)
+#
+# Required libraries
+#
 
-if(CCACHE_PROGRAM)
-  set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
-endif()
-
+# Qt
 find_package(Qt6
   REQUIRED
   COMPONENTS
@@ -35,19 +40,47 @@ find_package(Qt6
     QuickControls2
     Widgets
 )
+if(LINUX)
+  find_package(Qt6 REQUIRED COMPONENTS DBus WaylandClient)
+endif()
+qt_standard_project_setup(REQUIRES 6.8)
+
+# Threads
 find_package(Threads REQUIRED)
 
-qt_standard_project_setup(REQUIRES 6.9)
-
-if(LINUX)
-  find_package(Qt6 REQUIRED COMPONENTS DBus)
-
-  option(KDSingleApplication_STATIC "Build lib as static" ON)
-  add_subdirectory(libs/KDSingleApplication)
+# Ccache
+find_program(CCACHE_PROGRAM ccache)
+if(CCACHE_PROGRAM)
+  set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
 endif()
 
+
+#
+# External Libraries
+#
+
+# itay-grudev/SingleApplication
+FetchContent_Declare(SingleApplication
+  GIT_REPOSITORY  https://github.com/itay-grudev/SingleApplication
+  GIT_TAG         v3.5.6
+)
+set(QT_DEFAULT_MAJOR_VERSION 6 CACHE STRING "Qt version to use, defaults to 6")
+set(QAPPLICATION_CLASS FreeStandingSingleApplication CACHE STRING
+  "Inheritance class for SingleApplication"
+)
+FetchContent_MakeAvailable(SingleApplication)
+
+# HasanEsa/FileMan
+FetchContent_Declare(FileMan
+  GIT_REPOSITORY  https://gitlab.com/HasanEsa/FileMan
+  GIT_TAG         v1.0.1
+)
 set(FM_BUILD_AS "STATIC" CACHE STRING "Build FileMan as static")
-add_subdirectory(libs/HasanEsa/FileMan)
+FetchContent_MakeAvailable(FileMan)
+
+#
+# Project Setup
+#
 
 set(MUNADI_QML_FILES
   src/qml/AdjustmentComponent.qml
@@ -77,7 +110,6 @@ set(MUNADI_JS_FILES
 
 set(MUNADI_SOURCES
   src/cpp/alarm.h
-  src/cpp/dummysapp.h
   src/cpp/engine.cpp
   src/cpp/engine.h
   src/cpp/macos_window.h
@@ -160,9 +192,7 @@ qt_target_qml_sources(${PROJECT_NAME}
 )
 
 if (ANDROID)
-  include(FetchContent)
-  FetchContent_Declare(
-    android_openssl
+  FetchContent_Declare(android_openssl
     DOWNLOAD_EXTRACT_TIMESTAMP true
     URL https://github.com/KDAB/android_openssl/archive/refs/heads/master.zip
   )
@@ -178,21 +208,32 @@ if (ANDROID)
   add_android_openssl_libraries(${PROJECT_NAME})
 endif()
 
+#
+# Project Compilation
+#
+
 target_compile_definitions(${PROJECT_NAME}
   PRIVATE
     $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>
-    QT_ENABLE_STRICT_MODE_UP_TO=0x060900
+    QT_ENABLE_STRICT_MODE_UP_TO=0x060800
 )
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23)
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_26)
+
+set(CF_PROTECTION_FLAG -fcf-protection=none)
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64")
+  message(STATUS "Enabling Intel CET for x86_64/amd64")
+  set(CF_PROTECTION_FLAG -fcf-protection)
+endif()
+
 target_compile_options(${PROJECT_NAME} PRIVATE
-  $<$<AND:$<CXX_COMPILER_ID:GNU,Clang>,$<PLATFORM_ID:Linux>>:
+  $<$<AND:$<CXX_COMPILER_ID:GNU,Clang>>:
     -Wp,-D_FORTIFY_SOURCE=3
     -Wp,-D_GLIBCXX_ASSERTIONS
     -fexceptions
     -fstack-protector-strong
     -fasynchronous-unwind-tables
     -fstack-clash-protection
-    -fcf-protection
+    ${CF_PROTECTION_FLAG}
     -mno-omit-leaf-frame-pointer
     -pipe
     $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:
@@ -215,8 +256,18 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   Qt::Quick
   Qt::QuickControls2
   Qt::Widgets
+  SingleApplication::SingleApplication
   Threads::Threads
 )
+
+if(APPLE)
+  target_link_libraries(${PROJECT_NAME} PRIVATE "-framework AppKit")
+endif()
+
+if(LINUX)
+  target_link_libraries(${PROJECT_NAME} PRIVATE Qt::DBus Qt::WaylandClient)
+endif()
+
 target_link_options(${PROJECT_NAME} PRIVATE
   $<$<CXX_COMPILER_ID:Clang>:-fuse-ld=lld>
   $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>>:
@@ -225,19 +276,11 @@ target_link_options(${PROJECT_NAME} PRIVATE
   >
 )
 
-if(APPLE)
-  target_link_libraries(${PROJECT_NAME} PRIVATE "-framework AppKit")
-endif()
+#
+# Packaging
+#
 
 if(LINUX)
-  find_package(Qt6 COMPONENTS WaylandClient)
-
-  target_link_libraries(${PROJECT_NAME} PRIVATE
-    kdsingleapplication
-    Qt::DBus
-    Qt::WaylandClient
-  )
-
   install(TARGETS ${PROJECT_NAME})
   install(DIRECTORY xdg/icons xdg/metainfo xdg/applications TYPE DATA)
 endif()

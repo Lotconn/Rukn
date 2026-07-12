@@ -24,7 +24,7 @@ Munadi is a simple yet powerful Athan app designed to be a companion in your dai
 
 ## Screenshots
 
-### Version 26.06
+### Version 26.08
 
 <div style="overflow-x: auto; white-space: nowrap;">
 
@@ -48,7 +48,7 @@ Munadi is a simple yet powerful Athan app designed to be a companion in your dai
 
 | Packaging | Platform | Status |
 |-----------|----------|:--:|
-| Makeself  | linux/x86_64                  | [![pipeline status](https://gitlab.com/munadi/munadi/badges/26.06/pipeline.svg)](https://gitlab.com/munadi/munadi/-/commits/26.06)                                                |
+| Makeself  | linux/x86_64                  | [![pipeline status](https://gitlab.com/munadi/munadi/badges/26.08/pipeline.svg)](https://gitlab.com/munadi/munadi/-/commits/26.08)                                                |
 | Flatpak   | linux/x86_64<br>linux/aarch64 | [![Build pipeline](https://github.com/flathub-infra/vorarbeiter/actions/workflows/build.yml/badge.svg)](https://github.com/flathub-infra/vorarbeiter/actions/workflows/build.yml) |
 | APK       | android/arm64-v8a             | Alpha                                                                                                                                                                            |
 
@@ -68,7 +68,7 @@ Munadi is a simple yet powerful Athan app designed to be a companion in your dai
 No dependencies required - just download & install:
 
 ```bash
-# Replace VER with the file's version, e.g. Munadi-26.06.run
+# Replace VER with the file's version, e.g. Munadi-26.08.run
 $ sh Munadi-<VER>.run -q
 ```
 
@@ -326,10 +326,6 @@ After installing the packages, open the main `CMakeLists.txt` on project root in
 .
 ./
 ├── android/                        # Android-specific build files
-├── libs/                           # External libraries required for Munadi
-│   ├── android/openssl/              # KDAB/android-openssl submodule
-│   ├── HasanEsa/FileMan/             # HasanEsa/fileman submodule
-│   └── KDSingleApplication/          # KDAB/KDSingleApplication submodule
 ├── pkg/                            # Configs and manifests for packaging and tool building
 │   ├── android/                      # Android apk
 │   ├── docker/                       # Builder images
@@ -445,7 +441,7 @@ Contributions are also warmly accepted on the [flathub repository](https://githu
 
 ## AI Contribution Policy
 
-We aim to be transparent about contributions from AI agents, LLMs, and bots. AI-assisted contributions by humans are welcome. Any other autonomous AI contributions — including merge/pull requests, issues, and comments — will be rejected. This includes any "Signed-off-by: `<agent's operator>`" variants, i.e. human-operated agentic submissions. Human contributors are encouraged to include an "Assisted by: " footer in any contribution that involved AI or LLM assistance.
+We aim to be transparent about contributions from AI agents, LLMs, and bots. AI-assisted contributions by humans are welcome. Any other autonomous AI contributions — including merge/pull requests, issues, and comments — will be rejected. This includes any "Signed-off-by: `<agent's operator>`" variants, i.e. human-operated agentic submissions. Human contributors may include an "Assisted by: " footer in any contribution that involved AI or LLM assistance but is not required.
 
 ---
 
@@ -481,12 +477,6 @@ This project is licensed under the AGPL-3.0-or-later license. FFmpeg is built on
   - License: MIT
   - Source: <https://gitlab.com/HasanEsa/fileman>
 
-* **KDSingleApplication** by Klarälvdalens Datakonsult AB
-  - Project Implementation: Single-instance library
-  - License: MIT
-  - Reference: <https://www.kdab.com/kdsingleapplication/>
-  - Source: <https://github.com/KDAB/KDSingleApplication>
-
 * **makeself** by megastep
   - Project Implementation: Self-extracting installer
   - License: GPL v2
@@ -499,12 +489,19 @@ This project is licensed under the AGPL-3.0-or-later license. FFmpeg is built on
   - Homepage: <https://www.qt.io/>
   - Source: <https://code.qt.io/cgit/>
 
+* **SingleApplication** by itay-grudev
+  - Project Implementation: Single-instance library
+  - License: MIT
+  - Reference: <https://itay-grudev.github.io/SingleApplication/>
+  - Source: <https://github.com/itay-grudev/SingleApplication>
+
 
 ### Contributors
 
 - **Project Author:** AA [@hakpw](https://gitlab.com/hakpw)
 - Hasan Esa [@HasanEsa](https://gitlab.com/HasanEsa)
 - Damascene
+- Khaled Khamis [@khaledkhamis26](https://gitlab.com/khaledkhamis26)
 
 ---
 

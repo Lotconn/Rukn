@@ -23,7 +23,7 @@ def about():
 
 @app.route('/get')
 @app.route('/get/<string:version>')
-def install(version="26.06"):
+def install(version="26.08"):
     filename = f"Munadi-{version}.run"
 
     return send_from_directory(app.root_path + '/static/dl/', filename)

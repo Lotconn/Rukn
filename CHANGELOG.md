@@ -4,6 +4,36 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [26.08](#munadi-2608) - 2026-08-15
+
+### Bug Fixes
+- Condition Intel CET for x86_64/amd64 only
+
+### Improvements
+- Replace KDSingleApplication with SingleApplication by @itay-grudev that works across platforms
+- Update `org.kde.Platform` to `6.11`
+
+### Build & Infrastructure
+#### App build (general)
+- Replace submodules with CMake `FetchContent`
+- Increase CMake maximum policy version to 4.4
+- Up C++ standard to C++26
+- Drop Qt policy versions to LTS 6.8. Policy bumps will only occur on LTS version from now on
+
+#### Docs
+- Drop recommendation for "Assisted by: " footers
+- Add new contributor @khaledkhamis26 in the list
+
+#### Flatpak
+- Lowercase summary line in metainfo to comply with Flathub's standards
+
+#### Project misc
+- Remove stale `src/cpp/libitl/` from tree
+
+Full Changelog: [26.06...26.08](https://gitlab.com/munadi/munadi/-/compare/26.06...26.08)
+
+---
+
 ## [26.06](#munadi-2606) - 2026-06-05
 
 ### Bug Fixes
@@ -39,7 +69,6 @@ All notable changes to this project will be documented in this file.
 
 #### App build (general)
 - Enable more aggressive optimizations and useful hardenings
-- C++17 standardization instead of C++23
 - Qt 6.9.0 baseline standardization
 - Build system improvements and streamlining
 
