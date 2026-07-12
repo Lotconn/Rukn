@@ -140,6 +140,8 @@ set(MUNADI_RESOURCES
   src/data/whatsnew.html
   src/i18n/munadi_ar.qm
   src/i18n/munadi_ar.ts
+  src/i18n/munadi_bn.qm
+  src/i18n/munadi_bn.ts
   src/img/about.png
   src/img/arrow.png
   src/img/bg/0.jpg

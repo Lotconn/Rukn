@@ -64,7 +64,8 @@ int main(int argc, char *argv[])
     qDebug() << "System Locale: " << QLocale::system().name();
 
     QTranslator translator;
-    if(QLocale l(QLocale::system()); l.language() == QLocale::Arabic) {
+    if(QLocale l(QLocale::system()); l.language() == QLocale::Arabic ||
+                                      l.language() == QLocale::Bangla) {
         if (translator.load(l,
                             QLatin1String("munadi"),
                             QLatin1String("_"),
