@@ -24,11 +24,24 @@ Engine::Engine()
     init();
 }
 
-QString Engine::getHijriDate(const QDate &date, const int offset)
+using namespace Qt::StringLiterals;
+QString Engine::getDate(const QDate &date, const QString &format, const QString &calSystem, const int &offset) const
 {
-    const QDate &d = date.addDays(offset);
-    QCalendar q(QCalendar::System::Gregorian);
-    return q.dateFromParts(d.year(), d.month(), d.day()).toString(QString("dd-MMM-yyyy"), QCalendar(QCalendar::System::IslamicCivil));
+    static const QHash<QString, QCalendar::System> calendarNames {
+        { "Gregorian"_L1,    QCalendar::System::Gregorian },
+        { "Julian"_L1,       QCalendar::System::Julian },
+        { "Milankovic"_L1,   QCalendar::System::Milankovic },
+        { "Jalali"_L1,       QCalendar::System::Jalali },
+        { "IslamicCivil"_L1, QCalendar::System::IslamicCivil },
+    };
+
+    const auto val = calendarNames.constFind(calSystem);
+    QCalendar cal = (val != calendarNames.constEnd())   ? QCalendar(*val)
+                                                        : QCalendar(calSystem);
+    if (!cal.isValid())
+        cal = QCalendar();
+
+    return QLocale().toString(date.addDays(offset), format, cal);
 }
 
 QString Engine::show_help(bool flag)

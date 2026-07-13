@@ -44,8 +44,11 @@ QtObject {
     property int isToday: dateNavOffset === 0
 
     property int hijriDateOffset: 0
-    property string gregorianDateStr: Qt.formatDate(currentDate, "dd-MMM-yyyy")
-    property string hijriDateStr: engine.getHijriDate(currentDate, hijriDateOffset)
+
+    property var sysLocale: Qt.locale()
+
+    property string gregorianDateStr: sysLocale.toString(currentDate, "dd-MMM-yyyy")
+    property string hijriDateStr: engine.getDate(currentDate, "dd-MMM-yyyy", "IslamicCivil", hijriDateOffset)
     property string currentDateStr: calendarPreference[calendarPreferenceIndex]['method']()
 
     property int calendarPreferenceIndex: 0
@@ -212,12 +215,12 @@ QtObject {
 
     property var params: new Adhan.adhan.CalculationMethod.MuslimWorldLeague()
 
-    property string fajr:   Qt.formatTime(prayerTimes.fajr,     isoClock   ?  "hh:mm" : "hh:mm ap")
-    property string srise:  Qt.formatTime(prayerTimes.sunrise,  isoClock   ?  "hh:mm" : "hh:mm ap")
-    property string duhr:   Qt.formatTime(prayerTimes.dhuhr,    isoClock   ?  "hh:mm" : "hh:mm ap")
-    property string asr:    Qt.formatTime(prayerTimes.asr,      isoClock   ?  "hh:mm" : "hh:mm ap")
-    property string mgrb:   Qt.formatTime(prayerTimes.maghrib,  isoClock   ?  "hh:mm" : "hh:mm ap")
-    property string isha:   Qt.formatTime(prayerTimes.isha,     isoClock   ?  "hh:mm" : "hh:mm ap")
+    property string fajr:   sysLocale.toString(prayerTimes.fajr,    isoClock ? "hh:mm" : "hh:mm ap")
+    property string srise:  sysLocale.toString(prayerTimes.sunrise, isoClock ? "hh:mm" : "hh:mm ap")
+    property string duhr:   sysLocale.toString(prayerTimes.dhuhr,   isoClock ? "hh:mm" : "hh:mm ap")
+    property string asr:    sysLocale.toString(prayerTimes.asr,     isoClock ? "hh:mm" : "hh:mm ap")
+    property string mgrb:   sysLocale.toString(prayerTimes.maghrib, isoClock ? "hh:mm" : "hh:mm ap")
+    property string isha:   sysLocale.toString(prayerTimes.isha,    isoClock ? "hh:mm" : "hh:mm ap")
 
     property var prayerNames: [
         qsTr("Fajr"), qsTr("Sunrise"), qsTr("Dhuhr"), qsTr("Asr"), qsTr("Maghrib"), qsTr("Isha")]

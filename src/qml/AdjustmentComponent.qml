@@ -78,8 +78,8 @@ ColumnLayout {
             verticalAlignment: Text.AlignVCenter
 
             color: Material.secondaryTextColor
-            text: mins.value >= 0 ? qsTr("+ %L1").arg(Math.round(mins.value))
-                                  : qsTr("- %L1").arg(Math.round(mins.value))
+            text: mins.value > 0 ? qsTr("+%L1").arg(Math.round(mins.value))
+                                  : qsTr("%L1").arg(Math.round(mins.value))
         }
 
         Text {

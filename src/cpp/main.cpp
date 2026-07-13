@@ -9,6 +9,10 @@
 #include <engine.h>
 #include <SingleApplication>
 
+#ifdef Q_OS_WINDOWS
+#include <windows.h>
+#endif
+
 #ifdef Q_OS_MACOS
 #include <macos_window.h>
 #endif
@@ -33,18 +37,19 @@ int main(int argc, char *argv[])
     //qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
 
     QApplication app(argc, argv);
-    Engine engine;
-    auto *alarm = createAlarm(&app);
 
     QApplication::setStyle(QStyleFactory::create("gnome"));
 
     SingleApplication sapp(argc, argv, true);
     if (sapp.isSecondary()) {
+#ifdef Q_OS_WINDOWS
+        AllowSetForegroundWindow(DWORD(sapp.primaryPid()));
+#endif
         sapp.sendMessage( app.arguments().join(' ').toUtf8() );
-        qWarning() << "Munadi is already running.";
-        qDebug() << "Primary instance PID: " << sapp.primaryPid();
-        qDebug() << "Primary instance user: "
-                 << sapp.primaryUser().toLatin1().constData();
+        qWarning()  << "Munadi is already running.";
+        qDebug()    << "Primary instance PID: " << sapp.primaryPid();
+        qDebug()    << "Primary instance user: "
+                    << sapp.primaryUser().toLatin1().constData();
         return 0;
     }
 
@@ -79,6 +84,9 @@ int main(int argc, char *argv[])
     }
 
     QQmlApplicationEngine qae;
+
+    Engine engine;
+    auto *alarm = createAlarm(&app);
 
     if(argc > 1)
     {
