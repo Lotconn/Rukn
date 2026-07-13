@@ -10,8 +10,8 @@
     </message>
     <message>
         <location filename="../qml/AdjustmentComponent.qml" line="48"/>
-        <source>%1 %</source>
-        <translation>% %</translation>
+        <source>%L1 %</source>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qml/AdjustmentComponent.qml" line="52"/>
@@ -21,12 +21,12 @@
     <message>
         <location filename="../qml/AdjustmentComponent.qml" line="81"/>
         <source>+ %L1</source>
-        <translation>+ %</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qml/AdjustmentComponent.qml" line="82"/>
         <source>- %L1</source>
-        <translation>- %</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qml/AdjustmentComponent.qml" line="86"/>
@@ -39,7 +39,7 @@
     <message>
         <location filename="../qml/AudioManComp.qml" line="24"/>
         <source>Please choose an audio file</source>
-        <translation>অডিও ফাইল বাছুন</translation>
+        <translation>অডিও ফাইল নির্বাচন করুন</translation>
     </message>
     <message>
         <location filename="../qml/AudioManComp.qml" line="83"/>
@@ -66,24 +66,11 @@
     </message>
 </context>
 <context>
-    <name>DateRow</name>
-    <message>
-        <location filename="../qml/DateRow.qml" line="21"/>
-        <source>&lt;</source>
-        <translation>&lt;</translation>
-    </message>
-    <message>
-        <location filename="../qml/DateRow.qml" line="71"/>
-        <source>&gt;</source>
-        <translation>&gt;</translation>
-    </message>
-</context>
-<context>
     <name>LocationInfoRow</name>
     <message>
         <location filename="../qml/LocationInfoRow.qml" line="17"/>
         <source>Set your location ...</source>
-        <translation>আপনার স্থান নির্ধারণ করুন ...</translation>
+        <translation>অবস্থান নির্ধারণ করুন ...</translation>
     </message>
 </context>
 <context>
@@ -125,27 +112,27 @@
         <location filename="../qml/MunadiModel.qml" line="144"/>
         <location filename="../qml/MunadiModel.qml" line="145"/>
         <source>%L1</source>
-        <translation>%</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qml/MunadiModel.qml" line="144"/>
         <source>h </source>
-        <translation>টা </translation>
+        <translation>ঘ. </translation>
     </message>
     <message>
         <location filename="../qml/MunadiModel.qml" line="145"/>
         <source>m </source>
-        <translation>মি </translation>
+        <translation>মি. </translation>
     </message>
     <message>
         <location filename="../qml/MunadiModel.qml" line="148"/>
         <source>until </source>
-        <translation>হতে </translation>
+        <translation>বাকি: </translation>
     </message>
     <message>
         <location filename="../qml/MunadiModel.qml" line="150"/>
         <source>Seconds until </source>
-        <translation>হতে সেকেন্ড</translation>
+        <translation>কিছুক্ষণ বাকি: </translation>
     </message>
     <message>
         <location filename="../qml/MunadiModel.qml" line="223"/>
@@ -273,12 +260,12 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="70"/>
         <source>Application</source>
-        <translation>আ্যপ</translation>
+        <translation>অ্যাপ</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="82"/>
         <source>Theme</source>
-        <translation>থিম</translation>
+        <translation>শৈলী</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="103"/>
@@ -298,37 +285,37 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="163"/>
         <source>Show time-of-the-day wallpapers.</source>
-        <translation>সময়ানুসাঙ্গিক পটচ্ছবি প্রদর্শিত হবে।</translation>
+        <translation>সমায়নুসাঙ্গিক পটচ্ছবি প্রদর্শিত হবে।</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="178"/>
         <source>Hide on close</source>
-        <translation>বন্ধ না করে লুকিয়ে রাখুন</translation>
+        <translation>বন্ধ করাতে লুকিয়ে রাখুন</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="182"/>
         <source>When closing Munadi, hide it instead.</source>
-        <translation>মুনাদি বন্ধ না করে ট্রে-তে লুকিয়ে থাকবে।</translation>
+        <translation>মুনাদি বন্ধ না হয়ে ট্রে-তে লুকিয়ে থাকবে।</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="197"/>
         <source>24-Hour Format</source>
-        <translation>২৪-ঘন্টা সময় পদ্ধতি</translation>
+        <translation>২৪-ঘন্টা পদ্ধতি</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="201"/>
         <source>Show clock times in 24-hour format.</source>
-        <translation>২৪-ঘন্টা সময় পদ্ধতিতে ঘড়ি প্রদর্শিত হবে।</translation>
+        <translation>সময় ২৪-ঘন্টা পদ্ধতিতে প্রদর্শিত হবে।</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="216"/>
         <source>Show on Athan</source>
-        <translation>আযানের সময় দৃশ্যমান</translation>
+        <translation>আযানের সময় প্রদর্শন</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="220"/>
         <source>Try to show window on Athan.</source>
-        <translation>আযানের সময় দৃশ্যমান হবে।</translation>
+        <translation>আযানের সময় অ্যাপ প্রদর্শিত হবে।</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="235"/>
@@ -338,17 +325,17 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="239"/>
         <source>Try to start minimised after login.</source>
-        <translation>লগইনের পর গুপ্তভাবে চালু হবে।</translation>
+        <translation>লগইনের পরপর পিছনে স্বয়ংক্রীয়ভাবে চালু হবে।</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="258"/>
         <source>Check for updates</source>
-        <translation>হালনাগাদ যাচাই</translation>
+        <translation>সংস্করণ হালনাগাদ</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="262"/>
         <source>Munadi will check for updates when it first starts.</source>
-        <translation>প্রথম চালুর সময় মুনাদি হালনাগাদ সংস্করণ যাচাই করবে।</translation>
+        <translation>মুনাদি প্রথম চালু হবার সময় সর্বশেষ সংস্করণ তথ্য হালনাগাদ করবে।</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="277"/>
@@ -358,7 +345,7 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="288"/>
         <source>Mute all Athans</source>
-        <translation>সব আযান নিঃশব্দ করুন</translation>
+        <translation>সব আযান বন্ধ</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="310"/>
@@ -398,12 +385,12 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="401"/>
         <source>+ %L1</source>
-        <translation>+ %</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="402"/>
         <source>- %L1</source>
-        <translation>- %</translation>
+        <translation>কাতার</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="413"/>
@@ -436,7 +423,7 @@
     <message>
         <location filename="../qml/main.qml" line="369"/>
         <source>Show</source>
-        <translation>দেখান</translation>
+        <translation>প্রদর্শন</translation>
     </message>
     <message>
         <location filename="../qml/main.qml" line="369"/>
@@ -446,7 +433,7 @@
     <message>
         <location filename="../qml/main.qml" line="373"/>
         <source>Quit</source>
-        <translation>বন্ধ করুন</translation>
+        <translation>বন্ধ</translation>
     </message>
 </context>
 </TS>

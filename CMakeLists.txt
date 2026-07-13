@@ -131,11 +131,9 @@ set(MUNADI_RESOURCES
   src/data/athan-arRashid.ogg
   src/data/athan-makkah.ogg
   src/data/fajr-athan.ogg
-  src/data/NotoNaskhArabicUI-Bold.ttf
-  src/data/NotoNaskhArabicUI-Regular.ttf
-  src/data/NotoSans-Bold.ttf
-  src/data/NotoSans-ExtraLight.ttf
-  src/data/NotoSans-Regular.ttf
+  src/data/NotoNaskhArabic-VariableFont.ttf
+  src/data/NotoSans-VariableFont.ttf
+  src/data/NotoSansBengali-VariableFont.ttf
   src/data/timezones.tsv
   src/data/whatsnew.html
   src/i18n/munadi_ar.qm

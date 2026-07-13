@@ -18,7 +18,7 @@ Pane {
                 opacity: 0.5
                 flat: true
                 autoRepeat: true
-                text: qsTr("<")
+                text: "<"
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
 
@@ -68,7 +68,7 @@ Pane {
                 opacity: 0.5
                 flat: true
                 autoRepeat: true
-                text: qsTr(">")
+                text: ">"
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
 

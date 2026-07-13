@@ -398,8 +398,9 @@ Page {
 
                     Text {
                         color: Material.secondaryTextColor
-                        text: hijriSlider.value >= 0 ? qsTr("+ %L1").arg(hijriSlider.value.toFixed())
-                                                     : qsTr("- %L1").arg(Math.abs(hijriSlider.value.toFixed()))
+                        text: hijriSlider.value >= 0 ?
+                              qsTr("+ %L1").arg(Math.round(hijriSlider.value))
+                            : qsTr("- %L1").arg(Math.round(hijriSlider.value))
                     }
                 }
             }

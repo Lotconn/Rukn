@@ -231,15 +231,15 @@ QtObject {
         {"adjustment": 0, "volume": 0.5, "athan_idx": 0 }]
 
     property var audioList: [{
-            "name": qsTr("Makkah (built-in)"),
+            "name": "Makkah (built-in)",
             "path": "qrc:/qt/qml/Munadi/data/athan-makkah.ogg"
         },
         {
-            "name": qsTr("Ar-Rashid (built-in)"),
+            "name": "Ar-Rashid (built-in)",
             "path": "qrc:/qt/qml/Munadi/data/athan-arRashid.ogg"
         },
         {
-            "name": qsTr("Fajr (built-in)"),
+            "name": "Fajr (built-in)",
             "path": "qrc:/qt/qml/Munadi/data/fajr-athan.ogg"
         }]
 

@@ -45,7 +45,7 @@ ColumnLayout {
         }
         Text {
             color: Material.secondaryTextColor
-            text: qsTr("%L1 %").arg(Math.abs((volume.value * 100).toFixed()))
+            text: qsTr("%L1 %").arg(Math.round(volume.value * 100))
             Layout.minimumWidth: volText.width
         }
         Text {
@@ -78,8 +78,8 @@ ColumnLayout {
             verticalAlignment: Text.AlignVCenter
 
             color: Material.secondaryTextColor
-            text: mins.value >= 0 ? qsTr("+ %L1").arg(Math.abs(mins.value.toFixed()))
-                                  : qsTr("- %L1").arg(Math.abs(mins.value.toFixed()))
+            text: mins.value >= 0 ? qsTr("+ %L1").arg(Math.round(mins.value))
+                                  : qsTr("- %L1").arg(Math.round(mins.value))
         }
 
         Text {

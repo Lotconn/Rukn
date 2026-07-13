@@ -37,7 +37,7 @@ Item {
                 //color: Material.primaryTextColor
                 color: Material.secondaryTextColor
                 visible: !mm.locationNotSet
-                font.weight: Font.ExtraLight
+                font.weight: Font.Thin
             }
         }
 

@@ -52,20 +52,20 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain("munadi");
     app.setApplicationName("Munadi");
 
-    QFontDatabase::addApplicationFont(":/qt/qml/Munadi/data/NotoNaskhArabicUI-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/qt/qml/Munadi/data/NotoNaskhArabicUI-Bold.ttf");
-    QFontDatabase::addApplicationFont(":/qt/qml/Munadi/data/NotoSans-ExtraLight.ttf");
-    QFontDatabase::addApplicationFont(":/qt/qml/Munadi/data/NotoSans-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/qt/qml/Munadi/data/NotoSans-Bold.ttf");
+    QFontDatabase::addApplicationFont(":/qt/qml/Munadi/data/NotoNaskhArabic-VariableFont.ttf");
+    QFontDatabase::addApplicationFont(":/qt/qml/Munadi/data/NotoSans-VariableFont.ttf");
+    QFontDatabase::addApplicationFont(":/qt/qml/Munadi/data/NotoSansBengali-VariableFont.ttf");
 
-    QFont font {"Noto Sans, Noto Naskh Arabic UI"};
+    QFont font {"Noto Sans, Noto Naskh Arabic, Noto Sans Bengali"};
     app.setFont(font);
 
     qDebug() << "System Locale: " << QLocale::system().name();
 
     QTranslator translator;
-    if(QLocale l(QLocale::system()); l.language() == QLocale::Arabic ||
-                                      l.language() == QLocale::Bangla) {
+    if(QLocale l(QLocale::system());    l.language() == QLocale::Arabic ||
+                                        l.language() == QLocale::Bangla) {
+        l = QLocale(l.language(), l.territory());
+        QLocale::setDefault(l);
         if (translator.load(l,
                             QLatin1String("munadi"),
                             QLatin1String("_"),
