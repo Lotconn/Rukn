@@ -7,6 +7,9 @@ Pane {
 
     Material.elevation: mm.pane_elevation
 
+    LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft
+    LayoutMirroring.childrenInherit: true
+
     RowLayout {
         anchors.fill: parent
 
@@ -18,7 +21,7 @@ Pane {
                 opacity: 0.5
                 flat: true
                 autoRepeat: true
-                text: "<"
+                text: qsTr("<")
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
 
@@ -68,7 +71,7 @@ Pane {
                 opacity: 0.5
                 flat: true
                 autoRepeat: true
-                text: ">"
+                text: qsTr(">")
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
 

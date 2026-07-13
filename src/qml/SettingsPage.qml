@@ -22,7 +22,8 @@ Page {
         clip: true
         boundsBehavior: Flickable.StopAtBounds
 
-
+        LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft
+        LayoutMirroring.childrenInherit: true
 
         Keys.onUpPressed: scrollBar.decrease()
         Keys.onDownPressed: scrollBar.increase()

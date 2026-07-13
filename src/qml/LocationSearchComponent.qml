@@ -45,6 +45,9 @@ Item {
     ColumnLayout {
         id: cl
 
+        LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft
+        LayoutMirroring.childrenInherit: true
+
         spacing: theme.margin
 
         width: parent.width

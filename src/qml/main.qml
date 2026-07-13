@@ -22,10 +22,13 @@ ApplicationWindow {
     minimumHeight: 350
     minimumWidth: minimumHeight * theme.uiPortraitRatio
     color: Material.dialogColor
+
+    LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft
     LayoutMirroring.childrenInherit: true
 
     property bool   autoStartUp:    false
     property string newsVersion:    ""
+    property string localeLayout: qsTr("QT_LAYOUT_DIRECTION","QGuiApplication");
 
     function settingsBool(key, defaultValue) {
         var val = settings.value(key, defaultValue)
@@ -191,6 +194,9 @@ ApplicationWindow {
 
     MainPage {
         id: mainPage
+
+        LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft
+        LayoutMirroring.childrenInherit: true
 
         property double marg: Math.max(mainWindow.width, mainWindow.height) * mm.page_margins_p
         anchors.topMargin: marg
