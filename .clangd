@@ -1,0 +1,24 @@
+CompileFlags:
+  Add:
+    - -std=c++17
+    - -Ibuild
+
+Diagnostics:
+  ClangTidy:
+    Add:
+      - "*"
+    Remove:
+      - altera-unroll-loops
+      - "*braces-around-statements"
+      - cert-err58-cpp
+      - fuchsia-default-arguments-calls
+      - fuchsia-default-arguments-declarations
+      - fuchsia-statically-constructed-objects
+      - fuchsia-trailing-return
+      - hicpp-signed-bitwise
+      - "*libc*"
+      - readability-function-cognitive-complexity
+      - readability-identifier-length
+      - misc-use-anonymous-namespace
+      - misc-non-private-member-variables-in-classes
+      - modernize-use-trailing-return-type

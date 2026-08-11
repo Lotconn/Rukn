@@ -3,7 +3,8 @@
 <component type="desktop-application">
   <id>org.munadi.Munadi</id>
   <metadata_license>CC0-1.0</metadata_license>
-  <project_license>AGPL-3.0-or-later</project_license>
+  <project_license>
+  AGPL-3.0-or-later</project_license>
   <name>Munadi</name>
   <summary>Your simple and beautiful athan app</summary>
   ​<update_contact>aa_AT_hak.pw</update_contact>
@@ -11,7 +12,13 @@
     <name>Munadi Project</name>
   </developer>
   <description>
-    <p>Munadi is a simple yet powerful athan app designed to be a companion in your daily life. It offers a clean, beautiful interface free from advertisements and tracking, delivering precise prayer alerts for any city worldwide. The app includes dual calendar support (Gregorian and Hijri), multiple calculation methods, and the ability to view prayer schedules for any date—past or future. A range of thoughtful settings allows you to tailor the experience to your personal needs.</p>
+    <p>Munadi is a simple yet powerful athan app designed to be a companion in your daily life. It
+  offers a clean, beautiful interface free from advertisements and tracking, delivering precise
+  prayer alerts for any city worldwide. The app includes dual calendar support (Gregorian and
+      Hijri), multiple calculation methods, and the ability to view prayer schedules for any
+  date—past
+      or future. A range of thoughtful settings allows you to tailor the experience to your personal
+  needs.</p>
     <p>Features:</p>
     <ul>
       <li>Prayer times for nearly any city around the globe</li>
@@ -29,7 +36,8 @@
       <li>Support for various global calculation methods</li>
     </ul>
   </description>
-  <launchable type="desktop-id">org.munadi.Munadi.desktop</launchable>
+  <launchable
+    type="desktop-id">org.munadi.Munadi.desktop</launchable>
   <provides>
     <binary>munadi</binary>
     <id>munadi.desktop</id>
@@ -62,12 +70,17 @@
     <color type="primary" scheme_preference="light">#aed6f1</color>
     <color type="primary" scheme_preference="dark">#5dade2</color>
   </branding>
-  <content_rating type="oars-1.1"/>
+  <content_rating
+    type="oars-1.1" />
   <url type="bugtracker">https://gitlab.com/munadi/munadi/-/work_items</url>
-  <url type="homepage">https://munadi.org/</url>
-  <url type="faq">https://gitlab.com/munadi/munadi/-/blob/master/README.md</url>
-  <url type="contribute">https://gitlab.com/munadi/munadi/-/blob/master/README.md#contributing</url>
-  <url type="vcs-browser">https://gitlab.com/munadi/munadi/-/tree/master</url>
+  <url
+    type="homepage">https://munadi.org/</url>
+  <url type="faq">
+  https://gitlab.com/munadi/munadi/-/blob/master/README.md</url>
+  <url type="contribute">
+  https://gitlab.com/munadi/munadi/-/blob/master/README.md#contributing</url>
+  <url type="vcs-browser">
+  https://gitlab.com/munadi/munadi/-/tree/master</url>
   <screenshots>
     <screenshot type="default">
       <caption>Main page showing Fajr prayer time</caption>
@@ -95,11 +108,13 @@
     </screenshot>
     <screenshot>
       <caption>Main page with Material Light theme</caption>
-      <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2606/08_main_page_material_light.png</image>
+      <image>
+  https://gitlab.com/munadi/munadi/raw/master/screenshots/2606/08_main_page_material_light.png</image>
     </screenshot>
     <screenshot>
       <caption>Main page with Material Dark theme</caption>
-      <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2606/07_main_page_material_dark.png</image>
+      <image>
+  https://gitlab.com/munadi/munadi/raw/master/screenshots/2606/07_main_page_material_dark.png</image>
     </screenshot>
     <screenshot>
       <caption>Settings page (Light)</caption>
@@ -120,287 +135,295 @@
   </screenshots>
   <releases>
     <release version="26.06" date="2026-06-05">
-    <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2606</url>
-    <description>
-      <p>This release brings some nice UI enhancements and backend improvements to the app. Few itchy bugs were also squashed.</p>
-      <ul>
-        Notable Bug Fixes
-
-        <li>Fix tooltip time-left string doesn't handle time jumps</li>
-        <li>Fix custom audio list becoming stale if was configured for a prayer when a custom audio is removed randomly</li>
+      <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2606</url>
+      <description>
+        <p>This release brings some nice UI enhancements and backend improvements to the app. Few
+  itchy bugs were also squashed.</p>
+        <ul> Notable Bug Fixes <li>Fix tooltip time-left string doesn't handle time jumps</li>
+        <li>Fix
+  custom audio list becoming stale if was configured for a prayer when a custom audio is removed
+  randomly</li>
         <li>Monochrome tray icon now correctly tracks dark/light theme switches</li>
-      </ul>
-      <ul>
-        Improvements
-
-        <li>**New Icon**: Munadi now uses a new material-gradient inspired icon derived from Masjid Al-Aqsa</li>
+        </ul>
+        <ul> Improvements <li>**New Icon**: Munadi now uses a new material-gradient inspired icon
+  derived from Masjid Al-Aqsa</li>
         <li>Use the accent color derived from icon throughout</li>
-        <li>Improve keyboard navigations throughout the app</li>
+        <li>Improve
+  keyboard navigations throughout the app</li>
         <li>Improve UI geometry adjustment behaviors</li>
-        <li>Use a thinner font stroke on prayer table</li>
+        <li>Use
+  a thinner font stroke on prayer table</li>
         <li>Right align prayer times on the table</li>
-        <li>Replace "+" and "-" buttons beside the speaker icon with "Add" and "Remove" texts</li>
-        <li>Add a "Video" category option in file dialog to let users add video files as audio files too which is supported natively</li>
+        <li>Replace
+  "+" and "-" buttons beside the speaker icon with "Add" and "Remove" texts</li>
+        <li>Add a "Video"
+  category option in file dialog to let users add video files as audio files too which is supported
+  natively</li>
         <li>Few code restructures</li>
-        <li>Lazy-load/save config and make settings changes atomic</li>
-        <li>New file manager backend for improved, robust and stateless store management, improving experience inside sandboxes (e.g. flatpaks, snap)</li>
+        <li>Lazy-load/save config and make settings changes
+  atomic</li>
+        <li>New file manager backend for improved, robust and stateless store management,
+  improving experience inside sandboxes (e.g. flatpaks, snap)</li>
         <li>Upgrade to Qt 6.11.1</li>
-        <li>Bring back Arabic support</li>
-      </ul>
-      <ul>
-        Misc
-
-        <li>Drop $XDG_MUSIC_HOME permission on flatpak since it's not needed anymore</li>
-      </ul>
-    </description>
+        <li>Bring
+  back Arabic support</li>
+        </ul>
+        <ul> Misc <li>Drop $XDG_MUSIC_HOME permission on flatpak since it's not needed anymore</li>
+        </ul>
+      </description>
     </release>
     <release version="26.04" date="2026-04-18">
-    <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2604</url>
-    <description>
-      <p>Bug fixes and minor UI changes</p>
-      <ul>
-        Notable bug fixes
-        <li>Resolve typos in `install` and `uninstall` scripts, simplify few code</li>
+      <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2604</url>
+      <description>
+        <p>Bug fixes and minor UI changes</p>
+        <ul> Notable bug fixes <li>Resolve typos in `install` and `uninstall` scripts, simplify few
+  code</li>
         <li>Fix tooltip "Time Left" not updating when started hidden or after sleep</li>
-        <li>Show time left to next date's Fajr after Isha instead of waiting for 23:59</li>
-        <li>Prevent prayer labels running into adjacent time values; elide if parent too narrow</li>
-      </ul>
-      <ul>
-        Improvements
-        <li>Upgrade to Qt 6.11 (SFX standalone installer only)</li>
-        <li>Left-align Prayer Times table labels</li>
+        <li>Show
+  time left to next date's Fajr after Isha instead of waiting for 23:59</li>
+        <li>Prevent prayer
+            labels running into adjacent time values; elide if parent too narrow</li>
+        </ul>
+        <ul> Improvements <li>Upgrade to Qt 6.11 (SFX standalone installer only)</li>
+        <li>Left-align
+  Prayer Times table labels</li>
         <li>Show "Time Left" string only on current date</li>
-        <li>Clamp the Settings page width if parent window is too wide</li>
+        <li>Clamp the
+  Settings page width if parent window is too wide</li>
         <li>Limit smallest resizable window size</li>
-        <li>Update underlying libs</li>
-      </ul>
-      <ul>
-        Others
-        <li>Simplify Prayer Times table object alignment approach</li>
-        <li>Enable clickable hyperlinks on What's New page</li>
-        <li>Publish "Munadi static app builder" image to project's registry</li>
-      </ul>
-    </description>
+        <li>Update
+  underlying libs</li>
+        </ul>
+        <ul> Others <li>Simplify Prayer Times table object alignment approach</li>
+        <li>Enable
+  clickable hyperlinks on What's New page</li>
+        <li>Publish "Munadi static app builder" image to
+  project's registry</li>
+        </ul>
+      </description>
     </release>
     <release version="26.02" date="2026-02-03">
-    <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2602</url>
-    <description>
-      <p>Bug fixes, minor UI changes and new installer</p>
-      <ul>
-        Notable bug fixes
-        <li>Fix 'System' theme doesn't follow system</li>
-        <li>Fix muted athan plays on next start</li>
+      <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2602</url>
+      <description>
+        <p>Bug fixes, minor UI changes and new installer</p>
+        <ul> Notable bug fixes <li>Fix 'System' theme doesn't follow system</li>
+        <li>Fix muted athan
+  plays on next start</li>
         <li>Fix time not updated on tooltip</li>
-        <li>Allow exiting fullscreen during first onboarding</li>
-        <li>Prevent texts running into each other and overflowing around</li>
-        <li>Updates to android build</li>
-      </ul>
-      <ul>
-        New changes
-        <li>Improve the looks of the main page</li>
+        <li>Allow exiting fullscreen
+            during first onboarding</li>
+        <li>Prevent texts running into each other and overflowing
+  around</li>
+        <li>Updates
+            to android build</li>
+        </ul>
+        <ul> New changes <li>Improve the looks of the main page</li>
         <li>Monochrome tray icon</li>
-        <li>Two more built-in athans including fajr athan</li>
-      </ul>
-      <ul>
-        The self-extracting installer
-
-        <li>Munadi can now be installed using a self-extracting installer. No need for
-        downloading loads of dependencies, just make it executable (chmod +x) and run
-        the interactive installer. That's it! If you want to try it out, the latest
-        version of the installer is available at https://gitlab.com/munadi/munadi/-/releases/.</li>
-      </ul>
-    </description>
+        <li>Two
+  more built-in athans including fajr athan</li>
+        </ul>
+        <ul> The self-extracting installer <li>Munadi can now be installed using a self-extracting
+  installer. No need for
+            downloading loads of dependencies, just make it executable (chmod +x) and run
+            the interactive installer. That's it! If you want to try it out, the latest
+            version of the installer is available at https://gitlab.com/munadi/munadi/-/releases/.</li>
+        </ul>
+      </description>
     </release>
     <release version="25.11" date="2025-11-24">
-    <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2511</url>
-    <description>
-      <p>Back again with some long awaited and nice features!</p>
-      <ul>
-        <li>New theme with time-of-the-day wallpapers!</li>
-        <li>System theme integration</li>
-        <li>Prayer-time window opacity adjustment</li>
-        <li>Background blur adjustment</li>
-        <li>24-Hour time format</li>
-        <li>Time offset adjustments from -30 to +60 minutes</li>
-        <li>Ability to choose separate custom adhan for each prayer</li>
-        <li>Show either Hijri, Gregorian or both dates</li>
-        <li>Hijri date offset adjustments</li>
-        <li>Better keyboard navigation</li>
-        <li>[Flatpak] Statically linked libraries</li>
-        <li>Fixed bugs</li>
-        <li>Slimmed code base</li>
-      </ul>
+      <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2511</url>
+      <description>
+        <p>Back again with some long awaited and nice features!</p>
+        <ul>
+          <li>New theme with time-of-the-day wallpapers!</li>
+          <li>System theme integration</li>
+          <li>Prayer-time window opacity adjustment</li>
+          <li>Background blur adjustment</li>
+          <li>24-Hour time format</li>
+          <li>Time offset adjustments from -30 to +60 minutes</li>
+          <li>Ability to choose separate custom adhan for each prayer</li>
+          <li>Show either Hijri, Gregorian or both dates</li>
+          <li>Hijri date offset adjustments</li>
+          <li>Better keyboard navigation</li>
+          <li>[Flatpak] Statically linked libraries</li>
+          <li>Fixed bugs</li>
+          <li>Slimmed code base</li>
+        </ul>
 
-      <p>Special thanks to Hasan Esa [https://gitlab.com/HasanEsa/] for the contributions and motivation, more will follow as a result inshallah.</p>
-    </description>
+        <p>Special thanks to Hasan Esa [https://gitlab.com/HasanEsa/] for the contributions and
+  motivation, more will follow as a result inshallah.</p>
+      </description>
     </release>
     <release version="22.04" date="2022-03-31">
-    <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2204</url>
-    <description>
-      <p>Ramadan Kareem, some gifts:</p>
-      <ul>
-        <li>Dark mode!</li>
-        <li>Major UI changes</li>
-        <li>Better tray UI and usability</li>
-        <li>Flatpak integration (autostart, background and hidden autostart)</li>
-      </ul>
-    </description>
+      <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2204</url>
+      <description>
+        <p>Ramadan Kareem, some gifts:</p>
+        <ul>
+          <li>Dark mode!</li>
+          <li>Major UI changes</li>
+          <li>Better tray UI and usability</li>
+          <li>Flatpak integration (autostart, background and hidden autostart)</li>
+        </ul>
+      </description>
     </release>
     <release version="21.12" date="2021-12-01">
-    <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2112</url>
-    <description>
-      <p>This release contains a number of fixes and a new features:</p>
-      <ul>
-        <li>Option to hide window when closed (run in background)</li>
-        <li>Reworked alarm code, it now detects sleeps and changes to time</li>
-        <li>Flag as ready for mobile Linux, e.g. Phoc, Plasma Mobile</li>
-      </ul>
-    </description>
+      <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2112</url>
+      <description>
+        <p>This release contains a number of fixes and a new features:</p>
+        <ul>
+          <li>Option to hide window when closed (run in background)</li>
+          <li>Reworked alarm code, it now detects sleeps and changes to time</li>
+          <li>Flag as ready for mobile Linux, e.g. Phoc, Plasma Mobile</li>
+        </ul>
+      </description>
     </release>
     <release version="21.04.1" date="2021-04-28">
-    <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-21041</url>
-    <description>
-      <p>Fix broken progress bar/time left</p>
-    </description>
+      <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-21041</url>
+      <description>
+        <p>Fix broken progress bar/time left</p>
+      </description>
     </release>
     <release version="21.04" date="2021-04-01">
-    <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2104</url>
-    <description>
-      <p>This release contains a large number of changes:</p>
-      <ul>
-        <li>UI enhancement</li>
-        <li>Reworked alarm code</li>
-        <li>Upgraded Adhan.js lib to v3</li>
-        <li>Restored Android support (coming soon)</li>
-        <li>Fixed bug with no sound under Ubuntu</li>
-        <li>Restored ability to navigate to previous or next day (scroll over or click the date)</li>
-      </ul>
-    </description>
+      <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2104</url>
+      <description>
+        <p>This release contains a large number of changes:</p>
+        <ul>
+          <li>UI enhancement</li>
+          <li>Reworked alarm code</li>
+          <li>Upgraded Adhan.js lib to v3</li>
+          <li>Restored Android support (coming soon)</li>
+          <li>Fixed bug with no sound under Ubuntu</li>
+          <li>Restored ability to navigate to previous or next day (scroll over or click the date)</li>
+        </ul>
+      </description>
     </release>
     <release version="21.02" date="2021-02-01">
-    <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2102</url>
-    <description>
-      <p>This release fixes some bugs:</p>
-      <ul>
-        <li>Prayer times are now correct for countries with n.5 hours offset from UTC</li>
-        <li>Everything, including date and time, are now localised correctly</li>
-        <li>Hijir is disabled temporarily due to not being localised</li>
-      </ul>
-    </description>
+      <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2102</url>
+      <description>
+        <p>This release fixes some bugs:</p>
+        <ul>
+          <li>Prayer times are now correct for countries with n.5 hours offset from UTC</li>
+          <li>Everything, including date and time, are now localised correctly</li>
+          <li>Hijir is disabled temporarily due to not being localised</li>
+        </ul>
+      </description>
     </release>
     <release version="20.10" date="2020-10-01">
-    <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2010</url>
-    <description>
-      <p>This release adds tray icon support:</p>
-      <ul>
-        <li>Click (or double click) the tray icon to hide/show Munadi</li>
-        <li>Right click the tray icon for context menu</li>
-        <li>Clicking on "time left" will stop currently playing athan</li>
-      </ul>
-      <p>Note: Not all desktop environments support tray icons or behave consistently!</p>
-    </description>
+      <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2010</url>
+      <description>
+        <p>This release adds tray icon support:</p>
+        <ul>
+          <li>Click (or double click) the tray icon to hide/show Munadi</li>
+          <li>Right click the tray icon for context menu</li>
+          <li>Clicking on "time left" will stop currently playing athan</li>
+        </ul>
+        <p>Note: Not all desktop environments support tray icons or behave consistently!</p>
+      </description>
     </release>
     <release version="20.09.1" date="2020-09-26">
-    <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-20091</url>
-    <description>
-      <p>This release fixes some minor RTL issues and provides Snap improvements:</p>
-      <ul>
-        <li>Behind the scene improvements to RTL</li>
-        <li>Enabled perviously disabled window switching using dragging</li>
-        <li>Switched to core20 and cmake, which means supporting Snap going forward is possible</li>
-      </ul>
-    </description>
+      <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-20091</url>
+      <description>
+        <p>This release fixes some minor RTL issues and provides Snap improvements:</p>
+        <ul>
+          <li>Behind the scene improvements to RTL</li>
+          <li>Enabled perviously disabled window switching using dragging</li>
+          <li>Switched to core20 and cmake, which means supporting Snap going forward is possible</li>
+        </ul>
+      </description>
     </release>
     <release version="20.09" date="2020-09-01">
-    <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2009</url>
-    <description>
-      <p>This release adds some requested features:</p>
-      <ul>
-        <li>Added support for RTL languages</li>
-        <li>Added Arabic translation, thanks to Damascene</li>
-        <li>Some other minor enhancements</li>
-      </ul>
-    </description>
+      <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2009</url>
+      <description>
+        <p>This release adds some requested features:</p>
+        <ul>
+          <li>Added support for RTL languages</li>
+          <li>Added Arabic translation, thanks to Damascene</li>
+          <li>Some other minor enhancements</li>
+        </ul>
+      </description>
     </release>
     <release version="20.07" date="2020-07-01">
-    <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2007</url>
-    <description>
-      <p>This release adds some requested features:</p>
-      <ul>
-        <li>Added more calculation methods</li>
-        <li>Ability to add custom athans</li>
-      </ul>
-      <p>Note: Flatpak is now the preferred packaging method, this might be the last Snap release</p>
-    </description>
+      <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2007</url>
+      <description>
+        <p>This release adds some requested features:</p>
+        <ul>
+          <li>Added more calculation methods</li>
+          <li>Ability to add custom athans</li>
+        </ul>
+        <p>Note: Flatpak is now the preferred packaging method, this might be the last Snap release</p>
+      </description>
     </release>
     <release version="19.12" date="2019-12-01">
-    <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-1912</url>
-    <description>
-      <p>This is a minor release, mainly adding support for Snap packaging:</p>
-      <ul>
-        <li>Removed about page and merged it with settings page</li>
-        <li>Added support for Snap</li>
-        <li>Minor UI changes</li>
-      </ul>
-    </description>
+      <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-1912</url>
+      <description>
+        <p>This is a minor release, mainly adding support for Snap packaging:</p>
+        <ul>
+          <li>Removed about page and merged it with settings page</li>
+          <li>Added support for Snap</li>
+          <li>Minor UI changes</li>
+        </ul>
+      </description>
     </release>
     <release version="18.12" date="2018-12-01">
-    <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-1812</url>
-    <description>
-      <p>This release added requested features made by many of you, some features were removed, and of course some UI enhancements:</p>
-      <ul>
-        <li>Removed: Date can now go forward and backwards</li>
-        <li>Athan volumes can be configured individually</li>
-        <li>Added support for Android and Flatpak</li>
-        <li>UI enhancements</li>
-      </ul>
-    </description>
+      <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-1812</url>
+      <description>
+        <p>This release added requested features made by many of you, some features were removed,
+          and of course some UI enhancements:</p>
+        <ul>
+          <li>Removed: Date can now go forward and backwards</li>
+          <li>Athan volumes can be configured individually</li>
+          <li>Added support for Android and Flatpak</li>
+          <li>UI enhancements</li>
+        </ul>
+      </description>
     </release>
     <release version="17.02" date="2017-02-01">
-    <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-1702</url>
-    <description>
-      <p>This release added requested features made by many of you, some features were removed, and of course some UI enhancements:</p>
-      <ul>
-        <li>Brand new UI, using the latest and greatest from Qt</li>
-        <li>You can now toggle between Hijri date and Miladi</li>
-        <li>Mundadi will use system's proxy by default</li>
-        <li>Munadi is now almost three times lighter!</li>
-        <li>Date can now go forward and backwards</li>
-        <li>Removed Iqama functionality, sorry!</li>
-        <li>Added keyboard shortcuts, see help</li>
-        <li>Many issues fixed</li>
-      </ul>
-    </description>
+      <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-1702</url>
+      <description>
+        <p>This release added requested features made by many of you, some features were removed,
+          and of course some UI enhancements:</p>
+        <ul>
+          <li>Brand new UI, using the latest and greatest from Qt</li>
+          <li>You can now toggle between Hijri date and Miladi</li>
+          <li>Mundadi will use system's proxy by default</li>
+          <li>Munadi is now almost three times lighter!</li>
+          <li>Date can now go forward and backwards</li>
+          <li>Removed Iqama functionality, sorry!</li>
+          <li>Added keyboard shortcuts, see help</li>
+          <li>Many issues fixed</li>
+        </ul>
+      </description>
     </release>
     <release version="15.05" date="2015-05-01">
-    <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-1505</url>
-    <description>
-      <p>There are many exciting changes in this release, including changes to the user interface, functionality, speed and many more, see below:</p>
-      <p>Iqama Time (Experimental):</p>
-      <ul>
-        <li>Get Iqama time from any Mosque</li>
-        <li>Add Mosques to your favourite</li>
-        <li>Add Mosques to Munadi's datase</li>
-        <li>Add monthly timetable to any Mosque</li>
-        <li>Edit Mosque's details</li>
-        <li>Edit Mosque's timetable</li>
-        <li>Note: Please be responsible, we can't validate every Mosque out there</li>
-      </ul>
-      <p>User Interface:</p>
-      <ul>
-        <li>Added animation</li>
-        <li>Changed font and colour</li>
-        <li>Everything should be speedier</li>
-      </ul>
-      <p>Other changes:</p>
-      <ul>
-        <li>Integrated help</li>
-        <li>Automatically detect DST</li>
-        <li>New calculation methods</li>
-        <li>You now search for your city instead of menu selection</li>
-        <li>Many other changes behind the scenes</li>
-      </ul>
-    </description>
+      <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-1505</url>
+      <description>
+        <p>There are many exciting changes in this release, including changes to the user interface,
+  functionality, speed and many more, see below:</p>
+        <p>Iqama Time (Experimental):</p>
+        <ul>
+          <li>Get Iqama time from any Mosque</li>
+          <li>Add Mosques to your favourite</li>
+          <li>Add Mosques to Munadi's datase</li>
+          <li>Add monthly timetable to any Mosque</li>
+          <li>Edit Mosque's details</li>
+          <li>Edit Mosque's timetable</li>
+          <li>Note: Please be responsible, we can't validate every Mosque out there</li>
+        </ul>
+        <p>User Interface:</p>
+        <ul>
+          <li>Added animation</li>
+          <li>Changed font and colour</li>
+          <li>Everything should be speedier</li>
+        </ul>
+        <p>Other changes:</p>
+        <ul>
+          <li>Integrated help</li>
+          <li>Automatically detect DST</li>
+          <li>New calculation methods</li>
+          <li>You now search for your city instead of menu selection</li>
+          <li>Many other changes behind the scenes</li>
+        </ul>
+      </description>
     </release>
   </releases>
   <supports>

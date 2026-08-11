@@ -1,7 +1,7 @@
 import QtQuick
-import QtQuick.Controls
+// import QtQuick.Controls
 import QtQuick.Controls.Material
-import QtMultimedia
+// import QtMultimedia
 import QtQuick.Layouts
 
 Item {
@@ -53,8 +53,7 @@ Item {
 
                 Text {
                     id: athanLabel
-                    font.pixelSize: Math.min(parent.parent.height,
-                                             parent.parent.width) / pixelDiv
+                    font.pixelSize: Math.min(parent.parent.height, parent.parent.width) / pixelDiv
                     font.weight: prayerLabel.font.weight
                     color: prayerLabel.color
                     text: athanTime.substring(0, 5)

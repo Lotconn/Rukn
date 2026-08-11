@@ -13,7 +13,6 @@ Page {
         font.pixelSize: Font.pixelSize * parent.scale
         font.pointSize: compass.height / 20
         color: theme.fontColour
-
     }
 
     Rectangle {
@@ -29,8 +28,7 @@ Page {
         border.color: theme.fontColour
         border.width: 4
 
-        Component.onCompleted: console.log(
-                                   parent.width + ", " + parent.height)
+        Component.onCompleted: console.log(parent.width + ", " + parent.height)
 
         Image {
             id: arrow
@@ -53,9 +51,9 @@ Page {
                 target: engine
 
                 onMinuteElapsed: {
-                    var n = engine.getQibla()
-                    n = n > -90 && n < 90 ? -n : n
-                    arrow.rotation = n
+                    var n = engine.getQibla();
+                    n = n > -90 && n < 90 ? -n : n;
+                    arrow.rotation = n;
                 }
             }
         }
@@ -85,9 +83,7 @@ Page {
         anchors.horizontalCenter: parent.horizontalCenter
         font.pixelSize: qiblaLabel.font.pixelSize
         //text: sensor.hasZ && engine.ff() === "m" ? qsTr("Please wait ...") : qsTr("%1° with respect to North").arg(engine.getQibla().toFixed(0));
-        text: qsTr("%1° with respect to North").arg(engine.getQibla(
-                                                        ).toFixed(0))
+        text: qsTr("%1° with respect to North").arg(engine.getQibla().toFixed(0))
         color: theme.fontColour
-
     }
 }

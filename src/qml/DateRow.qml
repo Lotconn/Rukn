@@ -50,14 +50,13 @@ Pane {
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onHoveredChanged: containsMouse ? dateText.font.underline
-                                                      = true : dateText.font.underline = false
-                    onPressed: mm.todayDate();
+                    onHoveredChanged: containsMouse ? dateText.font.underline = true : dateText.font.underline = false
+                    onPressed: mm.todayDate()
                     onWheel: {
                         if (wheel.angleDelta.x < 0 || wheel.angleDelta.y > 0)
-                            mm.nextDate()
+                            mm.nextDate();
                         else
-                            mm.prevDate()
+                            mm.prevDate();
                     }
                 }
             }

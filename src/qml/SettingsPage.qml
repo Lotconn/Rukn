@@ -2,18 +2,19 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.Layouts
-import QtCore
-import QtPositioning
-import QtQuick.Dialogs
 
-import "qrc:/qt/qml/Munadi/data/Adhan.js" as Adhan
+// import QtCore
+// import QtPositioning
+// import QtQuick.Dialogs
+
+// import "qrc:/qt/qml/Munadi/data/Adhan.js" as Adhan
 
 Page {
     Component.onCompleted: {
-        mathhab.currentIndex    = mm.madhab - 1
-        algo.currentIndex       = mm.calcMethodIndex
-        hijriSlider.value       = mm.hijriDateOffset
-        calendar.currentIndex   = mm.calendarPreferenceIndex
+        mathhab.currentIndex = mm.madhab - 1;
+        algo.currentIndex = mm.calcMethodIndex;
+        hijriSlider.value = mm.hijriDateOffset;
+        calendar.currentIndex = mm.calendarPreferenceIndex;
     }
 
     Flickable {
@@ -88,7 +89,7 @@ Page {
                     currentIndex: mm.themeListIndex
 
                     onActivated: {
-                        mm.themeListIndex = currentIndex
+                        mm.themeListIndex = currentIndex;
                     }
 
                     model: mm.themeList
@@ -112,19 +113,18 @@ Page {
                     to: 64
 
                     onPressedChanged: {
-                        if(pressed) {
-                            settingsPopup.opacity = 0
-                            settingsPopup.modal = false
+                        if (pressed) {
+                            settingsPopup.opacity = 0;
+                            settingsPopup.modal = false;
                         } else {
-                            settingsPopup.opacity = 1
-                            settingsPopup.modal = true
+                            settingsPopup.opacity = 1;
+                            settingsPopup.modal = true;
                         }
                     }
 
                     onMoved: {
-                        mm.bg_img_blur = value
+                        mm.bg_img_blur = value;
                     }
-
                 }
                 Text {
                     color: Material.secondaryTextColor
@@ -139,17 +139,17 @@ Page {
                     to: 1
 
                     onPressedChanged: {
-                        if(pressed) {
-                            settingsPopup.opacity = 0
-                            settingsPopup.modal = false
+                        if (pressed) {
+                            settingsPopup.opacity = 0;
+                            settingsPopup.modal = false;
                         } else {
-                            settingsPopup.opacity = 1
-                            settingsPopup.modal = true
+                            settingsPopup.opacity = 1;
+                            settingsPopup.modal = true;
                         }
                     }
 
                     onMoved: {
-                        mm.rectangle_opacity = value
+                        mm.rectangle_opacity = value;
                     }
                 }
             }
@@ -244,9 +244,10 @@ Page {
                 Switch {
                     checked: mainWindow.autoStartUp
                     onCheckedChanged: {
-                        if (mainWindow.autoStartUp === checked) return
-                        mainWindow.autoStartUp = checked
-                        engine.autostart(checked)
+                        if (mainWindow.autoStartUp === checked)
+                            return;
+                        mainWindow.autoStartUp = checked;
+                        engine.autostart(checked);
                     }
                 }
                 enabled: engine.ff() === "d"
@@ -254,22 +255,22 @@ Page {
             }
 
             RowLayout {
-               ColumnLayout {
-                   SettingTitle {
-                       text: qsTr("Check for updates")
-                   }
+                ColumnLayout {
+                    SettingTitle {
+                        text: qsTr("Check for updates")
+                    }
 
-                   SettingSubtitle {
-                       text: qsTr("Munadi will check for updates when it first starts.")
-                   }
-               }
+                    SettingSubtitle {
+                        text: qsTr("Munadi will check for updates when it first starts.")
+                    }
+                }
 
-               Switch {
-                   checked: mm.checkForUpdates
-                   onCheckedChanged: mm.checkForUpdates = checked
-               }
-               enabled: engine.ff() === "d"
-               visible: enabled
+                Switch {
+                    checked: mm.checkForUpdates
+                    onCheckedChanged: mm.checkForUpdates = checked
+                }
+                enabled: engine.ff() === "d"
+                visible: enabled
             }
 
             SettingTitle {
@@ -292,8 +293,8 @@ Page {
                         Switch {
                             checked: mm.athanMuted
                             onCheckedChanged: {
-                                mm.athanMuted = checked
-                                athan.audioOutput.muted = checked
+                                mm.athanMuted = checked;
+                                athan.audioOutput.muted = checked;
                             }
                         }
                     }
@@ -339,7 +340,7 @@ Page {
                     Layout.fillWidth: true
 
                     onActivated: {
-                        mm.madhab = currentIndex + 1
+                        mm.madhab = currentIndex + 1;
                     }
 
                     model: ListModel {
@@ -361,8 +362,8 @@ Page {
                     Layout.fillWidth: true
 
                     onActivated: {
-                        mm.calcMethodIndex = currentIndex
-                        console.debug('calcIdx: ', mm.calcMethodIndex)
+                        mm.calcMethodIndex = currentIndex;
+                        console.debug('calcIdx: ', mm.calcMethodIndex);
                     }
                     textRole: 'name'
                     model: mm.calcMethod
@@ -378,8 +379,8 @@ Page {
                         Layout.fillWidth: true
 
                         onActivated: {
-                            mm.calendarPreferenceIndex = currentIndex
-                            console.debug('calPrefIdx: ', mm.calendarPreferenceIndex)
+                            mm.calendarPreferenceIndex = currentIndex;
+                            console.debug('calPrefIdx: ', mm.calendarPreferenceIndex);
                         }
 
                         textRole: 'name'
@@ -399,9 +400,7 @@ Page {
 
                     Text {
                         color: Material.secondaryTextColor
-                        text: hijriSlider.value > 0 ?
-                              qsTr("+%L1").arg(Math.round(hijriSlider.value))
-                            : qsTr("%L1").arg(Math.round(hijriSlider.value))
+                        text: hijriSlider.value > 0 ? qsTr("+%L1").arg(Math.round(hijriSlider.value)) : qsTr("%L1").arg(Math.round(hijriSlider.value))
                     }
                 }
             }
@@ -432,8 +431,8 @@ Page {
                 TextButton {
                     text: engine.getVersionNo()
                     onClicked: {
-                        whatsNewPopup.text = engine.getWhatsNew()
-                        whatsNewPopup.open()
+                        whatsNewPopup.text = engine.getWhatsNew();
+                        whatsNewPopup.open();
                     }
                 }
                 Text {

@@ -1,7 +1,8 @@
 import QtQuick
-import QtQuick.Controls
+// import QtQuick.Controls
 import QtQuick.Controls.Material
-import QtQuick.Layouts
+
+// import QtQuick.Layouts
 
 Item {
 
@@ -37,7 +38,10 @@ Item {
 
         cursorShape: Qt.PointingHandCursor
 
-        onClicked: { locationPopup.open(); settingsPopup.close(); }
+        onClicked: {
+            locationPopup.open();
+            settingsPopup.close();
+        }
         onHoveredChanged: textId.font.underline = containsMouse
     }
 }

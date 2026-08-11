@@ -1,12 +1,12 @@
 #include <engine.h>
 #include <updater.h>
 
-#include <QTime>
-#include <QSettings>
-#include <QQuickView>
-#include <QTextStream>
-#include <QTranslator>
 #include <QCalendar>
+#include <QQuickView>
+#include <QSettings>
+#include <QTextStream>
+#include <QTime>
+#include <QTranslator>
 
 #if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
 
@@ -19,182 +19,159 @@
 
 #endif
 
-Engine::Engine()
-{
-    init();
-}
+Engine::Engine() { init(); }
 
 using namespace Qt::StringLiterals;
-QString Engine::getDate(const QDate &date, const QString &format, const QString &calSystem, const int &offset) const
-{
-    static const QHash<QString, QCalendar::System> calendarNames {
-        { "Gregorian"_L1,    QCalendar::System::Gregorian },
-        { "Julian"_L1,       QCalendar::System::Julian },
-        { "Milankovic"_L1,   QCalendar::System::Milankovic },
-        { "Jalali"_L1,       QCalendar::System::Jalali },
-        { "IslamicCivil"_L1, QCalendar::System::IslamicCivil },
-    };
+QString Engine::getDate(const QDate &date, const QString &format,
+                        const QString &calSystem, const int &offset) const {
+  static const QHash<QString, QCalendar::System> calendarNames{
+      {"Gregorian"_L1, QCalendar::System::Gregorian},
+      {"Julian"_L1, QCalendar::System::Julian},
+      {"Milankovic"_L1, QCalendar::System::Milankovic},
+      {"Jalali"_L1, QCalendar::System::Jalali},
+      {"IslamicCivil"_L1, QCalendar::System::IslamicCivil},
+  };
 
-    const auto val = calendarNames.constFind(calSystem);
-    QCalendar cal = (val != calendarNames.constEnd())   ? QCalendar(*val)
-                                                        : QCalendar(calSystem);
-    if (!cal.isValid())
-        cal = QCalendar();
+  const auto val = calendarNames.constFind(calSystem);
+  QCalendar cal = (val != calendarNames.constEnd()) ? QCalendar(*val)
+                                                    : QCalendar(calSystem);
+  if (!cal.isValid())
+    cal = QCalendar();
 
-    return QLocale().toString(date.addDays(offset), format, cal);
+  return QLocale().toString(date.addDays(offset), format, cal);
 }
 
-QString Engine::show_help(bool flag)
-{
-    return "\nUsage: munadi [options]\n"
-    "Options:\n"
-    "  --hidden        Start minimized to system tray\n"
-    "  --fullscreen    Start in fullscreen mode\n"
-    "  --help          Show this help message and exit\n\n";
+QString Engine::show_help(bool flag) {
+  return "\nUsage: munadi [options]\n"
+         "Options:\n"
+         "  --hidden        Start minimized to system tray\n"
+         "  --fullscreen    Start in fullscreen mode\n"
+         "  --help          Show this help message and exit\n\n";
 }
 
-void Engine::autostart_hidden(bool flag)
-{
-    _hidden = flag;
-}
+void Engine::autostart_hidden(bool flag) { _hidden = flag; }
 
-bool Engine::autostart_hidden()
-{
-    return _hidden;
-}
+bool Engine::autostart_hidden() { return _hidden; }
 
-void Engine::fullscreen(bool flag)
-{
-    _fullscreen = flag;
-}
+void Engine::fullscreen(bool flag) { _fullscreen = flag; }
 
-bool Engine::fullscreen()
-{
-    return _fullscreen;
-}
+bool Engine::fullscreen() { return _fullscreen; }
 
-namespace
-{
+namespace {
 #if defined(Q_OS_WIN)
-    void autostart_win(bool set)
-    {
-        if(set)
-        {
-            QSettings startup("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
-                              QSettings::NativeFormat);
-            startup.setValue(QGuiApplication::applicationName(), "\"" + QGuiApplication::applicationFilePath().replace('/','\\') + "\""+ " -startup");
-        }
-        else
-        {
-            QSettings startup("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
-                              QSettings::NativeFormat);
-            startup.remove(QGuiApplication::applicationName());
-        }
-    }
+void autostart_win(bool set) {
+  if (set) {
+    QSettings startup(
+        "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+        QSettings::NativeFormat);
+    startup.setValue(
+        QGuiApplication::applicationName(),
+        "\"" + QGuiApplication::applicationFilePath().replace('/', '\\') +
+            "\"" + " -startup");
+  } else {
+    QSettings startup(
+        "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+        QSettings::NativeFormat);
+    startup.remove(QGuiApplication::applicationName());
+  }
+}
 #elif defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
-    void autostart_linux(bool set)
-    {
-        QDir autostartDir = QDir::homePath() + QDir::separator() + ".config/autostart";
+void autostart_linux(bool set) {
+  QDir autostartDir =
+      QDir::homePath() + QDir::separator() + ".config/autostart";
 
-        if(!autostartDir.exists())
-        {
-            if(!autostartDir.mkpath(autostartDir.path())) return;
-        }
+  if (!autostartDir.exists()) {
+    if (!autostartDir.mkpath(autostartDir.path()))
+      return;
+  }
 
-        QString desktopPath;
-        QString localPath = QDir::homePath() + "/.local/share/applications/org.munadi.Munadi.desktop";
-        QString systemPath = "/usr/local/share/applications/org.munadi.Munadi.desktop";
+  QString desktopPath;
+  QString localPath =
+      QDir::homePath() + "/.local/share/applications/org.munadi.Munadi.desktop";
+  QString systemPath =
+      "/usr/local/share/applications/org.munadi.Munadi.desktop";
 
-        if (QFile::exists(localPath)) {
-            desktopPath = localPath;
-        } else {
-            desktopPath = systemPath;
-        }
-        QFile desktopFile(desktopPath);
+  if (QFile::exists(localPath)) {
+    desktopPath = localPath;
+  } else {
+    desktopPath = systemPath;
+  }
+  QFile desktopFile(desktopPath);
 
-        QFile autostartDesktopFile(autostartDir.filePath("org.munadi.Munadi.desktop"));
+  QFile autostartDesktopFile(
+      autostartDir.filePath("org.munadi.Munadi.desktop"));
 
-        if(set)
-        {
-            if (!desktopFile.open(QIODevice::ReadOnly | QIODevice::Text))
-            {
-                     qDebug() << "Failed to open .desktop file!";
-                     return;
-            }
-
-            if (!autostartDesktopFile.open(QIODevice::WriteOnly | QIODevice::Text))
-            {
-                     qDebug() << "Failed to create .desktop file!";
-                     return;
-            }
-
-            QString data = QTextStream(&desktopFile).readAll();
-            data.replace("bin/munadi", "bin/munadi --hidden");
-            QTextStream(&autostartDesktopFile) << data;
-        }
-        else
-        {
-            autostartDesktopFile.remove();
-        }
+  if (set) {
+    if (!desktopFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+      qDebug() << "Failed to open .desktop file!";
+      return;
     }
-    void autostart_flatpak(bool set)
-    {
+
+    if (!autostartDesktopFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+      qDebug() << "Failed to create .desktop file!";
+      return;
+    }
+
+    QString data = QTextStream(&desktopFile).readAll();
+    data.replace("bin/munadi", "bin/munadi --hidden");
+    QTextStream(&autostartDesktopFile) << data;
+  } else {
+    autostartDesktopFile.remove();
+  }
+}
+void autostart_flatpak(bool set) {
 #ifndef ANDROID
-        QDBusInterface portal("org.freedesktop.portal.Desktop",
-                              "/org/freedesktop/portal/desktop",
-                              "org.freedesktop.portal.Background");
+  QDBusInterface portal("org.freedesktop.portal.Desktop",
+                        "/org/freedesktop/portal/desktop",
+                        "org.freedesktop.portal.Background");
 
-        QList<QString> commandline = {"munadi", "--hidden"};
+  QList<QString> commandline = {"munadi", "--hidden"};
 
-        QHash<QString, QVariant> params;
-        params.insert("reason", "Background Athan.");
-        params.insert("autostart", set);
-        params.insert("commandline", QVariant(commandline));
-        portal.call("RequestBackground", "", params);
-#endif
-    }
-#elif defined(Q_OS_MAC)
-    void autostart_mac(bool set)
-    {
-        //TODO
-    }
+  QHash<QString, QVariant> params;
+  params.insert("reason", "Background Athan.");
+  params.insert("autostart", set);
+  params.insert("commandline", QVariant(commandline));
+  portal.call("RequestBackground", "", params);
 #endif
 }
+#elif defined(Q_OS_MAC)
+void autostart_mac(bool set) {
+  // TODO
+}
+#endif
+} // namespace
 
-void Engine::autostart(bool set)
-{
+void Engine::autostart(bool set) {
 #if defined(Q_OS_WIN)
 
-    autostart_win(set);
+  autostart_win(set);
 
 #elif defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
 
-    if(qEnvironmentVariableIsSet("FLATPAK_ID"))
-        autostart_flatpak(set);
-    else
-        autostart_linux(set);
+  if (qEnvironmentVariableIsSet("FLATPAK_ID"))
+    autostart_flatpak(set);
+  else
+    autostart_linux(set);
 
 #elif defined(Q_OS_MAC)
 
-    autostart_mac(set);
+  autostart_mac(set);
 
 #endif
 }
 
-QString Engine::getWhatsNew()
-{
-    QFile whats_new(":/qt/qml/Munadi/data/whatsnew.html");
-    std::ignore = whats_new.open(QFile::ReadOnly | QFile::Text);
-    QTextStream ts(&whats_new);
+QString Engine::getWhatsNew() {
+  QFile whats_new(":/qt/qml/Munadi/data/whatsnew.html");
+  std::ignore = whats_new.open(QFile::ReadOnly | QFile::Text);
+  QTextStream ts(&whats_new);
 
-    QString out = ts.readAll();
+  QString out = ts.readAll();
 
-    return out;
+  return out;
 }
 
-bool Engine::init()
-{
-    updater = new Updater();
+bool Engine::init() {
+  updater = new Updater();
 
-    return true;
+  return true;
 }

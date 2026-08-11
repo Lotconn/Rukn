@@ -8,6 +8,9 @@ import "qrc:/qt/qml/Munadi/data/Adhan.js" as Adhan
 ColumnLayout {
     anchors.fill: parent
 
+    LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft
+    LayoutMirroring.childrenInherit: true
+
     property bool isWide: width > height
     property int defaultAlignment: isWide ? Layout.Left : Layout.Center
 

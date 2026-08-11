@@ -8,7 +8,7 @@ Item {
     // primary and secondary accents from icon
     property string accentLight: "#FFB066"  // warm light orange
     property var materialAccentLight: Material.color(Material.Orange, Material.ShadeA200)
-    
+
     property string accentDark: "#B35900" // muted burnt orange
     property var materialAccentDark: Material.color(Material.Orange, Material.Shade900)
 

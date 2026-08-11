@@ -40,7 +40,7 @@ ColumnLayout {
             value: mm.prayerConfig[selectedPrayerIdx.currentIndex].volume
 
             onMoved: {
-                mm.prayerConfig[selectedPrayerIdx.currentIndex].volume = value
+                mm.prayerConfig[selectedPrayerIdx.currentIndex].volume = value;
             }
         }
         Text {
@@ -61,25 +61,23 @@ ColumnLayout {
             to: 60
 
             onPressedChanged: {
-                if(pressed) {
-                    settingsPopup.opacity = 0.3
+                if (pressed) {
+                    settingsPopup.opacity = 0.3;
                 } else {
-                    settingsPopup.opacity = 1
+                    settingsPopup.opacity = 1;
                 }
             }
 
             onMoved: {
-                mm.prayerConfig[selectedPrayerIdx.currentIndex].adjustment = value
-                mm.invalidate()
+                mm.prayerConfig[selectedPrayerIdx.currentIndex].adjustment = value;
+                mm.invalidate();
             }
-
         }
         Text {
             verticalAlignment: Text.AlignVCenter
 
             color: Material.secondaryTextColor
-            text: mins.value > 0 ? qsTr("+%L1").arg(Math.round(mins.value))
-                                  : qsTr("%L1").arg(Math.round(mins.value))
+            text: mins.value > 0 ? qsTr("+%L1").arg(Math.round(mins.value)) : qsTr("%L1").arg(Math.round(mins.value))
         }
 
         Text {
@@ -97,7 +95,7 @@ ColumnLayout {
             onPressedChanged: model = mm.audioList
 
             onActivated: {
-                mm.prayerConfig[selectedPrayerIdx.currentIndex].athan_idx = currentIndex
+                mm.prayerConfig[selectedPrayerIdx.currentIndex].athan_idx = currentIndex;
             }
         }
 

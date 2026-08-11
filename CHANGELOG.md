@@ -7,30 +7,40 @@ All notable changes to this project will be documented in this file.
 ## [26.08](#munadi-2608) - 2026-08-15
 
 ### Bug Fixes
+
 - Condition Intel CET for x86_64/amd64 only
 
 ### Improvements
-- Replace KDSingleApplication with SingleApplication by @itay-grudev that works across platforms
+
+- Replace KDSingleApplication with SingleApplication by @itay-grudev that works
+  across platforms
 - Update `org.kde.Platform` to `6.11`
 
 ### Build & Infrastructure
+
 #### App build (general)
+
 - Replace submodules with CMake `FetchContent`
 - Increase CMake maximum policy version to 4.4
 - Up C++ standard to C++26
-- Drop Qt policy versions to LTS 6.8. Policy bumps will only occur on LTS version from now on
+- Drop Qt policy versions to LTS 6.8. Policy bumps will only occur on LTS
+  version from now on
 
 #### Docs
+
 - Drop recommendation for "Assisted by: " footers
 - Add new contributor @khaledkhamis26 in the list
 
 #### Flatpak
+
 - Lowercase summary line in metainfo to comply with Flathub's standards
 
 #### Project misc
+
 - Remove stale `src/cpp/libitl/` from tree
 
-Full Changelog: [26.06...26.08](https://gitlab.com/munadi/munadi/-/compare/26.06...26.08)
+Full Changelog:
+[26.06...26.08](https://gitlab.com/munadi/munadi/-/compare/26.06...26.08)
 
 ---
 
@@ -40,39 +50,49 @@ Full Changelog: [26.06...26.08](https://gitlab.com/munadi/munadi/-/compare/26.06
 
 - Fix tooltip time-left string doesn't handle time jumps.
 - Fix a warning about calling uninitiated handler being deprecated
-- Fix custom audio list becoming stale if was configured for a prayer when a random custom audio is removed
+- Fix custom audio list becoming stale if was configured for a prayer when a
+  random custom audio is removed
 - "Contacts" link in the settings page is broken
 - Fix `uninstall` command on SFX archive doesn't uninstall anything
 
 ### Improvements
 
-- **New Icon**: Munadi now uses a new material-gradient inspired icon derived from Masjid Al-Aqsa.
+- **New Icon**: Munadi now uses a new material-gradient inspired icon derived
+  from Masjid Al-Aqsa.
 - Use the brand shades for accent color throughout
 - Update the symbolic icon to be a sillohuette of the new icon
 - Add `xdg/icons/hicolor/scalable` for SVGs
 - Add 80px and 480px icons under `xdg/icons`
-- Do not calculate `timeLeftStr` for next fajr past 1100 minutes; handles even the polarmost settlements
+- Do not calculate `timeLeftStr` for next fajr past 1100 minutes; handles even
+  the polarmost settlements
 - Improve keyboard navigations on location search popup
 - Let UI stretch freely within 1:1 proportions, snap to left as usual otherwise
 - Use a thinner font stroke on prayer table
 - Right align prayer times on the table
-- Minimum width bounds also follows UI proportions now, despite disrupting settings page view
-- Replace "+" and "-" beside the speaker icon with actual texts to make the buttons' functions obvious. These are more often than not misunderstood for volume control buttons
-- Add a "Video" category option in file dialog to let users add video files as audio files too which is supported natively
+- Minimum width bounds also follows UI proportions now, despite disrupting
+  settings page view
+- Replace "+" and "-" beside the speaker icon with actual texts to make the
+  buttons' functions obvious. These are more often than not misunderstood for
+  volume control buttons
+- Add a "Video" category option in file dialog to let users add video files as
+  audio files too which is supported natively
 - Minor code restructures
 - Lazy-load/save config and make settings changes atomic
-- New file manager backend for improved, robust & stateless store management all while a better experience inside sandboxes (e.g. flatpaks, snap)
+- New file manager backend for improved, robust & stateless store management all
+  while a better experience inside sandboxes (e.g. flatpaks, snap)
 - Upgrade to Qt 6.11.1
 - Add back Arabic support
 
 ### Build & Infrastructure
 
 #### App build (general)
+
 - Enable more aggressive optimizations and useful hardenings
 - Qt 6.9.0 baseline standardization
 - Build system improvements and streamlining
 
 #### Flatpak
+
 - Migrate manifests to YAML
 - Add another manifest for a variant using SFX archive
 - Update the static manifest to correspond with recent workflow changes
@@ -80,29 +100,38 @@ Full Changelog: [26.06...26.08](https://gitlab.com/munadi/munadi/-/compare/26.06
 - Drop $XDG_MUSIC_HOME permission since it's not needed anymore
 
 #### makeself archive
+
 - Register munadi symbolic icon on the execution scripts
 
 #### Builder Images
+
 - Enable aggresive optimizations and level-up hardening generally
-- Drop network support until Munadi itself starts supporting 
+- Drop network support until Munadi itself starts supporting
 - Label following OpenContainer Annotations Spec
 - Add clang and dependencies/tools
 
 #### Docs
-- Update README.md with changes and rephrases, better readability, fix, improve & amend workflows, formatting and references
+
+- Update README.md with changes and rephrases, better readability, fix, improve
+  & amend workflows, formatting and references
 - Update CHANGELOG.md
 - Refresh feature list and put up a better summary/marketing line for the app
 
 #### Web
+
 - Update verification ID for flathub
-- Add "Acknowledgements" & "Contributors" sections enlisting used libraries and contributors for the whole project
+- Add "Acknowledgements" & "Contributors" sections enlisting used libraries and
+  contributors for the whole project
 - Refresh feature list and put up a better summary/marketing line for the app
 
 #### Project misc
-- Symlink redundant icon files across repo to those under `xdg/icons`
-- Move all image building relevant files under `pkg/docker` categorized subfolders 
 
-Full Changelog: [26.04...26.06](https://gitlab.com/munadi/munadi/-/compare/26.04...26.06)
+- Symlink redundant icon files across repo to those under `xdg/icons`
+- Move all image building relevant files under `pkg/docker` categorized
+  subfolders
+
+Full Changelog:
+[26.04...26.06](https://gitlab.com/munadi/munadi/-/compare/26.04...26.06)
 
 ---
 
@@ -113,7 +142,8 @@ Full Changelog: [26.04...26.06](https://gitlab.com/munadi/munadi/-/compare/26.04
 - Resolve typos in `install` and `uninstall` scripts, simplify few code
 - Fix tooltip "Time Left" not updating when started hidden or after sleep
 - Show time left to next date's Fajr after Isha instead of waiting for 23:59
-- Prevent prayer labels running into adjacent time values; elide if parent too narrow
+- Prevent prayer labels running into adjacent time values; elide if parent too
+  narrow
 
 ### App Improvements
 
@@ -130,38 +160,55 @@ Full Changelog: [26.04...26.06](https://gitlab.com/munadi/munadi/-/compare/26.04
 ### Build & Infrastructure
 
 #### Static libs building
+
 - Downgrade FFmpeg to Qt 6.11 recommended version (n7.1.3)
-- Compact builds by trimming unused libraries, program & components other than the app's purpose, use whitelisting to allow only what's necessary
+- Compact builds by trimming unused libraries, program & components other than
+  the app's purpose, use whitelisting to allow only what's necessary
 - Enable link-time optimization at the cost of building time
 - Disable documentations and debugging on FFmpeg and Qt builds
 - Further ensure no X dependencies (still hard to avoid anyway)
 - Build other Qt modules with similar build options as qtbase
 - Replace pulseaudio libs with pipewire
-- Add few optimization and performance cost-free hardening to Qt and FFmpeg build
+- Add few optimization and performance cost-free hardening to Qt and FFmpeg
+  build
 
 #### Builder image
-- Rename Dockerfile more generically as Containerfile; keep it symlinked to Containerfile
+
+- Rename Dockerfile more generically as Containerfile; keep it symlinked to
+  Containerfile
 - Switch to Rocky Linux 10.1 as builder base image
-- Build a trimmed, from-scratch image bundled with only necessary files & programs. This however, doesn't shrink the built image's size but helps to provide a custom image in a truer sense.
-- Add various linting & validation utils in the image for comprehensive development tasks. Only SFX installer related tools now, more will be added soon. Other tools can be installed after container creation with `dnf` if necessary.
+- Build a trimmed, from-scratch image bundled with only necessary files &
+  programs. This however, doesn't shrink the built image's size but helps to
+  provide a custom image in a truer sense.
+- Add various linting & validation utils in the image for comprehensive
+  development tasks. Only SFX installer related tools now, more will be added
+  soon. Other tools can be installed after container creation with `dnf` if
+  necessary.
 - Add various labels to describe this custom image
-- Simplify web server image; use the official gunicorn image instead of building from python-core image. Significantly reduces image size.
+- Simplify web server image; use the official gunicorn image instead of building
+  from python-core image. Significantly reduces image size.
 - Add few optimization and performance cost-free hardening during app building
 
 #### Gitlab CI/CD
+
 - Add CI/CD pipeline configuration
 - Publish "Munadi static app builder" image to the project's registry
-- Don't include built archives anymore, those should be available on "Releases" from now on
+- Don't include built archives anymore, those should be available on "Releases"
+  from now on
 
 #### makeself archive
+
 - Use `/tmp` for archive creation instead of CWD
 - Level-up compression
 - Log more consistently according to log-level
 - Various logging improvements
-- Show `uninstall` script output if invoked in `install` script with same verbosity level
+- Show `uninstall` script output if invoked in `install` script with same
+  verbosity level
 
 #### Project misc
-- Polish README.md for user and developer facing briefing & organize CHANGELOG.md
+
+- Polish README.md for user and developer facing briefing & organize
+  CHANGELOG.md
 - Add AI contribution policy for the project
 - Append -static to the flatpak static manifest again
 - Update screenshots
@@ -169,7 +216,8 @@ Full Changelog: [26.04...26.06](https://gitlab.com/munadi/munadi/-/compare/26.04
 - Convert `libs/KDSingleApplication` to a git submodule
 - Remove unneeded `libs/SFML-2.4.0`
 
-Full Changelog: [26.02...26.04](https://gitlab.com/munadi/munadi/-/compare/26.02...26.04)
+Full Changelog:
+[26.02...26.04](https://gitlab.com/munadi/munadi/-/compare/26.02...26.04)
 
 ---
 
@@ -192,11 +240,14 @@ Full Changelog: [26.02...26.04](https://gitlab.com/munadi/munadi/-/compare/26.02
 
 ### Self-Extracting Installer
 
-Munadi can now be installed using a self-extracting installer. No need to download and manage loads of dependencies—just make it executable (`chmod +x`) and run the interactive installer.
+Munadi can now be installed using a self-extracting installer. No need to
+download and manage loads of dependencies—just make it executable (`chmod +x`)
+and run the interactive installer.
 
 > Latest installer: [pkg/makeself](https://munadi.org/get/26.02)
 
-Full Changelog: [25.11...26.02](https://gitlab.com/munadi/munadi/-/compare/25.11...26.02)
+Full Changelog:
+[25.11...26.02](https://gitlab.com/munadi/munadi/-/compare/25.11...26.02)
 
 ---
 
@@ -218,9 +269,11 @@ Long-awaited features and enhancements:
 - Fixed bugs
 - Slimmed codebase
 
-Special thanks to [Hasan Esa](https://gitlab.com/HasanEsa) for the contributions and motivation, more will follow as a result insha-allah.
+Special thanks to [Hasan Esa](https://gitlab.com/HasanEsa) for the contributions
+and motivation, more will follow as a result insha-allah.
 
-Full Changelog: [22.04...25.11](https://gitlab.com/munadi/munadi/-/compare/22.04...25.11)
+Full Changelog:
+[22.04...25.11](https://gitlab.com/munadi/munadi/-/compare/22.04...25.11)
 
 ---
 
@@ -233,7 +286,8 @@ Full Changelog: [22.04...25.11](https://gitlab.com/munadi/munadi/-/compare/22.04
 - Improved tray UI and usability
 - Flatpak integration (autostart, background, hidden autostart)
 
-Full Changelog: [21.12...22.04](https://gitlab.com/munadi/munadi/-/compare/21.12...22.04)
+Full Changelog:
+[21.12...22.04](https://gitlab.com/munadi/munadi/-/compare/21.12...22.04)
 
 ---
 
@@ -243,7 +297,8 @@ Full Changelog: [21.12...22.04](https://gitlab.com/munadi/munadi/-/compare/21.12
 - Reworked alarm code with sleep and time change detection
 - Flag as ready for mobile Linux (Phoc, Plasma Mobile)
 
-Full Changelog: [21.04.1...21.12](https://gitlab.com/munadi/munadi/-/compare/21.04.1...21.12)
+Full Changelog:
+[21.04.1...21.12](https://gitlab.com/munadi/munadi/-/compare/21.04.1...21.12)
 
 ---
 
@@ -251,7 +306,8 @@ Full Changelog: [21.04.1...21.12](https://gitlab.com/munadi/munadi/-/compare/21.
 
 - Fixed broken progress bar/time left display
 
-Full Changelog: [21.04...21.04.1](https://gitlab.com/munadi/munadi/-/compare/21.04...21.04.1)
+Full Changelog:
+[21.04...21.04.1](https://gitlab.com/munadi/munadi/-/compare/21.04...21.04.1)
 
 ---
 
@@ -264,7 +320,8 @@ Full Changelog: [21.04...21.04.1](https://gitlab.com/munadi/munadi/-/compare/21.
 - Fixed no sound issue on Ubuntu
 - Restored date navigation (scroll or click date for previous/next day)
 
-Full Changelog: [21.02...21.04](https://gitlab.com/munadi/munadi/-/compare/21.02...21.04)
+Full Changelog:
+[21.02...21.04](https://gitlab.com/munadi/munadi/-/compare/21.02...21.04)
 
 ---
 
@@ -274,7 +331,8 @@ Full Changelog: [21.02...21.04](https://gitlab.com/munadi/munadi/-/compare/21.02
 - Full localization of date, time, and UI
 - Hijri disabled temporarily (localization not available)
 
-Full Changelog: [20.10...21.02](https://gitlab.com/munadi/munadi/-/compare/20.10...21.02)
+Full Changelog:
+[20.10...21.02](https://gitlab.com/munadi/munadi/-/compare/20.10...21.02)
 
 ---
 
@@ -288,7 +346,8 @@ Full Changelog: [20.10...21.02](https://gitlab.com/munadi/munadi/-/compare/20.10
 
 > **Note:** Not all desktop environments support tray icons consistently.
 
-Full Changelog: [20.09.1...20.10](https://gitlab.com/munadi/munadi/-/compare/20.09.1...20.10)
+Full Changelog:
+[20.09.1...20.10](https://gitlab.com/munadi/munadi/-/compare/20.09.1...20.10)
 
 ---
 
@@ -300,7 +359,8 @@ Full Changelog: [20.09.1...20.10](https://gitlab.com/munadi/munadi/-/compare/20.
 - Re-enabled window switching via dragging
 - Switched to core20 and CMake for forward-compatible Snap support
 
-Full Changelog: [20.09...20.09.1](https://gitlab.com/munadi/munadi/-/compare/20.09...20.09.1)
+Full Changelog:
+[20.09...20.09.1](https://gitlab.com/munadi/munadi/-/compare/20.09...20.09.1)
 
 ---
 
@@ -312,7 +372,8 @@ Full Changelog: [20.09...20.09.1](https://gitlab.com/munadi/munadi/-/compare/20.
 - Added Arabic translation (thanks to Damascene)
 - Minor enhancements
 
-Full Changelog: [20.07...20.09](https://gitlab.com/munadi/munadi/-/compare/20.07...20.09)
+Full Changelog:
+[20.07...20.09](https://gitlab.com/munadi/munadi/-/compare/20.07...20.09)
 
 ---
 
@@ -321,9 +382,11 @@ Full Changelog: [20.07...20.09](https://gitlab.com/munadi/munadi/-/compare/20.07
 - Added more calculation methods
 - Ability to add custom Athans
 
-> **Note:** Flatpak is now the preferred packaging method. This may be the last Snap release.
+> **Note:** Flatpak is now the preferred packaging method. This may be the last
+> Snap release.
 
-Full Changelog: [19.12...20.07](https://gitlab.com/munadi/munadi/-/compare/19.12...20.07)
+Full Changelog:
+[19.12...20.07](https://gitlab.com/munadi/munadi/-/compare/19.12...20.07)
 
 ---
 
@@ -335,7 +398,8 @@ Full Changelog: [19.12...20.07](https://gitlab.com/munadi/munadi/-/compare/19.12
 - Added Snap support
 - Minor UI changes
 
-Full Changelog: [18.12...19.12](https://gitlab.com/munadi/munadi/-/compare/17.02...19.12)
+Full Changelog:
+[18.12...19.12](https://gitlab.com/munadi/munadi/-/compare/17.02...19.12)
 
 ---
 
@@ -399,4 +463,5 @@ Follow us on social media for updates, news, and tutorials:
 
 ---
 
-*For full commit history, see [GitLab](https://gitlab.com/munadi/munadi/-/commits/master).*
+_For full commit history, see
+[GitLab](https://gitlab.com/munadi/munadi/-/commits/master)._

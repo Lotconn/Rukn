@@ -1,7 +1,7 @@
 #include <QtPlugin>
 #include <QtQml/QQmlExtensionPlugin>
 
-Q_IMPORT_QML_PLUGIN(HasanEsa_FileManPlugin)
+Q_IMPORT_QML_PLUGIN(Lotconn_FileManPlugin)
 
 Q_IMPORT_PLUGIN(QtQuick2Plugin)
 Q_IMPORT_PLUGIN(QtQuickControls2Plugin)

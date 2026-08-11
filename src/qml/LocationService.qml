@@ -9,9 +9,9 @@ Item {
     property bool loading: geocodeModel.status == GeocodeModel.Loading ? true : false
 
     function search(query) {
-        geocodeModel.reset()
-        geocodeModel.query = query
-        geocodeModel.update()
+        geocodeModel.reset();
+        geocodeModel.query = query;
+        geocodeModel.update();
     }
 
     Plugin {
@@ -29,7 +29,7 @@ Item {
         autoUpdate: false
 
         onLocationsChanged: {
-            ls.searchResults(this)
+            ls.searchResults(this);
         }
     }
 

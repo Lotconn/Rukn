@@ -1,0 +1,46 @@
+{
+  "workbench.editorAssociations": {
+    "{git}:/**/*.qrc": "default",
+    "{git}:/**/*.ui": "default",
+    "*.qrc": "qt-core.qrcEditor"
+  },
+  "qt-core.additionalQtPaths": [
+    {
+      "name": "Qt-6.11.1-linux-g++-x86_64_from_PATH",
+      "path": "/usr/bin/qmake"
+    }
+  ],
+  "clangd.arguments": [
+    "--background-index",
+    "-clang-tidy",
+    "--header-insertion=iwyu",
+    "--completion-style=detailed"
+  ],
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+  },
+  "C_Cpp.intelliSenseEngine": "disabled",
+  "[cpp]": {
+    "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
+  },
+  "[cmake]": {
+    "editor.defaultFormatter": "KylinIdeTeam.cmake-intellisence"
+  },
+  "editor.rulers": [
+    80
+  ],
+  "editor.tabSize": 2,
+  "editor.formatOnSave": true,
+  "cmake.sourceDirectory": "${workspaceFolder}",
+  "cmake.buildDirectory": "${workspaceFolder}",
+  "cmake.generator": "Ninja",
+  "[qml]": {
+    "editor.defaultFormatter": "theqtcompany.qt-qml"
+  },
+  "cmake.automaticReconfigure": false,
+  "cmake.configureOnOpen": false,
+  "qt-qml.qmlls.additionalImportPaths": [
+    "${workspaceFolder}/build/qml",
+    "/usr/lib64/qt6/qml"
+  ],
+}
