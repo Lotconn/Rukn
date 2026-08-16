@@ -1,9 +1,9 @@
 [Desktop Entry]
 Categories=Utility;
 Comment[ar]=برنامج اذان بسيط
-Comment[bn_BD]=সাধারন আযান অ্যাপ
-Comment[en_US]=Simple Athan App
-Comment=Simple Athan App
+Comment[bn_BD]=আপনার সহজ ও সুন্দর আযান অ্যাপ
+Comment[en_US]=Your simple and beautiful athan app
+Comment=Your simple and beautiful athan app
 Exec=munadi
 Icon=org.munadi.Munadi
 Name[ar]=منادي

@@ -1,43 +1,46 @@
 import QtQuick
-import QtQuick.Controls
+// import QtQuick.Controls
 import QtQuick.Controls.Material
-import QtQuick.Layouts
+
+// import QtQuick.Layouts
 
 Item {
-
     property string cityName
     property string countryName
 
     Text {
         anchors.centerIn: parent
-        font.pixelSize: parent.height / 2
-        font.italic: true
         color: Material.secondaryTextColor
         elide: Text.ElideRight
+        font.italic: true
+        font.pixelSize: parent.height / 2
+        font.underline: textId.font.underline
         text: qsTr("Set your location ...")
         visible: mm.locationNotSet
-        font.underline: textId.font.underline
     }
+
     Text {
         id: textId
+
         anchors.centerIn: parent
-        font.pixelSize: parent.height / 2
         color: Material.primaryTextColor
         elide: Text.ElideRight
-
-        visible: !mm.locationNotSet
-
+        font.pixelSize: parent.height / 2
         text: `${cityName}, <i>${countryName}</i>`
+        visible: !mm.locationNotSet
     }
 
     MouseArea {
         id: mouseArea
+
         anchors.fill: parent
+        cursorShape: Qt.PointingHandCursor
         hoverEnabled: true
 
-        cursorShape: Qt.PointingHandCursor
-
-        onClicked: { locationPopup.open(); settingsPopup.close(); }
+        onClicked: {
+            locationPopup.open();
+            settingsPopup.close();
+        }
         onHoveredChanged: textId.font.underline = containsMouse
     }
 }

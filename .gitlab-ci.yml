@@ -1,4 +1,5 @@
 stages:
+  - build-web-server
   - build
   - release
 
@@ -11,6 +12,39 @@ default:
 workflow:
   rules:
     - if: $CI_COMMIT_TAG =~ /^\d{2}\.\d{2}(\.\d+)?$/
+
+variables:
+
+build-web-server:
+  tags:
+    - saas-linux-small-amd64
+  stage: build-web-server
+  image: docker:27
+  services:
+    - docker:27-dind
+  interruptible: true
+  variables:
+    BUILDER_CACHE: "$CI_REGISTRY_IMAGE/builder:buildcache"
+    BUILDER_IMAGE: "$CI_REGISTRY_IMAGE/web-server:$CI_COMMIT_TAG-$CI_COMMIT_SHORT_SHA"
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_DRIVER: overlay2
+    GIT_DEPTH: 0
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - docker system prune -a
+    - docker buildx prune -a
+  script:
+    - df -h
+    - df -i
+    - env | grep CI_REGISTRY
+    - |
+      docker build \
+        --tag "$BUILDER_IMAGE" \
+        --file pkg/docker/web-server/Dockerfile \
+        pkg/docker/web-server
+    - docker push "$BUILDER_IMAGE"
+    - docker push "$BUILDER_IMAGE" "$CI_REGISTRY_IMAGE/web-server:latest"
 
 build-static:
   stage: build
@@ -44,16 +78,26 @@ create-release:
   needs:
     - build-static
   script:
-    - echo "Creating GitLab release for Munadi $CI_COMMIT_TAG"
+    - echo "Generating SHA256 checksum for the package..."
+    - sha256sum pkg/makeself/Munadi-$CI_COMMIT_TAG.run > pkg/makeself/Munadi-$CI_COMMIT_TAG.run.sha256
+    - |
+      {
+        echo "See [CHANGELOG]($CI_PROJECT_URL/-/blob/$CI_COMMIT_TAG/CHANGELOG.md) for what's new."
+        echo ""
+        echo "### Checksum"
+        echo "\`\`\`"
+        cat pkg/makeself/Munadi-$CI_COMMIT_TAG.run.sha256
+        echo "\`\`\`"
+      } > release-description.md
   release:
     tag_name: $CI_COMMIT_TAG
     name: "Munadi $CI_COMMIT_TAG"
-    description: |
-      See [CHANGELOG]($CI_PROJECT_URL/-/blob/$CI_COMMIT_TAG/CHANGELOG.md) for what's new.
-
-      [Full changelog]($CI_PROJECT_URL/compare/${CI_COMMIT_TAG}^..$CI_COMMIT_TAG)
+    description: release-description.md
     assets:
       links:
         - name: "Munadi-$CI_COMMIT_TAG.run"
           url: "$CI_PROJECT_URL/-/jobs/artifacts/$CI_COMMIT_TAG/raw/pkg/makeself/Munadi-$CI_COMMIT_TAG.run?job=build-static"
           link_type: package
+        - name: "Munadi-$CI_COMMIT_TAG.run.sha256"
+          url: "$CI_PROJECT_URL/-/jobs/artifacts/$CI_COMMIT_TAG/raw/pkg/makeself/Munadi-$CI_COMMIT_TAG.run.sha256?job=create-release"
+          link_type: other

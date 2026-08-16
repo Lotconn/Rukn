@@ -1,9 +1,3 @@
 [submodule "pkg/makeself/makeself"]
 	path = pkg/makeself/makeself
 	url = https://github.com/megastep/makeself
-[submodule "libs/KDSingleApplication"]
-	path = libs/KDSingleApplication
-	url = https://github.com/KDAB/KDSingleApplication
-[submodule "libs/HasanEsa/FileMan"]
-	path = libs/HasanEsa/FileMan
-	url = https://gitlab.com/hasanesa/fileman

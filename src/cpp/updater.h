@@ -6,16 +6,15 @@
 class Updater : public QObject
 {
     Q_OBJECT
-public:
+  public:
     explicit Updater(QObject *parent = 0);
     Q_INVOKABLE void check();
 
-signals:
+  signals:
     void updateAvailable(const QString &info);
 
-public slots:
+  public slots:
     void replyFinished(class QNetworkReply *reply);
-
 };
 
 #endif // UPDATER_H

@@ -5,29 +5,32 @@ import QtQuick.Controls.Material
 Button {
     id: control
 
-    hoverEnabled: true
     property alias horizontalAlignment: textId.horizontalAlignment
 
-    contentItem: Text {
-        id: textId
-        text: control.text
-        font: control.font
-        opacity: enabled ? 1.0 : 0.3
-        color: Material.secondaryTextColor
-        verticalAlignment: Text.AlignVCenter
-        elide: Text.ElideRight
-    }
+    hoverEnabled: true
 
     background: Item {
         implicitWidth: 100
         opacity: enabled ? 1 : 0.3
     }
+    contentItem: Text {
+        id: textId
+
+        color: Material.secondaryTextColor
+        elide: Text.ElideRight
+        font: control.font
+        opacity: enabled ? 1.0 : 0.3
+        text: control.text
+        verticalAlignment: Text.AlignVCenter
+    }
 
     MouseArea {
         id: mouseArea
+
         anchors.fill: parent
-        hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
+        hoverEnabled: true
+
         onHoveredChanged: textId.font.underline = containsMouse
         onPressed: mouse.accepted = false
     }

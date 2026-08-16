@@ -1,19 +1,18 @@
 import QtQuick
-import QtQuick.Controls
+// import QtQuick.Controls
 import QtQuick.Controls.Material
-import QtMultimedia
+// import QtMultimedia
 import QtQuick.Layouts
 
 Item {
-    Layout.preferredWidth: parent.width
-    Layout.fillHeight: true
-
-    property alias prayerLabel: prayerLabel.text
     property string athanTime
     //property alias iqamaTime: iqamaLabel.text
     property double pixelDiv: 3
-
     property var prayerId
+    property alias prayerLabel: prayerLabel.text
+
+    Layout.fillHeight: true
+    Layout.preferredWidth: parent.width
 
     RowLayout {
         anchors.fill: parent
@@ -22,51 +21,54 @@ Item {
         spacing: theme.margin
 
         Item {
-            Layout.preferredWidth: parent.width / 2
             Layout.preferredHeight: parent.height
+            Layout.preferredWidth: parent.width / 2
 
             Text {
                 id: prayerLabel
-                width: parent.width
-                text: mm.prayerNames[prayerId]
+
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
-                font.bold: prayerId === mm.currentPrayer
-                font.pixelSize: Math.min(parent.height, parent.width) / pixelDiv
-                elide: Text.ElideRight
                 //color: Material.primaryTextColor
                 color: Material.secondaryTextColor
+                elide: Text.ElideRight
+                font.bold: prayerId === mm.currentPrayer
+                font.pixelSize: Math.min(parent.height, parent.width) / pixelDiv
+                font.weight: Font.Thin
+                text: mm.prayerNames[prayerId]
                 visible: !mm.locationNotSet
-                font.weight: Font.ExtraLight
+                width: parent.width
             }
         }
 
         Item {
-            Layout.preferredWidth: parent.width / 2
             Layout.preferredHeight: parent.height
+            Layout.preferredWidth: parent.width / 2
 
             Row {
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
-                visible: !mm.locationNotSet
                 spacing: 1
+                visible: !mm.locationNotSet
 
                 Text {
                     id: athanLabel
-                    font.pixelSize: Math.min(parent.parent.height,
-                                             parent.parent.width) / pixelDiv
-                    font.weight: prayerLabel.font.weight
+
                     color: prayerLabel.color
+                    font.pixelSize: Math.min(parent.parent.height, parent.parent.width) / pixelDiv
+                    font.weight: prayerLabel.font.weight
                     text: athanTime.substring(0, 5)
                 }
+
                 Text {
                     id: ttt
+
                     anchors.baseline: athanLabel.baseline
-                    text: athanTime.substring(5)
-                    font.bold: athanLabel.font.bold
                     color: athanLabel.color
+                    font.bold: athanLabel.font.bold
                     font.pixelSize: athanLabel.font.pixelSize / 2
                     font.weight: athanLabel.font.weight
+                    text: athanTime.substring(5)
                 }
             }
         }

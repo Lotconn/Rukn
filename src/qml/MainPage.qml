@@ -6,97 +6,101 @@ import QtQuick.Controls.Material
 import "qrc:/qt/qml/Munadi/data/Adhan.js" as Adhan
 
 ColumnLayout {
-    anchors.fill: parent
-
-    property bool isWide: width > height
     property int defaultAlignment: isWide ? Layout.Left : Layout.Center
+    property bool isWide: width > height
+
+    LayoutMirroring.childrenInherit: true
+    LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft
+    anchors.fill: parent
 
     DateRow {
         id: topBar
 
+        Layout.alignment: parent.defaultAlignment
+        Layout.fillHeight: true
         Layout.preferredHeight: 40
         Layout.preferredWidth: isWide ? parent.height * theme.uiPortraitRatio : parent.width
-        Layout.fillHeight: true
-        Layout.alignment: parent.defaultAlignment
-
         background.opacity: mm.rectangle_opacity
     }
 
     Pane {
         id: table
 
+        property int lineHeight: height / 100
+
+        Layout.alignment: parent.defaultAlignment
+        Layout.bottomMargin: Layout.topMargin
+        Layout.fillHeight: true
         Layout.preferredHeight: 400
         Layout.preferredWidth: isWide ? parent.height * theme.uiPortraitRatio : parent.width
-        Layout.fillHeight: true
-        Layout.alignment: parent.defaultAlignment
-
         Layout.topMargin: 20
-        Layout.bottomMargin: Layout.topMargin
-
         Material.elevation: mm.pane_elevation
-
         background.opacity: mm.rectangle_opacity
-
-        property int lineHeight: height / 100
 
         ColumnLayout {
             anchors.fill: parent
 
             PrayerRow {
                 id: fajr
-                prayerId: Adhan.adhan.Prayer.Fajr
-                athanTime: mm.fajr
-                Layout.preferredHeight: 60
+
                 Layout.fillWidth: true
+                Layout.preferredHeight: 60
+                athanTime: mm.fajr
+                prayerId: Adhan.adhan.Prayer.Fajr
             }
 
             PrayerRow {
                 id: sunrise
-                Layout.topMargin: -20
-                prayerId: Adhan.adhan.Prayer.Sunrise
-                athanTime: mm.srise
-                Layout.preferredHeight: 30
+
                 Layout.fillWidth: true
+                Layout.preferredHeight: 30
+                Layout.topMargin: -20
+                athanTime: mm.srise
+                prayerId: Adhan.adhan.Prayer.Sunrise
             }
 
             Line {}
 
             PrayerRow {
                 id: duhr
-                prayerId: Adhan.adhan.Prayer.Dhuhr
-                athanTime: mm.duhr
-                Layout.preferredHeight: 60
+
                 Layout.fillWidth: true
+                Layout.preferredHeight: 60
+                athanTime: mm.duhr
+                prayerId: Adhan.adhan.Prayer.Dhuhr
             }
 
             Line {}
 
             PrayerRow {
                 id: asr
-                prayerId: Adhan.adhan.Prayer.Asr
-                athanTime: mm.asr
-                Layout.preferredHeight: 60
+
                 Layout.fillWidth: true
+                Layout.preferredHeight: 60
+                athanTime: mm.asr
+                prayerId: Adhan.adhan.Prayer.Asr
             }
 
             Line {}
 
             PrayerRow {
                 id: mgrb
-                prayerId: Adhan.adhan.Prayer.Maghrib
-                athanTime: mm.mgrb
-                Layout.preferredHeight: 60
+
                 Layout.fillWidth: true
+                Layout.preferredHeight: 60
+                athanTime: mm.mgrb
+                prayerId: Adhan.adhan.Prayer.Maghrib
             }
 
             Line {}
 
             PrayerRow {
                 id: isha
-                prayerId: Adhan.adhan.Prayer.Isha
-                athanTime: mm.isha
-                Layout.preferredHeight: 60
+
                 Layout.fillWidth: true
+                Layout.preferredHeight: 60
+                athanTime: mm.isha
+                prayerId: Adhan.adhan.Prayer.Isha
             }
         }
     }
@@ -104,14 +108,12 @@ ColumnLayout {
     TimeLeftRow {
         id: timeLeft
 
+        Layout.alignment: defaultAlignment
+        Layout.fillHeight: true
         Layout.preferredHeight: 40
         Layout.preferredWidth: isWide ? parent.height * theme.uiPortraitRatio : parent.width
-        Layout.fillHeight: true
-        Layout.alignment: defaultAlignment
-
-        visible: !mm.locationNotSet
-        text: mm.timeLeftStr
-
         background.opacity: mm.rectangle_opacity
+        text: mm.timeLeftStr
+        visible: !mm.locationNotSet
     }
 }
