@@ -5,41 +5,38 @@ import QtQuick.Controls
 Page {
     Text {
         id: qiblaLabel
-        anchors.top: parent.top
 
-        anchors.margins: 20
         anchors.horizontalCenter: parent.horizontalCenter
-        text: qsTr("Qibla Direction")
+        anchors.margins: 20
+        anchors.top: parent.top
+        color: theme.fontColour
         font.pixelSize: Font.pixelSize * parent.scale
         font.pointSize: compass.height / 20
-        color: theme.fontColour
-
+        text: qsTr("Qibla Direction")
     }
 
     Rectangle {
         id: compass
+
+        anchors.horizontalCenter: parent.horizontalCenter
         anchors.margins: 20
         anchors.top: qiblaLabel.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
-        radius: width + 45.0
-
-        width: Math.min(parent.width, parent.height) / 1.5
-        height: width
-
         border.color: theme.fontColour
         border.width: 4
+        height: width
+        radius: width + 45.0
+        width: Math.min(parent.width, parent.height) / 1.5
 
-        Component.onCompleted: console.log(
-                                   parent.width + ", " + parent.height)
+        Component.onCompleted: console.log(parent.width + ", " + parent.height)
 
         Image {
             id: arrow
+
             anchors.centerIn: parent
+            fillMode: Image.PreserveAspectFit
             //width: 20
             height: parent.height / 2
-            fillMode: Image.PreserveAspectFit
             rotation: engine.ff() === "m" ? 0 : engine.getQibla()
-
             source: "qrc:/qt/qml/Munadi/img/arrow.png"
 
             Behavior on rotation {
@@ -53,9 +50,9 @@ Page {
                 target: engine
 
                 onMinuteElapsed: {
-                    var n = engine.getQibla()
-                    n = n > -90 && n < 90 ? -n : n
-                    arrow.rotation = n
+                    var n = engine.getQibla();
+                    n = n > -90 && n < 90 ? -n : n;
+                    arrow.rotation = n;
                 }
             }
         }
@@ -79,15 +76,14 @@ Page {
     //    }
     Text {
         id: qiblaInfo
-        anchors.top: compass.bottom
+
+        anchors.horizontalCenter: parent.horizontalCenter
         //anchors.bottom: hijriDate.top
         anchors.margins: 20
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: compass.bottom
+        color: theme.fontColour
         font.pixelSize: qiblaLabel.font.pixelSize
         //text: sensor.hasZ && engine.ff() === "m" ? qsTr("Please wait ...") : qsTr("%1° with respect to North").arg(engine.getQibla().toFixed(0));
-        text: qsTr("%1° with respect to North").arg(engine.getQibla(
-                                                        ).toFixed(0))
-        color: theme.fontColour
-
+        text: qsTr("%1° with respect to North").arg(engine.getQibla().toFixed(0))
     }
 }

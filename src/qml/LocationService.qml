@@ -5,18 +5,21 @@ import QtLocation
 Item {
     id: ls
 
-    signal searchResults(var locations)
     property bool loading: geocodeModel.status == GeocodeModel.Loading ? true : false
 
+    signal searchResults(var locations)
+
     function search(query) {
-        geocodeModel.reset()
-        geocodeModel.query = query
-        geocodeModel.update()
+        geocodeModel.reset();
+        geocodeModel.query = query;
+        geocodeModel.update();
     }
 
     Plugin {
         id: aPlugin
+
         name: "osm"
+
         parameters: PluginParameter {
             name: "osm.geocoding.host"
             value: "https://nominatim.openstreetmap.org"
@@ -25,11 +28,12 @@ Item {
 
     GeocodeModel {
         id: geocodeModel
-        plugin: aPlugin
+
         autoUpdate: false
+        plugin: aPlugin
 
         onLocationsChanged: {
-            ls.searchResults(this)
+            ls.searchResults(this);
         }
     }
 

@@ -3,9 +3,9 @@ import QtQuick.Layouts
 import QtQuick.Controls.Material
 
 Text {
-    font.bold: true
-    color: Material.secondaryTextColor
     //
     Layout.fillWidth: true
+    color: Material.secondaryTextColor
+    font.bold: true
     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
 }

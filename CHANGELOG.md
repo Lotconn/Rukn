@@ -4,13 +4,78 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [26.08](#munadi-2608) - 2026-08-15
+
+### Bug Fixes
+
+- Condition Intel CET for x86_64/amd64 only to prevent aarch64/arm64 build failures
+- Fix screenshots having activity pin button, deviating from "default setup"
+- Fix some numerals not being translated in the foreign locale
+- Fix missing whitespaces and incomplete literals in Arabic translations
+
+### Improvements
+
+- Replace KDSingleApplication with SingleApplication by @itay-grudev that works across platforms
+- Update `org.kde.Platform` to `6.11`
+- Full Arabic and Bangla localization, including dynamic texts like calendar dates
+- Enable RTL (Right-to-Left) layout support for Arabic with minor UI adjustments
+- Use variable fonts instead of static ones for Arabic and Bangla to improve rendering and reduce
+  size
+- Update FileMan to the latest release and adapt QML components to its new API
+- Simplify homepage name to just "Munadi", moving the summary to the heading
+- Refactor QML components to use `let`/`const` instead of `var` for stricter scoping
+- Optimize `Qt.application.layoutDirection` handling by moving it to respective UI layers
+
+### Build & Infrastructure
+
+#### App build (general)
+
+- Replace submodules (`KDSingleApplication`, `FileMan`) with CMake `FetchContent`
+- Increase CMake maximum policy version to 4.4
+- Set C++ standard to C++23 for MSVC compatibility
+- Drop Qt policy versions to LTS 6.8. Policy bumps will only occur on LTS versions from now on
+- Enable conditional IPO/LTO, global PIC, and MSVC control flow guard flags
+- Fix GCC debug optimization warnings and enable additional useful warnings for GCC/Clang
+
+#### CI/CD & Packaging
+
+- Build and push web-server container image to the container registry in the CI pipeline
+- Gate only git-tracked files into the makeself SFX archive
+- Generate SHA256 digest of the built package and make the file available with the package in the
+  release page
+- Use a temporary markdown-formatted file for the release description to allow further formatting
+
+#### Docs
+
+- Drop recommendation for "Assisted by: " footers
+- Add new contributor @khaledkhamis26 in the list
+- Update README.md to highlight full Arabic & Bangla support and fix reference links
+- Reflect FileMan namespace changes in documentation
+
+#### Flatpak
+
+- Lowercase summary line in metainfo to comply with Flathub's standards
+- Make `FetchContent` usable inside network-offline flatpak build environment
+
+#### Project misc
+
+- Remove stale `src/cpp/libitl/` and `src/cpp/dummysapp.h` from tree
+- Add and update IDE/linter configurations (`.clangd`, `.prettierrc`, `.qmlls.ini`,
+  `.vscode/settings.json`)
+- Clean up `.gitignore` and apply project-wide auto-formatting
+
+Full Changelog: [26.06...26.08](https://gitlab.com/munadi/munadi/-/compare/26.06...26.08)
+
+---
+
 ## [26.06](#munadi-2606) - 2026-06-05
 
 ### Bug Fixes
 
 - Fix tooltip time-left string doesn't handle time jumps.
 - Fix a warning about calling uninitiated handler being deprecated
-- Fix custom audio list becoming stale if was configured for a prayer when a random custom audio is removed
+- Fix custom audio list becoming stale if was configured for a prayer when a random custom audio is
+  removed
 - "Contacts" link in the settings page is broken
 - Fix `uninstall` command on SFX archive doesn't uninstall anything
 
@@ -21,29 +86,34 @@ All notable changes to this project will be documented in this file.
 - Update the symbolic icon to be a sillohuette of the new icon
 - Add `xdg/icons/hicolor/scalable` for SVGs
 - Add 80px and 480px icons under `xdg/icons`
-- Do not calculate `timeLeftStr` for next fajr past 1100 minutes; handles even the polarmost settlements
+- Do not calculate `timeLeftStr` for next fajr past 1100 minutes; handles even the polarmost
+  settlements
 - Improve keyboard navigations on location search popup
 - Let UI stretch freely within 1:1 proportions, snap to left as usual otherwise
 - Use a thinner font stroke on prayer table
 - Right align prayer times on the table
 - Minimum width bounds also follows UI proportions now, despite disrupting settings page view
-- Replace "+" and "-" beside the speaker icon with actual texts to make the buttons' functions obvious. These are more often than not misunderstood for volume control buttons
-- Add a "Video" category option in file dialog to let users add video files as audio files too which is supported natively
+- Replace "+" and "-" beside the speaker icon with actual texts to make the buttons' functions
+  obvious. These are more often than not misunderstood for volume control buttons
+- Add a "Video" category option in file dialog to let users add video files as audio files too which
+  is supported natively
 - Minor code restructures
 - Lazy-load/save config and make settings changes atomic
-- New file manager backend for improved, robust & stateless store management all while a better experience inside sandboxes (e.g. flatpaks, snap)
+- New file manager backend for improved, robust & stateless store management all while a better
+  experience inside sandboxes (e.g. flatpaks, snap)
 - Upgrade to Qt 6.11.1
 - Add back Arabic support
 
 ### Build & Infrastructure
 
 #### App build (general)
+
 - Enable more aggressive optimizations and useful hardenings
-- C++17 standardization instead of C++23
 - Qt 6.9.0 baseline standardization
 - Build system improvements and streamlining
 
 #### Flatpak
+
 - Migrate manifests to YAML
 - Add another manifest for a variant using SFX archive
 - Update the static manifest to correspond with recent workflow changes
@@ -51,27 +121,34 @@ All notable changes to this project will be documented in this file.
 - Drop $XDG_MUSIC_HOME permission since it's not needed anymore
 
 #### makeself archive
+
 - Register munadi symbolic icon on the execution scripts
 
 #### Builder Images
+
 - Enable aggresive optimizations and level-up hardening generally
-- Drop network support until Munadi itself starts supporting 
+- Drop network support until Munadi itself starts supporting
 - Label following OpenContainer Annotations Spec
 - Add clang and dependencies/tools
 
 #### Docs
-- Update README.md with changes and rephrases, better readability, fix, improve & amend workflows, formatting and references
+
+- Update README.md with changes and rephrases, better readability, fix, improve & amend workflows,
+  formatting and references
 - Update CHANGELOG.md
 - Refresh feature list and put up a better summary/marketing line for the app
 
 #### Web
+
 - Update verification ID for flathub
-- Add "Acknowledgements" & "Contributors" sections enlisting used libraries and contributors for the whole project
+- Add "Acknowledgements" & "Contributors" sections enlisting used libraries and contributors for the
+  whole project
 - Refresh feature list and put up a better summary/marketing line for the app
 
 #### Project misc
+
 - Symlink redundant icon files across repo to those under `xdg/icons`
-- Move all image building relevant files under `pkg/docker` categorized subfolders 
+- Move all image building relevant files under `pkg/docker` categorized subfolders
 
 Full Changelog: [26.04...26.06](https://gitlab.com/munadi/munadi/-/compare/26.04...26.06)
 
@@ -101,8 +178,10 @@ Full Changelog: [26.04...26.06](https://gitlab.com/munadi/munadi/-/compare/26.04
 ### Build & Infrastructure
 
 #### Static libs building
+
 - Downgrade FFmpeg to Qt 6.11 recommended version (n7.1.3)
-- Compact builds by trimming unused libraries, program & components other than the app's purpose, use whitelisting to allow only what's necessary
+- Compact builds by trimming unused libraries, program & components other than the app's purpose,
+  use whitelisting to allow only what's necessary
 - Enable link-time optimization at the cost of building time
 - Disable documentations and debugging on FFmpeg and Qt builds
 - Further ensure no X dependencies (still hard to avoid anyway)
@@ -111,20 +190,27 @@ Full Changelog: [26.04...26.06](https://gitlab.com/munadi/munadi/-/compare/26.04
 - Add few optimization and performance cost-free hardening to Qt and FFmpeg build
 
 #### Builder image
+
 - Rename Dockerfile more generically as Containerfile; keep it symlinked to Containerfile
 - Switch to Rocky Linux 10.1 as builder base image
-- Build a trimmed, from-scratch image bundled with only necessary files & programs. This however, doesn't shrink the built image's size but helps to provide a custom image in a truer sense.
-- Add various linting & validation utils in the image for comprehensive development tasks. Only SFX installer related tools now, more will be added soon. Other tools can be installed after container creation with `dnf` if necessary.
+- Build a trimmed, from-scratch image bundled with only necessary files & programs. This however,
+  doesn't shrink the built image's size but helps to provide a custom image in a truer sense.
+- Add various linting & validation utils in the image for comprehensive development tasks. Only SFX
+  installer related tools now, more will be added soon. Other tools can be installed after container
+  creation with `dnf` if necessary.
 - Add various labels to describe this custom image
-- Simplify web server image; use the official gunicorn image instead of building from python-core image. Significantly reduces image size.
+- Simplify web server image; use the official gunicorn image instead of building from python-core
+  image. Significantly reduces image size.
 - Add few optimization and performance cost-free hardening during app building
 
 #### Gitlab CI/CD
+
 - Add CI/CD pipeline configuration
 - Publish "Munadi static app builder" image to the project's registry
 - Don't include built archives anymore, those should be available on "Releases" from now on
 
 #### makeself archive
+
 - Use `/tmp` for archive creation instead of CWD
 - Level-up compression
 - Log more consistently according to log-level
@@ -132,6 +218,7 @@ Full Changelog: [26.04...26.06](https://gitlab.com/munadi/munadi/-/compare/26.04
 - Show `uninstall` script output if invoked in `install` script with same verbosity level
 
 #### Project misc
+
 - Polish README.md for user and developer facing briefing & organize CHANGELOG.md
 - Add AI contribution policy for the project
 - Append -static to the flatpak static manifest again
@@ -163,7 +250,8 @@ Full Changelog: [26.02...26.04](https://gitlab.com/munadi/munadi/-/compare/26.02
 
 ### Self-Extracting Installer
 
-Munadi can now be installed using a self-extracting installer. No need to download and manage loads of dependencies—just make it executable (`chmod +x`) and run the interactive installer.
+Munadi can now be installed using a self-extracting installer. No need to download and manage loads
+of dependencies—just make it executable (`chmod +x`) and run the interactive installer.
 
 > Latest installer: [pkg/makeself](https://munadi.org/get/26.02)
 
@@ -189,7 +277,8 @@ Long-awaited features and enhancements:
 - Fixed bugs
 - Slimmed codebase
 
-Special thanks to [Hasan Esa](https://gitlab.com/HasanEsa) for the contributions and motivation, more will follow as a result insha-allah.
+Special thanks to [Hasan Esa](https://gitlab.com/HasanEsa) for the contributions and motivation,
+more will follow as a result insha-allah.
 
 Full Changelog: [22.04...25.11](https://gitlab.com/munadi/munadi/-/compare/22.04...25.11)
 
@@ -370,4 +459,4 @@ Follow us on social media for updates, news, and tutorials:
 
 ---
 
-*For full commit history, see [GitLab](https://gitlab.com/munadi/munadi/-/commits/master).*
+_For full commit history, see [GitLab](https://gitlab.com/munadi/munadi/-/commits/master)._
