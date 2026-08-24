@@ -175,7 +175,7 @@
     </screenshot>
   </screenshots>
   <releases>
-    <release version="26.08" date="2026-08-15">
+    <release version="26.08" date="2026-08-18">
       <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2608</url>
       <description>
         <p>The 26.08 release introduces comprehensive Bangla localization and completes full Arabic
