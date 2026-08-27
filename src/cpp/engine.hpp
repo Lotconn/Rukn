@@ -17,6 +17,9 @@ class PrayerEngine : public QObject
     Q_CLASSINFO("RegisterEnumClassesUnscoped", "false")
     QML_ELEMENT
     QML_SINGLETON
+    Q_PROPERTY(bool localeGuard READ localeGuard NOTIFY localeChanged)
+    Q_PROPERTY(QVariantList prayerConfig READ prayerConfig WRITE setPrayerConfig NOTIFY
+                   prayerConfigChanged)
     Q_PROPERTY(QStringList prayerNamesList READ prayerNamesList NOTIFY localeChanged)
     // Q_PROPERTY(PrayerEngine::Prayer currentPrayer READ currentPrayer NOTIFY timeChanged)
 
@@ -38,15 +41,23 @@ class PrayerEngine : public QObject
 
     static auto create(QQmlEngine *, QJSEngine *) -> PrayerEngine *;
     static auto instance() -> PrayerEngine &;
-    // auto        currentPrayer(Adhan::Instant when = Adhan::now()) -> PrayerEngine::Prayer;
 
-    auto prayerNamesList() -> QStringList;
+    // auto        currentPrayer(Adhan::Instant when = Adhan::now()) -> PrayerEngine::Prayer;
+    [[nodiscard]] auto localeGuard() const -> int;
+    [[nodiscard]] auto prayerConfig() const -> QVariantList;
+    auto               prayerNamesList() -> QStringList;
 
     Q_INVOKABLE [[nodiscard]] auto prayerName(Prayer) -> QString;
+    Q_INVOKABLE auto               removeAthanIndex(int rmIdx) -> void;
 
   signals:
-    void localeChanged();
+    auto localeChanged() -> void;
+    auto prayerConfigChanged(const QVariantList &config) -> void;
     // void timeChanged();
+
+  public slots:
+    auto refreshText() -> void;
+    auto setPrayerConfig(const QVariantList &config) -> void;
 
   private:
     Q_DISABLE_COPY_MOVE(PrayerEngine);
@@ -58,7 +69,9 @@ class PrayerEngine : public QObject
     static const QMap<Prayer, Adhan::Prayer> m_prayerEnumMap;
     static const QMap<Adhan::Prayer, Prayer> m_revPrayerEnumMap;
 
+    QAtomicInt                          m_localeChangeCount;
     QMap<Prayer, QString>               m_prayerDisplayNames;
+    QVariantList                        m_prayerConfig;
     std::unique_ptr<Adhan::PrayerTimes> m_prayerTimes;
 
     /////////////////////////////////////////////////////////////

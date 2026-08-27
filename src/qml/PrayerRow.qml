@@ -5,6 +5,8 @@ import QtQuick.Layouts
 import Munadi
 
 Item {
+    id: prayerRow
+
     property string athanTime
     //property alias iqamaTime: iqamaLabel.text
     property double pixelDiv: 3
@@ -32,10 +34,13 @@ Item {
                 //color: Material.primaryTextColor
                 color: Material.secondaryTextColor
                 elide: Text.ElideRight
-                font.bold: prayerId === mm.currentPrayer
-                font.pixelSize: Math.min(parent.height, parent.width) / pixelDiv
+                font.bold: prayerRow.prayerId === mm.currentPrayer
+                font.pixelSize: Math.min(parent.height, parent.width) / prayerRow.pixelDiv
                 font.weight: Font.Thin
-                text: PrayerEngine.prayerName(prayerId)
+                text: {
+                    PrayerEngine.localeGuard;
+                    PrayerEngine.prayerName(prayerRow.prayerId);
+                }
                 visible: !mm.locationNotSet
                 width: parent.width
             }
@@ -57,7 +62,7 @@ Item {
                     color: prayerLabel.color
                     font.pixelSize: Math.min(parent.parent.height, parent.parent.width) / pixelDiv
                     font.weight: prayerLabel.font.weight
-                    text: athanTime.substring(0, 5)
+                    text: prayerRow.athanTime.substring(0, 5)
                 }
 
                 Text {
@@ -68,7 +73,7 @@ Item {
                     font.bold: athanLabel.font.bold
                     font.pixelSize: athanLabel.font.pixelSize / 2
                     font.weight: athanLabel.font.weight
-                    text: athanTime.substring(5)
+                    text: prayerRow.athanTime.substring(5)
                 }
             }
         }

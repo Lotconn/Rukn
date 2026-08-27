@@ -8,6 +8,7 @@ import QtQuick.Dialogs
 import QtQuick.Layouts
 
 import Lotconn.FileMan
+import Munadi
 
 ColumnLayout {
     MediaPlayer {
@@ -29,7 +30,7 @@ ColumnLayout {
         title: qsTr("Please choose an audio file")
 
         onAccepted: {
-            const category = selectedNameFilter.index == 0 ? FileMan.Audio : selectedNameFilter.index == 1 ? FileMan.Video : (FileMan.Audio | FileMan.Video);
+            const category = selectedNameFilter.index == 0 ? FileMan.Categories.Audio : selectedNameFilter.index == 1 ? FileMan.Categories.Video : (FileMan.Categories.Audio | FileMan.Categories.Video);
             for (let i = 0; i < selectedFiles.length; i++) {
                 const fileUrl = new URL(selectedFiles[i]);
                 const result = FileMan.addFile(fileUrl, category);
@@ -103,23 +104,7 @@ ColumnLayout {
                 mm.audioList = newList;
                 audioListCb.model = mm.audioList;
 
-                let newConfig = JSON.parse(JSON.stringify(mm.prayerConfig));
-                if (newConfig[0].athan_idx === rmIdx)
-                    newConfig[0].athan_idx = 2;
-                if (newConfig[2].athan_idx === rmIdx)
-                    newConfig[2].athan_idx = 0;
-                if (newConfig[3].athan_idx === rmIdx)
-                    newConfig[3].athan_idx = 0;
-                if (newConfig[4].athan_idx === rmIdx)
-                    newConfig[4].athan_idx = 1;
-                if (newConfig[5].athan_idx === rmIdx)
-                    newConfig[5].athan_idx = 0;
-
-                for (let i = 0; i < newConfig.length; ++i) {
-                    if (newConfig[i].athan_idx > rmIdx)
-                        newConfig[i].athan_idx--;
-                }
-                mm.prayerConfig = newConfig;
+                PrayerEngine.removeAthanIndex(rmIdx);
             }
         }
     }

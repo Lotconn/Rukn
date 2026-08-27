@@ -35,6 +35,15 @@ PrayerEngine::PrayerEngine(QObject *parent) : QObject(parent)
     PrayerEngine::s_singletonInstance = this;
 
     this->init();
+
+    m_prayerConfig = {
+        QVariantMap{{"adjustment", 0}, {"volume", 0.2}, {"athan_idx", 2}}, // [0] Fajr
+        QVariantMap{{"adjustment", 0}, {"volume", 0.0}, {"athan_idx", 0}}, // [1] Sunrise
+        QVariantMap{{"adjustment", 0}, {"volume", 1.0}, {"athan_idx", 0}}, // [2] Dhuhr
+        QVariantMap{{"adjustment", 0}, {"volume", 1.0}, {"athan_idx", 0}}, // [3] Asr
+        QVariantMap{{"adjustment", 0}, {"volume", 1.0}, {"athan_idx", 1}}, // [4] Maghrib
+        QVariantMap{{"adjustment", 0}, {"volume", 0.5}, {"athan_idx", 0}}  // [5] Isha
+    };
 }
 
 void PrayerEngine::init()
@@ -55,8 +64,53 @@ PrayerEngine::~PrayerEngine()
         PrayerEngine::s_singletonInstance = nullptr;
 }
 
+auto PrayerEngine::prayerConfig() const -> QVariantList
+{ return m_prayerConfig; }
+
+auto PrayerEngine::setPrayerConfig(const QVariantList &config) -> void
+{
+    m_prayerConfig = config;
+    emit prayerConfigChanged(m_prayerConfig);
+}
+
+auto PrayerEngine::removeAthanIndex(int rmIdx) -> void
+{
+    // Iterate using enum values directly as indices
+    for (int i = static_cast<int>(Prayer::Fajr); i <= static_cast<int>(Prayer::Isha); ++i)
+    {
+        QVariantMap cfg     = m_prayerConfig[i].toMap();
+        const int   current = cfg.value("athan_idx").toInt();
+
+        if (current == rmIdx)
+        {
+            switch (static_cast<Prayer>(i))
+            {
+            case Prayer::Fajr:
+                cfg["athan_idx"] = 2;
+                break;
+            case Prayer::Maghrib:
+                cfg["athan_idx"] = 1;
+                break;
+            default:
+                cfg["athan_idx"] = 0;
+                break;
+            }
+        }
+        else if (current > rmIdx)
+        {
+            cfg["athan_idx"] = current - 1;
+        }
+        m_prayerConfig[i] = cfg;
+    }
+
+    emit prayerConfigChanged(m_prayerConfig);
+}
+
 // PrayerEngine::Prayer PrayerEngine::currentPrayer(Adhan::Instant when)
 // { return Munadi::PrayerEngine::m_revPrayerEnumMap.value(m_prayerTimes.currentPrayer(when)); }
+
+int PrayerEngine::localeGuard() const
+{ return this->m_localeChangeCount; }
 
 QString PrayerEngine::prayerName(PrayerEngine::Prayer prayer)
 { return m_prayerDisplayNames.value(prayer); }
@@ -69,6 +123,13 @@ QStringList PrayerEngine::prayerNamesList()
         list << value;
 
     return list;
+}
+
+void PrayerEngine::refreshText()
+{
+    this->init();
+    ++m_localeChangeCount;
+    emit localeChanged();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

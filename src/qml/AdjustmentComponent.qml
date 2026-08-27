@@ -10,12 +10,12 @@ ColumnLayout {
     id: component
 
     TabBar {
-        id: selectedPrayerIdx
+        id: prayerTab
 
         Layout.fillWidth: true
         width: parent.width
 
-        Component.onCompleted: itemAt(1).width = 0 // Hide sunrise tab
+        Component.onCompleted: itemAt(PrayerEngine.Prayer.Sunrise).width = 0 // Hide sunrise tab
 
         Repeater {
             model: PrayerEngine.prayerNamesList
@@ -30,47 +30,61 @@ ColumnLayout {
         columns: 3
 
         Text {
-            id: volText
+            id: volumeLabel
 
             color: Material.secondaryTextColor
             text: qsTr("Volume")
         }
 
         Slider {
-            id: volume
+            id: volumeSlider
 
             Layout.fillWidth: true
-            enabled: selectedPrayerIdx.currentIndex !== 1 // Skip sunrise tab
+            enabled: prayerTab.currentIndex !== PrayerEngine.Prayer.Sunrise
+            snapMode: Slider.SnapAlways
             stepSize: 0.05
-            value: mm.prayerConfig[selectedPrayerIdx.currentIndex].volume
+            value: PrayerEngine.prayerConfig[prayerTab.currentIndex].volume
 
             onMoved: {
-                mm.prayerConfig[selectedPrayerIdx.currentIndex].volume = value;
+                const idx = prayerTab.currentIndex;
+                const config = PrayerEngine.prayerConfig;
+
+                config[idx].volume = value;
+                PrayerEngine.prayerConfig = config;
             }
         }
 
         Text {
-            Layout.minimumWidth: volText.width
+            id: volumeValue
+
+            Layout.minimumWidth: volumeLabel.width
             color: Material.secondaryTextColor
-            text: qsTr("%L1 %").arg(Math.round(volume.value * 100))
+            text: qsTr("%L1 %").arg(Math.round(volumeSlider.value * 100))
         }
 
         Text {
+            id: minutesLabel
+
             color: Material.secondaryTextColor
             text: qsTr("Minutes")
         }
 
         Slider {
-            id: mins
+            id: minutesSlider
 
             Layout.fillWidth: true
+            enabled: prayerTab.currentIndex !== PrayerEngine.Prayer.Sunrise
             from: -30
             stepSize: 1
             to: 60
-            value: mm.prayerConfig[selectedPrayerIdx.currentIndex].adjustment
+            value: PrayerEngine.prayerConfig[prayerTab.currentIndex].adjustment
 
             onMoved: {
-                mm.prayerConfig[selectedPrayerIdx.currentIndex].adjustment = value;
+                const idx = prayerTab.currentIndex;
+                const config = PrayerEngine.prayerConfig;
+
+                config[idx].adjustment = value;
+                PrayerEngine.prayerConfig = config;
                 mm.invalidate();
             }
             onPressedChanged: {
@@ -83,25 +97,35 @@ ColumnLayout {
         }
 
         Text {
+            id: minutesValue
+
             color: Material.secondaryTextColor
-            text: mins.value > 0 ? qsTr("+%L1").arg(Math.round(mins.value)) : qsTr("%L1").arg(Math.round(mins.value))
+            text: minutesSlider.value > 0 ? qsTr("+%L1").arg(Math.round(minutesSlider.value)) : qsTr("%L1").arg(Math.round(minutesSlider.value))
             verticalAlignment: Text.AlignVCenter
         }
 
         Text {
+            id: athanLabel
+
             color: Material.secondaryTextColor
             text: qsTr("Athan")
         }
 
         ComboBox {
+            id: athanComboBox
+
             Layout.fillWidth: true
-            currentIndex: mm.prayerConfig[selectedPrayerIdx.currentIndex].athan_idx
-            enabled: selectedPrayerIdx.currentIndex !== 1
+            currentIndex: PrayerEngine.prayerConfig[prayerTab.currentIndex].athan_idx
+            enabled: prayerTab.currentIndex !== PrayerEngine.Prayer.Sunrise
             model: mm.audioList
             textRole: "name"
 
             onActivated: {
-                mm.prayerConfig[selectedPrayerIdx.currentIndex].athan_idx = currentIndex;
+                const idx = prayerTab.currentIndex;
+                const config = PrayerEngine.prayerConfig;
+
+                config[idx].athan_idx = athanComboBox.currentIndex;
+                PrayerEngine.prayerConfig = config;
             }
             onPressedChanged: model = mm.audioList
         }

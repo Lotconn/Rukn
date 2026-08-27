@@ -7,6 +7,8 @@ import "qrc:/qt/qml/Munadi/data/Adhan.js" as Adhan
 import Munadi
 
 ColumnLayout {
+    id: parentBox
+
     property int defaultAlignment: isWide ? Layout.Left : Layout.Center
     property bool isWide: width > height
 
@@ -20,7 +22,7 @@ ColumnLayout {
         Layout.alignment: parent.defaultAlignment
         Layout.fillHeight: true
         Layout.preferredHeight: 40
-        Layout.preferredWidth: isWide ? parent.height * theme.uiPortraitRatio : parent.width
+        Layout.preferredWidth: parentBox.isWide ? parent.height * theme.uiPortraitRatio : parent.width
         background.opacity: mm.rectangle_opacity
     }
 
@@ -33,7 +35,7 @@ ColumnLayout {
         Layout.bottomMargin: Layout.topMargin
         Layout.fillHeight: true
         Layout.preferredHeight: 400
-        Layout.preferredWidth: isWide ? parent.height * theme.uiPortraitRatio : parent.width
+        Layout.preferredWidth: parentBox.isWide ? parent.height * theme.uiPortraitRatio : parent.width
         Layout.topMargin: 20
         Material.elevation: mm.pane_elevation
         background.opacity: mm.rectangle_opacity
@@ -47,7 +49,7 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
                 athanTime: mm.fajr
-                prayerId: PrayerEngine.Fajr
+                prayerId: PrayerEngine.Prayer.Fajr
             }
 
             PrayerRow {
@@ -57,7 +59,7 @@ ColumnLayout {
                 Layout.preferredHeight: 30
                 Layout.topMargin: -20
                 athanTime: mm.srise
-                prayerId: PrayerEngine.Sunrise
+                prayerId: PrayerEngine.Prayer.Sunrise
             }
 
             Line {}
@@ -68,7 +70,7 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
                 athanTime: mm.duhr
-                prayerId: PrayerEngine.Dhuhr
+                prayerId: PrayerEngine.Prayer.Dhuhr
             }
 
             Line {}
@@ -79,7 +81,7 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
                 athanTime: mm.asr
-                prayerId: PrayerEngine.Asr
+                prayerId: PrayerEngine.Prayer.Asr
             }
 
             Line {}
@@ -90,7 +92,7 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
                 athanTime: mm.mgrb
-                prayerId: PrayerEngine.Maghrib
+                prayerId: PrayerEngine.Prayer.Maghrib
             }
 
             Line {}
@@ -101,7 +103,7 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
                 athanTime: mm.isha
-                prayerId: PrayerEngine.Isha
+                prayerId: PrayerEngine.Prayer.Isha
             }
         }
     }
@@ -109,10 +111,10 @@ ColumnLayout {
     TimeLeftRow {
         id: timeLeft
 
-        Layout.alignment: defaultAlignment
+        Layout.alignment: parentBox.defaultAlignment
         Layout.fillHeight: true
         Layout.preferredHeight: 40
-        Layout.preferredWidth: isWide ? parent.height * theme.uiPortraitRatio : parent.width
+        Layout.preferredWidth: parentBox.isWide ? parent.height * theme.uiPortraitRatio : parent.width
         background.opacity: mm.rectangle_opacity
         text: mm.timeLeftStr
         visible: !mm.locationNotSet

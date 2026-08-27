@@ -10,6 +10,7 @@ import Qt.labs.platform
 
 // import "qrc:/qt/qml/Munadi/data/Adhan.js" as Adhan
 import Lotconn.FileMan
+import Munadi
 
 ApplicationWindow {
     id: mainWindow
@@ -87,9 +88,9 @@ ApplicationWindow {
         mm.longitude = settings.value("longitude", mm.longitude);
         mm.madhab = settings.value("madhab", mm.madhab);
         mm.overrideOffsetBy = settings.value("overrideOffsetBy", mm.overrideOffsetBy);
-        var prayerConfig = settings.value("prayerConfig", JSON.stringify(mm.prayerConfig));
+        var prayerConfig = settings.value("prayerConfig", JSON.stringify(PrayerEngine.prayerConfig));
         try {
-            mm.prayerConfig = JSON.parse(prayerConfig);
+            PrayerEngine.prayerConfig = JSON.parse(prayerConfig);
         } catch (_) {}
 
         settings.category = "Window";
@@ -155,7 +156,7 @@ ApplicationWindow {
         settings.setValue("longitude", mm.longitude);
         settings.setValue("madhab", mm.madhab);
         settings.setValue("overrideOffsetBy", mm.overrideOffsetBy);
-        settings.setValue("prayerConfig", JSON.stringify(mm.prayerConfig));
+        settings.setValue("prayerConfig", JSON.stringify(PrayerEngine.prayerConfig));
 
         settings.category = "Window";
         settings.setValue("width", mainWindow.width);
@@ -422,9 +423,9 @@ ApplicationWindow {
 
                 mm.refreshTable();
 
-                var athan_idx = mm.prayerConfig[mm.currentPrayer].athan_idx;
+                const athan_idx = PrayerEngine.prayerConfig[mm.currentPrayer].athan_idx;
                 athan.source = mm.audioList[athan_idx]["path"];
-                athan.audioOutput.volume = mm.prayerConfig[mm.currentPrayer].volume;
+                athan.audioOutput.volume = PrayerEngine.prayerConfig[mm.currentPrayer].volume;
 
                 console.debug("athan.audioOutput.volume:", athan.audioOutput.volume);
                 console.debug("athan.audioOutput.muted:", athan.audioOutput.muted);
