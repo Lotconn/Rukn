@@ -2,7 +2,9 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.Layouts
-import QtCore
+// import QtCore
+
+import Munadi
 
 ColumnLayout {
     id: component
@@ -16,7 +18,7 @@ ColumnLayout {
         Component.onCompleted: itemAt(1).width = 0 // Hide sunrise tab
 
         Repeater {
-            model: mm.prayerNames
+            model: PrayerEngine.prayerNamesList
 
             TabButton {
                 text: modelData

@@ -1,8 +1,8 @@
 import QtQuick
-// import QtQuick.Controls
 import QtQuick.Controls.Material
-// import QtMultimedia
 import QtQuick.Layouts
+
+import Munadi
 
 Item {
     property string athanTime
@@ -35,7 +35,7 @@ Item {
                 font.bold: prayerId === mm.currentPrayer
                 font.pixelSize: Math.min(parent.height, parent.width) / pixelDiv
                 font.weight: Font.Thin
-                text: mm.prayerNames[prayerId]
+                text: PrayerEngine.prayerName(prayerId)
                 visible: !mm.locationNotSet
                 width: parent.width
             }

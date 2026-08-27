@@ -182,7 +182,7 @@ QtObject {
             "athan_idx": 0
         }
     ]
-    property var prayerNames: [qsTr("Fajr"), qsTr("Sunrise"), qsTr("Dhuhr"), qsTr("Asr"), qsTr("Maghrib"), qsTr("Isha")]
+    // property var prayerNames: [qsTr("Fajr"), qsTr("Sunrise"), qsTr("Dhuhr"), qsTr("Asr"), qsTr("Maghrib"), qsTr("Isha")]
     property var prayerTimes
     property double rectangle_opacity: 0.77
     property int rectangle_radius: 3
@@ -190,7 +190,7 @@ QtObject {
     property string srise: sysLocale.toString(prayerTimes.sunrise, isoClock ? "hh:mm" : "hh:mm ap")
     property bool stickerMode: false
     property var sysLocale: Qt.locale()
-    property var themeList: [qsTr("System"), qsTr("Light"), qsTr("Dark")]
+    // property var themeList: [qsTr("System"), qsTr("Light"), qsTr("Dark")]
     property int themeListIndex: 0
     property var timeForCurrentPrayer
     property var timeForNextPrayer

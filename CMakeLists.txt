@@ -92,6 +92,15 @@ set(QAPPLICATION_CLASS FreeStandingSingleApplication CACHE STRING
 )
 FetchContent_MakeAvailable(SingleApplication)
 
+# Lotconn/adhan-cpp
+FetchContent_Declare(Adhan-cpp
+  GIT_REPOSITORY https://github.com/lotconn/adhan-cpp
+  GIT_TAG 10c84bf165684add3f0a4e3cd670212b42c567f2
+  GIT_SHALLOW TRUE
+)
+set(FM_BUILD_AS "STATIC" CACHE STRING "Build Adhan C++ as static")
+FetchContent_MakeAvailable(Adhan-cpp)
+
 # Lotconn/FileMan
 FetchContent_Declare(FileMan
   GIT_REPOSITORY https://gitlab.com/lotconn/fileman
@@ -156,7 +165,12 @@ set(MUNADI_JS_FILES
 set(MUNADI_SOURCES
   src/cpp/alarm.h
   src/cpp/engine.cpp
+  src/cpp/engine_p.cpp
   src/cpp/engine.h
+  src/cpp/engine.hpp
+  src/cpp/engine_p.hpp
+  src/cpp/PrayerEngine.cpp
+  src/cpp/UiEngine.cpp
   src/cpp/macos_window.h
   src/cpp/updater.cpp
   src/cpp/updater.h
@@ -278,6 +292,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
   $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
 )
 target_link_libraries(${PROJECT_NAME} PRIVATE
+  adhan::adhan
   FileManplugin
   Qt::Core
   Qt::Gui

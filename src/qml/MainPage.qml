@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import QtQuick.Controls.Material
 
 import "qrc:/qt/qml/Munadi/data/Adhan.js" as Adhan
+import Munadi
 
 ColumnLayout {
     property int defaultAlignment: isWide ? Layout.Left : Layout.Center
@@ -46,7 +47,7 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
                 athanTime: mm.fajr
-                prayerId: Adhan.adhan.Prayer.Fajr
+                prayerId: PrayerEngine.Fajr
             }
 
             PrayerRow {
@@ -56,7 +57,7 @@ ColumnLayout {
                 Layout.preferredHeight: 30
                 Layout.topMargin: -20
                 athanTime: mm.srise
-                prayerId: Adhan.adhan.Prayer.Sunrise
+                prayerId: PrayerEngine.Sunrise
             }
 
             Line {}
@@ -67,7 +68,7 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
                 athanTime: mm.duhr
-                prayerId: Adhan.adhan.Prayer.Dhuhr
+                prayerId: PrayerEngine.Dhuhr
             }
 
             Line {}
@@ -78,7 +79,7 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
                 athanTime: mm.asr
-                prayerId: Adhan.adhan.Prayer.Asr
+                prayerId: PrayerEngine.Asr
             }
 
             Line {}
@@ -89,7 +90,7 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
                 athanTime: mm.mgrb
-                prayerId: Adhan.adhan.Prayer.Maghrib
+                prayerId: PrayerEngine.Maghrib
             }
 
             Line {}
@@ -100,7 +101,7 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
                 athanTime: mm.isha
-                prayerId: Adhan.adhan.Prayer.Isha
+                prayerId: PrayerEngine.Isha
             }
         }
     }
