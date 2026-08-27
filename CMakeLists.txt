@@ -21,6 +21,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_PROJECT_SPDX_LICENSE "AGPL-3.0-or-later")
 
+string(TOLOWER ${PROJECT_NAME} PROEJCT_NAME_LOWER)
+
 check_ipo_supported(RESULT IPOresult OUTPUT IPOoutput)
 if(IPOresult)
   set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
@@ -54,6 +56,7 @@ find_package(Qt6
   COMPONENTS
   Core
   Gui
+  LinguistTools
   Location
   Multimedia
   Positioning
@@ -62,10 +65,12 @@ find_package(Qt6
   QuickControls2
   Widgets
 )
+
 if(LINUX)
   find_package(Qt6 REQUIRED COMPONENTS DBus WaylandClient)
 endif()
-qt_standard_project_setup(REQUIRES 6.8)
+
+qt_standard_project_setup(REQUIRES 6.8 I18N_TRANSLATED_LANGUAGES ar bn)
 
 set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
 
@@ -90,7 +95,8 @@ FetchContent_MakeAvailable(SingleApplication)
 # Lotconn/FileMan
 FetchContent_Declare(FileMan
   GIT_REPOSITORY https://gitlab.com/lotconn/fileman
-  GIT_TAG v2.0.2
+  GIT_TAG 830b671594be51131a3bc66b85454f7130174d8f
+  GIT_SHALLOW TRUE
 )
 set(FM_BUILD_AS "STATIC" CACHE STRING "Build FileMan as static")
 FetchContent_MakeAvailable(FileMan)
@@ -130,7 +136,7 @@ set(MUNADI_QML_FILES
   src/qml/LocationInfoRow.qml
   src/qml/LocationSearchComponent.qml
   src/qml/LocationService.qml
-  src/qml/main.qml
+  src/qml/Main.qml
   src/qml/MainPage.qml
   src/qml/MunadiModel.qml
   src/qml/PageButton.qml
@@ -175,10 +181,6 @@ set(MUNADI_RESOURCES
   src/data/NotoSansBengali-VariableFont.ttf
   src/data/timezones.tsv
   src/data/whatsnew.html
-  src/i18n/munadi_ar.qm
-  src/i18n/munadi_ar.ts
-  src/i18n/munadi_bn.qm
-  src/i18n/munadi_bn.ts
   src/img/about.png
   src/img/arrow.png
   src/img/bg/0.jpg
@@ -217,7 +219,14 @@ qt_add_qml_module(${PROJECT_NAME}
   "${MUNADI_SOURCES}"
   RESOURCES
   "${MUNADI_RESOURCES}"
-  DEPENDENCIES TARGET FileMan
+  DEPENDENCIES Lotconn.FileMan
+)
+
+qt_add_translations(${PROJECT_NAME}
+  SOURCE_TARGETS ${PROJECT_NAME}
+  TS_FILE_BASE ${PROEJCT_NAME_LOWER}
+  TS_OUTPUT_DIRECTORY src/i18n/
+  RESOURCE_PREFIX qt/qml/Munadi/i18n
 )
 
 set_source_files_properties(src/qtquickcontrols2.conf

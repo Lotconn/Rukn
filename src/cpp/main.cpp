@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
     qae.rootContext()->setContextProperty("engine", &engine);
     qae.rootContext()->setContextProperty("sapp", &sapp);
     qae.rootContext()->setContextProperty("updater", engine.updater);
-    qae.load(QUrl(QLatin1String("qrc:/qt/qml/Munadi/qml/main.qml")));
+    qae.loadFromModule("Munadi", "Main");
 
 #ifdef Q_OS_MACOS
     if (auto *window = qobject_cast<QQuickWindow *>(qae.rootObjects().first()))

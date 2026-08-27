@@ -426,28 +426,28 @@
 <context>
     <name>main</name>
     <message>
-        <location filename="../qml/main.qml" line="31"/>
+        <location filename="../qml/Main.qml" line="31"/>
         <source>QT_LAYOUT_DIRECTION</source>
         <comment>QGuiApplication</comment>
         <translation>RTL</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="325"/>
+        <location filename="../qml/Main.qml" line="325"/>
         <source>Munadi</source>
         <translation>منادي</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="375"/>
+        <location filename="../qml/Main.qml" line="375"/>
         <source>Show</source>
         <translation>أظهر</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="375"/>
+        <location filename="../qml/Main.qml" line="375"/>
         <source>Hide</source>
         <translation>أخف</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="379"/>
+        <location filename="../qml/Main.qml" line="379"/>
         <source>Quit</source>
         <translation>أغلق</translation>
     </message>
