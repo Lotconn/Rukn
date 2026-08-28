@@ -1,4 +1,6 @@
+#include "internal-helpers.hpp"
 #include <engine.hpp>
+#include <fileman>
 
 using PrayerEngine = Munadi::PrayerEngine;
 using Prayer       = Munadi::PrayerEngine::Prayer;
@@ -34,7 +36,18 @@ PrayerEngine::PrayerEngine(QObject *parent) : QObject(parent)
 
     PrayerEngine::s_singletonInstance = this;
 
-    this->init();
+    this->initTexts();
+
+    m_audioList = {
+        QVariantMap{   {"name", "Makkah (built-in)"},
+                    {"path", "qrc:/qt/qml/Munadi/data/athan-makkah.ogg"}  },
+        QVariantMap{{"name", "Ar-Rashid (built-in)"},
+                    {"path", "qrc:/qt/qml/Munadi/data/athan-arRashid.ogg"}},
+        QVariantMap{     {"name", "Fajr (built-in)"},
+                    {"path", "qrc:/qt/qml/Munadi/data/fajr-athan.ogg"}    }
+    };
+
+    this->defaultAudioCount = m_audioList.size();
 
     m_prayerConfig = {
         QVariantMap{{"adjustment", 0}, {"volume", 0.2}, {"athan_idx", 2}}, // [0] Fajr
@@ -46,7 +59,13 @@ PrayerEngine::PrayerEngine(QObject *parent) : QObject(parent)
     };
 }
 
-void PrayerEngine::init()
+PrayerEngine::~PrayerEngine()
+{
+    if (PrayerEngine::s_singletonInstance == this)
+        PrayerEngine::s_singletonInstance = nullptr;
+}
+
+void PrayerEngine::initTexts()
 {
     m_prayerDisplayNames = {
         {   Prayer::Fajr,    tr("Fajr")},
@@ -58,59 +77,72 @@ void PrayerEngine::init()
     };
 }
 
-PrayerEngine::~PrayerEngine()
+auto PrayerEngine::addAthan(const QUrl &fileUrl, int fileDialogCategory) -> void
 {
-    if (PrayerEngine::s_singletonInstance == this)
-        PrayerEngine::s_singletonInstance = nullptr;
-}
+    FileMan::Categories categories = FileMan::None;
 
-auto PrayerEngine::prayerConfig() const -> QVariantList
-{ return m_prayerConfig; }
-
-auto PrayerEngine::setPrayerConfig(const QVariantList &config) -> void
-{
-    m_prayerConfig = config;
-    emit prayerConfigChanged(m_prayerConfig);
-}
-
-auto PrayerEngine::removeAthanIndex(int rmIdx) -> void
-{
-    // Iterate using enum values directly as indices
-    for (int i = static_cast<int>(Prayer::Fajr); i <= static_cast<int>(Prayer::Isha); ++i)
+    switch (fileDialogCategory)
     {
-        QVariantMap cfg     = m_prayerConfig[i].toMap();
-        const int   current = cfg.value("athan_idx").toInt();
-
-        if (current == rmIdx)
-        {
-            switch (static_cast<Prayer>(i))
-            {
-            case Prayer::Fajr:
-                cfg["athan_idx"] = 2;
-                break;
-            case Prayer::Maghrib:
-                cfg["athan_idx"] = 1;
-                break;
-            default:
-                cfg["athan_idx"] = 0;
-                break;
-            }
-        }
-        else if (current > rmIdx)
-        {
-            cfg["athan_idx"] = current - 1;
-        }
-        m_prayerConfig[i] = cfg;
+    case 0:
+        categories = FileMan::Audio;
+        break;
+    case 1:
+        categories = FileMan::Video;
+        break;
+    default:
+        categories = FileMan::Audio | FileMan::Video;
     }
 
-    emit prayerConfigChanged(m_prayerConfig);
+    if (categories == FileMan::None)
+    {
+        logCritical << "Invalid category propagated from file dialog";
+        return;
+    }
+
+    const add_file_t result = FileMan::instance().addFile(fileUrl, categories);
+
+    if (result.status() != 0 && result.status() != EEXIST)
+    {
+        logCritical << "FileMan::addFile() failed with error: " << result.status();
+        return;
+    }
+
+    const QVariantMap entry = {
+        {"name",       FileMan::getFileName(fileUrl)},
+        {"path", result.location().toDisplayString()}
+    };
+
+    QWriteLocker lock(&varLock);
+
+    m_audioList.append(entry);
+
+    emit audioListChanged(m_audioList);
 }
 
 // PrayerEngine::Prayer PrayerEngine::currentPrayer(Adhan::Instant when)
 // { return Munadi::PrayerEngine::m_revPrayerEnumMap.value(m_prayerTimes.currentPrayer(when)); }
 
-int PrayerEngine::localeGuard() const
-{ return this->m_localeChangeCount; }
+void PrayerEngine::modifyPrayerConfig(int prayerIndex, const QString &field, const QVariant &value)
+{
+    if (prayerIndex < 0 || prayerIndex >= m_prayerConfig.size())
+        return;
+
+    static const QSet<QString> validFields = {"adjustment", "volume", "athan_idx"};
+
+    if (!validFields.contains(field))
+    {
+        logCritical << field << "is not a valid field in prayerConfig";
+        return;
+    }
+
+    QWriteLocker lock(&varLock);
+
+    QVariantMap config          = m_prayerConfig[prayerIndex].toMap();
+    config[field]               = value;
+    m_prayerConfig[prayerIndex] = config;
+
+    emit prayerConfigChanged(m_prayerConfig);
+}
 
 QString PrayerEngine::prayerName(PrayerEngine::Prayer prayer)
 { return m_prayerDisplayNames.value(prayer); }
@@ -127,9 +159,60 @@ QStringList PrayerEngine::prayerNamesList()
 
 void PrayerEngine::refreshText()
 {
-    this->init();
+    this->initTexts();
     ++m_localeChangeCount;
     emit localeChanged();
+}
+
+auto PrayerEngine::removeAthan(int selectedIndex) -> void
+{
+    if (selectedIndex < this->defaultAudioCount || selectedIndex >= m_audioList.size())
+        return;
+
+    const QString   filePath = this->m_audioList[selectedIndex].toMap().value("path").toString();
+    const rm_file_t result   = FileMan::instance().rmFile(QUrl(filePath));
+
+    if (result.status_l() != 0 && result.status_l() != ENOENT)
+    {
+        logCritical << "Fileman::rmFile() failed with error: " << result.status_l();
+        return;
+    }
+
+    QWriteLocker lock(&varLock);
+
+    // Iterate using enum values directly as indices
+    for (int i = static_cast<int>(Prayer::Fajr); i <= static_cast<int>(Prayer::Isha); ++i)
+    {
+        QVariantMap cfg     = m_prayerConfig[i].toMap();
+        const int   current = cfg.value("athan_idx").toInt();
+
+        if (current == selectedIndex)
+        {
+            switch (static_cast<Prayer>(i))
+            {
+            case Prayer::Fajr:
+                cfg["athan_idx"] = 2;
+                break;
+            case Prayer::Maghrib:
+                cfg["athan_idx"] = 1;
+                break;
+            default:
+                cfg["athan_idx"] = 0;
+                break;
+            }
+        }
+        else if (current > selectedIndex)
+        {
+            cfg["athan_idx"] = current - 1;
+        }
+        m_prayerConfig[i] = cfg;
+    }
+
+    m_audioList.removeAt(selectedIndex);
+    m_audioList.squeeze();
+
+    emit audioListChanged(m_audioList);
+    emit prayerConfigChanged(m_prayerConfig);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -158,11 +241,52 @@ const QMap<Adhan::Prayer, PrayerEngine::Prayer> PrayerEngine::m_revPrayerEnumMap
     {   Adhan::Prayer::None,    PrayerEngine::None}
 };
 
+bool PrayerEngine::isValidAudioEntry(const QVariantMap &entry)
+{
+    return entry.contains("name") && entry.contains("path") &&
+           entry.value("name").typeId() == QMetaType::QString &&
+           entry.value("path").typeId() == QMetaType::QString;
+}
+
 QString PrayerEngine::toString(PrayerEngine::Prayer prayer)
 { return QString::fromLatin1(Adhan::PrayerUtils::to_string(m_prayerEnumMap.value(prayer))); }
 
-PrayerEngine::Prayer PrayerEngine::fromString(QStringView prayerString)
+PrayerEngine::Prayer PrayerEngine::fromString(QStringView prayerName)
 {
     return m_revPrayerEnumMap.value(
-        Adhan::PrayerUtils::from_string(QStringView(prayerString).toLatin1()));
+        Adhan::PrayerUtils::from_string(QStringView(prayerName).toLatin1()));
+}
+
+void PrayerEngine::setAudioList(const QVariantList &audioList)
+{
+    QWriteLocker lock(&varLock);
+
+    QVariantList validated;
+    validated.reserve(audioList.size());
+
+    for (const QVariant &item : audioList)
+    {
+        const QVariantMap entry = item.toMap();
+
+        if (!PrayerEngine::isValidAudioEntry(entry))
+        {
+            qWarning() << "PrayerEngine: dropping malformed audioList entry" << entry;
+            continue;
+        }
+
+        validated.append(entry);
+    }
+
+    m_audioList = validated;
+
+    emit audioListChanged(m_audioList);
+}
+
+void PrayerEngine::setPrayerConfig(const QVariantList &prayerConfig)
+{
+    QWriteLocker lock(&varLock);
+
+    m_prayerConfig = prayerConfig;
+
+    emit prayerConfigChanged(m_prayerConfig);
 }

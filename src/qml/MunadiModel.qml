@@ -2,26 +2,27 @@ import QtQuick
 // import QtCore
 import QtQuick.Controls.Material
 import "qrc:/qt/qml/Munadi/data/Adhan.js" as Adhan
+import Munadi
 
 QtObject {
     id: munadiModel
 
     property string asr: sysLocale.toString(prayerTimes.asr, isoClock ? "hh:mm" : "hh:mm ap")
     property bool athanMuted: false
-    property var audioList: [
-        {
-            "name": "Makkah (built-in)",
-            "path": "qrc:/qt/qml/Munadi/data/athan-makkah.ogg"
-        },
-        {
-            "name": "Ar-Rashid (built-in)",
-            "path": "qrc:/qt/qml/Munadi/data/athan-arRashid.ogg"
-        },
-        {
-            "name": "Fajr (built-in)",
-            "path": "qrc:/qt/qml/Munadi/data/fajr-athan.ogg"
-        }
-    ]
+    // property var audioList: [
+    //     {
+    //         "name": "Makkah (built-in)",
+    //         "path": "qrc:/qt/qml/Munadi/data/athan-makkah.ogg"
+    //     },
+    //     {
+    //         "name": "Ar-Rashid (built-in)",
+    //         "path": "qrc:/qt/qml/Munadi/data/athan-arRashid.ogg"
+    //     },
+    //     {
+    //         "name": "Fajr (built-in)",
+    //         "path": "qrc:/qt/qml/Munadi/data/fajr-athan.ogg"
+    //     }
+    // ]
     property bool bgImage: true
     property int bg_img_blur: 29
     property var calcMethod: [
@@ -277,7 +278,7 @@ QtObject {
                 mm.timeLeftStr += qsTr("Seconds until ");
             }
 
-            mm.timeLeftStr += mm.prayerNames[mm.nextPrayer];
+            mm.timeLeftStr += PrayerEngine.prayerNamesList[mm.nextPrayer];
         }
         console.debug("timeLeftStr", mm.timeLeftStr);
     }
@@ -312,12 +313,12 @@ QtObject {
         console.debug(new Date(), ': invalidate()');
         var params = calcMethod[calcMethodIndex]['method']();
         params.madhab = madhab;
-        params.adjustments.fajr = prayerConfig[0].adjustment;
-        params.adjustments.sunrise = prayerConfig[1].adjustment;
-        params.adjustments.dhuhr = prayerConfig[2].adjustment;
-        params.adjustments.asr = prayerConfig[3].adjustment;
-        params.adjustments.maghrib = prayerConfig[4].adjustment;
-        params.adjustments.isha = prayerConfig[5].adjustment;
+        params.adjustments.fajr = PrayerEngine.prayerConfig[0].adjustment;
+        params.adjustments.sunrise = PrayerEngine.prayerConfig[1].adjustment;
+        params.adjustments.dhuhr = PrayerEngine.prayerConfig[2].adjustment;
+        params.adjustments.asr = PrayerEngine.prayerConfig[3].adjustment;
+        params.adjustments.maghrib = PrayerEngine.prayerConfig[4].adjustment;
+        params.adjustments.isha = PrayerEngine.prayerConfig[5].adjustment;
         mm.params = params;
 
         var coordinates = new Adhan.adhan.Coordinates(latitude, longitude);

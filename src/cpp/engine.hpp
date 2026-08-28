@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QQmlEngine>
+#include <QReadWriteLock>
 #include <memory>
 
 #include <adhan/CalculationMethod.hpp>
@@ -17,8 +18,9 @@ class PrayerEngine : public QObject
     Q_CLASSINFO("RegisterEnumClassesUnscoped", "false")
     QML_ELEMENT
     QML_SINGLETON
-    Q_PROPERTY(bool localeGuard READ localeGuard NOTIFY localeChanged)
-    Q_PROPERTY(QVariantList prayerConfig READ prayerConfig WRITE setPrayerConfig NOTIFY
+    Q_PROPERTY(int localeGuard MEMBER m_localeChangeCount NOTIFY localeChanged)
+    Q_PROPERTY(QVariantList audioList MEMBER m_audioList WRITE setAudioList NOTIFY audioListChanged)
+    Q_PROPERTY(QVariantList prayerConfig MEMBER m_prayerConfig WRITE setPrayerConfig NOTIFY
                    prayerConfigChanged)
     Q_PROPERTY(QStringList prayerNamesList READ prayerNamesList NOTIFY localeChanged)
     // Q_PROPERTY(PrayerEngine::Prayer currentPrayer READ currentPrayer NOTIFY timeChanged)
@@ -42,22 +44,23 @@ class PrayerEngine : public QObject
     static auto create(QQmlEngine *, QJSEngine *) -> PrayerEngine *;
     static auto instance() -> PrayerEngine &;
 
-    // auto        currentPrayer(Adhan::Instant when = Adhan::now()) -> PrayerEngine::Prayer;
-    [[nodiscard]] auto localeGuard() const -> int;
-    [[nodiscard]] auto prayerConfig() const -> QVariantList;
-    auto               prayerNamesList() -> QStringList;
+    // auto currentPrayer(Adhan::Instant when = Adhan::now()) -> PrayerEngine::Prayer;
+    auto prayerNamesList() -> QStringList;
 
-    Q_INVOKABLE [[nodiscard]] auto prayerName(Prayer) -> QString;
-    Q_INVOKABLE auto               removeAthanIndex(int rmIdx) -> void;
+    Q_INVOKABLE auto               addAthan(const QUrl &fileUrl, int fileDialogCategory) -> void;
+    Q_INVOKABLE auto               modifyPrayerConfig(int prayerIndex, const QString &field,
+                                                      const QVariant &value) -> void;
+    Q_INVOKABLE [[nodiscard]] auto prayerName(Prayer prayerEnum) -> QString;
+    Q_INVOKABLE auto               removeAthan(int selectedIndex) -> void;
 
   signals:
+    auto audioListChanged(const QVariantList &audioList) -> void;
     auto localeChanged() -> void;
-    auto prayerConfigChanged(const QVariantList &config) -> void;
+    auto prayerConfigChanged(const QVariantList &prayerConfig) -> void;
     // void timeChanged();
 
   public slots:
     auto refreshText() -> void;
-    auto setPrayerConfig(const QVariantList &config) -> void;
 
   private:
     Q_DISABLE_COPY_MOVE(PrayerEngine);
@@ -69,18 +72,27 @@ class PrayerEngine : public QObject
     static const QMap<Prayer, Adhan::Prayer> m_prayerEnumMap;
     static const QMap<Adhan::Prayer, Prayer> m_revPrayerEnumMap;
 
+    qsizetype                           defaultAudioCount;
+    QVariantList                        m_audioList;
     QAtomicInt                          m_localeChangeCount;
     QMap<Prayer, QString>               m_prayerDisplayNames;
     QVariantList                        m_prayerConfig;
     std::unique_ptr<Adhan::PrayerTimes> m_prayerTimes;
+    QReadWriteLock                      varLock;
 
     /////////////////////////////////////////////////////////////
     //  Functions
     /////////////////////////////////////////////////////////////
-    [[nodiscard]] static auto toString(Prayer) -> QString;
-    static auto               fromString(QStringView) -> Prayer;
 
-    auto init() -> void;
+    [[nodiscard]] static auto isValidAudioEntry(const QVariantMap &entry) -> bool;
+    static auto               fromString(QStringView prayerName) -> Prayer;
+    [[nodiscard]] static auto toString(Prayer prayerEnum) -> QString;
+
+    auto initTexts() -> void;
+
+  private slots:
+    auto setAudioList(const QVariantList &audioList) -> void;
+    auto setPrayerConfig(const QVariantList &prayerConfig) -> void;
 };
 
 class UiEngine : public QObject

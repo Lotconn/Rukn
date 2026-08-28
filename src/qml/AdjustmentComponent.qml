@@ -45,13 +45,7 @@ ColumnLayout {
             stepSize: 0.05
             value: PrayerEngine.prayerConfig[prayerTab.currentIndex].volume
 
-            onMoved: {
-                const idx = prayerTab.currentIndex;
-                const config = PrayerEngine.prayerConfig;
-
-                config[idx].volume = value;
-                PrayerEngine.prayerConfig = config;
-            }
+            onMoved: PrayerEngine.modifyPrayerConfig(prayerTab.currentIndex, "volume", volumeSlider.value)
         }
 
         Text {
@@ -80,11 +74,7 @@ ColumnLayout {
             value: PrayerEngine.prayerConfig[prayerTab.currentIndex].adjustment
 
             onMoved: {
-                const idx = prayerTab.currentIndex;
-                const config = PrayerEngine.prayerConfig;
-
-                config[idx].adjustment = value;
-                PrayerEngine.prayerConfig = config;
+                PrayerEngine.modifyPrayerConfig(prayerTab.currentIndex, "adjustment", minutesSlider.value);
                 mm.invalidate();
             }
             onPressedChanged: {
@@ -117,17 +107,10 @@ ColumnLayout {
             Layout.fillWidth: true
             currentIndex: PrayerEngine.prayerConfig[prayerTab.currentIndex].athan_idx
             enabled: prayerTab.currentIndex !== PrayerEngine.Prayer.Sunrise
-            model: mm.audioList
+            model: PrayerEngine.audioList
             textRole: "name"
 
-            onActivated: {
-                const idx = prayerTab.currentIndex;
-                const config = PrayerEngine.prayerConfig;
-
-                config[idx].athan_idx = athanComboBox.currentIndex;
-                PrayerEngine.prayerConfig = config;
-            }
-            onPressedChanged: model = mm.audioList
+            onActivated: PrayerEngine.modifyPrayerConfig(prayerTab.currentIndex, "athan_idx", athanComboBox.currentIndex)
         }
 
         Item {}

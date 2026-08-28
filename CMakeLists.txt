@@ -164,16 +164,18 @@ set(MUNADI_JS_FILES
 
 set(MUNADI_SOURCES
   src/cpp/alarm.h
-  src/cpp/engine.cpp
-  src/cpp/engine_p.cpp
   src/cpp/engine.h
   src/cpp/engine.hpp
   src/cpp/engine_p.hpp
+  src/cpp/internal-helpers.hpp
+  src/cpp/macos_window.h
+  src/cpp/updater.h
+  src/cpp/engine.cpp
+  src/cpp/engine_p.cpp
+  src/cpp/internal-helpers.cpp
   src/cpp/PrayerEngine.cpp
   src/cpp/UiEngine.cpp
-  src/cpp/macos_window.h
   src/cpp/updater.cpp
-  src/cpp/updater.h
 )
 
 if(APPLE)

@@ -58,6 +58,7 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
+        console.log("App completion started");
         settings.category = "App";
         // [BUG]: values are parsed as strings, not booleans
         // handle booleans with helper function
@@ -74,10 +75,12 @@ ApplicationWindow {
         newsVersion = settings.value("newsVersion", "");
 
         settings.category = "Adhan";
-        var audioList = settings.value("audioList", JSON.stringify(mm.audioList));
+        var audioList = settings.value("audioList", JSON.stringify(PrayerEngine.audioList));
         try {
-            mm.audioList = JSON.parse(audioList);
-        } catch (_) {}
+            PrayerEngine.audioList = JSON.parse(audioList);
+        } catch (e) {
+            console.warn("Munadi: failed to parse stored audioList, keeping defaults:", e.message);
+        }
         mm.athanMuted = settingsBool("athanMuted", mm.athanMuted);
         mm.calcMethodIndex = settings.value("calcMethodIndex", mm.calcMethodIndex);
         mm.calendarPreferenceIndex = settings.value("calendarPreferenceIndex", mm.calendarPreferenceIndex);
@@ -91,7 +94,9 @@ ApplicationWindow {
         var prayerConfig = settings.value("prayerConfig", JSON.stringify(PrayerEngine.prayerConfig));
         try {
             PrayerEngine.prayerConfig = JSON.parse(prayerConfig);
-        } catch (_) {}
+        } catch (e) {
+            console.warn("Munadi: failed to parse stored prayerConfig, keeping defaults:", e.message);
+        }
 
         settings.category = "Window";
         mainWindow.width = settings.value("width", mainWindow.width);
@@ -145,7 +150,7 @@ ApplicationWindow {
 
         settings.category = "Adhan";
         settings.setValue("athanMuted", mm.athanMuted);
-        settings.setValue("audioList", JSON.stringify(mm.audioList));
+        settings.setValue("audioList", JSON.stringify(PrayerEngine.audioList));
         settings.setValue("calcMethodIndex", mm.calcMethodIndex);
         settings.setValue("calendarPreferenceIndex", mm.calendarPreferenceIndex);
         settings.setValue("checkForUpdates", mm.checkForUpdates);
@@ -424,7 +429,7 @@ ApplicationWindow {
                 mm.refreshTable();
 
                 const athan_idx = PrayerEngine.prayerConfig[mm.currentPrayer].athan_idx;
-                athan.source = mm.audioList[athan_idx]["path"];
+                athan.source = PrayerEngine.audioList[athan_idx].path;
                 athan.audioOutput.volume = PrayerEngine.prayerConfig[mm.currentPrayer].volume;
 
                 console.debug("athan.audioOutput.volume:", athan.audioOutput.volume);
