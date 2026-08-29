@@ -38,7 +38,7 @@ Item {
                 font.pixelSize: Math.min(parent.height, parent.width) / prayerRow.pixelDiv
                 font.weight: Font.Thin
                 text: {
-                    PrayerEngine.localeGuard;
+                    CoreEngine.localeGuard;
                     PrayerEngine.prayerName(prayerRow.prayerId);
                 }
                 visible: !mm.locationNotSet

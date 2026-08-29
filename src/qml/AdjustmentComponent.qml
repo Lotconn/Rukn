@@ -43,9 +43,9 @@ ColumnLayout {
             enabled: prayerTab.currentIndex !== PrayerEngine.Prayer.Sunrise
             snapMode: Slider.SnapAlways
             stepSize: 0.05
-            value: PrayerEngine.prayerConfig[prayerTab.currentIndex].volume
+            value: CoreEngine.prayerConfig[prayerTab.currentIndex].volume
 
-            onMoved: PrayerEngine.modifyPrayerConfig(prayerTab.currentIndex, "volume", volumeSlider.value)
+            onMoved: CoreEngine.modifyPrayerConfig(prayerTab.currentIndex, "volume", volumeSlider.value)
         }
 
         Text {
@@ -71,10 +71,10 @@ ColumnLayout {
             from: -30
             stepSize: 1
             to: 60
-            value: PrayerEngine.prayerConfig[prayerTab.currentIndex].adjustment
+            value: CoreEngine.prayerConfig[prayerTab.currentIndex].adjustment
 
             onMoved: {
-                PrayerEngine.modifyPrayerConfig(prayerTab.currentIndex, "adjustment", minutesSlider.value);
+                CoreEngine.modifyPrayerConfig(prayerTab.currentIndex, "adjustment", minutesSlider.value);
                 mm.invalidate();
             }
             onPressedChanged: {
@@ -105,12 +105,12 @@ ColumnLayout {
             id: athanComboBox
 
             Layout.fillWidth: true
-            currentIndex: PrayerEngine.prayerConfig[prayerTab.currentIndex].athan_idx
+            currentIndex: CoreEngine.prayerConfig[prayerTab.currentIndex].athan_idx
             enabled: prayerTab.currentIndex !== PrayerEngine.Prayer.Sunrise
-            model: PrayerEngine.audioList
+            model: CoreEngine.audioList
             textRole: "name"
 
-            onActivated: PrayerEngine.modifyPrayerConfig(prayerTab.currentIndex, "athan_idx", athanComboBox.currentIndex)
+            onActivated: CoreEngine.modifyPrayerConfig(prayerTab.currentIndex, "athan_idx", athanComboBox.currentIndex)
         }
 
         Item {}

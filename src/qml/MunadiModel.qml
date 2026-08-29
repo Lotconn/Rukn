@@ -191,7 +191,7 @@ QtObject {
     property string srise: sysLocale.toString(prayerTimes.sunrise, isoClock ? "hh:mm" : "hh:mm ap")
     property bool stickerMode: false
     property var sysLocale: Qt.locale()
-    // property var themeList: [qsTr("System"), qsTr("Light"), qsTr("Dark")]
+    property var themeList: [qsTr("System"), qsTr("Light"), qsTr("Dark")]
     property int themeListIndex: 0
     property var timeForCurrentPrayer
     property var timeForNextPrayer
@@ -313,12 +313,12 @@ QtObject {
         console.debug(new Date(), ': invalidate()');
         var params = calcMethod[calcMethodIndex]['method']();
         params.madhab = madhab;
-        params.adjustments.fajr = PrayerEngine.prayerConfig[0].adjustment;
-        params.adjustments.sunrise = PrayerEngine.prayerConfig[1].adjustment;
-        params.adjustments.dhuhr = PrayerEngine.prayerConfig[2].adjustment;
-        params.adjustments.asr = PrayerEngine.prayerConfig[3].adjustment;
-        params.adjustments.maghrib = PrayerEngine.prayerConfig[4].adjustment;
-        params.adjustments.isha = PrayerEngine.prayerConfig[5].adjustment;
+        params.adjustments.fajr = CoreEngine.prayerConfig[0].adjustment;
+        params.adjustments.sunrise = CoreEngine.prayerConfig[1].adjustment;
+        params.adjustments.dhuhr = CoreEngine.prayerConfig[2].adjustment;
+        params.adjustments.asr = CoreEngine.prayerConfig[3].adjustment;
+        params.adjustments.maghrib = CoreEngine.prayerConfig[4].adjustment;
+        params.adjustments.isha = CoreEngine.prayerConfig[5].adjustment;
         mm.params = params;
 
         var coordinates = new Adhan.adhan.Coordinates(latitude, longitude);

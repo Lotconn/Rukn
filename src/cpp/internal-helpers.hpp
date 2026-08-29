@@ -1,7 +1,7 @@
 #pragma once
 
+#include <PrayerEngine.hpp>
 #include <QLoggingCategory>
-#include <engine.hpp>
 
 Q_DECLARE_LOGGING_CATEGORY(munadi)
 
