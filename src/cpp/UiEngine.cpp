@@ -1,10 +1,13 @@
+#include <CoreEngine.hpp>
+#include <PrayerEngine.hpp>
 #include <UiEngine.hpp>
 
-using UiEngine = Munadi::UiEngine;
+namespace Munadi
+{
 
-UiEngine *UiEngine::s_singletonInstance = nullptr;
+UiEngine *UiEngine::s_singletonInstance{nullptr};
 
-UiEngine *UiEngine::create(QQmlEngine * /*unused*/, QJSEngine * /*unused*/)
+UiEngine *UiEngine::create(QQmlEngine *qmlEngine, QJSEngine * /*unused*/)
 {
 
     if (UiEngine::s_singletonInstance == nullptr)
@@ -16,6 +19,15 @@ UiEngine *UiEngine::create(QQmlEngine * /*unused*/, QJSEngine * /*unused*/)
     // to garbage-collect or delete it.
     QQmlEngine::setObjectOwnership(UiEngine::s_singletonInstance, QQmlEngine::CppOwnership);
 
+    // Forces CoreEngine to exist through QML if it doesn't yet then wires up the locale-change
+    // fan-out.
+    auto *core = qmlEngine->singletonInstance<CoreEngine *>("Munadi", "CoreEngine");
+    QObject::connect(core, &CoreEngine::localeChanged, UiEngine::s_singletonInstance,
+                     &UiEngine::refreshTexts);
+
+    // Forces PrayerEngine to exist through QML too if it doesn't yet for the same reason
+    qmlEngine->singletonInstance<PrayerEngine *>("Munadi", "PrayerEngine");
+
     return UiEngine::s_singletonInstance;
 }
 
@@ -25,17 +37,19 @@ UiEngine &UiEngine::instance()
         qFatal("Munadi: no instance constructed. Munadi must be explicitly instantiated before "
                "invoking the instance");
 
-    return *s_singletonInstance;
+    return *UiEngine::s_singletonInstance;
 }
 
-UiEngine::UiEngine(QObject *parent) : QObject(parent)
+UiEngine::UiEngine(QObject *parent) : QObject{parent}
 {
 
-    if (s_singletonInstance != nullptr)
+    if (UiEngine::s_singletonInstance != nullptr)
         qFatal("Munadi: A second Munadi instance was constructed; only one "
                "instance may exist per process");
 
     UiEngine::s_singletonInstance = this;
+
+    this->m_themeListIdx = 0;
 }
 
 UiEngine::~UiEngine()
@@ -45,11 +59,16 @@ UiEngine::~UiEngine()
         UiEngine::s_singletonInstance = nullptr;
 }
 
+void UiEngine::refreshTexts()
+{ PrayerEngine::instance().reInitTexts(); }
+
 QStringList UiEngine::themeList()
 { return {tr("System"), tr("Light"), tr("Dark")}; }
 
 int UiEngine::themeListIndex()
-{ return m_themeListIdx; }
+{ return this->m_themeListIdx; }
 
 void UiEngine::setThemeListIdx(int idx)
-{ m_themeListIdx = idx; }
+{ this->m_themeListIdx = idx; }
+
+} // namespace Munadi

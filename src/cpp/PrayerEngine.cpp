@@ -1,7 +1,9 @@
 #include <PrayerEngine.hpp>
 
-using PrayerEngine = Munadi::PrayerEngine;
-using Prayer       = Munadi::PrayerEngine::Prayer;
+namespace Munadi
+{
+
+using Prayer = Munadi::PrayerEngine::Prayer;
 
 PrayerEngine *PrayerEngine::create(QQmlEngine * /*unused*/, QJSEngine * /*unused*/)
 {
@@ -24,12 +26,12 @@ PrayerEngine &PrayerEngine::instance()
                "instantiated before "
                "invoking the instance");
 
-    return *s_singletonInstance;
+    return *PrayerEngine::s_singletonInstance;
 }
 
 PrayerEngine::PrayerEngine(QObject *parent) : QObject(parent)
 {
-    if (s_singletonInstance != nullptr)
+    if (PrayerEngine::s_singletonInstance != nullptr)
         qFatal("Munadi:PrayerEngine: A second Munadi instance was constructed; only one "
                "instance may exist per process");
 
@@ -49,7 +51,7 @@ PrayerEngine::~PrayerEngine()
 
 void PrayerEngine::initTexts()
 {
-    m_prayerDisplayNames = {
+    this->m_prayerDisplayNames = {
         {   Prayer::Fajr,    tr("Fajr")},
         {Prayer::Sunrise, tr("Sunrise")},
         {  Prayer::Dhuhr,   tr("Dhuhr")},
@@ -59,14 +61,14 @@ void PrayerEngine::initTexts()
     };
 }
 
-QString PrayerEngine::prayerName(PrayerEngine::Prayer prayer)
-{ return m_prayerDisplayNames.value(prayer); }
+QString PrayerEngine::prayerName(PrayerEngine::Prayer prayerEnum)
+{ return this->m_prayerDisplayNames.value(prayerEnum); }
 
 QStringList PrayerEngine::prayerNamesList()
 {
     QStringList list;
 
-    for (const auto &[key, value] : m_prayerDisplayNames.asKeyValueRange())
+    for (const auto &[key, value] : this->m_prayerDisplayNames.asKeyValueRange())
         list << value;
 
     return list;
@@ -79,33 +81,14 @@ void PrayerEngine::reInitTexts()
 //  Private Members
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-PrayerEngine *PrayerEngine::s_singletonInstance = nullptr;
-
-const QMap<PrayerEngine::Prayer, Adhan::Prayer> PrayerEngine::m_prayerEnumMap = {
-    {   PrayerEngine::Fajr,    Adhan::Prayer::Fajr},
-    {PrayerEngine::Sunrise, Adhan::Prayer::Sunrise},
-    {  PrayerEngine::Dhuhr,   Adhan::Prayer::Dhuhr},
-    {    PrayerEngine::Asr,     Adhan::Prayer::Asr},
-    {PrayerEngine::Maghrib, Adhan::Prayer::Maghrib},
-    {   PrayerEngine::Isha,    Adhan::Prayer::Isha},
-    {   PrayerEngine::None,    Adhan::Prayer::None}
-};
-
-const QMap<Adhan::Prayer, PrayerEngine::Prayer> PrayerEngine::m_revPrayerEnumMap = {
-    {   Adhan::Prayer::Fajr,    PrayerEngine::Fajr},
-    {Adhan::Prayer::Sunrise, PrayerEngine::Sunrise},
-    {  Adhan::Prayer::Dhuhr,   PrayerEngine::Dhuhr},
-    {    Adhan::Prayer::Asr,     PrayerEngine::Asr},
-    {Adhan::Prayer::Maghrib, PrayerEngine::Maghrib},
-    {   Adhan::Prayer::Isha,    PrayerEngine::Isha},
-    {   Adhan::Prayer::None,    PrayerEngine::None}
-};
+PrayerEngine *PrayerEngine::s_singletonInstance{nullptr};
 
 QString PrayerEngine::toString(PrayerEngine::Prayer prayer)
-{ return QString::fromLatin1(Adhan::PrayerUtils::to_string(m_prayerEnumMap.value(prayer))); }
+{ return QString::fromLatin1(Adhan::PrayerUtils::to_string(this->m_prayerEnumMap.value(prayer))); }
 
 PrayerEngine::Prayer PrayerEngine::fromString(QStringView prayerName)
 {
-    return m_revPrayerEnumMap.value(
-        Adhan::PrayerUtils::from_string(QStringView(prayerName).toLatin1()));
+    return this->m_revPrayerEnumMap.value(
+        Adhan::PrayerUtils::from_string(QStringView{prayerName}.toLatin1().toStdString()));
 }
+} // namespace Munadi

@@ -5,11 +5,8 @@ import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.Effects
 import QtQuick.Window
-//import QtQuick.VirtualKeyboard
 import Qt.labs.platform
 
-// import "qrc:/qt/qml/Munadi/data/Adhan.js" as Adhan
-import Lotconn.FileMan
 import Munadi
 
 ApplicationWindow {
@@ -132,9 +129,6 @@ ApplicationWindow {
 
         if (Qt.application.layoutDirection === Qt.RightToLeft)
             console.debug("Layout is" + qsTr("QT_LAYOUT_DIRECTION", "QGuiApplication"));
-
-        var e = FileMan.refreshStore();
-        console.debug("FileMan::refreshStore() return:", e);
     }
     Component.onDestruction: {
         settings.category = "App";

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16...4.4)
 
 project(munadi
-  VERSION 26.08
+  VERSION 26.10
   DESCRIPTION "Your Simple and Beautiful Athan App"
   LANGUAGES CXX C
 )
@@ -95,8 +95,7 @@ FetchContent_MakeAvailable(SingleApplication)
 # Lotconn/adhan-cpp
 FetchContent_Declare(Adhan-cpp
   GIT_REPOSITORY https://github.com/lotconn/adhan-cpp
-  GIT_TAG 10c84bf165684add3f0a4e3cd670212b42c567f2
-  GIT_SHALLOW TRUE
+  GIT_TAG bf13ff4cbcc855756111cad1ee3d392d83c8b153
 )
 set(FM_BUILD_AS "STATIC" CACHE STRING "Build Adhan C++ as static")
 FetchContent_MakeAvailable(Adhan-cpp)
@@ -105,7 +104,6 @@ FetchContent_MakeAvailable(Adhan-cpp)
 FetchContent_Declare(FileMan
   GIT_REPOSITORY https://gitlab.com/lotconn/fileman
   GIT_TAG 830b671594be51131a3bc66b85454f7130174d8f
-  GIT_SHALLOW TRUE
 )
 set(FM_BUILD_AS "STATIC" CACHE STRING "Build FileMan as static")
 FetchContent_MakeAvailable(FileMan)
@@ -242,7 +240,7 @@ qt_add_qml_module(${PROJECT_NAME}
 qt_add_translations(${PROJECT_NAME}
   SOURCE_TARGETS ${PROJECT_NAME}
   TS_FILE_BASE ${PROEJCT_NAME_LOWER}
-  TS_OUTPUT_DIRECTORY src/i18n/
+  TS_FILE_DIR src/i18n/
   RESOURCE_PREFIX qt/qml/Munadi/i18n
 )
 

@@ -5,6 +5,7 @@
 
 namespace Munadi
 {
+
 class UiEngine : public QObject
 {
     Q_OBJECT
@@ -25,9 +26,12 @@ class UiEngine : public QObject
     static UiEngine *create(QQmlEngine *, QJSEngine *);
     static UiEngine &instance();
 
-    QStringList themeList();
-    int         themeListIndex();
-    void        setThemeListIdx(int);
+    auto themeList() -> QStringList;
+    auto themeListIndex() -> int;
+    auto setThemeListIdx(int) -> void;
+
+  public slots:
+    auto refreshTexts() -> void;
 
   private:
     Q_DISABLE_COPY_MOVE(UiEngine);
@@ -36,4 +40,5 @@ class UiEngine : public QObject
 
     int m_themeListIdx;
 };
+
 } // namespace Munadi

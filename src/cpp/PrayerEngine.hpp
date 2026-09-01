@@ -2,15 +2,16 @@
 
 #include <QObject>
 #include <QQmlEngine>
-#include <memory>
+// #include <memory>
 
-#include <adhan/CalculationMethod.hpp>
-#include <adhan/Coordinates.hpp>
-#include <adhan/DateUtils.hpp>
+// #include <adhan/CalculationMethod.hpp>
+// #include <adhan/Coordinates.hpp>
+// #include <adhan/DateUtils.hpp>
 #include <adhan/PrayerTimes.hpp>
 
 namespace Munadi
 {
+
 class PrayerEngine : public QObject
 {
     Q_OBJECT
@@ -50,10 +51,10 @@ class PrayerEngine : public QObject
     //  Functions
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Q_INVOKABLE [[nodiscard]] auto prayerName(Prayer prayerEnum) -> QString;
+    Q_INVOKABLE [[nodiscard]] QString prayerName(Prayer prayerEnum);
     // void timeChanged();
 
-  public slots:
+  public slots: // NOLINT(readability-redundant-access-specifiers)
     auto reInitTexts() -> void;
 
   private:
@@ -63,22 +64,41 @@ class PrayerEngine : public QObject
     //  Variables
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    static PrayerEngine                     *s_singletonInstance;
-    static const QMap<Prayer, Adhan::Prayer> m_prayerEnumMap;
-    static const QMap<Adhan::Prayer, Prayer> m_revPrayerEnumMap;
+    static PrayerEngine *s_singletonInstance;
 
-    QMap<Prayer, QString>               m_prayerDisplayNames;
-    std::unique_ptr<Adhan::PrayerTimes> m_prayerTimes;
+    const QMap<Prayer, Adhan::Prayer> m_prayerEnumMap{
+        {   PrayerEngine::Fajr,    Adhan::Prayer::Fajr},
+        {PrayerEngine::Sunrise, Adhan::Prayer::Sunrise},
+        {  PrayerEngine::Dhuhr,   Adhan::Prayer::Dhuhr},
+        {    PrayerEngine::Asr,     Adhan::Prayer::Asr},
+        {PrayerEngine::Maghrib, Adhan::Prayer::Maghrib},
+        {   PrayerEngine::Isha,    Adhan::Prayer::Isha},
+        {   PrayerEngine::None,    Adhan::Prayer::None}
+    };
+
+    const QMap<Adhan::Prayer, Prayer> m_revPrayerEnumMap{
+        {   Adhan::Prayer::Fajr,    PrayerEngine::Fajr},
+        {Adhan::Prayer::Sunrise, PrayerEngine::Sunrise},
+        {  Adhan::Prayer::Dhuhr,   PrayerEngine::Dhuhr},
+        {    Adhan::Prayer::Asr,     PrayerEngine::Asr},
+        {Adhan::Prayer::Maghrib, PrayerEngine::Maghrib},
+        {   Adhan::Prayer::Isha,    PrayerEngine::Isha},
+        {   Adhan::Prayer::None,    PrayerEngine::None}
+    };
+
+    QMap<Prayer, QString> m_prayerDisplayNames;
+    // std::unique_ptr<Adhan::PrayerTimes> m_prayerTimes;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //  Functions
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    static auto               fromString(QStringView prayerName) -> Prayer;
-    [[nodiscard]] static auto toString(Prayer prayerEnum) -> QString;
+    auto               fromString(QStringView prayerName) -> Prayer;
+    [[nodiscard]] auto toString(Prayer prayerEnum) -> QString;
 
     // auto currentPrayer(Adhan::Instant when = Adhan::now()) -> PrayerEngine::Prayer;
     auto initTexts() -> void;
     auto prayerNamesList() -> QStringList;
 };
+
 } // namespace Munadi

@@ -3,7 +3,6 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Controls.Material
 
-import "qrc:/qt/qml/Munadi/data/Adhan.js" as Adhan
 import Munadi
 
 ColumnLayout {
@@ -49,7 +48,7 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
                 athanTime: mm.fajr
-                prayerId: PrayerEngine.Prayer.Fajr
+                prayerId: PrayerEngine.Fajr
             }
 
             PrayerRow {
@@ -59,7 +58,7 @@ ColumnLayout {
                 Layout.preferredHeight: 30
                 Layout.topMargin: -20
                 athanTime: mm.srise
-                prayerId: PrayerEngine.Prayer.Sunrise
+                prayerId: PrayerEngine.Sunrise
             }
 
             Line {}
@@ -70,7 +69,7 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
                 athanTime: mm.duhr
-                prayerId: PrayerEngine.Prayer.Dhuhr
+                prayerId: PrayerEngine.Dhuhr
             }
 
             Line {}
@@ -81,7 +80,7 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
                 athanTime: mm.asr
-                prayerId: PrayerEngine.Prayer.Asr
+                prayerId: PrayerEngine.Asr
             }
 
             Line {}
@@ -92,7 +91,7 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
                 athanTime: mm.mgrb
-                prayerId: PrayerEngine.Prayer.Maghrib
+                prayerId: PrayerEngine.Maghrib
             }
 
             Line {}
@@ -103,7 +102,7 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
                 athanTime: mm.isha
-                prayerId: PrayerEngine.Prayer.Isha
+                prayerId: PrayerEngine.Isha
             }
         }
     }

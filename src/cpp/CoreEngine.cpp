@@ -1,10 +1,11 @@
 #include "internal-helpers.hpp"
 #include <CoreEngine.hpp>
 #include <PrayerEngine.hpp>
-#include <fileman>
 
-using CoreEngine = Munadi::CoreEngine;
-using Prayer     = Munadi::PrayerEngine::Prayer;
+namespace Munadi
+{
+
+using Prayer = Munadi::PrayerEngine::Prayer;
 
 CoreEngine *CoreEngine::create(QQmlEngine * /*unused*/, QJSEngine * /*unused*/)
 {
@@ -30,33 +31,15 @@ CoreEngine &CoreEngine::instance()
     return *s_singletonInstance;
 }
 
-CoreEngine::CoreEngine(QObject *parent) : QObject(parent)
+CoreEngine::CoreEngine(QObject *parent) : QObject{parent}
 {
     if (s_singletonInstance != nullptr)
         qFatal("Munadi:CoreEngine: A second Munadi instance was constructed; only one "
                "instance may exist per process");
 
+    logDebug << "FileMan::refreshStore() return: " << fileman.refreshStore();
+
     CoreEngine::s_singletonInstance = this;
-
-    m_audioList = {
-        QVariantMap{   {"name", "Makkah (built-in)"},
-                    {"path", "qrc:/qt/qml/Munadi/data/athan-makkah.ogg"}  },
-        QVariantMap{{"name", "Ar-Rashid (built-in)"},
-                    {"path", "qrc:/qt/qml/Munadi/data/athan-arRashid.ogg"}},
-        QVariantMap{     {"name", "Fajr (built-in)"},
-                    {"path", "qrc:/qt/qml/Munadi/data/fajr-athan.ogg"}    }
-    };
-
-    this->defaultAudioCount = m_audioList.size();
-
-    m_prayerConfig = {
-        QVariantMap{{"adjustment", 0}, {"volume", 0.2}, {"athan_idx", 2}}, // [0] Fajr
-        QVariantMap{{"adjustment", 0}, {"volume", 0.0}, {"athan_idx", 0}}, // [1] Sunrise
-        QVariantMap{{"adjustment", 0}, {"volume", 1.0}, {"athan_idx", 0}}, // [2] Dhuhr
-        QVariantMap{{"adjustment", 0}, {"volume", 1.0}, {"athan_idx", 0}}, // [3] Asr
-        QVariantMap{{"adjustment", 0}, {"volume", 1.0}, {"athan_idx", 1}}, // [4] Maghrib
-        QVariantMap{{"adjustment", 0}, {"volume", 0.5}, {"athan_idx", 0}}  // [5] Isha
-    };
 }
 
 CoreEngine::~CoreEngine()
@@ -67,7 +50,7 @@ CoreEngine::~CoreEngine()
 
 auto CoreEngine::addAthan(const QUrl &fileUrl, int fileDialogCategory) -> void
 {
-    FileMan::Categories categories = FileMan::None;
+    FileMan::Categories categories{FileMan::None};
 
     switch (fileDialogCategory)
     {
@@ -87,7 +70,7 @@ auto CoreEngine::addAthan(const QUrl &fileUrl, int fileDialogCategory) -> void
         return;
     }
 
-    const add_file_t result = FileMan::instance().addFile(fileUrl, categories);
+    const add_file_t result{fileman.addFile(fileUrl, categories)};
 
     if (result.status() != 0 && result.status() != EEXIST)
     {
@@ -95,30 +78,24 @@ auto CoreEngine::addAthan(const QUrl &fileUrl, int fileDialogCategory) -> void
         return;
     }
 
-    const QVariantMap entry = {
+    const QVariantMap entry{
         {"name",       FileMan::getFileName(fileUrl)},
         {"path", result.location().toDisplayString()}
     };
 
-    QWriteLocker lock(&varLock);
+    QWriteLocker lock{&this->varLock};
 
-    m_audioList.append(entry);
+    this->m_audioList.append(entry);
 
-    emit audioListChanged(m_audioList);
-}
-
-void CoreEngine::emitLocaleChanged()
-{
-    ++m_localeChangeCount;
-    emit localeChanged();
+    emit audioListChanged(this->m_audioList);
 }
 
 void CoreEngine::modifyPrayerConfig(int prayerIndex, const QString &field, const QVariant &value)
 {
-    if (prayerIndex < 0 || prayerIndex >= m_prayerConfig.size())
+    if (prayerIndex < 0 || prayerIndex >= this->m_prayerConfig.size())
         return;
 
-    static const QSet<QString> validFields = {"adjustment", "volume", "athan_idx"};
+    static const QSet<QString> validFields{"adjustment", "volume", "athan_idx"};
 
     if (!validFields.contains(field))
     {
@@ -126,22 +103,23 @@ void CoreEngine::modifyPrayerConfig(int prayerIndex, const QString &field, const
         return;
     }
 
-    QWriteLocker lock(&varLock);
+    QWriteLocker lock{&this->varLock};
 
-    QVariantMap config          = m_prayerConfig[prayerIndex].toMap();
-    config[field]               = value;
-    m_prayerConfig[prayerIndex] = config;
+    QVariantMap config{this->m_prayerConfig[prayerIndex].toMap()};
 
-    emit prayerConfigChanged(m_prayerConfig);
+    config[field]                     = value;
+    this->m_prayerConfig[prayerIndex] = config;
+
+    emit prayerConfigChanged(this->m_prayerConfig);
 }
 
 auto CoreEngine::removeAthan(int selectedIndex) -> void
 {
-    if (selectedIndex < this->defaultAudioCount || selectedIndex >= m_audioList.size())
+    if (selectedIndex < this->defaultAudioCount || selectedIndex >= this->m_audioList.size())
         return;
 
-    const QString   filePath = this->m_audioList[selectedIndex].toMap().value("path").toString();
-    const rm_file_t result   = FileMan::instance().rmFile(QUrl(filePath));
+    const QString   filePath{this->m_audioList[selectedIndex].toMap().value("path").toString()};
+    const rm_file_t result{fileman.rmFile(QUrl(filePath))};
 
     if (result.status_l() != 0 && result.status_l() != ENOENT)
     {
@@ -149,13 +127,13 @@ auto CoreEngine::removeAthan(int selectedIndex) -> void
         return;
     }
 
-    QWriteLocker lock(&varLock);
+    QWriteLocker lock{&this->varLock};
 
     // Iterate using enum values directly as indices
-    for (int i = static_cast<int>(Prayer::Fajr); i <= static_cast<int>(Prayer::Isha); ++i)
+    for (int i{static_cast<int>(Prayer::Fajr)}; i <= static_cast<int>(Prayer::Isha); ++i)
     {
-        QVariantMap cfg     = m_prayerConfig[i].toMap();
-        const int   current = cfg.value("athan_idx").toInt();
+        QVariantMap cfg{this->m_prayerConfig[i].toMap()};
+        const int   current{cfg.value("athan_idx").toInt()};
 
         if (current == selectedIndex)
         {
@@ -176,21 +154,22 @@ auto CoreEngine::removeAthan(int selectedIndex) -> void
         {
             cfg["athan_idx"] = current - 1;
         }
-        m_prayerConfig[i] = cfg;
+
+        this->m_prayerConfig[i] = cfg;
     }
 
-    m_audioList.removeAt(selectedIndex);
-    m_audioList.squeeze();
+    this->m_audioList.removeAt(selectedIndex);
+    this->m_audioList.squeeze();
 
-    emit audioListChanged(m_audioList);
-    emit prayerConfigChanged(m_prayerConfig);
+    emit this->audioListChanged(this->m_audioList);
+    emit this->prayerConfigChanged(this->m_prayerConfig);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  Private Members
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CoreEngine *CoreEngine::s_singletonInstance = nullptr;
+CoreEngine *CoreEngine::s_singletonInstance{nullptr};
 
 bool CoreEngine::isValidAudioEntry(const QVariantMap &entry)
 {
@@ -199,16 +178,19 @@ bool CoreEngine::isValidAudioEntry(const QVariantMap &entry)
            entry.value("path").typeId() == QMetaType::QString;
 }
 
+int CoreEngine::localeGuard()
+{ return 0; }
+
 void CoreEngine::setAudioList(const QVariantList &audioList)
 {
-    QWriteLocker lock(&varLock);
-
+    QWriteLocker lock{&this->varLock};
     QVariantList validated;
+
     validated.reserve(audioList.size());
 
     for (const QVariant &item : audioList)
     {
-        const QVariantMap entry = item.toMap();
+        const QVariantMap entry{item.toMap()};
 
         if (!CoreEngine::isValidAudioEntry(entry))
         {
@@ -219,16 +201,17 @@ void CoreEngine::setAudioList(const QVariantList &audioList)
         validated.append(entry);
     }
 
-    m_audioList = validated;
+    this->m_audioList = validated;
 
-    emit audioListChanged(m_audioList);
+    emit this->audioListChanged(this->m_audioList);
 }
 
 void CoreEngine::setPrayerConfig(const QVariantList &prayerConfig)
 {
-    QWriteLocker lock(&varLock);
+    QWriteLocker lock{&this->varLock};
 
-    m_prayerConfig = prayerConfig;
+    this->m_prayerConfig = prayerConfig;
 
-    emit prayerConfigChanged(m_prayerConfig);
+    emit this->prayerConfigChanged(this->m_prayerConfig);
 }
+} // namespace Munadi
