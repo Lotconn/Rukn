@@ -66,25 +66,6 @@ int main(int argc, char *argv[])
 
     qDebug() << "System Locale: " << QLocale::system().name();
 
-    QTranslator translator;
-    if (QLocale l(QLocale::system());
-        l.language() == QLocale::Arabic || l.language() == QLocale::Bangla)
-    {
-        l = QLocale(l.language(), l.territory());
-        QLocale::setDefault(l);
-        if (translator.load(l, QLatin1String("munadi"), QLatin1String("_"),
-                            QLatin1String(":/qt/qml/Munadi/i18n")))
-        {
-            app.installTranslator(&translator);
-            qDebug() << "Loaded translator file: " << translator.filePath();
-        }
-    }
-    else if (l.name() != QLatin1String("en_US"))
-    {
-        QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
-        qInfo() << "Setting locale to: " << QLocale().name();
-    }
-
     QQmlApplicationEngine qae;
 
     Engine engine;

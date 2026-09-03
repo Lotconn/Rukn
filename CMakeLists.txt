@@ -234,7 +234,6 @@ qt_add_qml_module(${PROJECT_NAME}
   "${MUNADI_SOURCES}"
   RESOURCES
   "${MUNADI_RESOURCES}"
-  DEPENDENCIES Lotconn.FileMan
 )
 
 qt_add_translations(${PROJECT_NAME}

@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.Layouts
+import Munadi
 
 // import QtCore
 // import QtPositioning
@@ -86,7 +87,7 @@ Page {
 
                     Layout.fillWidth: true
                     currentIndex: mm.themeListIndex
-                    model: mm.themeList
+                    model: UiEngine.themeList
 
                     onActivated: {
                         mm.themeListIndex = currentIndex;

@@ -1,45 +1,41 @@
+#include <QCoreApplication>
+#include <QEvent>
+
 #include "internal-helpers.hpp"
 #include <CoreEngine.hpp>
 #include <PrayerEngine.hpp>
+
+// Q_STATIC_LOGGING_CATEGORY(munadi, "CoreEngine") // Qt >= 6.9
+Q_LOGGING_CATEGORY(coreEngine, "CoreEngine")
 
 namespace Munadi
 {
 
 using Prayer = Munadi::PrayerEngine::Prayer;
 
-CoreEngine *CoreEngine::create(QQmlEngine * /*unused*/, QJSEngine * /*unused*/)
-{
-    if (CoreEngine::s_singletonInstance == nullptr)
-        qFatal("Munadi:CoreEngine: no instance constructed. Munadi must be explicitly "
-               "instantiated before the QML engine loads");
-
-    // The singleton's lifetime is owned by this TU (main()/first construction),
-    // not by the QQmlEngine. Make that explicit so the engine never attempts
-    // to garbage-collect or delete it.
-    QQmlEngine::setObjectOwnership(CoreEngine::s_singletonInstance, QQmlEngine::CppOwnership);
-
-    return CoreEngine::s_singletonInstance;
-}
-
 CoreEngine &CoreEngine::instance()
 {
     if (CoreEngine::s_singletonInstance == nullptr)
-        qFatal("Munadi:CoreEngine: no instance constructed. Munadi must be explicitly "
-               "instantiated before "
-               "invoking the instance");
+        logFatal(coreEngine)
+            << "No instance constructed. Explicit instantiation is required before invoking "
+               "the instance";
 
-    return *s_singletonInstance;
+    return *CoreEngine::s_singletonInstance;
 }
 
 CoreEngine::CoreEngine(QObject *parent) : QObject{parent}
 {
-    if (s_singletonInstance != nullptr)
-        qFatal("Munadi:CoreEngine: A second Munadi instance was constructed; only one "
-               "instance may exist per process");
+    if (CoreEngine::s_singletonInstance != nullptr)
+        logFatal(coreEngine)
+            << "A second instance was constructed; only one instance may exist per process";
 
-    logDebug << "FileMan::refreshStore() return: " << fileman.refreshStore();
+    logDebug(coreEngine) << "FileMan::refreshStore() return: " << fileman.refreshStore();
 
     CoreEngine::s_singletonInstance = this;
+
+    this->applyLocale();
+
+    qApp->installEventFilter(this);
 }
 
 CoreEngine::~CoreEngine()
@@ -66,7 +62,7 @@ auto CoreEngine::addAthan(const QUrl &fileUrl, int fileDialogCategory) -> void
 
     if (categories == FileMan::None)
     {
-        logCritical << "Invalid category propagated from file dialog";
+        logCritical(coreEngine) << "Invalid category propagated from file dialog";
         return;
     }
 
@@ -74,7 +70,7 @@ auto CoreEngine::addAthan(const QUrl &fileUrl, int fileDialogCategory) -> void
 
     if (result.status() != 0 && result.status() != EEXIST)
     {
-        logCritical << "FileMan::addFile() failed with error: " << result.status();
+        logCritical(coreEngine) << "FileMan::addFile() failed with error: " << result.status();
         return;
     }
 
@@ -90,6 +86,26 @@ auto CoreEngine::addAthan(const QUrl &fileUrl, int fileDialogCategory) -> void
     emit audioListChanged(this->m_audioList);
 }
 
+void CoreEngine::applyLocale()
+{
+    qApp->removeTranslator(&m_translator); // no-op if none installed
+
+    QLocale l(QLocale::system());
+
+    if (l.language() == QLocale::Arabic || l.language() == QLocale::Bangla)
+    {
+        l = QLocale(l.language(), l.territory());
+        QLocale::setDefault(l);
+        if (m_translator.load(l, QLatin1String("munadi"), QLatin1String("_"),
+                              QLatin1String(":/qt/qml/Munadi/i18n")))
+            qApp->installTranslator(&m_translator);
+    }
+    else
+    {
+        QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
+    }
+}
+
 void CoreEngine::modifyPrayerConfig(int prayerIndex, const QString &field, const QVariant &value)
 {
     if (prayerIndex < 0 || prayerIndex >= this->m_prayerConfig.size())
@@ -99,7 +115,7 @@ void CoreEngine::modifyPrayerConfig(int prayerIndex, const QString &field, const
 
     if (!validFields.contains(field))
     {
-        logCritical << field << "is not a valid field in prayerConfig";
+        logCritical(coreEngine) << field << "is not a valid field in prayerConfig";
         return;
     }
 
@@ -123,7 +139,7 @@ auto CoreEngine::removeAthan(int selectedIndex) -> void
 
     if (result.status_l() != 0 && result.status_l() != ENOENT)
     {
-        logCritical << "Fileman::rmFile() failed with error: " << result.status_l();
+        logCritical(coreEngine) << "Fileman::rmFile() failed with error: " << result.status_l();
         return;
     }
 
@@ -166,20 +182,33 @@ auto CoreEngine::removeAthan(int selectedIndex) -> void
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+//  Protected Members
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+bool CoreEngine::eventFilter(QObject *object, QEvent *event)
+{
+    switch (event->type())
+    {
+    case QEvent::LocaleChange:
+        // OS-level change
+        logDebug(coreEngine) << "Locale change detected";
+        this->applyLocale();
+    case QEvent::LanguageChange:
+        // App-level change, e.g. language selected from options
+        logDebug(coreEngine) << "New translations loaded";
+        emit this->localeChanged();
+    default:
+        break;
+    }
+
+    return QObject::eventFilter(object, event);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 //  Private Members
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CoreEngine *CoreEngine::s_singletonInstance{nullptr};
-
-bool CoreEngine::isValidAudioEntry(const QVariantMap &entry)
-{
-    return entry.contains("name") && entry.contains("path") &&
-           entry.value("name").typeId() == QMetaType::QString &&
-           entry.value("path").typeId() == QMetaType::QString;
-}
-
-int CoreEngine::localeGuard()
-{ return 0; }
 
 void CoreEngine::setAudioList(const QVariantList &audioList)
 {
@@ -192,7 +221,7 @@ void CoreEngine::setAudioList(const QVariantList &audioList)
     {
         const QVariantMap entry{item.toMap()};
 
-        if (!CoreEngine::isValidAudioEntry(entry))
+        if (!isValidAudioEntry(entry))
         {
             qWarning() << "CoreEngine: dropping malformed audioList entry" << entry;
             continue;

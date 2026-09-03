@@ -15,7 +15,7 @@ ColumnLayout {
         Layout.fillWidth: true
         width: parent.width
 
-        Component.onCompleted: itemAt(PrayerEngine.Prayer.Sunrise).width = 0 // Hide sunrise tab
+        Component.onCompleted: itemAt(PrayerEngine.Sunrise).width = 0 // Hide sunrise tab
 
         Repeater {
             model: PrayerEngine.prayerNamesList
@@ -40,7 +40,7 @@ ColumnLayout {
             id: volumeSlider
 
             Layout.fillWidth: true
-            enabled: prayerTab.currentIndex !== PrayerEngine.Prayer.Sunrise
+            enabled: prayerTab.currentIndex !== PrayerEngine.Sunrise
             snapMode: Slider.SnapAlways
             stepSize: 0.05
             value: CoreEngine.prayerConfig[prayerTab.currentIndex].volume
@@ -67,7 +67,7 @@ ColumnLayout {
             id: minutesSlider
 
             Layout.fillWidth: true
-            enabled: prayerTab.currentIndex !== PrayerEngine.Prayer.Sunrise
+            enabled: prayerTab.currentIndex !== PrayerEngine.Sunrise
             from: -30
             stepSize: 1
             to: 60
@@ -106,7 +106,7 @@ ColumnLayout {
 
             Layout.fillWidth: true
             currentIndex: CoreEngine.prayerConfig[prayerTab.currentIndex].athan_idx
-            enabled: prayerTab.currentIndex !== PrayerEngine.Prayer.Sunrise
+            enabled: prayerTab.currentIndex !== PrayerEngine.Sunrise
             model: CoreEngine.audioList
             textRole: "name"
 

@@ -1,10 +1,9 @@
 #pragma once
 
 #include <QObject>
-#include <QQmlEngine>
 #include <QReadWriteLock>
+#include <QTranslator>
 #include <fileman>
-#include <memory>
 
 namespace Munadi
 {
@@ -15,7 +14,6 @@ class CoreEngine : public QObject
     Q_CLASSINFO("RegisterEnumClassesUnscoped", "false")
     QML_ELEMENT
     QML_SINGLETON
-    Q_PROPERTY(int localeGuard READ localeGuard NOTIFY localeChanged)
     Q_PROPERTY(QVariantList audioList MEMBER m_audioList WRITE setAudioList NOTIFY audioListChanged)
     Q_PROPERTY(QVariantList prayerConfig MEMBER m_prayerConfig WRITE setPrayerConfig NOTIFY
                    prayerConfigChanged)
@@ -29,13 +27,17 @@ class CoreEngine : public QObject
     explicit CoreEngine(QObject *parent = nullptr);
     ~CoreEngine() override;
 
-    static auto create(QQmlEngine *, QJSEngine *) -> CoreEngine *;
     static auto instance() -> CoreEngine &;
+
+    auto applyLocale() -> void;
 
     Q_INVOKABLE void addAthan(const QUrl &fileUrl, int fileDialogCategory);
     Q_INVOKABLE void modifyPrayerConfig(int prayerIndex, const QString &field,
                                         const QVariant &value);
     Q_INVOKABLE void removeAthan(int selectedIndex);
+
+  protected:
+    bool eventFilter(QObject *object, QEvent *event) override;
 
   private:
     Q_DISABLE_COPY_MOVE(CoreEngine);
@@ -86,14 +88,13 @@ class CoreEngine : public QObject
                     {"athan_idx", defaultAthan}                                                   }  // [5] Isha
     };
 
+    QTranslator m_translator;
+
     QReadWriteLock varLock;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //  Functions
     ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    [[nodiscard]] static auto isValidAudioEntry(const QVariantMap &entry) -> bool;
-    static auto               localeGuard() -> int;
 
     auto setAudioList(const QVariantList &audioList) -> void;
     auto setPrayerConfig(const QVariantList &prayerConfig) -> void;

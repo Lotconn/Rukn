@@ -18,17 +18,18 @@ class PrayerEngine : public QObject
     Q_CLASSINFO("RegisterEnumClassesUnscoped", "false")
     QML_ELEMENT
     QML_SINGLETON
-    Q_PROPERTY(QStringList prayerNamesList READ prayerNamesList NOTIFY localeChanged)
+
+    Q_PROPERTY(QStringList prayerNamesList READ prayerNamesList NOTIFY textsChanged)
+    Q_PROPERTY(int textsRefresher READ textsRefresher NOTIFY textsChanged)
     // Q_PROPERTY(PrayerEngine::Prayer currentPrayer READ currentPrayer NOTIFY timeChanged)
 
   signals:
-    auto localeChanged() -> void;
+    auto textsChanged() -> void;
 
   public:
     explicit PrayerEngine(QObject *parent = nullptr);
     ~PrayerEngine() override;
 
-    static auto create(QQmlEngine *, QJSEngine *) -> PrayerEngine *;
     static auto instance() -> PrayerEngine &;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -55,7 +56,7 @@ class PrayerEngine : public QObject
     // void timeChanged();
 
   public slots: // NOLINT(readability-redundant-access-specifiers)
-    auto reInitTexts() -> void;
+    auto refreshTexts() -> void;
 
   private:
     Q_DISABLE_COPY_MOVE(PrayerEngine);
@@ -65,6 +66,8 @@ class PrayerEngine : public QObject
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     static PrayerEngine *s_singletonInstance;
+
+    QMetaObject::Connection m_localeChangedConnection;
 
     const QMap<Prayer, Adhan::Prayer> m_prayerEnumMap{
         {   PrayerEngine::Fajr,    Adhan::Prayer::Fajr},
@@ -94,11 +97,15 @@ class PrayerEngine : public QObject
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     auto               fromString(QStringView prayerName) -> Prayer;
+    auto               textsRefresher() -> int;
     [[nodiscard]] auto toString(Prayer prayerEnum) -> QString;
 
     // auto currentPrayer(Adhan::Instant when = Adhan::now()) -> PrayerEngine::Prayer;
     auto initTexts() -> void;
     auto prayerNamesList() -> QStringList;
+
+  private slots: // NOLINT(readability-redundant-access-specifiers)
+    auto connectLocaleChangedSignal() -> void;
 };
 
 } // namespace Munadi

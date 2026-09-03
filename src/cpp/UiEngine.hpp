@@ -12,33 +12,34 @@ class UiEngine : public QObject
     Q_CLASSINFO("RegisterEnumClassesUnscoped", "false")
     QML_ELEMENT
     QML_SINGLETON
-    Q_PROPERTY(QStringList themeList READ themeList CONSTANT)
+    Q_PROPERTY(QStringList themeList MEMBER m_themeList NOTIFY themeListChanged)
     Q_PROPERTY(
         int themeListIndex READ themeListIndex WRITE setThemeListIdx NOTIFY themeListIdxChanged)
 
   signals:
+    void themeListChanged();
     void themeListIdxChanged(int);
 
   public:
     explicit UiEngine(QObject *parent = nullptr);
     ~UiEngine() override;
 
-    static UiEngine *create(QQmlEngine *, QJSEngine *);
     static UiEngine &instance();
 
     auto themeList() -> QStringList;
     auto themeListIndex() -> int;
     auto setThemeListIdx(int) -> void;
 
-  public slots:
-    auto refreshTexts() -> void;
-
   private:
     Q_DISABLE_COPY_MOVE(UiEngine);
 
     static UiEngine *s_singletonInstance;
 
-    int m_themeListIdx;
+    int         m_themeListIdx = 0;
+    QStringList m_themeList;
+
+  private slots: // NOLINT(readability-redundant-access-specifiers)
+    auto initTexts() -> void;
 };
 
 } // namespace Munadi

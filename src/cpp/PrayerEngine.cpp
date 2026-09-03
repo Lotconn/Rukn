@@ -1,65 +1,50 @@
+#include <QTimer>
+
+#include "internal-helpers.hpp"
+#include <CoreEngine.hpp>
 #include <PrayerEngine.hpp>
+
+// Q_STATIC_LOGGING_CATEGORY(munadi, "PrayerEngine") // Qt >= 6.9
+Q_LOGGING_CATEGORY(prayerEngine, "PrayerEngine")
 
 namespace Munadi
 {
 
 using Prayer = Munadi::PrayerEngine::Prayer;
 
-PrayerEngine *PrayerEngine::create(QQmlEngine * /*unused*/, QJSEngine * /*unused*/)
-{
-    if (PrayerEngine::s_singletonInstance == nullptr)
-        qFatal("Munadi:PrayerEngine: no instance constructed. Munadi must be explicitly "
-               "instantiated before the QML engine loads");
-
-    // The singleton's lifetime is owned by this TU (main()/first construction),
-    // not by the QQmlEngine. Make that explicit so the engine never attempts
-    // to garbage-collect or delete it.
-    QQmlEngine::setObjectOwnership(PrayerEngine::s_singletonInstance, QQmlEngine::CppOwnership);
-
-    return PrayerEngine::s_singletonInstance;
-}
-
 PrayerEngine &PrayerEngine::instance()
 {
     if (PrayerEngine::s_singletonInstance == nullptr)
-        qFatal("Munadi:PrayerEngine: no instance constructed. Munadi must be explicitly "
-               "instantiated before "
-               "invoking the instance");
+        logFatal(prayerEngine)
+            << "No instance constructed. Explicit instantiation is required before invoking "
+               "the instance";
 
     return *PrayerEngine::s_singletonInstance;
 }
 
-PrayerEngine::PrayerEngine(QObject *parent) : QObject(parent)
+PrayerEngine::PrayerEngine(QObject *parent) : QObject{parent}
 {
     if (PrayerEngine::s_singletonInstance != nullptr)
-        qFatal("Munadi:PrayerEngine: A second Munadi instance was constructed; only one "
-               "instance may exist per process");
+        logFatal(prayerEngine)
+            << "A second instance was constructed; only one instance may exist per process";
 
     PrayerEngine::s_singletonInstance = this;
 
     this->initTexts();
+
+    QTimer::singleShot(0, this, &PrayerEngine::connectLocaleChangedSignal);
 }
 
 PrayerEngine::~PrayerEngine()
 {
+    QObject::disconnect(m_localeChangedConnection);
+
     if (PrayerEngine::s_singletonInstance == this)
         PrayerEngine::s_singletonInstance = nullptr;
 }
 
 // PrayerEngine::Prayer PrayerEngine::currentPrayer(Adhan::Instant when)
 // { return Munadi::PrayerEngine::m_revPrayerEnumMap.value(m_prayerTimes.currentPrayer(when)); }
-
-void PrayerEngine::initTexts()
-{
-    this->m_prayerDisplayNames = {
-        {   Prayer::Fajr,    tr("Fajr")},
-        {Prayer::Sunrise, tr("Sunrise")},
-        {  Prayer::Dhuhr,   tr("Dhuhr")},
-        {    Prayer::Asr,     tr("Asr")},
-        {Prayer::Maghrib, tr("Maghrib")},
-        {   Prayer::Isha,    tr("Isha")}
-    };
-}
 
 QString PrayerEngine::prayerName(PrayerEngine::Prayer prayerEnum)
 { return this->m_prayerDisplayNames.value(prayerEnum); }
@@ -74,14 +59,44 @@ QStringList PrayerEngine::prayerNamesList()
     return list;
 }
 
-void PrayerEngine::reInitTexts()
-{ this->initTexts(); }
+void PrayerEngine::refreshTexts()
+{
+    this->initTexts();
+
+    emit this->textsChanged();
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  Private Members
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 PrayerEngine *PrayerEngine::s_singletonInstance{nullptr};
+
+void PrayerEngine::connectLocaleChangedSignal()
+{
+    m_localeChangedConnection = QObject::connect(
+        &CoreEngine::instance(), &CoreEngine::localeChanged, this, &PrayerEngine::refreshTexts);
+
+    if (m_localeChangedConnection == nullptr)
+        logWarning(prayerEngine) << "localeChanged signal not connected";
+    else
+        logDebug(prayerEngine) << "localeChanged signal connected";
+}
+
+void PrayerEngine::initTexts()
+{
+    this->m_prayerDisplayNames = {
+        {   Prayer::Fajr,    tr("Fajr")},
+        {Prayer::Sunrise, tr("Sunrise")},
+        {  Prayer::Dhuhr,   tr("Dhuhr")},
+        {    Prayer::Asr,     tr("Asr")},
+        {Prayer::Maghrib, tr("Maghrib")},
+        {   Prayer::Isha,    tr("Isha")}
+    };
+}
+
+int PrayerEngine::textsRefresher()
+{ return textsRefresherReal(); }
 
 QString PrayerEngine::toString(PrayerEngine::Prayer prayer)
 { return QString::fromLatin1(Adhan::PrayerUtils::to_string(this->m_prayerEnumMap.value(prayer))); }
