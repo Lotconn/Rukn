@@ -13,7 +13,7 @@ ColumnLayout {
     MediaPlayer {
         id: athanPreview
 
-        source: CoreEngine.audioList[audioListCb.currentIndex].path
+        source: MultimediaEngine.athanList[audioListCb.currentIndex].path
 
         audioOutput: AudioOutput {
             volume: 1.0
@@ -25,7 +25,7 @@ ColumnLayout {
             id: audioListCb
 
             Layout.fillWidth: true
-            model: CoreEngine.audioList
+            model: MultimediaEngine.athanList
             textRole: "name"
         }
 
@@ -57,9 +57,9 @@ ColumnLayout {
             text: qsTr("Remove")
 
             onClicked: {
-                CoreEngine.removeAthan(audioListCb.currentIndex);
+                MultimediaEngine.removeAthan(audioListCb.currentIndex);
 
-                audioListCb.currentIndex = CoreEngine.audioList.length - 1;
+                audioListCb.currentIndex = MultimediaEngine.athanList.length - 1;
             }
         }
     }
@@ -74,9 +74,9 @@ ColumnLayout {
 
         onAccepted: {
             for (let i = 0; i < selectedFiles.length; i++)
-                CoreEngine.addAthan(selectedFiles[i], selectedNameFilter.index);
+                MultimediaEngine.addAthan(selectedFiles[i]);
 
-            audioListCb.currentIndex = CoreEngine.audioList.length - 1;
+            audioListCb.currentIndex = MultimediaEngine.athanList.length - 1;
         }
     }
 }

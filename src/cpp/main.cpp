@@ -5,6 +5,7 @@
 #include <QSocketNotifier>
 #include <QStyleFactory>
 
+#include <CoreEngine.hpp>
 #include <SingleApplication>
 #include <alarm.h>
 #include <engine.h>
@@ -19,6 +20,7 @@
 
 #ifdef Q_OS_LINUX
 #include <csignal>
+#include <print>
 #include <sys/socket.h>
 #include <unistd.h>
 
@@ -46,27 +48,32 @@ int main(int argc, char *argv[])
 #ifdef Q_OS_WINDOWS
         AllowSetForegroundWindow(DWORD(sapp.primaryPid()));
 #endif
-        sapp.sendMessage(app.arguments().join(' ').toUtf8());
+        sapp.sendMessage(QApplication::arguments().join(' ').toUtf8());
         qWarning() << "Munadi is already running.";
         qDebug() << "Primary instance PID: " << sapp.primaryPid();
         qDebug() << "Primary instance user: " << sapp.primaryUser().toLatin1().constData();
         return 0;
     }
 
-    app.setWindowIcon(QIcon(":/qt/qml/Munadi/img/munadi.png"));
-    app.setOrganizationDomain("munadi");
-    app.setApplicationName("Munadi");
+    QApplication::setWindowIcon(QIcon(":/qt/qml/Munadi/img/munadi.png"));
+    QApplication::setOrganizationDomain("munadi.org");
+    QApplication::setOrganizationName("munadi");
+    QApplication::setApplicationName("Munadi");
 
     QFontDatabase::addApplicationFont(":/qt/qml/Munadi/data/NotoNaskhArabic-VariableFont.ttf");
     QFontDatabase::addApplicationFont(":/qt/qml/Munadi/data/NotoSans-VariableFont.ttf");
     QFontDatabase::addApplicationFont(":/qt/qml/Munadi/data/NotoSansBengali-VariableFont.ttf");
 
     QFont font{"Noto Sans, Noto Naskh Arabic, Noto Sans Bengali"};
-    app.setFont(font);
+    QApplication::setFont(font);
 
     qDebug() << "System Locale: " << QLocale::system().name();
 
     QQmlApplicationEngine qae;
+
+    // This nudge is necessary for satisfying the dependencies, and should be earliest before
+    // anything
+    qae.singletonInstance<Munadi::CoreEngine *>("Munadi", "CoreEngine");
 
     Engine engine;
     auto  *alarm = createAlarm(&app);
@@ -79,7 +86,7 @@ int main(int argc, char *argv[])
             engine.fullscreen(true);
         else if (strcmp(argv[1], "--help") == 0)
         {
-            printf("%s", qPrintable(engine.show_help(true)));
+            std::print("{}", qPrintable(engine.show_help(true)));
             exit(0);
         }
     }
@@ -101,7 +108,7 @@ int main(int argc, char *argv[])
 
     QSocketNotifier sigNotifier(sigFd[0], QSocketNotifier::Read);
     QObject::connect(&sigNotifier, &QSocketNotifier::activated, &app, [](QSocketDescriptor) {
-        char                  tmp;
+        char                  tmp   = 0;
         [[maybe_unused]] auto trash = ::read(sigFd[0], &tmp, sizeof(tmp));
         // just to avoid compiler warnings
         QCoreApplication::quit();
@@ -115,7 +122,7 @@ int main(int argc, char *argv[])
     sigaction(SIGTERM, &sa, nullptr);
 #endif
 
-    int ret = app.exec();
+    int ret = QApplication::exec();
 
 #ifdef Q_OS_LINUX
     ::close(sigFd[0]);

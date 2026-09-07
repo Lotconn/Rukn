@@ -9,20 +9,6 @@ QtObject {
 
     property string asr: sysLocale.toString(prayerTimes.asr, isoClock ? "hh:mm" : "hh:mm ap")
     property bool athanMuted: false
-    // property var audioList: [
-    //     {
-    //         "name": "Makkah (built-in)",
-    //         "path": "qrc:/qt/qml/Munadi/data/athan-makkah.ogg"
-    //     },
-    //     {
-    //         "name": "Ar-Rashid (built-in)",
-    //         "path": "qrc:/qt/qml/Munadi/data/athan-arRashid.ogg"
-    //     },
-    //     {
-    //         "name": "Fajr (built-in)",
-    //         "path": "qrc:/qt/qml/Munadi/data/fajr-athan.ogg"
-    //     }
-    // ]
     property bool bgImage: true
     property int bg_img_blur: 29
     property var calcMethod: [
@@ -151,39 +137,6 @@ QtObject {
     property double page_margins_p: 0.02
     property int pane_elevation: 6
     property var params: new Adhan.adhan.CalculationMethod.MuslimWorldLeague()
-    // property var prayerConfig: [
-    //     {
-    //         "adjustment": 0,
-    //         "volume": 0.2,
-    //         "athan_idx": 2
-    //     },
-    //     {
-    //         "adjustment": 0,
-    //         "volume": 0.0,
-    //         "athan_idx": 0
-    //     },
-    //     {
-    //         "adjustment": 0,
-    //         "volume": 1.0,
-    //         "athan_idx": 0
-    //     },
-    //     {
-    //         "adjustment": 0,
-    //         "volume": 1.0,
-    //         "athan_idx": 0
-    //     },
-    //     {
-    //         "adjustment": 0,
-    //         "volume": 1.0,
-    //         "athan_idx": 1
-    //     },
-    //     {
-    //         "adjustment": 0,
-    //         "volume": 0.5,
-    //         "athan_idx": 0
-    //     }
-    // ]
-    // property var prayerNames: [qsTr("Fajr"), qsTr("Sunrise"), qsTr("Dhuhr"), qsTr("Asr"), qsTr("Maghrib"), qsTr("Isha")]
     property var prayerTimes
     property double rectangle_opacity: 0.77
     property int rectangle_radius: 3
@@ -247,7 +200,7 @@ QtObject {
         console.debug('refreshTimeLeft()');
 
         if (athan.isOn) {
-            mm.timeLeftStr = qsTr("%1 Athan ...").arg(mm.prayerNames[mm.currentPrayer]);
+            mm.timeLeftStr = qsTr("%1 Athan ...").arg(UiEngine.prayerDisplayName(mm.currentPrayer));
         } else {
             if (!mm.timeForNextPrayer) {
                 mm.timeLeftStr = "";
@@ -278,7 +231,7 @@ QtObject {
                 mm.timeLeftStr += qsTr("Seconds until ");
             }
 
-            mm.timeLeftStr += PrayerEngine.prayerNamesList[mm.nextPrayer];
+            mm.timeLeftStr += UiEngine.prayerDisplayName(mm.nextPrayer);
         }
         console.debug("timeLeftStr", mm.timeLeftStr);
     }
@@ -313,12 +266,12 @@ QtObject {
         console.debug(new Date(), ': invalidate()');
         var params = calcMethod[calcMethodIndex]['method']();
         params.madhab = madhab;
-        params.adjustments.fajr = CoreEngine.prayerConfig[0].adjustment;
-        params.adjustments.sunrise = CoreEngine.prayerConfig[1].adjustment;
-        params.adjustments.dhuhr = CoreEngine.prayerConfig[2].adjustment;
-        params.adjustments.asr = CoreEngine.prayerConfig[3].adjustment;
-        params.adjustments.maghrib = CoreEngine.prayerConfig[4].adjustment;
-        params.adjustments.isha = CoreEngine.prayerConfig[5].adjustment;
+        params.adjustments.fajr = PrayerEngine.prayerConfig[0].adjustment;
+        params.adjustments.sunrise = PrayerEngine.prayerConfig[1].adjustment;
+        params.adjustments.dhuhr = PrayerEngine.prayerConfig[2].adjustment;
+        params.adjustments.asr = PrayerEngine.prayerConfig[3].adjustment;
+        params.adjustments.maghrib = PrayerEngine.prayerConfig[4].adjustment;
+        params.adjustments.isha = PrayerEngine.prayerConfig[5].adjustment;
         mm.params = params;
 
         var coordinates = new Adhan.adhan.Coordinates(latitude, longitude);

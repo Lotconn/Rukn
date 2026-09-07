@@ -2,9 +2,9 @@
 
 #include <QObject>
 #include <QQmlEngine>
-// #include <memory>
+#include <QReadWriteLock>
 
-// #include <adhan/CalculationMethod.hpp>
+#include <adhan/CalculationMethod.hpp>
 // #include <adhan/Coordinates.hpp>
 // #include <adhan/DateUtils.hpp>
 #include <adhan/PrayerTimes.hpp>
@@ -19,12 +19,9 @@ class PrayerEngine : public QObject
     QML_ELEMENT
     QML_SINGLETON
 
-    Q_PROPERTY(QStringList prayerNamesList READ prayerNamesList NOTIFY textsChanged)
-    Q_PROPERTY(int textsRefresher READ textsRefresher NOTIFY textsChanged)
+    Q_PROPERTY(QVariantList prayerConfig MEMBER m_prayerConfig WRITE setPrayerConfig RESET
+                   defaultPrayerConfig NOTIFY prayerConfigChanged)
     // Q_PROPERTY(PrayerEngine::Prayer currentPrayer READ currentPrayer NOTIFY timeChanged)
-
-  signals:
-    auto textsChanged() -> void;
 
   public:
     explicit PrayerEngine(QObject *parent = nullptr);
@@ -36,15 +33,15 @@ class PrayerEngine : public QObject
     //  Types & Enums
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    enum Prayer : qint8
+    enum Prayer : quint8
     {
-        Fajr    = static_cast<qint8>(Adhan::Prayer::Fajr),
-        Sunrise = static_cast<qint8>(Adhan::Prayer::Sunrise),
-        Dhuhr   = static_cast<qint8>(Adhan::Prayer::Dhuhr),
-        Asr     = static_cast<qint8>(Adhan::Prayer::Asr),
-        Maghrib = static_cast<qint8>(Adhan::Prayer::Maghrib),
-        Isha    = static_cast<qint8>(Adhan::Prayer::Isha),
-        None    = static_cast<qint8>(Adhan::Prayer::None),
+        Fajr    = static_cast<quint8>(Adhan::Prayer::Fajr),
+        Sunrise = static_cast<quint8>(Adhan::Prayer::Sunrise),
+        Dhuhr   = static_cast<quint8>(Adhan::Prayer::Dhuhr),
+        Asr     = static_cast<quint8>(Adhan::Prayer::Asr),
+        Maghrib = static_cast<quint8>(Adhan::Prayer::Maghrib),
+        Isha    = static_cast<quint8>(Adhan::Prayer::Isha),
+        None    = static_cast<quint8>(Adhan::Prayer::None),
     };
     Q_ENUM(Prayer)
 
@@ -52,11 +49,15 @@ class PrayerEngine : public QObject
     //  Functions
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Q_INVOKABLE [[nodiscard]] QString prayerName(Prayer prayerEnum);
-    // void timeChanged();
+    static auto fromString(QAnyStringView prayerName) -> Prayer;
+    static auto toString(Prayer prayerEnum) -> QString;
+    static auto metaPrayerEnum() -> const QMetaEnum &;
 
-  public slots: // NOLINT(readability-redundant-access-specifiers)
-    auto refreshTexts() -> void;
+    auto getPrayerConfig(Prayer prayerEnum, QAnyStringView field) -> QVariant;
+
+    Q_INVOKABLE void modifyPrayerConfig(Prayer prayerEnum, const QVariantMap &entry);
+
+    // void timeChanged();
 
   private:
     Q_DISABLE_COPY_MOVE(PrayerEngine);
@@ -65,11 +66,12 @@ class PrayerEngine : public QObject
     //  Variables
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    static PrayerEngine *s_singletonInstance;
+    inline static PrayerEngine *s_singletonInstance{nullptr};
 
-    QMetaObject::Connection m_localeChangedConnection;
+    std::unique_ptr<Adhan::CalculationParameters> m_calcParams;
+    QVariantList                                  m_prayerConfig;
 
-    const QMap<Prayer, Adhan::Prayer> m_prayerEnumMap{
+    inline static QMap<Prayer, Adhan::Prayer> m_prayerEnumMap{
         {   PrayerEngine::Fajr,    Adhan::Prayer::Fajr},
         {PrayerEngine::Sunrise, Adhan::Prayer::Sunrise},
         {  PrayerEngine::Dhuhr,   Adhan::Prayer::Dhuhr},
@@ -79,7 +81,7 @@ class PrayerEngine : public QObject
         {   PrayerEngine::None,    Adhan::Prayer::None}
     };
 
-    const QMap<Adhan::Prayer, Prayer> m_revPrayerEnumMap{
+    inline static QMap<Adhan::Prayer, Prayer> m_revPrayerEnumMap{
         {   Adhan::Prayer::Fajr,    PrayerEngine::Fajr},
         {Adhan::Prayer::Sunrise, PrayerEngine::Sunrise},
         {  Adhan::Prayer::Dhuhr,   PrayerEngine::Dhuhr},
@@ -89,23 +91,37 @@ class PrayerEngine : public QObject
         {   Adhan::Prayer::None,    PrayerEngine::None}
     };
 
-    QMap<Prayer, QString> m_prayerDisplayNames;
     // std::unique_ptr<Adhan::PrayerTimes> m_prayerTimes;
+    inline static QMetaEnum m_metaPrayerEnum{QMetaEnum::fromType<Prayer>()};
+
+    QMetaObject::Connection coreOfflineConnection;
+    QMetaObject::Connection coreOnlineConnection;
+    QMap<QString, int>      prayerConfigKeys;
+    qsizetype               prayerConfigListSize;
+    qsizetype               prayerConfigMapSize;
+    QReadWriteLock          varLock;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //  Functions
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    auto               fromString(QStringView prayerName) -> Prayer;
-    auto               textsRefresher() -> int;
-    [[nodiscard]] auto toString(Prayer prayerEnum) -> QString;
-
     // auto currentPrayer(Adhan::Instant when = Adhan::now()) -> PrayerEngine::Prayer;
-    auto initTexts() -> void;
-    auto prayerNamesList() -> QStringList;
+    auto connectToCoreOffline() -> void;
+    auto connectToCoreOnline() -> void;
+    auto defaultCalcParams() -> void;
+    auto defaultPrayerConfig() -> void;
+    auto loadConfigs() -> void;
+    auto saveConfigs() -> void;
+    auto setPrayerConfig(const QVariantList &prayerConfig) -> void;
 
-  private slots: // NOLINT(readability-redundant-access-specifiers)
-    auto connectLocaleChangedSignal() -> void;
+  signals:
+    auto invalidate() -> void;
+    auto prayerConfigChanged(QVariantList prayerConfig) -> void;
+
+  private slots: // NOLINT(*-redundant-access-specifiers)
+    auto onCoreOffline() -> void;
+    auto onCoreOnline() -> void;
+    auto onInvalidate() -> void;
 };
 
 } // namespace Munadi

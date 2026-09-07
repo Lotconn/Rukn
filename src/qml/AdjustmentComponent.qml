@@ -2,12 +2,11 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.Layouts
-// import QtCore
 
 import Munadi
 
 ColumnLayout {
-    id: component
+    id: prayerAdj
 
     TabBar {
         id: prayerTab
@@ -18,7 +17,7 @@ ColumnLayout {
         Component.onCompleted: itemAt(PrayerEngine.Sunrise).width = 0 // Hide sunrise tab
 
         Repeater {
-            model: PrayerEngine.prayerNamesList
+            model: UiEngine.prayerDisplayNamesList
 
             TabButton {
                 text: modelData
@@ -43,9 +42,11 @@ ColumnLayout {
             enabled: prayerTab.currentIndex !== PrayerEngine.Sunrise
             snapMode: Slider.SnapAlways
             stepSize: 0.05
-            value: CoreEngine.prayerConfig[prayerTab.currentIndex].volume
+            value: MultimediaEngine.athanConfig[prayerTab.currentIndex].volume
 
-            onMoved: CoreEngine.modifyPrayerConfig(prayerTab.currentIndex, "volume", volumeSlider.value)
+            onMoved: MultimediaEngine.modifyAthanConfig(prayerTab.currentIndex, {
+                "volume": volumeSlider.value
+            })
         }
 
         Text {
@@ -71,10 +72,12 @@ ColumnLayout {
             from: -30
             stepSize: 1
             to: 60
-            value: CoreEngine.prayerConfig[prayerTab.currentIndex].adjustment
+            value: PrayerEngine.prayerConfig[prayerTab.currentIndex].adjustment
 
             onMoved: {
-                CoreEngine.modifyPrayerConfig(prayerTab.currentIndex, "adjustment", minutesSlider.value);
+                PrayerEngine.modifyPrayerConfig(prayerTab.currentIndex, {
+                    "adjustment": minutesSlider.value
+                });
                 mm.invalidate();
             }
             onPressedChanged: {
@@ -105,12 +108,14 @@ ColumnLayout {
             id: athanComboBox
 
             Layout.fillWidth: true
-            currentIndex: CoreEngine.prayerConfig[prayerTab.currentIndex].athan_idx
+            currentIndex: MultimediaEngine.athanConfig[prayerTab.currentIndex].athan_idx
             enabled: prayerTab.currentIndex !== PrayerEngine.Sunrise
-            model: CoreEngine.audioList
+            model: MultimediaEngine.athanList
             textRole: "name"
 
-            onActivated: CoreEngine.modifyPrayerConfig(prayerTab.currentIndex, "athan_idx", athanComboBox.currentIndex)
+            onActivated: MultimediaEngine.modifyAthanConfig(prayerTab.currentIndex, {
+                "athan_idx": athanComboBox.currentIndex
+            })
         }
 
         Item {}

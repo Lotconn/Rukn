@@ -165,6 +165,7 @@ set(MUNADI_SOURCES
   src/cpp/engine.h
   src/cpp/CoreEngine.hpp
   src/cpp/PrayerEngine.hpp
+  src/cpp/MultimediaEngine.hpp
   src/cpp/UiEngine.hpp
   src/cpp/internal-helpers.hpp
   src/cpp/macos_window.h
@@ -173,6 +174,7 @@ set(MUNADI_SOURCES
   src/cpp/internal-helpers.cpp
   src/cpp/CoreEngine.cpp
   src/cpp/PrayerEngine.cpp
+  src/cpp/MultimediaEngine.cpp
   src/cpp/UiEngine.cpp
   src/cpp/updater.cpp
 )

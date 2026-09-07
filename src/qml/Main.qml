@@ -72,12 +72,12 @@ ApplicationWindow {
         newsVersion = settings.value("newsVersion", "");
 
         settings.category = "Adhan";
-        var audioList = settings.value("audioList", JSON.stringify(CoreEngine.audioList));
-        try {
-            CoreEngine.audioList = JSON.parse(audioList);
-        } catch (e) {
-            console.warn("Munadi: failed to parse stored audioList, keeping defaults:", e.message);
-        }
+        // var audioList = settings.value("audioList", JSON.stringify(CoreEngine.audioList));
+        // try {
+        //     CoreEngine.audioList = JSON.parse(audioList);
+        // } catch (e) {
+        //     console.warn("Munadi: failed to parse stored audioList, keeping defaults:", e.message);
+        // }
         mm.athanMuted = settingsBool("athanMuted", mm.athanMuted);
         mm.calcMethodIndex = settings.value("calcMethodIndex", mm.calcMethodIndex);
         mm.calendarPreferenceIndex = settings.value("calendarPreferenceIndex", mm.calendarPreferenceIndex);
@@ -88,12 +88,12 @@ ApplicationWindow {
         mm.longitude = settings.value("longitude", mm.longitude);
         mm.madhab = settings.value("madhab", mm.madhab);
         mm.overrideOffsetBy = settings.value("overrideOffsetBy", mm.overrideOffsetBy);
-        var prayerConfig = settings.value("prayerConfig", JSON.stringify(CoreEngine.prayerConfig));
-        try {
-            CoreEngine.prayerConfig = JSON.parse(prayerConfig);
-        } catch (e) {
-            console.warn("Munadi: failed to parse stored prayerConfig, keeping defaults:", e.message);
-        }
+        // var prayerConfig = settings.value("prayerConfig", JSON.stringify(CoreEngine.prayerConfig));
+        // try {
+        //     CoreEngine.prayerConfig = JSON.parse(prayerConfig);
+        // } catch (e) {
+        //     console.warn("Munadi: failed to parse stored prayerConfig, keeping defaults:", e.message);
+        // }
 
         settings.category = "Window";
         mainWindow.width = settings.value("width", mainWindow.width);
@@ -144,7 +144,6 @@ ApplicationWindow {
 
         settings.category = "Adhan";
         settings.setValue("athanMuted", mm.athanMuted);
-        settings.setValue("audioList", JSON.stringify(CoreEngine.audioList));
         settings.setValue("calcMethodIndex", mm.calcMethodIndex);
         settings.setValue("calendarPreferenceIndex", mm.calendarPreferenceIndex);
         settings.setValue("checkForUpdates", mm.checkForUpdates);
@@ -155,7 +154,6 @@ ApplicationWindow {
         settings.setValue("longitude", mm.longitude);
         settings.setValue("madhab", mm.madhab);
         settings.setValue("overrideOffsetBy", mm.overrideOffsetBy);
-        settings.setValue("prayerConfig", JSON.stringify(CoreEngine.prayerConfig));
 
         settings.category = "Window";
         settings.setValue("width", mainWindow.width);
@@ -422,9 +420,9 @@ ApplicationWindow {
 
                 mm.refreshTable();
 
-                const athan_idx = CoreEngine.prayerConfig[mm.currentPrayer].athan_idx;
-                athan.source = CoreEngine.audioList[athan_idx].path;
-                athan.audioOutput.volume = CoreEngine.prayerConfig[mm.currentPrayer].volume;
+                const athan_idx = MultimediaEngine.athanConfig[mm.currentPrayer].athan_idx;
+                athan.source = MultimediaEngine.athanList[athan_idx].path;
+                athan.audioOutput.volume = MultimediaEngine.athanConfig[mm.currentPrayer].volume;
 
                 console.debug("athan.audioOutput.volume:", athan.audioOutput.volume);
                 console.debug("athan.audioOutput.muted:", athan.audioOutput.muted);

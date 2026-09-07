@@ -38,8 +38,8 @@ Item {
                 font.pixelSize: Math.min(parent.height, parent.width) / prayerRow.pixelDiv
                 font.weight: Font.Thin
                 text: {
-                    PrayerEngine.textsRefresher;
-                    PrayerEngine.prayerName(prayerRow.prayerId);
+                    const nothing = UiEngine.textsRefresher;
+                    UiEngine.prayerDisplayName(prayerRow.prayerId);
                 }
                 visible: !mm.locationNotSet
                 width: parent.width

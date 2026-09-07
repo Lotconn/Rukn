@@ -4,32 +4,32 @@
 <context>
     <name>AdjustmentComponent</name>
     <message>
-        <location filename="../qml/AdjustmentComponent.qml" line="36"/>
+        <location filename="../qml/AdjustmentComponent.qml" line="35"/>
         <source>Volume</source>
         <translation>الصوت</translation>
     </message>
     <message>
-        <location filename="../qml/AdjustmentComponent.qml" line="56"/>
+        <location filename="../qml/AdjustmentComponent.qml" line="55"/>
         <source>%L1 %</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/AdjustmentComponent.qml" line="63"/>
+        <location filename="../qml/AdjustmentComponent.qml" line="62"/>
         <source>Minutes</source>
         <translation>الدقائق</translation>
     </message>
     <message>
-        <location filename="../qml/AdjustmentComponent.qml" line="93"/>
+        <location filename="../qml/AdjustmentComponent.qml" line="92"/>
         <source>+%L1</source>
         <translation>%L1+</translation>
     </message>
     <message>
-        <location filename="../qml/AdjustmentComponent.qml" line="93"/>
+        <location filename="../qml/AdjustmentComponent.qml" line="92"/>
         <source>%L1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/AdjustmentComponent.qml" line="101"/>
+        <location filename="../qml/AdjustmentComponent.qml" line="100"/>
         <source>Athan</source>
         <translation>أذان</translation>
     </message>
@@ -108,73 +108,70 @@
         <translation>RTL</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="328"/>
+        <location filename="../qml/Main.qml" line="326"/>
         <source>Munadi</source>
         <translation>منادي</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="378"/>
+        <location filename="../qml/Main.qml" line="376"/>
         <source>Show</source>
         <translation>أظهر</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="378"/>
+        <location filename="../qml/Main.qml" line="376"/>
         <source>Hide</source>
         <translation>أخف</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="384"/>
+        <location filename="../qml/Main.qml" line="382"/>
         <source>Quit</source>
         <translation>أغلق</translation>
     </message>
 </context>
 <context>
-    <name>Munadi::PrayerEngine</name>
+    <name>Munadi::UiEngine</name>
     <message>
-        <location filename="../cpp/PrayerEngine.cpp" line="98"/>
+        <location filename="../cpp/UiEngine.cpp" line="86"/>
         <source>Fajr</source>
         <translation>الفجر</translation>
     </message>
     <message>
-        <location filename="../cpp/PrayerEngine.cpp" line="99"/>
+        <location filename="../cpp/UiEngine.cpp" line="87"/>
         <source>Sunrise</source>
         <translation>الشروق</translation>
     </message>
     <message>
-        <location filename="../cpp/PrayerEngine.cpp" line="100"/>
+        <location filename="../cpp/UiEngine.cpp" line="88"/>
         <source>Dhuhr</source>
         <translation>الظهر</translation>
     </message>
     <message>
-        <location filename="../cpp/PrayerEngine.cpp" line="101"/>
+        <location filename="../cpp/UiEngine.cpp" line="89"/>
         <source>Asr</source>
         <translation>العصر</translation>
     </message>
     <message>
-        <location filename="../cpp/PrayerEngine.cpp" line="102"/>
+        <location filename="../cpp/UiEngine.cpp" line="90"/>
         <source>Maghrib</source>
         <translation>المغرب</translation>
     </message>
     <message>
-        <location filename="../cpp/PrayerEngine.cpp" line="103"/>
+        <location filename="../cpp/UiEngine.cpp" line="91"/>
         <source>Isha</source>
         <translation>العشاء</translation>
     </message>
-</context>
-<context>
-    <name>Munadi::UiEngine</name>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="62"/>
+        <location filename="../cpp/UiEngine.cpp" line="94"/>
         <source>System</source>
         <translation>النظام</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="62"/>
+        <location filename="../cpp/UiEngine.cpp" line="94"/>
         <source>Light</source>
         <translation>فاتح</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="62"/>
+        <location filename="../cpp/UiEngine.cpp" line="94"/>
         <source>Dark</source>
         <translation>مظلم</translation>
     </message>
@@ -182,159 +179,123 @@
 <context>
     <name>MunadiModel</name>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="105"/>
+        <location filename="../qml/MunadiModel.qml" line="91"/>
         <source>Both</source>
         <translation>كلاهما</translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="111"/>
+        <location filename="../qml/MunadiModel.qml" line="97"/>
         <source>Hijri</source>
         <translation>هجري</translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="117"/>
+        <location filename="../qml/MunadiModel.qml" line="103"/>
         <source>Gregorian</source>
         <translation>ميلادي</translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="250"/>
+        <location filename="../qml/MunadiModel.qml" line="203"/>
         <source>%1 Athan ...</source>
         <translation>%1 أذان ...</translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="271"/>
-        <location filename="../qml/MunadiModel.qml" line="273"/>
+        <location filename="../qml/MunadiModel.qml" line="224"/>
+        <location filename="../qml/MunadiModel.qml" line="226"/>
         <source>%L1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="271"/>
+        <location filename="../qml/MunadiModel.qml" line="224"/>
         <source>h </source>
         <translation>ساعة </translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="273"/>
+        <location filename="../qml/MunadiModel.qml" line="226"/>
         <source>m </source>
         <translation>دقيقة </translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="276"/>
+        <location filename="../qml/MunadiModel.qml" line="229"/>
         <source>until </source>
         <translation>حتي </translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="278"/>
+        <location filename="../qml/MunadiModel.qml" line="231"/>
         <source>Seconds until </source>
         <translation>ثواني حتي </translation>
     </message>
     <message>
-        <source>Fajr</source>
-        <translation type="vanished">الفجر</translation>
-    </message>
-    <message>
-        <source>Sunrise</source>
-        <translation type="vanished">الشروق</translation>
-    </message>
-    <message>
-        <source>Dhuhr</source>
-        <translation type="vanished">الظهر</translation>
-    </message>
-    <message>
-        <source>Asr</source>
-        <translation type="vanished">العصر</translation>
-    </message>
-    <message>
-        <source>Maghrib</source>
-        <translation type="vanished">المغرب</translation>
-    </message>
-    <message>
-        <source>Isha</source>
-        <translation type="vanished">العشاء</translation>
-    </message>
-    <message>
-        <source>Makkah (built-in)</source>
-        <translation type="vanished">مكة (معد مسبقا)</translation>
-    </message>
-    <message>
-        <source>Ar-Rashid (built-in)</source>
-        <translation type="vanished">الرشيد (معد مسبقا)</translation>
-    </message>
-    <message>
-        <source>Fajr (built-in)</source>
-        <translation type="vanished">الفجر (معد مسبقا)</translation>
-    </message>
-    <message>
-        <location filename="../qml/MunadiModel.qml" line="194"/>
+        <location filename="../qml/MunadiModel.qml" line="147"/>
         <source>System</source>
         <translation>النظام</translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="194"/>
+        <location filename="../qml/MunadiModel.qml" line="147"/>
         <source>Light</source>
         <translation>فاتح</translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="194"/>
+        <location filename="../qml/MunadiModel.qml" line="147"/>
         <source>Dark</source>
         <translation>مظلم</translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="30"/>
+        <location filename="../qml/MunadiModel.qml" line="16"/>
         <source>Muslim World League</source>
         <translation>رابطة العالم الإسلامي</translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="36"/>
+        <location filename="../qml/MunadiModel.qml" line="22"/>
         <source>Egyptian</source>
         <translation>مصري</translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="42"/>
+        <location filename="../qml/MunadiModel.qml" line="28"/>
         <source>Karachi</source>
         <translation>كراتشي</translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="48"/>
+        <location filename="../qml/MunadiModel.qml" line="34"/>
         <source>Umm AlQura</source>
         <translation>أم القري</translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="54"/>
+        <location filename="../qml/MunadiModel.qml" line="40"/>
         <source>Dubai</source>
         <translation>دبي</translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="60"/>
+        <location filename="../qml/MunadiModel.qml" line="46"/>
         <source>Moonsighting Committee</source>
         <translation>لجنة رؤية الهلال</translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="66"/>
+        <location filename="../qml/MunadiModel.qml" line="52"/>
         <source>North America</source>
         <translation>أمريكا الشمالية</translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="72"/>
+        <location filename="../qml/MunadiModel.qml" line="58"/>
         <source>Kuwait</source>
         <translation>الكويت</translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="78"/>
+        <location filename="../qml/MunadiModel.qml" line="64"/>
         <source>Qatar</source>
         <translation>قطر</translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="84"/>
+        <location filename="../qml/MunadiModel.qml" line="70"/>
         <source>Singapore</source>
         <translation>سنغافورة</translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="90"/>
+        <location filename="../qml/MunadiModel.qml" line="76"/>
         <source>Turkey</source>
         <translation>تركيا</translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="96"/>
+        <location filename="../qml/MunadiModel.qml" line="82"/>
         <source>Other</source>
         <translation>أخري</translation>
     </message>
@@ -495,30 +456,6 @@
         <location filename="../qml/SettingsPage.qml" line="498"/>
         <source>Support</source>
         <translation>الدعم</translation>
-    </message>
-</context>
-<context>
-    <name>main</name>
-    <message>
-        <source>QT_LAYOUT_DIRECTION</source>
-        <comment>QGuiApplication</comment>
-        <translation type="vanished">RTL</translation>
-    </message>
-    <message>
-        <source>Munadi</source>
-        <translation type="vanished">منادي</translation>
-    </message>
-    <message>
-        <source>Show</source>
-        <translation type="vanished">أظهر</translation>
-    </message>
-    <message>
-        <source>Hide</source>
-        <translation type="vanished">أخف</translation>
-    </message>
-    <message>
-        <source>Quit</source>
-        <translation type="vanished">أغلق</translation>
     </message>
 </context>
 </TS>
