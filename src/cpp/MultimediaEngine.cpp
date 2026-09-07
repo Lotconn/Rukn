@@ -74,61 +74,6 @@ void MultimediaEngine::addAthan(const QUrl &fileUrl)
     emit this->athanListChanged(this->m_athanList);
 }
 
-void MultimediaEngine::removeAthan(const qsizetype &rmIdx)
-{
-    if (rmIdx < this->defaultAthans || rmIdx >= m_athanList.size())
-    {
-        logCritical(multimediaEngine) << "Invalid index value \"" << rmIdx << "\"";
-
-        return;
-    }
-
-    const QUrl      fileUrl{this->m_athanList.at(rmIdx).toMap().value("path").toUrl()};
-    const rm_file_t result{fileman->rmFile(QUrl(fileUrl))};
-
-    if (result.status_l() != 0 && result.status_l() != ENOENT)
-    {
-        logCritical(multimediaEngine)
-            << "Fileman::rmFile() failed with error: " << result.status_l();
-
-        return;
-    }
-
-    QWriteLocker lock(&this->varLock);
-
-    for (int i = 0; i <= PrayerEngine::metaPrayerEnum().keyCount(); ++i)
-    {
-        QVariantMap tempMap{m_athanConfig.at(i).toMap()};
-        const int   currentIdx{tempMap.value("athan_idx").toInt()};
-
-        if (currentIdx == rmIdx)
-        {
-            switch (static_cast<Prayer>(i))
-            {
-            case Prayer::Fajr:
-                tempMap.insert("athan_idx", MultimediaEngine::defaultFajrAthan);
-                break;
-            case Prayer::Maghrib:
-                tempMap.insert("athan_idx", MultimediaEngine::defaultMaghribAthan);
-                break;
-            default:
-                tempMap.insert("athan_idx", MultimediaEngine::defaultAthan);
-                break;
-            }
-        }
-        else if (currentIdx > rmIdx)
-            tempMap.insert("athan_idx", currentIdx - 1);
-
-        this->m_athanConfig.replace(i, tempMap);
-    }
-
-    this->m_athanList.removeAt(rmIdx);
-    this->m_athanList.squeeze();
-
-    emit this->athanListChanged(this->m_athanList);
-    emit this->athanConfigChanged(this->m_athanConfig);
-}
-
 void MultimediaEngine::modifyAthanConfig(Prayer prayerEnum, const QVariantMap &entry)
 {
     const char *key{PrayerEngine::metaPrayerEnum().valueToKey(prayerEnum)};
@@ -172,6 +117,65 @@ void MultimediaEngine::modifyAthanConfig(Prayer prayerEnum, const QVariantMap &e
     this->m_athanConfig.replace(qToUnderlying(prayerEnum), tempMap);
 
     emit athanConfigChanged(this->m_athanConfig);
+}
+
+void MultimediaEngine::removeAthan(const qsizetype &rmIdx)
+{
+    if (rmIdx < this->defaultAthans || rmIdx >= m_athanList.size())
+    {
+        logCritical(multimediaEngine) << "Invalid index value \"" << rmIdx << "\"";
+
+        return;
+    }
+
+    const QUrl      fileUrl{this->m_athanList.at(rmIdx).toMap().value("path").toUrl()};
+    const rm_file_t result(fileman->rmFile(QUrl(fileUrl)));
+
+    logDebug(multimediaEngine) << "Result: " << result.status_l() << " " << result.status_h();
+
+    if (result.status_l() != 0 && result.status_l() != ENOENT)
+    {
+        logCritical(multimediaEngine)
+            << "Fileman::rmFile() failed with error: " << result.status_l();
+
+        return;
+    }
+
+    QWriteLocker lock{&this->varLock};
+
+    for (int i = 0; i < this->athanConfigListSize; ++i)
+    {
+        QVariantMap tempMap{m_athanConfig.at(i).toMap()};
+        const int   currentIdx{tempMap.value("athan_idx").toInt()};
+
+        if (currentIdx == rmIdx)
+        {
+            switch (static_cast<Prayer>(i))
+            {
+            case Prayer::Fajr:
+                tempMap.insert("athan_idx", MultimediaEngine::defaultFajrAthan);
+                break;
+            case Prayer::Maghrib:
+                tempMap.insert("athan_idx", MultimediaEngine::defaultMaghribAthan);
+                break;
+            default:
+                tempMap.insert("athan_idx", MultimediaEngine::defaultAthan);
+                break;
+            }
+        }
+        else if (currentIdx > rmIdx)
+            tempMap.insert("athan_idx", currentIdx - 1);
+
+        this->m_athanConfig.replace(i, tempMap);
+    }
+
+    this->m_athanList.removeAt(rmIdx);
+    this->m_athanList.squeeze();
+
+    CoreEngine::instance().removeSettingsKey("Athans/"_L1 + QString::number(rmIdx + 1));
+
+    emit this->athanListChanged(this->m_athanList);
+    emit this->athanConfigChanged(this->m_athanConfig);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -263,7 +267,7 @@ void MultimediaEngine::loadConfigs()
 {
     logDebug(multimediaEngine) << "Loading athan settings from config file";
 
-    QVariantList cfgList{this->m_athanConfig};
+    QVariantList cfgList(this->m_athanConfig); // don't use cfgList{}
 
     for (qsizetype i = 0; i < this->athanConfigListSize; ++i)
     {

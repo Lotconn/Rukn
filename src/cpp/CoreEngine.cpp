@@ -1,3 +1,4 @@
+#include "CoreEngine.hpp"
 #include <QCoreApplication>
 #include <QDir>
 #include <QEvent>
@@ -135,6 +136,26 @@ QVariantList CoreEngine::readSettingsArray(QAnyStringView group)
     this->settings->endArray();
 
     return list;
+}
+
+void CoreEngine::removeSettingsKey(QAnyStringView key)
+{
+    QWriteLocker lock(&varLock);
+
+    this->settings->remove(key);
+    this->settings->sync();
+
+    switch (this->settings->status())
+    {
+    case QSettings::AccessError:
+        logWarning(coreEngine) << "Failed to read config";
+        break;
+    case QSettings::FormatError:
+        logWarning(coreEngine) << "Config is malformed";
+        break;
+    default:
+        break;
+    }
 }
 
 void CoreEngine::writeSettings(QAnyStringView key, const QVariant &value)

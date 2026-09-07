@@ -186,7 +186,7 @@ void PrayerEngine::loadConfigs()
 {
     logDebug(prayerEngine) << "Loading prayer settings from config file";
 
-    QVariantList cfgList{this->m_prayerConfig};
+    QVariantList cfgList(this->m_prayerConfig); // don't use cfgList{}
 
     for (qsizetype i = 0; i < this->prayerConfigListSize; ++i)
     {
