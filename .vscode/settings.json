@@ -10,16 +10,13 @@
       "path": "/usr/bin/qmake"
     }
   ],
-  "clangd.arguments": [
-    "--background-index",
-    "-clang-tidy",
-    "--header-insertion=iwyu",
-    "--completion-style=detailed"
-  ],
   "[markdown]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
   },
   "C_Cpp.intelliSenseEngine": "disabled",
+  "clangd.arguments": [
+    "--completion-style=detailed"
+  ],
   "[cpp]": {
     "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
   },

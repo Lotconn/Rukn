@@ -1,7 +1,8 @@
 CompileFlags:
   Add:
     - -Ibuild
-
+Completion:
+  HeaderInsertion: Never
 Diagnostics:
   ClangTidy:
     Add:
