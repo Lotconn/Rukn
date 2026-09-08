@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QJsonArray>
 #include <QLockFile>
 #include <QMutex>
 #include <QObject>
@@ -26,11 +27,14 @@ class CoreEngine : public QObject
     static auto               instance() -> CoreEngine &;
     [[nodiscard]] static auto isOnline() noexcept -> bool;
     static auto               onceOnline(QObject *context, std::function<void()> slot,
-                                         int retriesLeft = 19) // NOLINT(*-magic-numbers)
-        -> void;
+                                         int retriesLeft = 19) -> void; // NOLINT(*-magic-numbers)
 
+    auto readOldSettings(QAnyStringView oldKey, const QVariant &defaultValue = {}) -> QVariant;
+    auto readOldSettingsJsArray(QAnyStringView oldKey, const QJsonArray &defaultArray = {})
+        -> QVariantList;
     auto readSettings(QAnyStringView key, const QVariant &defaultValue = {}) -> QVariant;
     auto readSettingsArray(QAnyStringView group) -> QVariantList;
+    // auto removeOldSettingsKey(QAnyStringView key) -> bool;
     auto writeSettings(QAnyStringView key, const QVariant &value) -> void;
     auto writeSettingsArray(QAnyStringView group, const QVariantList &entryMaps) -> void;
 
@@ -59,12 +63,14 @@ class CoreEngine : public QObject
     //  Functions
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
+    static auto readValueOfKey(QSettings &settings, QAnyStringView key,
+                               const QVariant &defaultValue = {}) -> QVariant;
+    static auto setValueOfKey(QSettings &settings, QAnyStringView key, const QVariant &value,
+                              bool flushOnWrite = false) -> void;
+
     // auto acquireConfigLock() -> int;
     auto applyLocale() -> void;
-    auto readValueOfKey(QAnyStringView key, const QVariant &defaultValue = {}) -> QVariant;
     // auto releaseConfigLock() -> void;
-    auto setValueOfKey(QAnyStringView key, const QVariant &value, bool flushOnWrite = false)
-        -> void;
 
   signals:
     auto coreOffline() -> void;

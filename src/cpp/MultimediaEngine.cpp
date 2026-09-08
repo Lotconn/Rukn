@@ -102,8 +102,8 @@ void MultimediaEngine::modifyAthanConfig(Prayer prayerEnum, const QVariantMap &e
         return;
     }
 
-    QWriteLocker lock{&this->varLock};
-    QVariantMap  tempMap{this->m_athanConfig.at(qToUnderlying(prayerEnum)).toMap()};
+    const QWriteLocker lock{&this->varLock};
+    QVariantMap        tempMap{this->m_athanConfig.at(qToUnderlying(prayerEnum)).toMap()};
 
     if (tempMap == entry)
     {
@@ -120,6 +120,8 @@ void MultimediaEngine::modifyAthanConfig(Prayer prayerEnum, const QVariantMap &e
 
 void MultimediaEngine::removeAthan(const qsizetype &rmIdx)
 {
+    const QWriteLocker lock{&this->varLock};
+
     if (rmIdx < this->defaultAthans || rmIdx >= m_athanList.size())
     {
         logCritical(multimediaEngine) << "Invalid index value \"" << rmIdx << "\"";
@@ -132,15 +134,13 @@ void MultimediaEngine::removeAthan(const qsizetype &rmIdx)
 
     logDebug(multimediaEngine) << "Result: " << result.status_l() << " " << result.status_h();
 
-    if (result.status_l() != 0 && result.status_l() != ENOENT)
+    if (result.status_l() != 0 && result.status_l() != ENOENT && result.status_l() != EINVAL)
     {
         logCritical(multimediaEngine)
             << "Fileman::rmFile() failed with error: " << result.status_l();
 
         return;
     }
-
-    QWriteLocker lock{&this->varLock};
 
     for (int i = 0; i < this->athanConfigListSize; ++i)
     {
@@ -235,11 +235,18 @@ void MultimediaEngine::defaultAthanList()
         this->athanListKeys.insert(key, value.typeId());
 }
 
-void MultimediaEngine::loadConfigs()
+void MultimediaEngine::loadAthanConfig(bool &configMigrated)
 {
-    logDebug(multimediaEngine) << "Loading athan settings from config file";
-
     QVariantList cfgList(this->m_athanConfig); // don't use cfgList{}
+    QVariantList oldAthanConfig;
+    const bool   migrated{
+        CoreEngine::instance().readSettings("MultimediaEngineConfigMigrated"_L1).toBool()};
+
+    if (!migrated)
+        oldAthanConfig = CoreEngine::instance().readOldSettingsJsArray("Adhan/prayerConfig"_L1);
+
+    if (!oldAthanConfig.isEmpty())
+        logInfo(multimediaEngine) << "Migrating from old config";
 
     for (qsizetype i = 0; i < this->athanConfigListSize; ++i)
     {
@@ -249,17 +256,20 @@ void MultimediaEngine::loadConfigs()
         if (prayerName.isEmpty() || prayerEnum == Prayer::Sunrise || prayerEnum == Prayer::None)
             continue;
 
-        QVariantMap entry{m_athanConfig.at(i).toMap()};
+        QVariantMap entry{this->m_athanConfig.at(i).toMap()};
 
         for (const QString &key : this->athanConfigKeys.keys())
         {
-            QVariant cfgVal{CoreEngine::instance().readSettings(
-                "AthanConfig/" + prayerName + "/" + key, entry.value(key))};
+            QVariant cfgVal;
+
+            cfgVal = (oldAthanConfig.isEmpty())
+                         ? CoreEngine::instance().readSettings(
+                               "AthanConfig/"_L1 + prayerName + '/'_L1 + key, entry.value(key))
+                         : oldAthanConfig.at(i).toMap().value(key);
 
             logDebug(multimediaEngine)
                 << "Value for key \"" << key << "\" in list item " << i << ": " << cfgVal;
 
-            // should go before isValidEntry check
             if (!cfgVal.convert(QMetaType(this->athanConfigKeys.value(key))))
             {
                 logWarning(multimediaEngine) << "Failed converting stored value for \"" << key
@@ -275,9 +285,44 @@ void MultimediaEngine::loadConfigs()
 
     this->setAthanConfig(cfgList);
 
-    logDebug(multimediaEngine) << "Loading athan list from config file";
+    if (!oldAthanConfig.isEmpty() && !configMigrated)
+        configMigrated = true;
+}
 
-    this->setAthanList(CoreEngine::instance().readSettingsArray("Athans"_L1));
+void MultimediaEngine::loadAthanList(bool &configMigrated)
+{
+    QVariantList oldAthanList;
+    const bool   migrated{
+        CoreEngine::instance().readSettings("MultimediaEngineConfigMigrated"_L1).toBool()};
+
+    if (!migrated)
+        oldAthanList = CoreEngine::instance().readOldSettingsJsArray("Adhan/audioList"_L1);
+
+    if (!oldAthanList.isEmpty())
+    {
+        logInfo(multimediaEngine) << "Migrating from old config";
+
+        this->setAthanList(oldAthanList);
+
+        if (!configMigrated)
+            configMigrated = true;
+    }
+    else
+        this->setAthanList(CoreEngine::instance().readSettingsArray("Athans"_L1));
+}
+
+void MultimediaEngine::loadConfigs()
+{
+    logDebug(multimediaEngine) << "Loading athan settings from config file";
+
+    bool athanConfigMigrated{false};
+    bool athanListMigrated{false};
+
+    this->loadAthanConfig(athanConfigMigrated);
+    this->loadAthanList(athanListMigrated);
+
+    if (athanConfigMigrated && athanListMigrated)
+        CoreEngine::instance().writeSettings("MultimediaEngineConfigMigrated"_L1, true);
 }
 
 void MultimediaEngine::saveConfigs()
@@ -312,6 +357,8 @@ void MultimediaEngine::setAthanConfig(const QVariantList &athanConfig)
         return;
     }
 
+    const QWriteLocker lock{&this->varLock};
+
     if (athanConfig == this->m_athanConfig)
     {
         logDebug(multimediaEngine) << "Skipping setting identical list";
@@ -328,8 +375,6 @@ void MultimediaEngine::setAthanConfig(const QVariantList &athanConfig)
         return;
     }
 
-    QWriteLocker lock{&this->varLock};
-
     this->m_athanConfig = athanConfig;
 
     emit this->athanConfigChanged(this->m_athanConfig);
@@ -343,6 +388,8 @@ void MultimediaEngine::setAthanList(const QVariantList &athanList)
 
         return;
     }
+
+    const QWriteLocker lock{&this->varLock};
 
     if (athanList == this->m_athanList)
     {
@@ -366,10 +413,7 @@ void MultimediaEngine::setAthanList(const QVariantList &athanList)
         return;
     }
 
-    QWriteLocker lock{&this->varLock};
-
     this->m_athanList = athanList;
-
     emit this->athanListChanged(this->m_athanList);
 }
 

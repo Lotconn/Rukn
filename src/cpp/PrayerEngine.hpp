@@ -109,6 +109,7 @@ class PrayerEngine : public QObject
     auto defaultCalcParams() -> void;
     auto defaultPrayerConfig() -> void;
     auto loadConfigs() -> void;
+    auto loadPrayerConfig(bool &configMigrated) -> void;
     auto saveConfigs() -> void;
     auto setPrayerConfig(const QVariantList &prayerConfig) -> void;
 

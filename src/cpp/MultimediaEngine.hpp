@@ -64,6 +64,8 @@ class MultimediaEngine : public QObject
     auto connectToCoreOffline() -> void;
     auto defaultAthanList() -> void;
     auto defaultAthanConfig() -> void;
+    auto loadAthanConfig(bool &configMigrated) -> void;
+    auto loadAthanList(bool &configMigrated) -> void;
     auto loadConfigs() -> void;
     auto saveConfigs() -> void;
     auto setAthanConfig(const QVariantList &athanConfig) -> void;

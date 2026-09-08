@@ -73,7 +73,6 @@ void PrayerEngine::modifyPrayerConfig(Prayer prayerEnum, const QVariantMap &entr
     {
         logCritical(prayerEngine) << "\"" << prayerEnum
                                   << "\" does not resolve to a valid Prayer enum";
-
         return;
     }
 
@@ -93,8 +92,8 @@ void PrayerEngine::modifyPrayerConfig(Prayer prayerEnum, const QVariantMap &entr
         return;
     }
 
-    QWriteLocker lock{&this->varLock};
-    QVariantMap  tempMap{this->m_prayerConfig.at(qToUnderlying(prayerEnum)).toMap()};
+    const QWriteLocker lock{&this->varLock};
+    QVariantMap        tempMap{this->m_prayerConfig.at(qToUnderlying(prayerEnum)).toMap()};
 
     if (tempMap == entry)
     {
@@ -160,7 +159,27 @@ void PrayerEngine::loadConfigs()
 {
     logDebug(prayerEngine) << "Loading prayer settings from config file";
 
+    bool prayerConfigMigrated{false};
+
+    this->loadPrayerConfig(prayerConfigMigrated);
+
+    if (prayerConfigMigrated)
+        CoreEngine::instance().writeSettings("PrayerEngineConfigMigrated"_L1, true);
+}
+
+void PrayerEngine::loadPrayerConfig(bool &configMigrated)
+{
     QVariantList cfgList(this->m_prayerConfig); // don't use cfgList{}
+    QVariantList oldPrayerConfig;
+
+    const bool migrated{
+        CoreEngine::instance().readSettings("PrayerEngineConfigMigrated"_L1).toBool()};
+
+    if (!migrated)
+        oldPrayerConfig = CoreEngine::instance().readOldSettingsJsArray("Adhan/prayerConfig"_L1);
+
+    if (!oldPrayerConfig.isEmpty())
+        logInfo(prayerEngine) << "Migrating from old config";
 
     for (qsizetype i = 0; i < this->prayerConfigListSize; ++i)
     {
@@ -170,17 +189,21 @@ void PrayerEngine::loadConfigs()
         if (prayerName.isEmpty() || prayerEnum == Prayer::Sunrise || prayerEnum == Prayer::None)
             continue;
 
-        QVariantMap entry{m_prayerConfig.at(i).toMap()};
+        QVariantMap entry{this->m_prayerConfig.at(i).toMap()};
 
         for (const QString &key : this->prayerConfigKeys.keys())
         {
-            QVariant cfgVal{CoreEngine::instance().readSettings(
-                "PrayerConfig/" + prayerName + "/" + key, entry.value(key))};
+            QVariant cfgVal;
+
+            if (oldPrayerConfig.isEmpty())
+                cfgVal = CoreEngine::instance().readSettings(
+                    "PrayerConfig/"_L1 + prayerName + '/'_L1 + key, entry.value(key));
+            else
+                cfgVal = oldPrayerConfig.at(i).toMap().value(key);
 
             logDebug(prayerEngine)
                 << "Value for key \"" << key << "\" in list item " << i << ": " << cfgVal;
 
-            // should go before isValidEntry check
             if (!cfgVal.convert(QMetaType(this->prayerConfigKeys.value(key))))
             {
                 logWarning(prayerEngine) << "Failed converting stored value for \"" << key
@@ -195,6 +218,9 @@ void PrayerEngine::loadConfigs()
     }
 
     this->setPrayerConfig(cfgList);
+
+    if (!oldPrayerConfig.isEmpty() && !configMigrated)
+        configMigrated = true;
 }
 
 void PrayerEngine::saveConfigs()
@@ -210,7 +236,8 @@ void PrayerEngine::saveConfigs()
             continue;
 
         for (const auto &[key, value] : m_prayerConfig.at(i).toMap().asKeyValueRange())
-            CoreEngine::instance().writeSettings("PrayerConfig/" + prayerName + "/" + key, value);
+            CoreEngine::instance().writeSettings("PrayerConfig/"_L1 + prayerName + '/'_L1 + key,
+                                                 value);
     }
 }
 
@@ -222,6 +249,8 @@ void PrayerEngine::setPrayerConfig(const QVariantList &prayerConfig)
 
         return;
     }
+
+    const QWriteLocker lock{&this->varLock};
 
     if (prayerConfig == this->m_prayerConfig)
     {
@@ -237,8 +266,6 @@ void PrayerEngine::setPrayerConfig(const QVariantList &prayerConfig)
 
         return;
     }
-
-    QWriteLocker lock{&this->varLock};
 
     this->m_prayerConfig = prayerConfig;
 
@@ -260,7 +287,7 @@ void PrayerEngine::onCoreOnline()
 
 void PrayerEngine::onInvalidate()
 {
-    QWriteLocker lock{&this->varLock};
+    const QWriteLocker lock{&this->varLock};
 
     this->m_calcParams->madhab = Adhan::CalculationMethod::MuslimWorldLeague().madhab;
     this->m_calcParams->adjustments.fajr =

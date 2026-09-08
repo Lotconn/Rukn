@@ -1,4 +1,3 @@
-#include "CoreEngine.hpp"
 #include <QCoreApplication>
 #include <QDir>
 #include <QEvent>
@@ -43,7 +42,7 @@ CoreEngine::CoreEngine(QObject *parent) : QObject{parent}
         const QString oldConfigPath{oldConfigFile.absoluteFilePath()};
         logDebug(coreEngine) << "Old config detected at " << oldConfigPath;
 
-        this->oldSettings = std::make_unique<QSettings>(oldConfigPath);
+        this->oldSettings = std::make_unique<QSettings>(oldConfigPath, QSettings::NativeFormat);
     }
 
     this->applyLocale();
@@ -120,6 +119,75 @@ void CoreEngine::onceOnline(QObject *context, std::function<void()> slot, int re
         slot();
 }
 
+QVariant CoreEngine::readOldSettings(QAnyStringView oldKey, const QVariant &defaultValue)
+{
+    if (this->oldSettings == nullptr)
+    {
+        logDebug(coreEngine) << "Old settings doesn't exist, skipping migration";
+
+        return {};
+    }
+
+    if (oldKey.isEmpty())
+    {
+        logCritical(coreEngine) << "Provided key is empty";
+
+        return {};
+    }
+
+    const QWriteLocker lock{&varLock};
+
+    return CoreEngine::readValueOfKey(*this->oldSettings, oldKey, defaultValue);
+}
+
+QVariantList CoreEngine::readOldSettingsJsArray(QAnyStringView    oldKey,
+                                                const QJsonArray &defaultArray)
+{
+    if (this->oldSettings == nullptr)
+    {
+        logDebug(coreEngine) << "Old settings doesn't exist, skipping migration";
+
+        return {};
+    }
+
+    if (oldKey.isEmpty())
+    {
+        logCritical(coreEngine) << "Provided key is empty";
+
+        return {};
+    }
+
+    const QWriteLocker lock{&varLock};
+    const QVariant     oldValue{CoreEngine::readValueOfKey(*this->oldSettings, oldKey)};
+
+    QJsonParseError     err;
+    const QJsonDocument jsonDoc{QJsonDocument::fromJson(oldValue.toByteArray(), &err)};
+
+    if (err.error != QJsonParseError::NoError)
+    {
+        logWarning(coreEngine) << "Failed to parse JSON";
+        logDebug(coreEngine) << "Error at offset " << err.offset << ": " << err.errorString();
+
+        return defaultArray.toVariantList();
+    }
+
+    if (jsonDoc.isEmpty() || jsonDoc.isNull())
+    {
+        logWarning(coreEngine) << "Parsed JSON is empty, using default value";
+
+        return defaultArray.toVariantList();
+    }
+
+    if (!jsonDoc.isArray())
+    {
+        logWarning(coreEngine) << "Parsed JSON is not an array, using default value";
+
+        return defaultArray.toVariantList();
+    }
+
+    return jsonDoc.array().toVariantList();
+}
+
 QVariant CoreEngine::readSettings(QAnyStringView key, const QVariant &defaultValue)
 {
     if (key.isEmpty())
@@ -129,9 +197,9 @@ QVariant CoreEngine::readSettings(QAnyStringView key, const QVariant &defaultVal
         return {};
     }
 
-    QWriteLocker lock(&varLock);
+    const QWriteLocker lock{&varLock};
 
-    return this->readValueOfKey(key, defaultValue);
+    return CoreEngine::readValueOfKey(*this->settings, key, defaultValue);
 }
 
 QVariantList CoreEngine::readSettingsArray(QAnyStringView group)
@@ -143,9 +211,9 @@ QVariantList CoreEngine::readSettingsArray(QAnyStringView group)
         return {};
     }
 
-    QWriteLocker lock(&varLock);
-    QVariantList list;
-    qsizetype    size{this->settings->beginReadArray(group)};
+    const QWriteLocker lock{&varLock};
+    QVariantList       list;
+    const qsizetype    size{this->settings->beginReadArray(group)};
 
     logDebug(coreEngine) << "Array size for \"" << group << "\" is " << size;
 
@@ -159,7 +227,7 @@ QVariantList CoreEngine::readSettingsArray(QAnyStringView group)
 
         for (const QString &key : this->settings->childKeys())
         {
-            const QVariant value{readValueOfKey(key)};
+            const QVariant value{CoreEngine::readValueOfKey(*this->settings, key)};
 
             logDebug(coreEngine) << "Value of key \"" << key << "\": " << value;
 
@@ -174,6 +242,22 @@ QVariantList CoreEngine::readSettingsArray(QAnyStringView group)
     return list;
 }
 
+// bool CoreEngine::removeOldSettingsKey(QAnyStringView key)
+// {
+//     if (key.isEmpty())
+//     {
+//         logCritical(coreEngine) << "Provided key is empty";
+
+//         return false;
+//     }
+
+//     const QWriteLocker lock{&varLock};
+
+//     this->oldSettings->remove(key);
+
+//     return true;
+// }
+
 void CoreEngine::writeSettings(QAnyStringView key, const QVariant &value)
 {
     if (key.isEmpty())
@@ -183,9 +267,9 @@ void CoreEngine::writeSettings(QAnyStringView key, const QVariant &value)
         return;
     }
 
-    QWriteLocker lock(&varLock);
+    const QWriteLocker lock{&varLock};
 
-    this->setValueOfKey(key, value, true);
+    CoreEngine::setValueOfKey(*this->settings, key, value, true);
 }
 
 void CoreEngine::writeSettingsArray(QAnyStringView group, const QVariantList &entryMaps)
@@ -197,7 +281,7 @@ void CoreEngine::writeSettingsArray(QAnyStringView group, const QVariantList &en
         return;
     }
 
-    QWriteLocker lock{&varLock};
+    const QWriteLocker lock{&varLock};
 
     this->settings->remove(group);
     this->settings->beginWriteArray(group);
@@ -209,7 +293,7 @@ void CoreEngine::writeSettingsArray(QAnyStringView group, const QVariantList &en
         this->settings->setArrayIndex(static_cast<int>(i));
 
         for (const auto &[key, value] : map.asKeyValueRange())
-            this->setValueOfKey(key, value);
+            CoreEngine::setValueOfKey(*this->settings, key, value);
     }
 
     this->settings->endArray();
@@ -303,21 +387,20 @@ void CoreEngine::applyLocale()
 void CoreEngine::onAboutToQuit()
 { emit this->coreOffline(); }
 
-QVariant CoreEngine::readValueOfKey(QAnyStringView key, const QVariant &defaultValue)
+QVariant CoreEngine::readValueOfKey(QSettings &settings, QAnyStringView key,
+                                    const QVariant &defaultValue)
 {
-    bool           invalidKey = false;
-    const QVariant value{this->settings->value(key)};
+    QVariant value{settings.value(key)};
 
-    switch (this->settings->status())
+    switch (settings.status())
     {
     case QSettings::AccessError:
         logWarning(coreEngine) << "Failed to read config";
-        break;
+        return defaultValue;
     case QSettings::FormatError:
         logWarning(coreEngine) << "Config for key \"" << key
                                << "\" is malformed, returning default value";
-        invalidKey = true;
-        break;
+        return defaultValue;
     default:
         break;
     }
@@ -327,10 +410,10 @@ QVariant CoreEngine::readValueOfKey(QAnyStringView key, const QVariant &defaultV
         logWarning(coreEngine) << "Failed to fetch a valid value for key \"" << key
                                << "\", returning default value";
 
-        invalidKey = true;
+        return defaultValue;
     }
 
-    return (invalidKey) ? defaultValue : value;
+    return value;
 }
 
 // void CoreEngine::releaseConfigLock()
@@ -338,17 +421,18 @@ QVariant CoreEngine::readValueOfKey(QAnyStringView key, const QVariant &defaultV
 //     this->configLock->unlock();
 // }
 
-void CoreEngine::setValueOfKey(QAnyStringView key, const QVariant &value, bool flushOnWrite)
+void CoreEngine::setValueOfKey(QSettings &settings, QAnyStringView key, const QVariant &value,
+                               bool flushOnWrite)
 {
     if (value.isNull())
         logWarning(coreEngine) << "Value is empty. Make sure this is intended.";
 
-    this->settings->setValue(key, value);
+    settings.setValue(key, value);
 
     if (flushOnWrite)
-        this->settings->sync();
+        settings.sync();
 
-    switch (this->settings->status())
+    switch (settings.status())
     {
     case QSettings::AccessError:
         logWarning(coreEngine) << "Failed to read config";
