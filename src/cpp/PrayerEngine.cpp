@@ -17,7 +17,7 @@ PrayerEngine::PrayerEngine(QObject *parent) : QObject{parent}
 
     this->defaultCalcParams();
     this->defaultPrayerConfig();
-    QTimer::singleShot(0, this, &PrayerEngine::connectToCoreOnline);
+    CoreEngine::onceOnline(this, [this] { this->onCoreOnline(); });
 
     PrayerEngine::s_singletonInstance = this;
 }
@@ -25,7 +25,6 @@ PrayerEngine::PrayerEngine(QObject *parent) : QObject{parent}
 PrayerEngine::~PrayerEngine()
 {
     QObject::disconnect(this->coreOfflineConnection);
-    QObject::disconnect(this->coreOnlineConnection);
 
     if (PrayerEngine::s_singletonInstance == this)
         PrayerEngine::s_singletonInstance = nullptr;
@@ -46,7 +45,7 @@ PrayerEngine &PrayerEngine::instance()
 
 PrayerEngine::Prayer PrayerEngine::fromString(QAnyStringView prayerName)
 {
-    const int val{PrayerEngine::m_metaPrayerEnum.keyToValue(qPrintable(prayerName.toString()))};
+    const int val{PrayerEngine::s_metaPrayerEnum.keyToValue(qPrintable(prayerName.toString()))};
 
     return (val == -1) ? Prayer::None : static_cast<Prayer>(val);
 }
@@ -63,11 +62,11 @@ QVariant PrayerEngine::getPrayerConfig(Prayer prayerEnum, QAnyStringView field)
 }
 
 const QMetaEnum &PrayerEngine::metaPrayerEnum()
-{ return PrayerEngine::m_metaPrayerEnum; }
+{ return PrayerEngine::s_metaPrayerEnum; }
 
 void PrayerEngine::modifyPrayerConfig(Prayer prayerEnum, const QVariantMap &entry)
 {
-    const char *key{m_metaPrayerEnum.valueToKey(prayerEnum)};
+    const char *key{s_metaPrayerEnum.valueToKey(prayerEnum)};
 
     // QML-side invalid int index -> Prayer enum cast guard
     if (key == nullptr)
@@ -78,7 +77,7 @@ void PrayerEngine::modifyPrayerConfig(Prayer prayerEnum, const QVariantMap &entr
         return;
     }
 
-    const QString enumName{QString(PrayerEngine::m_metaPrayerEnum.scope()) + "::" + key};
+    const QString enumName{QString(PrayerEngine::s_metaPrayerEnum.scope()) + "::" + key};
 
     if (prayerEnum == Prayer::Sunrise || prayerEnum == Prayer::None)
     {
@@ -110,7 +109,7 @@ void PrayerEngine::modifyPrayerConfig(Prayer prayerEnum, const QVariantMap &entr
 }
 
 QString PrayerEngine::toString(Prayer prayer)
-{ return PrayerEngine::m_metaPrayerEnum.valueToKey(qToUnderlying(prayer)); }
+{ return PrayerEngine::s_metaPrayerEnum.valueToKey(qToUnderlying(prayer)); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  Private Members
@@ -126,31 +125,6 @@ void PrayerEngine::connectToCoreOffline()
         logWarning(prayerEngine) << "aboutToQuit signal not connected";
     else
         logDebug(prayerEngine) << "aboutToQuit signal connected";
-}
-
-void PrayerEngine::connectToCoreOnline()
-{
-    if (!CoreEngine::exists())
-    {
-        // CoreEngine not constructed yet on this tick; retry next tick.
-        logDebug(prayerEngine) << "CoreEngine doesn't exist yet";
-        QTimer::singleShot(0, this, &PrayerEngine::connectToCoreOnline);
-        return;
-    }
-
-    this->coreOnlineConnection =
-        QObject::connect(&CoreEngine::instance(), &CoreEngine::coreOnline, this,
-                         &PrayerEngine::onCoreOnline, Qt::DirectConnection);
-
-    if (this->coreOnlineConnection == nullptr)
-        logWarning(prayerEngine) << "coreOnline signal not connected";
-    else
-        logDebug(prayerEngine) << "coreOnline signal connected";
-
-    // coreOnline() already fired before we connected; manually reconcile
-    logDebug(prayerEngine) << "CoreEngine already online; catching up";
-
-    this->onCoreOnline();
 }
 
 void PrayerEngine::defaultCalcParams()

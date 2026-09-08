@@ -15,7 +15,7 @@ UiEngine::UiEngine(QObject *parent) : QObject{parent}
         logFatal(uiEngine)
             << "A second instance was constructed; only one instance may exist per process";
 
-    QTimer::singleShot(0, this, &UiEngine::connectToCoreOnline);
+    CoreEngine::onceOnline(this, [this] { this->onCoreOnline(); });
     this->initTexts();
 
     UiEngine::s_singletonInstance = this;
@@ -24,7 +24,6 @@ UiEngine::UiEngine(QObject *parent) : QObject{parent}
 UiEngine::~UiEngine()
 {
     QObject::disconnect(this->coreOfflineConnection);
-    QObject::disconnect(this->coreOnlineConnection);
     QObject::disconnect(this->localeChangedConnection);
 
     if (UiEngine::s_singletonInstance == this)
@@ -68,31 +67,6 @@ void UiEngine::connectToCoreOffline()
         logWarning(uiEngine) << "aboutToQuit signal not connected";
     else
         logDebug(uiEngine) << "aboutToQuit signal connected";
-}
-
-void UiEngine::connectToCoreOnline()
-{
-    if (!CoreEngine::exists())
-    {
-        logDebug(uiEngine) << "CoreEngine doesn't exist yet";
-        // CoreEngine not constructed yet on this tick; retry next tick.
-        QTimer::singleShot(0, this, &UiEngine::connectToCoreOnline);
-        return;
-    }
-
-    this->coreOnlineConnection =
-        QObject::connect(&CoreEngine::instance(), &CoreEngine::coreOnline, this,
-                         &UiEngine::onCoreOnline, Qt::DirectConnection);
-
-    if (this->coreOnlineConnection == nullptr)
-        logWarning(uiEngine) << "coreOnline signal not connected";
-    else
-        logDebug(uiEngine) << "coreOnline signal connected";
-
-    // coreOnline() already fired before we connected; manually reconcile
-    logDebug(uiEngine) << "CoreEngine already online; catching up";
-
-    this->onCoreOnline();
 }
 
 void UiEngine::connectToLocaleChanged()

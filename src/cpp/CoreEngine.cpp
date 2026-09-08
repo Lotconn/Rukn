@@ -59,6 +59,7 @@ CoreEngine::CoreEngine(QObject *parent) : QObject{parent}
         logDebug(coreEngine) << "aboutToQuit signal connected";
 
     CoreEngine::s_singletonInstance = this;
+    CoreEngine::s_online            = true;
 
     emit this->coreOnline();
 }
@@ -68,7 +69,10 @@ CoreEngine::~CoreEngine()
     QObject::disconnect(this->aboutToQuitConnection);
 
     if (CoreEngine::s_singletonInstance == this)
+    {
         CoreEngine::s_singletonInstance = nullptr;
+        CoreEngine::s_online            = false;
+    }
 }
 
 CoreEngine &CoreEngine::instance()
@@ -83,6 +87,38 @@ CoreEngine &CoreEngine::instance()
 
 bool CoreEngine::exists() noexcept
 { return CoreEngine::s_singletonInstance != nullptr; }
+
+bool CoreEngine::isOnline() noexcept
+{ return CoreEngine::s_online; }
+
+void CoreEngine::onceOnline(QObject *context, std::function<void()> slot, int retriesLeft)
+{
+    if (!CoreEngine::exists())
+    {
+        if (retriesLeft <= 0)
+        {
+            logCritical(coreEngine) << "CoreEngine still not constructed after several retries";
+
+            return;
+        }
+
+        QTimer::singleShot(0, context, [context, slot, retriesLeft]() mutable {
+            CoreEngine::onceOnline(context, std::move(slot), retriesLeft - 1);
+        });
+        return;
+    }
+
+    const auto connection = QObject::connect(&CoreEngine::instance(), &CoreEngine::coreOnline,
+                                             context, slot, Qt::DirectConnection);
+
+    if (connection == nullptr)
+        logWarning(coreEngine) << "coreOnline signal not connected";
+    else
+        logDebug(coreEngine) << "coreOnline signal connected";
+
+    if (CoreEngine::isOnline())
+        slot();
+}
 
 QVariant CoreEngine::readSettings(QAnyStringView key, const QVariant &defaultValue)
 {

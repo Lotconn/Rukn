@@ -22,8 +22,12 @@ class CoreEngine : public QObject
     explicit CoreEngine(QObject *parent = nullptr);
     ~CoreEngine() override;
 
-    static auto exists() noexcept -> bool;
-    static auto instance() -> CoreEngine &;
+    static auto               exists() noexcept -> bool;
+    static auto               instance() -> CoreEngine &;
+    [[nodiscard]] static auto isOnline() noexcept -> bool;
+    static auto               onceOnline(QObject *context, std::function<void()> slot,
+                                         int retriesLeft = 19) // NOLINT(*-magic-numbers)
+        -> void;
 
     auto readSettings(QAnyStringView key, const QVariant &defaultValue = {}) -> QVariant;
     auto readSettingsArray(QAnyStringView group) -> QVariantList;
@@ -41,6 +45,7 @@ class CoreEngine : public QObject
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     inline static CoreEngine *s_singletonInstance{nullptr};
+    inline static bool        s_online{false};
 
     QMetaObject::Connection    aboutToQuitConnection;
     std::unique_ptr<QLockFile> configLock;

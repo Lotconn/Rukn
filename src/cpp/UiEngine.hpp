@@ -48,7 +48,6 @@ class UiEngine : public QObject
     QStringList                         m_themeList;
 
     QMetaObject::Connection coreOfflineConnection;
-    QMetaObject::Connection coreOnlineConnection;
     QMetaObject::Connection localeChangedConnection;
     QReadWriteLock          varLock;
 
@@ -60,7 +59,6 @@ class UiEngine : public QObject
     static auto dummy(const QStringList &) -> void;
 
     auto connectToCoreOffline() -> void;
-    auto connectToCoreOnline() -> void;
     auto connectToLocaleChanged() -> void;
     auto defaultTheme() -> void;
     auto prayerDisplayNamesList() -> QStringList;

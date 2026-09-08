@@ -68,10 +68,7 @@ class PrayerEngine : public QObject
 
     inline static PrayerEngine *s_singletonInstance{nullptr};
 
-    std::unique_ptr<Adhan::CalculationParameters> m_calcParams;
-    QVariantList                                  m_prayerConfig;
-
-    inline static QMap<Prayer, Adhan::Prayer> m_prayerEnumMap{
+    inline static QMap<Prayer, Adhan::Prayer> s_prayerEnumMap{
         {   PrayerEngine::Fajr,    Adhan::Prayer::Fajr},
         {PrayerEngine::Sunrise, Adhan::Prayer::Sunrise},
         {  PrayerEngine::Dhuhr,   Adhan::Prayer::Dhuhr},
@@ -81,7 +78,7 @@ class PrayerEngine : public QObject
         {   PrayerEngine::None,    Adhan::Prayer::None}
     };
 
-    inline static QMap<Adhan::Prayer, Prayer> m_revPrayerEnumMap{
+    inline static QMap<Adhan::Prayer, Prayer> s_revPrayerEnumMap{
         {   Adhan::Prayer::Fajr,    PrayerEngine::Fajr},
         {Adhan::Prayer::Sunrise, PrayerEngine::Sunrise},
         {  Adhan::Prayer::Dhuhr,   PrayerEngine::Dhuhr},
@@ -92,10 +89,12 @@ class PrayerEngine : public QObject
     };
 
     // std::unique_ptr<Adhan::PrayerTimes> m_prayerTimes;
-    inline static QMetaEnum m_metaPrayerEnum{QMetaEnum::fromType<Prayer>()};
+    inline static QMetaEnum s_metaPrayerEnum{QMetaEnum::fromType<Prayer>()};
+
+    std::unique_ptr<Adhan::CalculationParameters> m_calcParams;
+    QVariantList                                  m_prayerConfig;
 
     QMetaObject::Connection coreOfflineConnection;
-    QMetaObject::Connection coreOnlineConnection;
     QMap<QString, int>      prayerConfigKeys;
     qsizetype               prayerConfigListSize;
     qsizetype               prayerConfigMapSize;
@@ -107,7 +106,6 @@ class PrayerEngine : public QObject
 
     // auto currentPrayer(Adhan::Instant when = Adhan::now()) -> PrayerEngine::Prayer;
     auto connectToCoreOffline() -> void;
-    auto connectToCoreOnline() -> void;
     auto defaultCalcParams() -> void;
     auto defaultPrayerConfig() -> void;
     auto loadConfigs() -> void;

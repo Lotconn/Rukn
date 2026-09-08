@@ -19,7 +19,7 @@ MultimediaEngine::MultimediaEngine(QObject *parent) : QObject{parent}, fileman{n
 
     this->defaultAthanConfig();
     this->defaultAthanList();
-    QTimer::singleShot(0, this, &MultimediaEngine::connectToCoreOnline);
+    CoreEngine::onceOnline(this, [this] { this->onCoreOnline(); });
 
     MultimediaEngine::s_singletonInstance = this;
 }
@@ -27,7 +27,6 @@ MultimediaEngine::MultimediaEngine(QObject *parent) : QObject{parent}, fileman{n
 MultimediaEngine::~MultimediaEngine()
 {
     QObject::disconnect(this->coreOfflineConnection);
-    QObject::disconnect(this->coreOnlineConnection);
 
     if (MultimediaEngine::s_singletonInstance == this)
         MultimediaEngine::s_singletonInstance = nullptr;
@@ -190,31 +189,6 @@ void MultimediaEngine::connectToCoreOffline()
         logWarning(multimediaEngine) << "coreOffline signal not connected";
     else
         logDebug(multimediaEngine) << "coreOffline signal connected";
-}
-
-void MultimediaEngine::connectToCoreOnline()
-{
-    if (!CoreEngine::exists())
-    {
-        // CoreEngine not constructed yet on this tick; retry next tick.
-        logDebug(multimediaEngine) << "CoreEngine doesn't exist yet";
-        QTimer::singleShot(0, this, &MultimediaEngine::connectToCoreOnline);
-        return;
-    }
-
-    this->coreOnlineConnection =
-        QObject::connect(&CoreEngine::instance(), &CoreEngine::coreOnline, this,
-                         &MultimediaEngine::onCoreOnline, Qt::DirectConnection);
-
-    if (this->coreOnlineConnection == nullptr)
-        logWarning(multimediaEngine) << "coreOnline signal not connected";
-    else
-        logDebug(multimediaEngine) << "coreOnline signal connected";
-
-    // coreOnline() already fired before we connected; manually reconcile
-    logDebug(multimediaEngine) << "CoreEngine already online; catching up";
-
-    this->onCoreOnline();
 }
 
 void MultimediaEngine::defaultAthanConfig()

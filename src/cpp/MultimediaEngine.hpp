@@ -53,7 +53,6 @@ class MultimediaEngine : public QObject
     QMap<QString, int>      athanListKeys;
     qsizetype               athanListMapSize;
     QMetaObject::Connection coreOfflineConnection;
-    QMetaObject::Connection coreOnlineConnection;
     qsizetype               defaultAthans;
     FileMan                *fileman;
     QReadWriteLock          varLock;
@@ -63,7 +62,6 @@ class MultimediaEngine : public QObject
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     auto connectToCoreOffline() -> void;
-    auto connectToCoreOnline() -> void;
     auto defaultAthanList() -> void;
     auto defaultAthanConfig() -> void;
     auto loadConfigs() -> void;
