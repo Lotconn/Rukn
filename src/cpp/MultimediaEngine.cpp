@@ -172,8 +172,6 @@ void MultimediaEngine::removeAthan(const qsizetype &rmIdx)
     this->m_athanList.removeAt(rmIdx);
     this->m_athanList.squeeze();
 
-    CoreEngine::instance().removeSettingsKey("Athans/"_L1 + QString::number(rmIdx + 1));
-
     emit this->athanListChanged(this->m_athanList);
     emit this->athanConfigChanged(this->m_athanConfig);
 }

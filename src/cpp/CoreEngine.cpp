@@ -138,26 +138,6 @@ QVariantList CoreEngine::readSettingsArray(QAnyStringView group)
     return list;
 }
 
-void CoreEngine::removeSettingsKey(QAnyStringView key)
-{
-    QWriteLocker lock(&varLock);
-
-    this->settings->remove(key);
-    this->settings->sync();
-
-    switch (this->settings->status())
-    {
-    case QSettings::AccessError:
-        logWarning(coreEngine) << "Failed to read config";
-        break;
-    case QSettings::FormatError:
-        logWarning(coreEngine) << "Config is malformed";
-        break;
-    default:
-        break;
-    }
-}
-
 void CoreEngine::writeSettings(QAnyStringView key, const QVariant &value)
 {
     if (key.isEmpty())
@@ -181,8 +161,9 @@ void CoreEngine::writeSettingsArray(QAnyStringView group, const QVariantList &en
         return;
     }
 
-    QWriteLocker lock(&varLock);
+    QWriteLocker lock{&varLock};
 
+    this->settings->remove(group);
     this->settings->beginWriteArray(group);
 
     for (qsizetype i = 0; i < entryMaps.size(); ++i)
@@ -196,7 +177,6 @@ void CoreEngine::writeSettingsArray(QAnyStringView group, const QVariantList &en
     }
 
     this->settings->endArray();
-
     this->settings->sync();
 }
 

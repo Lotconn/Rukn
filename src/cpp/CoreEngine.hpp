@@ -27,7 +27,6 @@ class CoreEngine : public QObject
 
     auto readSettings(QAnyStringView key, const QVariant &defaultValue = {}) -> QVariant;
     auto readSettingsArray(QAnyStringView group) -> QVariantList;
-    auto removeSettingsKey(QAnyStringView key) -> void;
     auto writeSettings(QAnyStringView key, const QVariant &value) -> void;
     auto writeSettingsArray(QAnyStringView group, const QVariantList &entryMaps) -> void;
 
