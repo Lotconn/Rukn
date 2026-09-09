@@ -21,23 +21,16 @@ UiEngine::UiEngine(QObject *parent) : QObject{parent}
     UiEngine::s_singletonInstance = this;
 }
 
-UiEngine::~UiEngine()
-{
-    QObject::disconnect(this->coreOfflineConnection);
-    QObject::disconnect(this->localeChangedConnection);
+UiEngine::~UiEngine() = default;
 
-    if (UiEngine::s_singletonInstance == this)
-        UiEngine::s_singletonInstance = nullptr;
-}
-
-UiEngine &UiEngine::instance()
+UiEngine *UiEngine::instance() noexcept
 {
     if (UiEngine::s_singletonInstance == nullptr)
         logFatal(uiEngine)
             << "No instance constructed. Explicit instantiation is required before invoking "
                "the instance";
 
-    return *UiEngine::s_singletonInstance;
+    return UiEngine::s_singletonInstance;
 }
 
 QString UiEngine::prayerDisplayName(Prayer prayerEnum)
@@ -57,24 +50,21 @@ QStringList UiEngine::prayerDisplayNamesList()
 //  Private Members
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void UiEngine::connectToCoreOffline()
+void UiEngine::connectToCoreOffline() const
 {
-    this->coreOfflineConnection =
-        QObject::connect(&CoreEngine::instance(), &CoreEngine::coreOffline, this,
-                         &UiEngine::onCoreOffline, Qt::DirectConnection);
-
-    if (this->coreOfflineConnection == nullptr)
-        logWarning(uiEngine) << "aboutToQuit signal not connected";
+    if (const auto conn = QObject::connect(CoreEngine::instance(), &CoreEngine::coreOffline, this,
+                                           &UiEngine::onCoreOffline, Qt::DirectConnection);
+        conn == nullptr)
+        logWarning(uiEngine) << "coreOffline signal not connected";
     else
-        logDebug(uiEngine) << "aboutToQuit signal connected";
+        logDebug(uiEngine) << "coreOffline signal connected";
 }
 
-void UiEngine::connectToLocaleChanged()
+void UiEngine::connectToLocaleChanged() const
 {
-    this->localeChangedConnection = QObject::connect(
-        &CoreEngine::instance(), &CoreEngine::localeChanged, this, &UiEngine::onLocaleChanged);
-
-    if (this->localeChangedConnection == nullptr)
+    if (const auto conn = QObject::connect(CoreEngine::instance(), &CoreEngine::localeChanged, this,
+                                           &UiEngine::onLocaleChanged);
+        conn == nullptr)
         logWarning(uiEngine) << "localeChanged signal not connected";
     else
         logDebug(uiEngine) << "localeChanged signal connected";

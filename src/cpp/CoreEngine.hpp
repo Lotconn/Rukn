@@ -23,8 +23,8 @@ class CoreEngine : public QObject
     explicit CoreEngine(QObject *parent = nullptr);
     ~CoreEngine() override;
 
-    static auto               exists() noexcept -> bool;
-    static auto               instance() -> CoreEngine &;
+    static auto               instance() noexcept -> CoreEngine *;
+    static auto               instanceExists() noexcept -> bool;
     [[nodiscard]] static auto isOnline() noexcept -> bool;
     static auto               onceOnline(QObject *context, std::function<void()> slot,
                                          int retriesLeft = 19) -> void; // NOLINT(*-magic-numbers)
@@ -48,16 +48,15 @@ class CoreEngine : public QObject
     //  Variables
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    inline static CoreEngine *s_singletonInstance{nullptr};
-    inline static bool        s_online{false};
+    inline static QPointer<CoreEngine> s_singletonInstance;
+    inline static bool                 s_online{false};
 
-    QMetaObject::Connection    aboutToQuitConnection;
-    std::unique_ptr<QLockFile> configLock;
-    std::unique_ptr<QSettings> oldSettings;
-    std::unique_ptr<QSettings> settings;
-    QMutex                     threadLock;
-    QTranslator                translator;
-    QReadWriteLock             varLock;
+    QLockFile     *configLock{nullptr};
+    QSettings     *oldSettings{nullptr};
+    QSettings     *settings{nullptr};
+    QMutex         threadLock;
+    QTranslator    translator;
+    QReadWriteLock varLock;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //  Functions

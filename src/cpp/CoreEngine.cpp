@@ -24,15 +24,14 @@ CoreEngine::CoreEngine(QObject *parent) : QObject{parent}
                                    "name. Settings won't be saved.";
     else
     {
-        this->settings = std::make_unique<QSettings>(QSettings::IniFormat, QSettings::UserScope,
-                                                     QCoreApplication::organizationName(), appName);
+        this->settings = new QSettings(QSettings::IniFormat, QSettings::UserScope,
+                                       QCoreApplication::organizationName(), appName, this);
 
         logDebug(coreEngine) << "Settings file: " << this->settings->fileName();
 
         const QDir &configDir{QFileInfo(settings->fileName()).absolutePath()};
 
-        this->configLock =
-            std::make_unique<QLockFile>(configDir.absoluteFilePath(".settings.lock"_L1));
+        this->configLock = new QLockFile(configDir.absoluteFilePath(".settings.lock"_L1));
     }
 
     if (const QFileInfo oldConfigFile{
@@ -42,17 +41,15 @@ CoreEngine::CoreEngine(QObject *parent) : QObject{parent}
         const QString oldConfigPath{oldConfigFile.absoluteFilePath()};
         logDebug(coreEngine) << "Old config detected at " << oldConfigPath;
 
-        this->oldSettings = std::make_unique<QSettings>(oldConfigPath, QSettings::NativeFormat);
+        this->oldSettings = new QSettings(oldConfigPath, QSettings::NativeFormat, this);
     }
 
     this->applyLocale();
     qApp->installEventFilter(this);
 
-    this->aboutToQuitConnection =
-        QObject::connect(qApp, &QCoreApplication::aboutToQuit, this, &CoreEngine::onAboutToQuit,
-                         Qt::DirectConnection);
-
-    if (this->aboutToQuitConnection == nullptr)
+    if (const auto conn = QObject::connect(qApp, &QCoreApplication::aboutToQuit, this,
+                                           &CoreEngine::onAboutToQuit, Qt::DirectConnection);
+        conn == nullptr)
         logWarning(coreEngine) << "aboutToQuit signal not connected";
     else
         logDebug(coreEngine) << "aboutToQuit signal connected";
@@ -63,28 +60,19 @@ CoreEngine::CoreEngine(QObject *parent) : QObject{parent}
     emit this->coreOnline();
 }
 
-CoreEngine::~CoreEngine()
-{
-    QObject::disconnect(this->aboutToQuitConnection);
+CoreEngine::~CoreEngine() = default;
 
-    if (CoreEngine::s_singletonInstance == this)
-    {
-        CoreEngine::s_singletonInstance = nullptr;
-        CoreEngine::s_online            = false;
-    }
-}
-
-CoreEngine &CoreEngine::instance()
+CoreEngine *CoreEngine::instance() noexcept
 {
     if (CoreEngine::s_singletonInstance == nullptr)
         logFatal(coreEngine)
             << "No instance constructed. Explicit instantiation is required before invoking "
                "the instance";
 
-    return *CoreEngine::s_singletonInstance;
+    return CoreEngine::s_singletonInstance;
 }
 
-bool CoreEngine::exists() noexcept
+bool CoreEngine::instanceExists() noexcept
 { return CoreEngine::s_singletonInstance != nullptr; }
 
 bool CoreEngine::isOnline() noexcept
@@ -92,7 +80,7 @@ bool CoreEngine::isOnline() noexcept
 
 void CoreEngine::onceOnline(QObject *context, std::function<void()> slot, int retriesLeft)
 {
-    if (!CoreEngine::exists())
+    if (!CoreEngine::instanceExists())
     {
         if (retriesLeft <= 0)
         {
@@ -107,10 +95,9 @@ void CoreEngine::onceOnline(QObject *context, std::function<void()> slot, int re
         return;
     }
 
-    const auto connection = QObject::connect(&CoreEngine::instance(), &CoreEngine::coreOnline,
-                                             context, slot, Qt::DirectConnection);
-
-    if (connection == nullptr)
+    if (const auto conn = QObject::connect(CoreEngine::instance(), &CoreEngine::coreOnline, context,
+                                           slot, Qt::DirectConnection);
+        conn == nullptr)
         logWarning(coreEngine) << "coreOnline signal not connected";
     else
         logDebug(coreEngine) << "coreOnline signal connected";

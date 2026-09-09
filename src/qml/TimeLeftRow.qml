@@ -4,6 +4,7 @@ import QtQuick.Controls.Material
 import QtQuick.Layouts
 
 import "qrc:/qt/qml/Munadi/data/Adhan.js" as Adhan
+import Munadi
 
 Pane {
     property alias text: timeLeftLabel.text
@@ -43,7 +44,7 @@ Pane {
                 font.weight: Font.DemiBold
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
-                visible: progressBar.visible || athan.isOn
+                visible: progressBar.visible || MultimediaEngine.athanPlaying
             }
 
             ProgressBar {
@@ -62,7 +63,7 @@ Pane {
                 else
                     0
                 value: mm.currentTime.getTime()
-                visible: mm.currentPrayer !== Adhan.Prayer.None && mm.nextPrayer !== Adhan.Prayer.None && !athan.isOn && mm.dateNavOffset === 0
+                visible: mm.currentPrayer !== PrayerEngine.None && mm.nextPrayer !== PrayerEngine.None && !MultimediaEngine.athanPlaying && mm.dateNavOffset === 0
                 width: parent.width / 1.5
             }
         }
@@ -76,9 +77,9 @@ Pane {
                 flat: true
                 icon.source: "qrc:/qt/qml/Munadi/img/stop.png"
                 opacity: 0.5
-                visible: athan.isOn
+                visible: MultimediaEngine.athanPlaying
 
-                onClicked: athan.stop()
+                onClicked: MultimediaEngine.athanStop()
             }
         }
     }

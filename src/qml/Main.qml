@@ -1,7 +1,4 @@
 import QtCore
-import QtMultimedia
-import QtQuick
-import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.Effects
 import QtQuick.Window
@@ -72,13 +69,6 @@ ApplicationWindow {
         newsVersion = settings.value("newsVersion", "");
 
         settings.category = "Adhan";
-        // var audioList = settings.value("audioList", JSON.stringify(CoreEngine.audioList));
-        // try {
-        //     CoreEngine.audioList = JSON.parse(audioList);
-        // } catch (e) {
-        //     console.warn("Munadi: failed to parse stored audioList, keeping defaults:", e.message);
-        // }
-        mm.athanMuted = settingsBool("athanMuted", mm.athanMuted);
         mm.calcMethodIndex = settings.value("calcMethodIndex", mm.calcMethodIndex);
         mm.calendarPreferenceIndex = settings.value("calendarPreferenceIndex", mm.calendarPreferenceIndex);
         mm.cityName = settings.value("cityName", mm.cityName);
@@ -88,12 +78,6 @@ ApplicationWindow {
         mm.longitude = settings.value("longitude", mm.longitude);
         mm.madhab = settings.value("madhab", mm.madhab);
         mm.overrideOffsetBy = settings.value("overrideOffsetBy", mm.overrideOffsetBy);
-        // var prayerConfig = settings.value("prayerConfig", JSON.stringify(CoreEngine.prayerConfig));
-        // try {
-        //     CoreEngine.prayerConfig = JSON.parse(prayerConfig);
-        // } catch (e) {
-        //     console.warn("Munadi: failed to parse stored prayerConfig, keeping defaults:", e.message);
-        // }
 
         settings.category = "Window";
         mainWindow.width = settings.value("width", mainWindow.width);
@@ -143,7 +127,6 @@ ApplicationWindow {
         settings.setValue("themeListIndex", mm.themeListIndex);
 
         settings.category = "Adhan";
-        settings.setValue("athanMuted", mm.athanMuted);
         settings.setValue("calcMethodIndex", mm.calcMethodIndex);
         settings.setValue("calendarPreferenceIndex", mm.calendarPreferenceIndex);
         settings.setValue("checkForUpdates", mm.checkForUpdates);
@@ -178,14 +161,6 @@ ApplicationWindow {
 
     MunadiModel {
         id: mm
-    }
-
-    MediaPlayer {
-        id: athan
-
-        property bool isOn: playbackState === MediaPlayer.PlayingState
-
-        audioOutput: AudioOutput {}
     }
 
     Settings {
@@ -362,10 +337,10 @@ ApplicationWindow {
             MenuItem {
                 id: timeleft
 
-                text: mm.timeLeftStr + (athan.isOn ? " 🔇" : "")
+                text: mm.timeLeftStr + (MultimediaEngine.athanPlaying ? " 🔇" : "")
                 visible: text.length > 0
 
-                onTriggered: athan.isOn ? athan.stop() : mainWindow.show()
+                onTriggered: MultimediaEngine.athanPlaying ? MultimediaEngine.athanStop() : mainWindow.show()
             }
 
             MenuSeparator {}
@@ -420,17 +395,7 @@ ApplicationWindow {
 
                 mm.refreshTable();
 
-                const athan_idx = MultimediaEngine.athanConfig[mm.currentPrayer].athan_idx;
-                athan.source = MultimediaEngine.athanList[athan_idx].path;
-                athan.audioOutput.volume = MultimediaEngine.athanConfig[mm.currentPrayer].volume;
-
-                console.debug("athan.audioOutput.volume:", athan.audioOutput.volume);
-                console.debug("athan.audioOutput.muted:", athan.audioOutput.muted);
-
-                if (athan.audioOutput.volume > 0 && !athan.audioOutput.muted) {
-                    console.debug("Will play");
-                    athan.play();
-                }
+                MultimediaEngine.athanPlay();
 
                 if (mm.showOnAthan) {
                     mainWindow.show();
@@ -445,11 +410,11 @@ ApplicationWindow {
     }
 
     Connections {
-        function onPlaybackStateChanged(state) {
+        function onAthanPlayingChanged(athanPlaying) {
             mm.refreshTimeLeft();
         }
 
-        target: athan
+        target: MultimediaEngine
     }
 
     Connections {

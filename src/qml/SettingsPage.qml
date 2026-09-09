@@ -173,7 +173,7 @@ Page {
                 Switch {
                     checked: mm.bgImage
 
-                    onCheckedChanged: mm.bgImage = checked
+                    onClicked: mm.bgImage = checked
                 }
             }
 
@@ -194,7 +194,7 @@ Page {
                 Switch {
                     checked: mm.hideOnClose
 
-                    onCheckedChanged: mm.hideOnClose = checked
+                    onClicked: mm.hideOnClose = checked
                 }
             }
 
@@ -215,7 +215,7 @@ Page {
                 Switch {
                     checked: mm.isoClock
 
-                    onCheckedChanged: mm.isoClock = checked
+                    onClicked: mm.isoClock = checked
                 }
             }
 
@@ -236,7 +236,7 @@ Page {
                 Switch {
                     checked: mm.showOnAthan
 
-                    onCheckedChanged: mm.showOnAthan = checked
+                    onClicked: mm.showOnAthan = checked
                 }
             }
 
@@ -257,7 +257,7 @@ Page {
                 Switch {
                     checked: mainWindow.autoStartUp
 
-                    onCheckedChanged: {
+                    onClicked: {
                         if (mainWindow.autoStartUp === checked)
                             return;
                         mainWindow.autoStartUp = checked;
@@ -283,7 +283,7 @@ Page {
                 Switch {
                     checked: mm.checkForUpdates
 
-                    onCheckedChanged: mm.checkForUpdates = checked
+                    onClicked: mm.checkForUpdates = checked
                 }
             }
 
@@ -306,12 +306,9 @@ Page {
                         }
 
                         Switch {
-                            checked: mm.athanMuted
+                            checked: MultimediaEngine.athanMuted
 
-                            onCheckedChanged: {
-                                mm.athanMuted = checked;
-                                athan.audioOutput.muted = checked;
-                            }
+                            onClicked: MultimediaEngine.athanMuted = checked
                         }
                     }
                 }

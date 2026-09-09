@@ -11,6 +11,7 @@ Diagnostics:
       - altera-unroll-loops
       - "*braces-around-statements"
       - cert-err58-cpp
+      - "*owning-memory"
       - fuchsia-default-arguments-calls
       - fuchsia-default-arguments-declarations
       - fuchsia-statically-constructed-objects

@@ -8,7 +8,6 @@ QtObject {
     id: munadiModel
 
     property string asr: sysLocale.toString(prayerTimes.asr, isoClock ? "hh:mm" : "hh:mm ap")
-    property bool athanMuted: false
     property bool bgImage: true
     property int bg_img_blur: 29
     property var calcMethod: [
@@ -199,7 +198,7 @@ QtObject {
     function refreshTimeLeft() {
         console.debug('refreshTimeLeft()');
 
-        if (athan.isOn) {
+        if (MultimediaEngine.athanPlaying) {
             mm.timeLeftStr = qsTr("%1 Athan ...").arg(UiEngine.prayerDisplayName(mm.currentPrayer));
         } else {
             if (!mm.timeForNextPrayer) {

@@ -1,8 +1,5 @@
 import QtCore
-import QtMultimedia
-import QtQml
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.Dialogs
 import QtQuick.Layouts
@@ -10,19 +7,9 @@ import QtQuick.Layouts
 import Munadi
 
 ColumnLayout {
-    MediaPlayer {
-        id: athanPreview
-
-        source: MultimediaEngine.athanList[audioListCb.currentIndex].path
-
-        audioOutput: AudioOutput {
-            volume: 1.0
-        }
-    }
-
     RowLayout {
         ComboBox {
-            id: audioListCb
+            id: athanListCBox
 
             Layout.fillWidth: true
             model: MultimediaEngine.athanList
@@ -30,15 +17,10 @@ ColumnLayout {
         }
 
         Button {
-            icon.source: athanPreview.playbackState === MediaPlayer.PlayingState ? "qrc:/qt/qml/Munadi/img/stop.png" : "qrc:/qt/qml/Munadi/img/start.png"
+            icon.source: MultimediaEngine.previewPlaying ? "qrc:/qt/qml/Munadi/img/stop.png" : "qrc:/qt/qml/Munadi/img/start.png"
             implicitWidth: height
 
-            onPressed: {
-                if (athanPreview.playbackState === MediaPlayer.PlayingState) {
-                    athanPreview.stop();
-                } else
-                    athanPreview.play();
-            }
+            onClicked: MultimediaEngine.previewPlaying ? MultimediaEngine.previewStop() : MultimediaEngine.previewPlay(athanListCBox.currentIndex)
         }
     }
 
@@ -57,9 +39,9 @@ ColumnLayout {
             text: qsTr("Remove")
 
             onClicked: {
-                MultimediaEngine.removeAthan(audioListCb.currentIndex);
+                MultimediaEngine.removeAthan(athanListCBox.currentIndex);
 
-                audioListCb.currentIndex = MultimediaEngine.athanList.length - 1;
+                athanListCBox.currentIndex = MultimediaEngine.athanList.length - 1;
             }
         }
     }
@@ -73,10 +55,10 @@ ColumnLayout {
         title: qsTr("Please choose an audio file")
 
         onAccepted: {
-            for (let i = 0; i < selectedFiles.length; i++)
-                MultimediaEngine.addAthan(selectedFiles[i]);
+            for (const file of selectedFiles)
+                MultimediaEngine.addAthan(file);
 
-            audioListCb.currentIndex = MultimediaEngine.athanList.length - 1;
+            athanListCBox.currentIndex = MultimediaEngine.athanList.length - 1;
         }
     }
 }

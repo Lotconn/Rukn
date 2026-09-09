@@ -22,23 +22,20 @@ PrayerEngine::PrayerEngine(QObject *parent) : QObject{parent}
     PrayerEngine::s_singletonInstance = this;
 }
 
-PrayerEngine::~PrayerEngine()
-{
-    QObject::disconnect(this->coreOfflineConnection);
+PrayerEngine::~PrayerEngine() = default;
 
-    if (PrayerEngine::s_singletonInstance == this)
-        PrayerEngine::s_singletonInstance = nullptr;
-}
-
-PrayerEngine &PrayerEngine::instance()
+PrayerEngine *PrayerEngine::instance() noexcept
 {
     if (PrayerEngine::s_singletonInstance == nullptr)
         logFatal(prayerEngine)
             << "No instance constructed. Explicit instantiation is required before invoking "
                "the instance";
 
-    return *PrayerEngine::s_singletonInstance;
+    return PrayerEngine::s_singletonInstance;
 }
+
+Prayer PrayerEngine::currentPrayer()
+{ return Prayer::Maghrib; }
 
 // PrayerEngine::Prayer PrayerEngine::currentPrayer(Adhan::Instant when)
 // { return Munadi::PrayerEngine::m_revPrayerEnumMap.value(m_prayerTimes.currentPrayer(when)); }
@@ -114,16 +111,14 @@ QString PrayerEngine::toString(Prayer prayer)
 //  Private Members
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void PrayerEngine::connectToCoreOffline()
+void PrayerEngine::connectToCoreOffline() const
 {
-    this->coreOfflineConnection =
-        QObject::connect(&CoreEngine::instance(), &CoreEngine::coreOffline, this,
-                         &PrayerEngine::onCoreOffline, Qt::DirectConnection);
-
-    if (this->coreOfflineConnection == nullptr)
-        logWarning(prayerEngine) << "aboutToQuit signal not connected";
+    if (const auto conn = QObject::connect(CoreEngine::instance(), &CoreEngine::coreOffline, this,
+                                           &PrayerEngine::onCoreOffline, Qt::DirectConnection);
+        conn == nullptr)
+        logWarning(prayerEngine) << "coreOffline signal not connected";
     else
-        logDebug(prayerEngine) << "aboutToQuit signal connected";
+        logDebug(prayerEngine) << "coreOffline signal connected";
 }
 
 void PrayerEngine::defaultCalcParams()
@@ -164,7 +159,7 @@ void PrayerEngine::loadConfigs()
     this->loadPrayerConfig(prayerConfigMigrated);
 
     if (prayerConfigMigrated)
-        CoreEngine::instance().writeSettings("PrayerEngineConfigMigrated"_L1, true);
+        CoreEngine::instance()->writeSettings("PrayerEngineConfigMigrated"_L1, true);
 }
 
 void PrayerEngine::loadPrayerConfig(bool &configMigrated)
@@ -173,10 +168,10 @@ void PrayerEngine::loadPrayerConfig(bool &configMigrated)
     QVariantList oldPrayerConfig;
 
     const bool migrated{
-        CoreEngine::instance().readSettings("PrayerEngineConfigMigrated"_L1).toBool()};
+        CoreEngine::instance()->readSettings("PrayerEngineConfigMigrated"_L1).toBool()};
 
     if (!migrated)
-        oldPrayerConfig = CoreEngine::instance().readOldSettingsJsArray("Adhan/prayerConfig"_L1);
+        oldPrayerConfig = CoreEngine::instance()->readOldSettingsJsArray("Adhan/prayerConfig"_L1);
 
     if (!oldPrayerConfig.isEmpty())
         logInfo(prayerEngine) << "Migrating from old config";
@@ -196,7 +191,7 @@ void PrayerEngine::loadPrayerConfig(bool &configMigrated)
             QVariant cfgVal;
 
             if (oldPrayerConfig.isEmpty())
-                cfgVal = CoreEngine::instance().readSettings(
+                cfgVal = CoreEngine::instance()->readSettings(
                     "PrayerConfig/"_L1 + prayerName + '/'_L1 + key, entry.value(key));
             else
                 cfgVal = oldPrayerConfig.at(i).toMap().value(key);
@@ -236,8 +231,8 @@ void PrayerEngine::saveConfigs()
             continue;
 
         for (const auto &[key, value] : m_prayerConfig.at(i).toMap().asKeyValueRange())
-            CoreEngine::instance().writeSettings("PrayerConfig/"_L1 + prayerName + '/'_L1 + key,
-                                                 value);
+            CoreEngine::instance()->writeSettings("PrayerConfig/"_L1 + prayerName + '/'_L1 + key,
+                                                  value);
     }
 }
 

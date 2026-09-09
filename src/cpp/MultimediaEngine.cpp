@@ -1,5 +1,6 @@
 #include "internal-helpers.hpp"
 #include <MultimediaEngine.hpp>
+#include <QAudioOutput>
 
 // Q_STATIC_LOGGING_CATEGORY(munadi, "MultimediaEngine") // Qt >= 6.9
 Q_LOGGING_CATEGORY(multimediaEngine, "MultimediaEngine")
@@ -9,7 +10,10 @@ namespace Munadi
 
 using Prayer = PrayerEngine::Prayer;
 
-MultimediaEngine::MultimediaEngine(QObject *parent) : QObject{parent}, fileman{new FileMan()}
+MultimediaEngine::MultimediaEngine(QObject *parent)
+    : QObject{parent}, athanOutput{new QAudioOutput(this)}, athanPlayer{new QMediaPlayer(this)},
+      fileman{new FileMan(this)}, previewOutput{new QAudioOutput(this)},
+      previewPlayer{new QMediaPlayer(this)}
 {
     if (MultimediaEngine::s_singletonInstance != nullptr)
         logFatal(multimediaEngine)
@@ -17,29 +21,45 @@ MultimediaEngine::MultimediaEngine(QObject *parent) : QObject{parent}, fileman{n
 
     logDebug(multimediaEngine) << "FileMan::refreshStore() return: " << fileman->refreshStore();
 
+    this->athanPlayer->setAudioOutput(this->athanOutput);
     this->defaultAthanConfig();
     this->defaultAthanList();
+
+    if (const QMetaObject::Connection conn = QObject::connect(
+            this->athanPlayer, &QMediaPlayer::playbackStateChanged, this,
+            [this](QMediaPlayer::PlaybackState state) -> void {
+                emit this->athanPlayingChanged(state == QMediaPlayer::PlayingState);
+            });
+        conn == nullptr)
+        logWarning(multimediaEngine) << "Failed to establish athan playback state connection";
+    else
+        logDebug(multimediaEngine) << "Athan playback state connection established";
+
+    if (const QMetaObject::Connection conn = QObject::connect(
+            this->previewPlayer, &QMediaPlayer::playbackStateChanged, this,
+            [this](QMediaPlayer::PlaybackState state) -> void {
+                emit this->previewPlayingChanged(state == QMediaPlayer::PlayingState);
+            });
+        conn == nullptr)
+        logWarning(multimediaEngine) << "Failed to establish preview playback state connection";
+    else
+        logDebug(multimediaEngine) << "Preview playback state connection established";
+
     CoreEngine::onceOnline(this, [this] { this->onCoreOnline(); });
 
     MultimediaEngine::s_singletonInstance = this;
 }
 
-MultimediaEngine::~MultimediaEngine()
-{
-    QObject::disconnect(this->coreOfflineConnection);
+MultimediaEngine::~MultimediaEngine() = default;
 
-    if (MultimediaEngine::s_singletonInstance == this)
-        MultimediaEngine::s_singletonInstance = nullptr;
-}
-
-MultimediaEngine &MultimediaEngine::instance()
+MultimediaEngine *MultimediaEngine::instance() noexcept
 {
     if (MultimediaEngine::s_singletonInstance == nullptr)
         logFatal(multimediaEngine)
             << "No instance constructed. Explicit instantiation is required before invoking "
                "the instance";
 
-    return *MultimediaEngine::s_singletonInstance;
+    return MultimediaEngine::s_singletonInstance;
 }
 
 QVariant MultimediaEngine::getAthanConfig(Prayer prayerEnum, QAnyStringView field)
@@ -71,6 +91,17 @@ void MultimediaEngine::addAthan(const QUrl &fileUrl)
     });
 
     emit this->athanListChanged(this->m_athanList);
+}
+
+void MultimediaEngine::athanStop()
+{
+    if (this->athanPlayer->isPlaying())
+    {
+        this->athanPlayer->stop();
+        this->athanPlayer->setAudioOutput(nullptr);
+    }
+    else
+        logDebug(multimediaEngine) << "Stop ignored; media is not playing";
 }
 
 void MultimediaEngine::modifyAthanConfig(Prayer prayerEnum, const QVariantMap &entry)
@@ -116,6 +147,51 @@ void MultimediaEngine::modifyAthanConfig(Prayer prayerEnum, const QVariantMap &e
     this->m_athanConfig.replace(qToUnderlying(prayerEnum), tempMap);
 
     emit athanConfigChanged(this->m_athanConfig);
+}
+
+void MultimediaEngine::athanPlay()
+{
+    const quint8 cfgIdx{qToUnderlying(PrayerEngine::instance()->currentPrayer())};
+    const int    athanIdx{this->m_athanConfig.at(cfgIdx).toMap().value("athan_idx"_L1).toInt()};
+
+    this->athanPlayer->setAudioOutput(this->athanOutput);
+    this->athanOutput->setMuted(this->m_athanMuted);
+    this->athanOutput->setVolume(
+        this->m_athanConfig.at(cfgIdx).toMap().value("volume"_L1).toFloat());
+
+    if (const float volume{this->athanOutput->volume()};
+        volume <= 0 || this->athanOutput->isMuted())
+        return;
+
+    this->athanPlayer->setSource(this->m_athanList.at(athanIdx).toMap().value("path"_L1).toUrl());
+    this->athanPlayer->play();
+}
+
+void MultimediaEngine::previewPlay(int athanListIdx)
+{
+    if (athanListIdx < 0 || athanListIdx >= this->m_athanList.size())
+    {
+        logCritical(multimediaEngine) << "Index " << athanListIdx << " out of valid range";
+
+        return;
+    }
+
+    this->previewPlayer->setAudioOutput(this->previewOutput);
+    this->previewPlayer->setSource(
+        this->m_athanList.at(athanListIdx).toMap().value("path"_L1).toUrl());
+    // this->previewOutput->setVolume(1.0) // not necessary, defaults to 1.0
+    this->previewPlayer->play();
+}
+
+void MultimediaEngine::previewStop()
+{
+    if (this->previewPlayer->isPlaying())
+    {
+        this->previewPlayer->stop();
+        this->previewPlayer->setAudioOutput(nullptr);
+    }
+    else
+        logDebug(multimediaEngine) << "Stop ignored; media is not playing";
 }
 
 void MultimediaEngine::removeAthan(const qsizetype &rmIdx)
@@ -179,13 +255,11 @@ void MultimediaEngine::removeAthan(const qsizetype &rmIdx)
 //  Private Members
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void MultimediaEngine::connectToCoreOffline()
+void MultimediaEngine::connectToCoreOffline() const
 {
-    this->coreOfflineConnection =
-        QObject::connect(&CoreEngine::instance(), &CoreEngine::coreOffline, this,
-                         &MultimediaEngine::onCoreOffline, Qt::DirectConnection);
-
-    if (this->coreOfflineConnection == nullptr)
+    if (const auto conn = QObject::connect(CoreEngine::instance(), &CoreEngine::coreOffline, this,
+                                           &MultimediaEngine::onCoreOffline, Qt::DirectConnection);
+        conn == nullptr)
         logWarning(multimediaEngine) << "coreOffline signal not connected";
     else
         logDebug(multimediaEngine) << "coreOffline signal connected";
@@ -235,15 +309,21 @@ void MultimediaEngine::defaultAthanList()
         this->athanListKeys.insert(key, value.typeId());
 }
 
+bool MultimediaEngine::isAthanPlaying()
+{ return this->athanPlayer->isPlaying(); }
+
+bool MultimediaEngine::isPreviewPlaying()
+{ return this->previewPlayer->isPlaying(); }
+
 void MultimediaEngine::loadAthanConfig(bool &configMigrated)
 {
     QVariantList cfgList(this->m_athanConfig); // don't use cfgList{}
     QVariantList oldAthanConfig;
     const bool   migrated{
-        CoreEngine::instance().readSettings("MultimediaEngineConfigMigrated"_L1).toBool()};
+        CoreEngine::instance()->readSettings("MultimediaEngineConfigMigrated"_L1).toBool()};
 
     if (!migrated)
-        oldAthanConfig = CoreEngine::instance().readOldSettingsJsArray("Adhan/prayerConfig"_L1);
+        oldAthanConfig = CoreEngine::instance()->readOldSettingsJsArray("Adhan/prayerConfig"_L1);
 
     if (!oldAthanConfig.isEmpty())
         logInfo(multimediaEngine) << "Migrating from old config";
@@ -263,7 +343,7 @@ void MultimediaEngine::loadAthanConfig(bool &configMigrated)
             QVariant cfgVal;
 
             cfgVal = (oldAthanConfig.isEmpty())
-                         ? CoreEngine::instance().readSettings(
+                         ? CoreEngine::instance()->readSettings(
                                "AthanConfig/"_L1 + prayerName + '/'_L1 + key, entry.value(key))
                          : oldAthanConfig.at(i).toMap().value(key);
 
@@ -293,10 +373,10 @@ void MultimediaEngine::loadAthanList(bool &configMigrated)
 {
     QVariantList oldAthanList;
     const bool   migrated{
-        CoreEngine::instance().readSettings("MultimediaEngineConfigMigrated"_L1).toBool()};
+        CoreEngine::instance()->readSettings("MultimediaEngineConfigMigrated"_L1).toBool()};
 
     if (!migrated)
-        oldAthanList = CoreEngine::instance().readOldSettingsJsArray("Adhan/audioList"_L1);
+        oldAthanList = CoreEngine::instance()->readOldSettingsJsArray("Adhan/audioList"_L1);
 
     if (!oldAthanList.isEmpty())
     {
@@ -308,7 +388,7 @@ void MultimediaEngine::loadAthanList(bool &configMigrated)
             configMigrated = true;
     }
     else
-        this->setAthanList(CoreEngine::instance().readSettingsArray("Athans"_L1));
+        this->setAthanList(CoreEngine::instance()->readSettingsArray("Athans"_L1));
 }
 
 void MultimediaEngine::loadConfigs()
@@ -321,8 +401,10 @@ void MultimediaEngine::loadConfigs()
     this->loadAthanConfig(athanConfigMigrated);
     this->loadAthanList(athanListMigrated);
 
-    if (athanConfigMigrated && athanListMigrated)
-        CoreEngine::instance().writeSettings("MultimediaEngineConfigMigrated"_L1, true);
+    CoreEngine::instance()->writeSettings("MultimediaEngineConfigMigrated"_L1,
+                                          athanConfigMigrated && athanListMigrated);
+
+    this->m_athanMuted = CoreEngine::instance()->readSettings("AthanConfig/AllMuted"_L1).toBool();
 }
 
 void MultimediaEngine::saveConfigs()
@@ -338,14 +420,15 @@ void MultimediaEngine::saveConfigs()
             continue;
 
         for (const auto &[key, value] : m_athanConfig.at(i).toMap().asKeyValueRange())
-            CoreEngine::instance().writeSettings("AthanConfig/"_L1 + prayerName + '/'_L1 + key,
-                                                 value);
+            CoreEngine::instance()->writeSettings("AthanConfig/"_L1 + prayerName + '/'_L1 + key,
+                                                  value);
     }
 
     // athanList save
     logDebug(multimediaEngine) << "Saving athan list";
 
-    CoreEngine::instance().writeSettingsArray("Athans"_L1, this->m_athanList);
+    CoreEngine::instance()->writeSettingsArray("Athans"_L1, this->m_athanList);
+    CoreEngine::instance()->writeSettings("AthanConfig/AllMuted"_L1, this->m_athanMuted.load());
 }
 
 void MultimediaEngine::setAthanConfig(const QVariantList &athanConfig)

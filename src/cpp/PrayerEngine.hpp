@@ -27,7 +27,7 @@ class PrayerEngine : public QObject
     explicit PrayerEngine(QObject *parent = nullptr);
     ~PrayerEngine() override;
 
-    static auto instance() -> PrayerEngine &;
+    static auto instance() noexcept -> PrayerEngine *;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //  Types & Enums
@@ -54,6 +54,7 @@ class PrayerEngine : public QObject
     static auto metaPrayerEnum() -> const QMetaEnum &;
 
     auto getPrayerConfig(Prayer prayerEnum, QAnyStringView field) -> QVariant;
+    auto currentPrayer() -> Prayer;
 
     Q_INVOKABLE void modifyPrayerConfig(Prayer prayerEnum, const QVariantMap &entry);
 
@@ -66,7 +67,7 @@ class PrayerEngine : public QObject
     //  Variables
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    inline static PrayerEngine *s_singletonInstance{nullptr};
+    inline static QPointer<PrayerEngine> s_singletonInstance;
 
     inline static QMap<Prayer, Adhan::Prayer> s_prayerEnumMap{
         {   PrayerEngine::Fajr,    Adhan::Prayer::Fajr},
@@ -94,18 +95,17 @@ class PrayerEngine : public QObject
     std::unique_ptr<Adhan::CalculationParameters> m_calcParams;
     QVariantList                                  m_prayerConfig;
 
-    QMetaObject::Connection coreOfflineConnection;
-    QMap<QString, int>      prayerConfigKeys;
-    qsizetype               prayerConfigListSize;
-    qsizetype               prayerConfigMapSize;
-    QReadWriteLock          varLock;
+    QMap<QString, int> prayerConfigKeys;
+    qsizetype          prayerConfigListSize;
+    qsizetype          prayerConfigMapSize;
+    QReadWriteLock     varLock;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //  Functions
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     // auto currentPrayer(Adhan::Instant when = Adhan::now()) -> PrayerEngine::Prayer;
-    auto connectToCoreOffline() -> void;
+    auto connectToCoreOffline() const -> void;
     auto defaultCalcParams() -> void;
     auto defaultPrayerConfig() -> void;
     auto loadConfigs() -> void;

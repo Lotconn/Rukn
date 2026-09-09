@@ -26,7 +26,7 @@ class UiEngine : public QObject
     explicit UiEngine(QObject *parent = nullptr);
     ~UiEngine() override;
 
-    static auto instance() -> UiEngine &;
+    static auto instance() noexcept -> UiEngine *;
 
     auto themeList() -> QStringList;
     auto themeListIndex() -> int;
@@ -41,15 +41,13 @@ class UiEngine : public QObject
     //  Variables
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    inline static UiEngine *s_singletonInstance{nullptr};
+    inline static QPointer<UiEngine> s_singletonInstance{nullptr};
 
     QMap<PrayerEngine::Prayer, QString> m_prayerDisplayNames;
     int                                 m_themeListIdx = 0;
     QStringList                         m_themeList;
 
-    QMetaObject::Connection coreOfflineConnection;
-    QMetaObject::Connection localeChangedConnection;
-    QReadWriteLock          varLock;
+    QReadWriteLock varLock;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //  Functions
@@ -58,8 +56,8 @@ class UiEngine : public QObject
     static auto textsRefresher() -> int;
     static auto dummy(const QStringList &) -> void;
 
-    auto connectToCoreOffline() -> void;
-    auto connectToLocaleChanged() -> void;
+    auto connectToCoreOffline() const -> void;
+    auto connectToLocaleChanged() const -> void;
     auto defaultTheme() -> void;
     auto prayerDisplayNamesList() -> QStringList;
     auto initTexts() -> void;
