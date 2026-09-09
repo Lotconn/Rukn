@@ -401,8 +401,8 @@ void MultimediaEngine::loadConfigs()
     this->loadAthanConfig(athanConfigMigrated);
     this->loadAthanList(athanListMigrated);
 
-    CoreEngine::instance()->writeSettings("MultimediaEngineConfigMigrated"_L1,
-                                          athanConfigMigrated && athanListMigrated);
+    if (athanConfigMigrated && athanListMigrated)
+        CoreEngine::instance()->writeSettings("MultimediaEngineConfigMigrated"_L1, true);
 
     this->m_athanMuted = CoreEngine::instance()->readSettings("AthanConfig/AllMuted"_L1).toBool();
 }
