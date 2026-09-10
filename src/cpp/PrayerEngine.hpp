@@ -19,7 +19,7 @@ class PrayerEngine : public QObject
     QML_ELEMENT
     QML_SINGLETON
 
-    Q_PROPERTY(QVariantList prayerConfig MEMBER m_prayerConfig WRITE setPrayerConfig RESET
+    Q_PROPERTY(QVariantMap prayerConfig MEMBER m_prayerConfig WRITE setPrayerConfig RESET
                    defaultPrayerConfig NOTIFY prayerConfigChanged)
     // Q_PROPERTY(PrayerEngine::Prayer currentPrayer READ currentPrayer NOTIFY timeChanged)
 
@@ -50,13 +50,13 @@ class PrayerEngine : public QObject
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     static auto fromString(QAnyStringView prayerName) -> Prayer;
-    static auto toString(Prayer prayerEnum) -> QString;
     static auto metaPrayerEnum() -> const QMetaEnum &;
 
     auto getPrayerConfig(Prayer prayerEnum, QAnyStringView field) -> QVariant;
     auto currentPrayer() -> Prayer;
 
-    Q_INVOKABLE void modifyPrayerConfig(Prayer prayerEnum, const QVariantMap &entry);
+    Q_INVOKABLE void           modifyPrayerConfig(const QString &key, const QVariantMap &entry);
+    Q_INVOKABLE static QString toString(Prayer prayerEnum);
 
     // void timeChanged();
 
@@ -93,10 +93,11 @@ class PrayerEngine : public QObject
     inline static QMetaEnum s_metaPrayerEnum{QMetaEnum::fromType<Prayer>()};
 
     std::unique_ptr<Adhan::CalculationParameters> m_calcParams;
-    QVariantList                                  m_prayerConfig;
+    QVariantMap                                   m_prayerConfig;
 
-    QMap<QString, int> prayerConfigKeys;
-    qsizetype          prayerConfigListSize;
+    QMap<QString, int> prayerConfigFields;
+    QSet<QString>      prayerConfigKeys;
+    qsizetype          prayerConfigEntrySize;
     qsizetype          prayerConfigMapSize;
     QReadWriteLock     varLock;
 
@@ -111,11 +112,11 @@ class PrayerEngine : public QObject
     auto loadConfigs() -> void;
     auto loadPrayerConfig(bool &configMigrated) -> void;
     auto saveConfigs() -> void;
-    auto setPrayerConfig(const QVariantList &prayerConfig) -> void;
+    auto setPrayerConfig(const QVariantMap &prayerConfig) -> void;
 
   signals:
     auto invalidate() -> void;
-    auto prayerConfigChanged(QVariantList prayerConfig) -> void;
+    auto prayerConfigChanged(QVariantMap prayerConfig) -> void;
 
   private slots: // NOLINT(*-redundant-access-specifiers)
     auto onCoreOffline() -> void;

@@ -265,12 +265,11 @@ QtObject {
         console.debug(new Date(), ': invalidate()');
         var params = calcMethod[calcMethodIndex]['method']();
         params.madhab = madhab;
-        params.adjustments.fajr = PrayerEngine.prayerConfig[0].adjustment;
-        params.adjustments.sunrise = PrayerEngine.prayerConfig[1].adjustment;
-        params.adjustments.dhuhr = PrayerEngine.prayerConfig[2].adjustment;
-        params.adjustments.asr = PrayerEngine.prayerConfig[3].adjustment;
-        params.adjustments.maghrib = PrayerEngine.prayerConfig[4].adjustment;
-        params.adjustments.isha = PrayerEngine.prayerConfig[5].adjustment;
+        params.adjustments.fajr = PrayerEngine.prayerConfig.Fajr.adjustment;
+        params.adjustments.dhuhr = PrayerEngine.prayerConfig.Dhuhr.adjustment;
+        params.adjustments.asr = PrayerEngine.prayerConfig.Asr.adjustment;
+        params.adjustments.maghrib = PrayerEngine.prayerConfig.Maghrib.adjustment;
+        params.adjustments.isha = PrayerEngine.prayerConfig.Isha.adjustment;
         mm.params = params;
 
         var coordinates = new Adhan.adhan.Coordinates(latitude, longitude);

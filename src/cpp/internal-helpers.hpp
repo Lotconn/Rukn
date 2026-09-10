@@ -25,9 +25,10 @@ Q_DECLARE_LOGGING_CATEGORY(common)
 // Included in this internal header for all sources to utilize
 using Qt::StringLiterals::operator""_L1; // NOLINT(*global-names-in-headers)
 
-auto isValidEntryList(const QVariantList &entryMaps, const qsizetype &refMapSize,
-                      const QMap<QString, int> &refFields, const qsizetype &refListSize = 0)
-    -> bool;
-auto isValidEntry(const QVariantMap &entry, const qsizetype &refMapSize,
-                  const QMap<QString, int> &refFields) -> bool;
+auto isValidEntry(const QVariantMap &entryMaps, const qsizetype &refEntrySize,
+                  const QMap<QString, int> &refFields, const qsizetype &refMapSize = 0) -> bool;
+auto isValidEntry(const QVariantList &entryList, const qsizetype &refMapSize,
+                  const QMap<QString, int> &refFields, const qsizetype &refListSize = 0) -> bool;
+auto isValidMap(const QVariantMap &entry, const qsizetype &refMapSize,
+                const QMap<QString, int> &refFields) -> bool;
 auto textsRefresherReal() -> int;

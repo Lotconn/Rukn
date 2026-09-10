@@ -4,8 +4,8 @@
 
 Q_LOGGING_CATEGORY(common, "Common")
 
-bool isValidEntry(const QVariantMap &entry, const qsizetype &refMapSize,
-                  const QMap<QString, int> &refFields)
+bool isValidMap(const QVariantMap &entry, const qsizetype &refMapSize,
+                const QMap<QString, int> &refFields)
 {
     if (entry.size() < 0 || entry.size() > refMapSize)
         return false;
@@ -20,17 +20,27 @@ bool isValidEntry(const QVariantMap &entry, const qsizetype &refMapSize,
         });
 }
 
-bool isValidEntryList(const QVariantList &entryMaps, const qsizetype &refMapSize,
-                      const QMap<QString, int> &refFields, const qsizetype &refListSize)
+bool isValidEntry(const QVariantMap &entryMaps, const qsizetype &refEntrySize,
+                  const QMap<QString, int> &refFields, const qsizetype &refMapSize)
 {
-    if (refListSize > 0 && entryMaps.size() != refListSize)
+    if (refMapSize > 0 && entryMaps.size() != refMapSize)
         return false;
 
-    const QVariantList maps{entryMaps};
-    return std::ranges::all_of(maps.begin(), maps.end(),
-                               [&refMapSize, &refFields](const QVariant &list) -> bool {
-                                   return isValidEntry(list.toMap(), refMapSize, refFields);
+    return std::ranges::all_of(entryMaps,
+                               [&refEntrySize, &refFields](const QVariant &list) -> bool {
+                                   return isValidMap(list.toMap(), refEntrySize, refFields);
                                });
+}
+
+bool isValidEntry(const QVariantList &entryList, const qsizetype &refMapSize,
+                  const QMap<QString, int> &refFields, const qsizetype &refListSize)
+{
+    if (refListSize > 0 && entryList.size() != refListSize)
+        return false;
+
+    return std::ranges::all_of(entryList, [&refMapSize, &refFields](const QVariant &list) -> bool {
+        return isValidMap(list.toMap(), refMapSize, refFields);
+    });
 }
 
 int textsRefresherReal()

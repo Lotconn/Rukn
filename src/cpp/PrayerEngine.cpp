@@ -49,40 +49,42 @@ PrayerEngine::Prayer PrayerEngine::fromString(QAnyStringView prayerName)
 
 QVariant PrayerEngine::getPrayerConfig(Prayer prayerEnum, QAnyStringView field)
 {
-    if (!this->prayerConfigKeys.contains(field.toString()))
+    if (!this->prayerConfigFields.contains(field.toString()))
     {
         logCritical(prayerEngine) << field << "is not a valid field in PrayerConfig";
         return {};
     }
 
-    return this->m_prayerConfig.at(qToUnderlying(prayerEnum)).toMap().value(field.toString());
+    return this->m_prayerConfig.value(PrayerEngine::toString(prayerEnum))
+        .toMap()
+        .value(field.toString());
 }
 
 const QMetaEnum &PrayerEngine::metaPrayerEnum()
 { return PrayerEngine::s_metaPrayerEnum; }
 
-void PrayerEngine::modifyPrayerConfig(Prayer prayerEnum, const QVariantMap &entry)
+void PrayerEngine::modifyPrayerConfig(const QString &key, const QVariantMap &entry)
 {
-    const char *key{s_metaPrayerEnum.valueToKey(prayerEnum)};
+    const int enumVal{PrayerEngine::s_metaPrayerEnum.keyToValue(qPrintable(key))};
 
-    // QML-side invalid int index -> Prayer enum cast guard
-    if (key == nullptr)
+    if (enumVal == -1)
     {
-        logCritical(prayerEngine) << "\"" << prayerEnum
-                                  << "\" does not resolve to a valid Prayer enum";
+        logCritical(prayerEngine) << key << " resolves to unknown enum value";
+
         return;
     }
 
     const QString enumName{QString(PrayerEngine::s_metaPrayerEnum.scope()) + "::" + key};
 
-    if (prayerEnum == Prayer::Sunrise || prayerEnum == Prayer::None)
+    if (static_cast<Prayer>(enumVal) == Prayer::Sunrise ||
+        static_cast<Prayer>(enumVal) == Prayer::None)
     {
         logWarning(prayerEngine) << "Modifying \"" << enumName << "\" is not allowed";
 
         return;
     }
 
-    if (!isValidEntry(entry, this->prayerConfigMapSize, this->prayerConfigKeys))
+    if (!isValidEntry(entry, this->prayerConfigEntrySize, this->prayerConfigFields))
     {
         logCritical(prayerEngine) << "[" << entry << "] is not a valid entry in prayerConfig";
 
@@ -90,7 +92,7 @@ void PrayerEngine::modifyPrayerConfig(Prayer prayerEnum, const QVariantMap &entr
     }
 
     const QWriteLocker lock{&this->varLock};
-    QVariantMap        tempMap{this->m_prayerConfig.at(qToUnderlying(prayerEnum)).toMap()};
+    QVariantMap        tempMap{this->m_prayerConfig.value(key).toMap()};
 
     if (tempMap == entry)
     {
@@ -100,12 +102,24 @@ void PrayerEngine::modifyPrayerConfig(Prayer prayerEnum, const QVariantMap &entr
     }
 
     tempMap.insert(entry);
-    this->m_prayerConfig.replace(qToUnderlying(prayerEnum), tempMap);
+    this->m_prayerConfig.insert(key, tempMap);
     emit prayerConfigChanged(this->m_prayerConfig);
 }
 
-QString PrayerEngine::toString(Prayer prayer)
-{ return PrayerEngine::s_metaPrayerEnum.valueToKey(qToUnderlying(prayer)); }
+QString PrayerEngine::toString(Prayer prayerEnum)
+{
+    const char *key{PrayerEngine::s_metaPrayerEnum.valueToKey(prayerEnum)};
+
+    // QML-side invalid int index -> Prayer enum cast guard
+    if (key == nullptr)
+    {
+        logCritical(prayerEngine) << "\"" << prayerEnum
+                                  << "\" does not resolve to a valid Prayer enum";
+        return {};
+    }
+
+    return key;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  Private Members
@@ -133,41 +147,40 @@ void PrayerEngine::defaultCalcParams()
 void PrayerEngine::defaultPrayerConfig()
 {
     this->m_prayerConfig = {
-        QVariantMap{{"adjustment", 0.0}}, // [0] Fajr
-        QVariantMap{{"adjustment", 0.0}}, // [1] Sunrise
-        QVariantMap{{"adjustment", 0.0}}, // [2] Dhuhr
-        QVariantMap{{"adjustment", 0.0}}, // [3] Asr
-        QVariantMap{{"adjustment", 0.0}}, // [4] Maghrib
-        QVariantMap{{"adjustment", 0.0}}  // [5] Isha
+        {   "Fajr"_L1, QVariantMap{{"adjustment"_L1, 0.0}}},
+        {  "Dhuhr"_L1, QVariantMap{{"adjustment"_L1, 0.0}}},
+        {    "Asr"_L1, QVariantMap{{"adjustment"_L1, 0.0}}},
+        {"Maghrib"_L1, QVariantMap{{"adjustment"_L1, 0.0}}},
+        {   "Isha"_L1, QVariantMap{{"adjustment"_L1, 0.0}}},
     };
 
-    const QVariantMap maps{this->m_prayerConfig.at(0).toMap()};
+    const QVariantMap maps{this->m_prayerConfig.value("Fajr"_L1).toMap()};
 
-    this->prayerConfigListSize = this->m_prayerConfig.size();
-    this->prayerConfigMapSize  = maps.size();
+    this->prayerConfigKeys = QSet(this->m_prayerConfig.keyBegin(), this->m_prayerConfig.keyEnd());
+    this->prayerConfigMapSize   = this->m_prayerConfig.size();
+    this->prayerConfigEntrySize = maps.size();
 
     for (const auto &[key, value] : maps.asKeyValueRange())
-        this->prayerConfigKeys.insert(key, value.typeId());
+        this->prayerConfigFields.insert(key, value.typeId());
 }
 
 void PrayerEngine::loadConfigs()
 {
     logDebug(prayerEngine) << "Loading prayer settings from config file";
 
-    bool prayerConfigMigrated{false};
+    bool configMigrated{true};
 
-    this->loadPrayerConfig(prayerConfigMigrated);
+    this->loadPrayerConfig(configMigrated);
 
-    if (prayerConfigMigrated)
+    if (configMigrated)
         CoreEngine::instance()->writeSettings("PrayerEngineConfigMigrated"_L1, true);
 }
 
 void PrayerEngine::loadPrayerConfig(bool &configMigrated)
 {
-    QVariantList cfgList(this->m_prayerConfig); // don't use cfgList{}
+    QVariantMap  cfgMap{this->m_prayerConfig};
     QVariantList oldPrayerConfig;
-
-    const bool migrated{
+    const bool   migrated{
         CoreEngine::instance()->readSettings("PrayerEngineConfigMigrated"_L1).toBool()};
 
     if (!migrated)
@@ -176,30 +189,39 @@ void PrayerEngine::loadPrayerConfig(bool &configMigrated)
     if (!oldPrayerConfig.isEmpty())
         logInfo(prayerEngine) << "Migrating from old config";
 
-    for (qsizetype i = 0; i < this->prayerConfigListSize; ++i)
+    for (const QString &prayerName : this->prayerConfigKeys)
     {
-        const Prayer  prayerEnum{static_cast<Prayer>(i)};
-        const QString prayerName{PrayerEngine::toString(prayerEnum)};
+        const int i = PrayerEngine::s_metaPrayerEnum.keyToValue(qPrintable(prayerName));
 
-        if (prayerName.isEmpty() || prayerEnum == Prayer::Sunrise || prayerEnum == Prayer::None)
+        if (i == -1)
+        {
+            logCritical(prayerEngine) << prayerName << " resolves to unknown enum value";
+
             continue;
+        }
 
-        QVariantMap entry{this->m_prayerConfig.at(i).toMap()};
+        if (static_cast<Prayer>(i) == Prayer::Sunrise || static_cast<Prayer>(i) == Prayer::None)
+        {
+            logWarning(prayerEngine) << "Modifying \"" << prayerName << "\" is not allowed";
 
-        for (const QString &key : this->prayerConfigKeys.keys())
+            return;
+        }
+
+        QVariantMap entry{this->m_prayerConfig.value(prayerName).toMap()};
+
+        for (const QString &key : this->prayerConfigFields.keys())
         {
             QVariant cfgVal;
 
-            if (oldPrayerConfig.isEmpty())
-                cfgVal = CoreEngine::instance()->readSettings(
-                    "PrayerConfig/"_L1 + prayerName + '/'_L1 + key, entry.value(key));
-            else
-                cfgVal = oldPrayerConfig.at(i).toMap().value(key);
+            cfgVal = (oldPrayerConfig.isEmpty())
+                         ? CoreEngine::instance()->readSettings(
+                               "PrayerConfig/"_L1 + prayerName + '/'_L1 + key, entry.value(key))
+                         : oldPrayerConfig.at(i).toMap().value(key);
 
             logDebug(prayerEngine)
-                << "Value for key \"" << key << "\" in list item " << i << ": " << cfgVal;
+                << "Value for key \"" << key << "\" in list item " << prayerName << ": " << cfgVal;
 
-            if (!cfgVal.convert(QMetaType(this->prayerConfigKeys.value(key))))
+            if (!cfgVal.convert(QMetaType(this->prayerConfigFields.value(key))))
             {
                 logWarning(prayerEngine) << "Failed converting stored value for \"" << key
                                          << "\" to expected type; keeping default";
@@ -209,34 +231,32 @@ void PrayerEngine::loadPrayerConfig(bool &configMigrated)
             entry.insert(key, cfgVal);
         }
 
-        cfgList.replace(i, entry);
+        cfgMap.insert(prayerName, entry);
     }
 
-    this->setPrayerConfig(cfgList);
+    this->setPrayerConfig(cfgMap);
 
-    if (!oldPrayerConfig.isEmpty() && !configMigrated)
-        configMigrated = true;
+    if (migrated)
+        configMigrated = false;
 }
 
 void PrayerEngine::saveConfigs()
 {
     logDebug(prayerEngine) << "Saving prayer configurations";
 
-    for (qsizetype i = 0; i < this->prayerConfigListSize; ++i)
+    for (const QString &prayerName : this->prayerConfigKeys)
     {
-        const Prayer  prayerEnum{static_cast<Prayer>(i)};
-        const QString prayerName{PrayerEngine::toString(prayerEnum)};
-
-        if (prayerName == nullptr || prayerEnum == Prayer::Sunrise || prayerEnum == Prayer::None)
+        // prayerName == "Sunrise" and prayerEnum == "None" checks are not necessary
+        if (prayerName.isEmpty())
             continue;
 
-        for (const auto &[key, value] : m_prayerConfig.at(i).toMap().asKeyValueRange())
+        for (const auto &[key, value] : m_prayerConfig.value(prayerName).toMap().asKeyValueRange())
             CoreEngine::instance()->writeSettings("PrayerConfig/"_L1 + prayerName + '/'_L1 + key,
                                                   value);
     }
 }
 
-void PrayerEngine::setPrayerConfig(const QVariantList &prayerConfig)
+void PrayerEngine::setPrayerConfig(const QVariantMap &prayerConfig)
 {
     if (prayerConfig.isEmpty())
     {
@@ -254,8 +274,8 @@ void PrayerEngine::setPrayerConfig(const QVariantList &prayerConfig)
         return;
     }
 
-    if (!isValidEntryList(prayerConfig, this->prayerConfigMapSize, this->prayerConfigKeys,
-                          this->prayerConfigListSize))
+    if (!isValidEntry(prayerConfig, this->prayerConfigEntrySize, this->prayerConfigFields,
+                      this->prayerConfigMapSize))
     {
         logCritical(prayerEngine) << "Config [" << prayerConfig << "] is not a valid configuration";
 

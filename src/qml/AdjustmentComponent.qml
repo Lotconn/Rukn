@@ -11,10 +11,14 @@ ColumnLayout {
     TabBar {
         id: prayerTab
 
+        property string prayer: PrayerEngine.toString(prayerTab.currentIndex)
+
         Layout.fillWidth: true
         width: parent.width
 
         Component.onCompleted: itemAt(PrayerEngine.Sunrise).width = 0 // Hide sunrise tab
+
+        onCurrentIndexChanged: prayer = PrayerEngine.toString(prayerTab.currentIndex)
 
         Repeater {
             model: UiEngine.prayerDisplayNamesList
@@ -42,9 +46,9 @@ ColumnLayout {
             enabled: prayerTab.currentIndex !== PrayerEngine.Sunrise
             snapMode: Slider.SnapAlways
             stepSize: 0.05
-            value: MultimediaEngine.athanConfig[prayerTab.currentIndex].volume
+            value: MultimediaEngine.athanConfig[prayerTab.prayer].volume
 
-            onMoved: MultimediaEngine.modifyAthanConfig(prayerTab.currentIndex, {
+            onMoved: MultimediaEngine.modifyAthanConfig(prayerTab.prayer, {
                 "volume": volumeSlider.value
             })
         }
@@ -72,10 +76,10 @@ ColumnLayout {
             from: -30
             stepSize: 1
             to: 60
-            value: PrayerEngine.prayerConfig[prayerTab.currentIndex].adjustment
+            value: PrayerEngine.prayerConfig[prayerTab.prayer].adjustment
 
             onMoved: {
-                PrayerEngine.modifyPrayerConfig(prayerTab.currentIndex, {
+                PrayerEngine.modifyPrayerConfig(prayerTab.prayer, {
                     "adjustment": minutesSlider.value
                 });
                 mm.invalidate();
@@ -108,12 +112,12 @@ ColumnLayout {
             id: athanComboBox
 
             Layout.fillWidth: true
-            currentIndex: MultimediaEngine.athanConfig[prayerTab.currentIndex].athan_idx
+            currentIndex: MultimediaEngine.athanConfig[prayerTab.prayer].athan_idx
             enabled: prayerTab.currentIndex !== PrayerEngine.Sunrise
             model: MultimediaEngine.athanList
             textRole: "name"
 
-            onActivated: MultimediaEngine.modifyAthanConfig(prayerTab.currentIndex, {
+            onActivated: MultimediaEngine.modifyAthanConfig(prayerTab.prayer, {
                 "athan_idx": athanComboBox.currentIndex
             })
         }
