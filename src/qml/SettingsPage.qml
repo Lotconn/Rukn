@@ -4,16 +4,8 @@ import QtQuick.Controls.Material
 import QtQuick.Layouts
 import Munadi
 
-// import QtCore
-// import QtPositioning
-// import QtQuick.Dialogs
-
-// import "qrc:/qt/qml/Munadi/data/Adhan.js" as Adhan
-
 Page {
     Component.onCompleted: {
-        mathhab.currentIndex = mm.madhab - 1;
-        algo.currentIndex = mm.calcMethodIndex;
         hijriSlider.value = mm.hijriDateOffset;
         calendar.currentIndex = mm.calendarPreferenceIndex;
     }
@@ -356,19 +348,14 @@ Page {
                     id: mathhab
 
                     Layout.fillWidth: true
-
-                    model: ListModel {
-                        ListElement {
-                            text: qsTr("Majority")
-                        }
-
-                        ListElement {
-                            text: qsTr("Hanafi")
-                        }
-                    }
+                    currentIndex: UiEngine.madhabDisplayIndex
+                    model: UiEngine.madhabDisplayNames
+                    textRole: "trText"
 
                     onActivated: {
-                        mm.madhab = currentIndex + 1;
+                        UiEngine.madhabDisplayIndex = currentIndex;
+                        console.debug("currentIndex", currentIndex);
+                        console.debug("UiE madhabIdx", UiEngine.madhabDisplayIndex);
                     }
                 }
 
@@ -381,12 +368,14 @@ Page {
                     id: algo
 
                     Layout.fillWidth: true
-                    model: mm.calcMethod
-                    textRole: 'name'
+                    currentIndex: UiEngine.calcMethodDisplayIndex
+                    model: UiEngine.calcMethodsDisplayNames
+                    textRole: 'trText'
 
                     onActivated: {
-                        mm.calcMethodIndex = currentIndex;
-                        console.debug('calcIdx: ', mm.calcMethodIndex);
+                        UiEngine.calcMethodDisplayIndex = currentIndex;
+                        console.debug("currentIndex", currentIndex);
+                        console.debug("UiE calcIdx", UiEngine.calcMethodDisplayIndex);
                     }
                 }
 

@@ -19,7 +19,7 @@ class PrayerEngine : public QObject
     QML_ELEMENT
     QML_SINGLETON
 
-    Q_PROPERTY(QVariantMap prayerConfig MEMBER m_prayerConfig WRITE setPrayerConfig RESET
+    Q_PROPERTY(QVariantHash prayerConfig MEMBER m_prayerConfig WRITE setPrayerConfig RESET
                    defaultPrayerConfig NOTIFY prayerConfigChanged)
     // Q_PROPERTY(PrayerEngine::Prayer currentPrayer READ currentPrayer NOTIFY timeChanged)
 
@@ -27,7 +27,9 @@ class PrayerEngine : public QObject
     explicit PrayerEngine(QObject *parent = nullptr);
     ~PrayerEngine() override;
 
-    static auto instance() noexcept -> PrayerEngine *;
+    static auto               instanceExists() noexcept -> bool;
+    static auto               instance() noexcept -> PrayerEngine *;
+    [[nodiscard]] static auto isOnline() noexcept -> bool;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //  Types & Enums
@@ -51,11 +53,17 @@ class PrayerEngine : public QObject
 
     static auto fromString(QAnyStringView prayerName) -> Prayer;
     static auto metaPrayerEnum() -> const QMetaEnum &;
+    static auto onceOnline(QObject *context, std::function<void()> slot,
+                           int retriesLeft = 19) -> void; // NOLINT(*-magic-numbers)
 
-    auto getPrayerConfig(Prayer prayerEnum, QAnyStringView field) -> QVariant;
     auto currentPrayer() -> Prayer;
+    auto getCalcMethod() -> QString;
+    auto getMadhab() -> QString;
+    auto getPrayerConfig(Prayer prayerEnum, QAnyStringView field) -> QVariant;
+    auto setCalcMethod(const QString &method) -> void;
+    auto setMadhab(const QString &madhab) -> void;
 
-    Q_INVOKABLE void           modifyPrayerConfig(const QString &key, const QVariantMap &entry);
+    Q_INVOKABLE void           modifyPrayerConfig(const QString &key, const QVariantHash &entry);
     Q_INVOKABLE static QString toString(Prayer prayerEnum);
 
     // void timeChanged();
@@ -68,8 +76,47 @@ class PrayerEngine : public QObject
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     inline static QPointer<PrayerEngine> s_singletonInstance;
+    inline static bool                   s_online{false};
 
-    inline static QMap<Prayer, Adhan::Prayer> s_prayerEnumMap{
+    inline static const QHash<QString, std::function<Adhan::CalculationParameters()>> s_calcMethods{
+        {    QLatin1StringView{"MuslimWorldLeague"},
+         []() -> Adhan::CalculationParameters {
+         return Adhan::CalculationMethod::MuslimWorldLeague();
+         }                                                                                        },
+        {             QLatin1StringView{"Egyptian"},
+         []() -> Adhan::CalculationParameters { return Adhan::CalculationMethod::Egyptian(); }    },
+        {              QLatin1StringView{"Karachi"},
+         []() -> Adhan::CalculationParameters { return Adhan::CalculationMethod::Karachi(); }     },
+        {            QLatin1StringView{"UmmAlQura"},
+         []() -> Adhan::CalculationParameters { return Adhan::CalculationMethod::UmmAlQura(); }   },
+        {                QLatin1StringView{"Dubai"},
+         []() -> Adhan::CalculationParameters { return Adhan::CalculationMethod::Dubai(); }       },
+        {QLatin1StringView{"MoonsightingCommittee"},
+         []() -> Adhan::CalculationParameters {
+         return Adhan::CalculationMethod::MoonsightingCommittee();
+         }                                                                                        },
+        {         QLatin1StringView{"NorthAmerica"},
+         []() -> Adhan::CalculationParameters { return Adhan::CalculationMethod::NorthAmerica(); }},
+        {               QLatin1StringView{"Kuwait"},
+         []() -> Adhan::CalculationParameters { return Adhan::CalculationMethod::Kuwait(); }      },
+        {                QLatin1StringView{"Qatar"},
+         []() -> Adhan::CalculationParameters { return Adhan::CalculationMethod::Qatar(); }       },
+        {            QLatin1StringView{"Singapore"},
+         []() -> Adhan::CalculationParameters { return Adhan::CalculationMethod::Singapore(); }   },
+        {               QLatin1StringView{"Tehran"},
+         []() -> Adhan::CalculationParameters { return Adhan::CalculationMethod::Tehran(); }      },
+        {               QLatin1StringView{"Turkey"},
+         []() -> Adhan::CalculationParameters { return Adhan::CalculationMethod::Turkey(); }      },
+        {                QLatin1StringView{"Other"},
+         []() -> Adhan::CalculationParameters { return Adhan::CalculationMethod::Other(); }       }
+    };
+
+    inline static const QHash<QString, Adhan::Madhab> s_madhab{
+        { QLatin1StringView("Shafi"),  Adhan::Madhab::Shafi},
+        {QLatin1StringView("Hanafi"), Adhan::Madhab::Hanafi},
+    };
+
+    inline static const QHash<Prayer, Adhan::Prayer> s_prayerEnumMap{
         {   PrayerEngine::Fajr,    Adhan::Prayer::Fajr},
         {PrayerEngine::Sunrise, Adhan::Prayer::Sunrise},
         {  PrayerEngine::Dhuhr,   Adhan::Prayer::Dhuhr},
@@ -79,7 +126,7 @@ class PrayerEngine : public QObject
         {   PrayerEngine::None,    Adhan::Prayer::None}
     };
 
-    inline static QMap<Adhan::Prayer, Prayer> s_revPrayerEnumMap{
+    inline static const QHash<Adhan::Prayer, Prayer> s_revPrayerEnumMap{
         {   Adhan::Prayer::Fajr,    PrayerEngine::Fajr},
         {Adhan::Prayer::Sunrise, PrayerEngine::Sunrise},
         {  Adhan::Prayer::Dhuhr,   PrayerEngine::Dhuhr},
@@ -90,16 +137,18 @@ class PrayerEngine : public QObject
     };
 
     // std::unique_ptr<Adhan::PrayerTimes> m_prayerTimes;
-    inline static QMetaEnum s_metaPrayerEnum{QMetaEnum::fromType<Prayer>()};
+    inline static const QMetaEnum s_metaPrayerEnum{QMetaEnum::fromType<Prayer>()};
 
+    QString                                       m_calcMethodKey;
     std::unique_ptr<Adhan::CalculationParameters> m_calcParams;
-    QVariantMap                                   m_prayerConfig;
+    QString                                       m_madhabKey;
+    QVariantHash                                  m_prayerConfig;
 
-    QMap<QString, int> prayerConfigFields;
-    QSet<QString>      prayerConfigKeys;
-    qsizetype          prayerConfigEntrySize;
-    qsizetype          prayerConfigMapSize;
-    QReadWriteLock     varLock;
+    QHash<QString, int> prayerConfigFields;
+    QSet<QString>       prayerConfigKeys;
+    qsizetype           prayerConfigEntrySize;
+    qsizetype           prayerConfigMapSize;
+    QReadWriteLock      varLock{QReadWriteLock::Recursive};
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //  Functions
@@ -112,11 +161,12 @@ class PrayerEngine : public QObject
     auto loadConfigs() -> void;
     auto loadPrayerConfig(bool &configMigrated) -> void;
     auto saveConfigs() -> void;
-    auto setPrayerConfig(const QVariantMap &prayerConfig) -> void;
+    auto setPrayerConfig(const QVariantHash &prayerConfig) -> void;
 
   signals:
+    auto engineOnline() -> void;
     auto invalidate() -> void;
-    auto prayerConfigChanged(QVariantMap prayerConfig) -> void;
+    auto prayerConfigChanged(QVariantHash prayerConfig) -> void;
 
   private slots: // NOLINT(*-redundant-access-specifiers)
     auto onCoreOffline() -> void;

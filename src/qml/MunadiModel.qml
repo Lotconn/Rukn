@@ -10,81 +10,6 @@ QtObject {
     property string asr: sysLocale.toString(prayerTimes.asr, isoClock ? "hh:mm" : "hh:mm ap")
     property bool bgImage: true
     property int bg_img_blur: 29
-    property var calcMethod: [
-        {
-            "name": qsTr("Muslim World League"),
-            "method": function () {
-                return new Adhan.adhan.CalculationMethod.MuslimWorldLeague();
-            }
-        },
-        {
-            "name": qsTr("Egyptian"),
-            "method": function () {
-                return new Adhan.adhan.CalculationMethod.Egyptian();
-            }
-        },
-        {
-            "name": qsTr("Karachi"),
-            "method": function () {
-                return new Adhan.adhan.CalculationMethod.Karachi();
-            }
-        },
-        {
-            "name": qsTr("Umm AlQura"),
-            "method": function () {
-                return new Adhan.adhan.CalculationMethod.UmmAlQura();
-            }
-        },
-        {
-            "name": qsTr("Dubai"),
-            "method": function () {
-                return new Adhan.adhan.CalculationMethod.Dubai();
-            }
-        },
-        {
-            "name": qsTr("Moonsighting Committee"),
-            "method": function () {
-                return new Adhan.adhan.CalculationMethod.MoonsightingCommittee();
-            }
-        },
-        {
-            "name": qsTr("North America"),
-            "method": function () {
-                return new Adhan.adhan.CalculationMethod.NorthAmerica();
-            }
-        },
-        {
-            "name": qsTr("Kuwait"),
-            "method": function () {
-                return new Adhan.adhan.CalculationMethod.Kuwait();
-            }
-        },
-        {
-            "name": qsTr("Qatar"),
-            "method": function () {
-                return new Adhan.adhan.CalculationMethod.Qatar();
-            }
-        },
-        {
-            "name": qsTr("Singapore"),
-            "method": function () {
-                return new Adhan.adhan.CalculationMethod.Singapore();
-            }
-        },
-        {
-            "name": qsTr("Turkey"),
-            "method": function () {
-                return new Adhan.adhan.CalculationMethod.Turkey();
-            }
-        },
-        {
-            "name": qsTr("Other"),
-            "method": function () {
-                return new Adhan.adhan.CalculationMethod.Other();
-            }
-        }
-    ]
-    property int calcMethodIndex: 0
     property var calendarPreference: [
         {
             "name": qsTr("Both"),
@@ -259,12 +184,11 @@ QtObject {
     Component.onCompleted: {
         currentDate = new Date();
     }
-    onCalcMethodIndexChanged: invalidate()
     onCurrentDateChanged: invalidate()
     onInvalidate: {
         console.debug(new Date(), ': invalidate()');
-        var params = calcMethod[calcMethodIndex]['method']();
-        params.madhab = madhab;
+        // var params = calcMethod[calcMethodIndex]['method']();
+        params.madhab = UiEngine.madhabDisplayIndex + 1;
         params.adjustments.fajr = PrayerEngine.prayerConfig.Fajr.adjustment;
         params.adjustments.dhuhr = PrayerEngine.prayerConfig.Dhuhr.adjustment;
         params.adjustments.asr = PrayerEngine.prayerConfig.Asr.adjustment;
@@ -275,7 +199,6 @@ QtObject {
         var coordinates = new Adhan.adhan.Coordinates(latitude, longitude);
         mm.prayerTimes = new Adhan.adhan.PrayerTimes(coordinates, currentDate, params);
     }
-    onMadhabChanged: invalidate()
     onPrayerTimesChanged: {
         alarm.clear("athan");
 

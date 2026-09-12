@@ -25,10 +25,45 @@ Q_DECLARE_LOGGING_CATEGORY(common)
 // Included in this internal header for all sources to utilize
 using Qt::StringLiterals::operator""_L1; // NOLINT(*global-names-in-headers)
 
-auto isValidEntry(const QVariantMap &entryMaps, const qsizetype &refEntrySize,
-                  const QMap<QString, int> &refFields, const qsizetype &refMapSize = 0) -> bool;
+bool checkIndex(const QVariant &index, const QVariantList &refList,
+                const std::optional<int> &idxVar = std::nullopt);
+auto fetchAndSetListIdx(const int &index, const QVariantList &refList, QAtomicInt &idxVar,
+                        const std::function<void(const QString &)> &setFunc) -> void;
+auto isValidEntry(const QVariantHash &entryMaps, const qsizetype &refEntrySize,
+                  const QHash<QString, int> &refFields, const qsizetype &refMapSize = 0) -> bool;
 auto isValidEntry(const QVariantList &entryList, const qsizetype &refMapSize,
-                  const QMap<QString, int> &refFields, const qsizetype &refListSize = 0) -> bool;
-auto isValidMap(const QVariantMap &entry, const qsizetype &refMapSize,
-                const QMap<QString, int> &refFields) -> bool;
+                  const QHash<QString, int> &refFields, const qsizetype &refListSize = 0) -> bool;
+auto isValidMap(const QVariantHash &entry, const qsizetype &refMapSize,
+                const QHash<QString, int> &refFields) -> bool;
+auto loadConfigKey(QAnyStringView oldKey, QAnyStringView newKey, const QString &migrateKey,
+                   QObject *obj, QAnyStringView property,
+                   std::optional<bool> configMigrated = std::nullopt) -> void;
+auto loadConfigKey(QAnyStringView oldKey, QAnyStringView newKey, const QString &migrateKey,
+                   const std::function<void(const QVariant &)> &setFunc,
+                   std::optional<bool> configMigrated = std::nullopt) -> void;
+auto preLoadConfigKey(QAnyStringView oldKey, QAnyStringView newKey, const QString &migrateKey,
+                      std::optional<bool> configMigrated) -> QVariant;
 auto textsRefresherReal() -> int;
+
+template <typename Key, typename T>
+auto setConfig(const QHash<Key, T> &table, const QString &key, QString &var) -> bool
+{
+    if (!table.contains(key))
+    {
+        logCritical(common) << "Key " << key << " not recognized";
+
+        return false;
+    }
+
+    if (var == key)
+    {
+        logInfo(common) << "Skipping setting identical key";
+
+        return true;
+    }
+
+    logDebug(common) << "Replacing " << var << " with " << key;
+    var = key;
+
+    return true;
+}

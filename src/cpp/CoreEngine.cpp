@@ -245,7 +245,7 @@ QVariantList CoreEngine::readSettingsArray(QAnyStringView group)
 //     return true;
 // }
 
-void CoreEngine::writeSettings(QAnyStringView key, const QVariant &value)
+void CoreEngine::writeSettings(QAnyStringView key, const QVariant &value, bool flushOnWrite)
 {
     if (key.isEmpty())
     {
@@ -256,10 +256,11 @@ void CoreEngine::writeSettings(QAnyStringView key, const QVariant &value)
 
     const QWriteLocker lock{&varLock};
 
-    CoreEngine::setValueOfKey(*this->settings, key, value, true);
+    CoreEngine::setValueOfKey(*this->settings, key, value, flushOnWrite);
 }
 
-void CoreEngine::writeSettingsArray(QAnyStringView group, const QVariantList &entryMaps)
+void CoreEngine::writeSettingsArray(QAnyStringView group, const QVariantList &entryMaps,
+                                    bool flushOnWrite)
 {
     if (group.isEmpty())
     {
@@ -284,7 +285,9 @@ void CoreEngine::writeSettingsArray(QAnyStringView group, const QVariantList &en
     }
 
     this->settings->endArray();
-    this->settings->sync();
+
+    if (flushOnWrite)
+        this->settings->sync();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

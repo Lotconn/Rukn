@@ -17,7 +17,7 @@ class MultimediaEngine : public QObject
 
     Q_PROPERTY(QVariantList athanList MEMBER m_athanList WRITE setAthanList RESET defaultAthanList
                    NOTIFY athanListChanged)
-    Q_PROPERTY(QVariantMap athanConfig MEMBER m_athanConfig WRITE setAthanConfig RESET
+    Q_PROPERTY(QVariantHash athanConfig MEMBER m_athanConfig WRITE setAthanConfig RESET
                    defaultAthanConfig NOTIFY athanConfigChanged)
     Q_PROPERTY(bool athanPlaying READ isAthanPlaying NOTIFY athanPlayingChanged)
     Q_PROPERTY(bool athanMuted MEMBER m_athanMuted NOTIFY athanMutedChanged)
@@ -34,7 +34,7 @@ class MultimediaEngine : public QObject
     Q_INVOKABLE void addAthan(const QUrl &fileUrl);
     Q_INVOKABLE void athanPlay();
     Q_INVOKABLE void athanStop();
-    Q_INVOKABLE void modifyAthanConfig(const QString &key, const QVariantMap &entry);
+    Q_INVOKABLE void modifyAthanConfig(const QString &key, const QVariantHash &entry);
     Q_INVOKABLE void previewPlay(int athanListIdx);
     Q_INVOKABLE void previewStop();
     Q_INVOKABLE void removeAthan(const qsizetype &rmIdx);
@@ -49,27 +49,27 @@ class MultimediaEngine : public QObject
     inline static QPointer<MultimediaEngine> s_singletonInstance;
 
     QVariantList      m_athanList;
-    QVariantMap       m_athanConfig;
+    QVariantHash      m_athanConfig;
     std::atomic<bool> m_athanMuted{false};
 
     static constexpr int defaultAthan{0};
     static constexpr int defaultFajrAthan{2};
     static constexpr int defaultMaghribAthan{1};
 
-    QMap<QString, int> athanConfigFields;
-    QSet<QString>      athanConfigKeys;
-    qsizetype          athanConfigEntrySize;
-    qsizetype          athanConfigMapSize;
-    QMap<QString, int> athanListKeys;
-    qsizetype          athanListMapSize;
-    QAudioOutput      *athanOutput;
-    QMediaPlayer      *athanPlayer{nullptr};
-    QMap<QString, int> configFields;
-    qsizetype          defaultAthans;
-    FileMan           *fileman{nullptr};
-    QAudioOutput      *previewOutput;
-    QMediaPlayer      *previewPlayer;
-    QReadWriteLock     varLock;
+    QHash<QString, int> athanConfigFields;
+    QSet<QString>       athanConfigKeys;
+    qsizetype           athanConfigEntrySize;
+    qsizetype           athanConfigMapSize;
+    QHash<QString, int> athanListKeys;
+    qsizetype           athanListMapSize;
+    QAudioOutput       *athanOutput;
+    QMediaPlayer       *athanPlayer{nullptr};
+    QHash<QString, int> configFields;
+    qsizetype           defaultAthans;
+    FileMan            *fileman{nullptr};
+    QAudioOutput       *previewOutput;
+    QMediaPlayer       *previewPlayer;
+    QReadWriteLock      varLock;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //  Functions
@@ -83,14 +83,12 @@ class MultimediaEngine : public QObject
     auto loadAthanConfig(bool &configMigrated) -> void;
     auto loadAthanList(bool &configMigrated) -> void;
     auto loadConfigs() -> void;
-    auto loadConfigKey(QAnyStringView oldKey, QAnyStringView newKey, QAnyStringView property,
-                       bool &configMigrated) -> void;
     auto saveConfigs() -> void;
-    auto setAthanConfig(const QVariantMap &athanConfig) -> void;
+    auto setAthanConfig(const QVariantHash &athanConfig) -> void;
     auto setAthanList(const QVariantList &athanList) -> void;
 
   signals:
-    auto athanConfigChanged(QVariantMap athanConfig) -> void;
+    auto athanConfigChanged(QVariantHash athanConfig) -> void;
     auto athanListChanged(QVariantList athanList) -> void;
     auto athanMutedChanged(bool athanMuted) -> void;
     auto athanPlayingChanged(bool playing) -> void;

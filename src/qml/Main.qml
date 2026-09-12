@@ -69,14 +69,12 @@ ApplicationWindow {
         newsVersion = settings.value("newsVersion", "");
 
         settings.category = "Adhan";
-        mm.calcMethodIndex = settings.value("calcMethodIndex", mm.calcMethodIndex);
         mm.calendarPreferenceIndex = settings.value("calendarPreferenceIndex", mm.calendarPreferenceIndex);
         mm.cityName = settings.value("cityName", mm.cityName);
         mm.countryName = settings.value("countryName", mm.countryName);
         mm.hijriDateOffset = settings.value("hijriDateOffset", mm.hijriDateOffset);
         mm.latitude = settings.value("latitude", mm.latitude);
         mm.longitude = settings.value("longitude", mm.longitude);
-        mm.madhab = settings.value("madhab", mm.madhab);
         mm.overrideOffsetBy = settings.value("overrideOffsetBy", mm.overrideOffsetBy);
 
         settings.category = "Window";
@@ -127,7 +125,6 @@ ApplicationWindow {
         settings.setValue("themeListIndex", mm.themeListIndex);
 
         settings.category = "Adhan";
-        settings.setValue("calcMethodIndex", mm.calcMethodIndex);
         settings.setValue("calendarPreferenceIndex", mm.calendarPreferenceIndex);
         settings.setValue("checkForUpdates", mm.checkForUpdates);
         settings.setValue("cityName", mm.cityName);
@@ -135,7 +132,6 @@ ApplicationWindow {
         settings.setValue("hijriDateOffset", mm.hijriDateOffset);
         settings.setValue("latitude", mm.latitude);
         settings.setValue("longitude", mm.longitude);
-        settings.setValue("madhab", mm.madhab);
         settings.setValue("overrideOffsetBy", mm.overrideOffsetBy);
 
         settings.category = "Window";
@@ -231,6 +227,35 @@ ApplicationWindow {
                     cursorShape: parent.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
                 }
             }
+        }
+    }
+
+    Popup {
+        id: compassPopup
+
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+        focus: true
+        height: parent.height * 0.8
+        modal: true
+        parent: Overlay.overlay
+        width: Math.min(mainPage.width, 770.0)
+        x: (parent.width - width) / 2
+        y: (parent.height - height) / 2
+
+        onAboutToShow: cpLoader.sourceComponent = compassPage
+
+        Component {
+            id: compassPage
+
+            CompassPage {
+                anchors.fill: parent
+            }
+        }
+
+        Loader {
+            id: cpLoader
+
+            anchors.fill: parent
         }
     }
 

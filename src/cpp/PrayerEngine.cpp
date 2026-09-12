@@ -19,20 +19,36 @@ PrayerEngine::PrayerEngine(QObject *parent) : QObject{parent}
     this->defaultPrayerConfig();
     CoreEngine::onceOnline(this, [this] { this->onCoreOnline(); });
 
+    if (const auto conn =
+            QObject::connect(this, &PrayerEngine::invalidate, this, &PrayerEngine::onInvalidate);
+        conn == nullptr)
+        logWarning(prayerEngine) << "Invalidate signal not connected";
+    else
+        logDebug(prayerEngine) << "Invalidate signal connected";
+
     PrayerEngine::s_singletonInstance = this;
+    PrayerEngine::s_online            = true;
+
+    emit this->engineOnline();
 }
 
 PrayerEngine::~PrayerEngine() = default;
 
+bool PrayerEngine::instanceExists() noexcept
+{ return PrayerEngine::s_singletonInstance != nullptr; }
+
 PrayerEngine *PrayerEngine::instance() noexcept
 {
-    if (PrayerEngine::s_singletonInstance == nullptr)
+    if (!PrayerEngine::instanceExists())
         logFatal(prayerEngine)
             << "No instance constructed. Explicit instantiation is required before invoking "
                "the instance";
 
     return PrayerEngine::s_singletonInstance;
 }
+
+bool PrayerEngine::isOnline() noexcept
+{ return PrayerEngine::s_online; }
 
 Prayer PrayerEngine::currentPrayer()
 { return Prayer::Maghrib; }
@@ -56,14 +72,20 @@ QVariant PrayerEngine::getPrayerConfig(Prayer prayerEnum, QAnyStringView field)
     }
 
     return this->m_prayerConfig.value(PrayerEngine::toString(prayerEnum))
-        .toMap()
+        .toHash()
         .value(field.toString());
 }
+
+QString PrayerEngine::getCalcMethod()
+{ return this->m_calcMethodKey; }
+
+QString PrayerEngine::getMadhab()
+{ return this->m_madhabKey; }
 
 const QMetaEnum &PrayerEngine::metaPrayerEnum()
 { return PrayerEngine::s_metaPrayerEnum; }
 
-void PrayerEngine::modifyPrayerConfig(const QString &key, const QVariantMap &entry)
+void PrayerEngine::modifyPrayerConfig(const QString &key, const QVariantHash &entry)
 {
     const int enumVal{PrayerEngine::s_metaPrayerEnum.keyToValue(qPrintable(key))};
 
@@ -92,7 +114,7 @@ void PrayerEngine::modifyPrayerConfig(const QString &key, const QVariantMap &ent
     }
 
     const QWriteLocker lock{&this->varLock};
-    QVariantMap        tempMap{this->m_prayerConfig.value(key).toMap()};
+    QVariantHash       tempMap{this->m_prayerConfig.value(key).toHash()};
 
     if (tempMap == entry)
     {
@@ -103,7 +125,8 @@ void PrayerEngine::modifyPrayerConfig(const QString &key, const QVariantMap &ent
 
     tempMap.insert(entry);
     this->m_prayerConfig.insert(key, tempMap);
-    emit prayerConfigChanged(this->m_prayerConfig);
+    emit this->prayerConfigChanged(this->m_prayerConfig);
+    emit this->invalidate();
 }
 
 QString PrayerEngine::toString(Prayer prayerEnum)
@@ -137,8 +160,10 @@ void PrayerEngine::connectToCoreOffline() const
 
 void PrayerEngine::defaultCalcParams()
 {
-    this->m_calcParams = std::make_unique<Adhan::CalculationParameters>(
-        Adhan::CalculationMethod::MuslimWorldLeague());
+    this->m_calcMethodKey = "MuslimWorldLeague"_L1;
+    this->m_calcParams    = std::make_unique<Adhan::CalculationParameters>(
+        PrayerEngine::s_calcMethods.value(this->m_calcMethodKey)());
+    this->m_madhabKey = "Shafi"_L1;
 
     // Adhan::CalculationMethod() defaults to madhab == Shafi and all prayer times adjustments to 0
     // except Dhuhr == 1
@@ -147,14 +172,14 @@ void PrayerEngine::defaultCalcParams()
 void PrayerEngine::defaultPrayerConfig()
 {
     this->m_prayerConfig = {
-        {   "Fajr"_L1, QVariantMap{{"adjustment"_L1, 0.0}}},
-        {  "Dhuhr"_L1, QVariantMap{{"adjustment"_L1, 0.0}}},
-        {    "Asr"_L1, QVariantMap{{"adjustment"_L1, 0.0}}},
-        {"Maghrib"_L1, QVariantMap{{"adjustment"_L1, 0.0}}},
-        {   "Isha"_L1, QVariantMap{{"adjustment"_L1, 0.0}}},
+        {   "Fajr"_L1, QVariantHash{{"adjustment"_L1, 0.0}}},
+        {  "Dhuhr"_L1, QVariantHash{{"adjustment"_L1, 0.0}}},
+        {    "Asr"_L1, QVariantHash{{"adjustment"_L1, 0.0}}},
+        {"Maghrib"_L1, QVariantHash{{"adjustment"_L1, 0.0}}},
+        {   "Isha"_L1, QVariantHash{{"adjustment"_L1, 0.0}}},
     };
 
-    const QVariantMap maps{this->m_prayerConfig.value("Fajr"_L1).toMap()};
+    const QVariantHash maps{this->m_prayerConfig.value("Fajr"_L1).toHash()};
 
     this->prayerConfigKeys = QSet(this->m_prayerConfig.keyBegin(), this->m_prayerConfig.keyEnd());
     this->prayerConfigMapSize   = this->m_prayerConfig.size();
@@ -168,17 +193,22 @@ void PrayerEngine::loadConfigs()
 {
     logDebug(prayerEngine) << "Loading prayer settings from config file";
 
-    bool configMigrated{true};
+    bool          configMigrated{true};
+    const QString migrateKey{"PrayerEngineConfigMigrated"_L1};
 
     this->loadPrayerConfig(configMigrated);
+    loadConfigKey({}, "PrayerConfig/CalcMethod"_L1, migrateKey,
+                  [this](const QVariant &name) -> void { this->setCalcMethod(name.toString()); });
+    loadConfigKey({}, "PrayerConfig/Madhab"_L1, migrateKey,
+                  [this](const QVariant &name) -> void { this->setMadhab(name.toString()); });
 
     if (configMigrated)
-        CoreEngine::instance()->writeSettings("PrayerEngineConfigMigrated"_L1, true);
+        CoreEngine::instance()->writeSettings("PrayerEngineConfigMigrated"_L1, true, false);
 }
 
 void PrayerEngine::loadPrayerConfig(bool &configMigrated)
 {
-    QVariantMap  cfgMap{this->m_prayerConfig};
+    QVariantHash cfgMap{this->m_prayerConfig};
     QVariantList oldPrayerConfig;
     const bool   migrated{
         CoreEngine::instance()->readSettings("PrayerEngineConfigMigrated"_L1).toBool()};
@@ -207,16 +237,17 @@ void PrayerEngine::loadPrayerConfig(bool &configMigrated)
             return;
         }
 
-        QVariantMap entry{this->m_prayerConfig.value(prayerName).toMap()};
+        QVariantHash entry{this->m_prayerConfig.value(prayerName).toHash()};
 
         for (const QString &key : this->prayerConfigFields.keys())
         {
             QVariant cfgVal;
 
-            cfgVal = (oldPrayerConfig.isEmpty())
-                         ? CoreEngine::instance()->readSettings(
-                               "PrayerConfig/"_L1 + prayerName + '/'_L1 + key, entry.value(key))
-                         : oldPrayerConfig.at(i).toMap().value(key);
+            cfgVal =
+                (oldPrayerConfig.isEmpty())
+                    ? CoreEngine::instance()->readSettings(
+                          "PrayerConfig/Prayer/"_L1 + prayerName + '/'_L1 + key, entry.value(key))
+                    : oldPrayerConfig.at(i).toHash().value(key);
 
             logDebug(prayerEngine)
                 << "Value for key \"" << key << "\" in list item " << prayerName << ": " << cfgVal;
@@ -240,6 +271,35 @@ void PrayerEngine::loadPrayerConfig(bool &configMigrated)
         configMigrated = false;
 }
 
+void PrayerEngine::onceOnline(QObject *context, std::function<void()> slot, int retriesLeft)
+{
+    if (!PrayerEngine::instanceExists())
+    {
+        if (retriesLeft <= 0)
+        {
+            logCritical(prayerEngine) << "PrayerEngine still not constructed after several retries";
+
+            return;
+        }
+
+        QTimer::singleShot(0, context, [context, slot, retriesLeft]() mutable {
+            PrayerEngine::onceOnline(context, std::move(slot), retriesLeft - 1);
+        });
+
+        return;
+    }
+
+    if (const auto conn = QObject::connect(PrayerEngine::instance(), &PrayerEngine::engineOnline,
+                                           context, slot, Qt::DirectConnection);
+        conn == nullptr)
+        logWarning(prayerEngine) << "prayerOnline signal not connected";
+    else
+        logDebug(prayerEngine) << "prayerOnline signal connected";
+
+    if (PrayerEngine::isOnline())
+        slot();
+}
+
 void PrayerEngine::saveConfigs()
 {
     logDebug(prayerEngine) << "Saving prayer configurations";
@@ -250,13 +310,35 @@ void PrayerEngine::saveConfigs()
         if (prayerName.isEmpty())
             continue;
 
-        for (const auto &[key, value] : m_prayerConfig.value(prayerName).toMap().asKeyValueRange())
-            CoreEngine::instance()->writeSettings("PrayerConfig/"_L1 + prayerName + '/'_L1 + key,
-                                                  value);
+        for (const auto &[key, value] : m_prayerConfig.value(prayerName).toHash().asKeyValueRange())
+            CoreEngine::instance()->writeSettings(
+                "PrayerConfig/Prayer/"_L1 + prayerName + '/'_L1 + key, value);
     }
+
+    CoreEngine::instance()->writeSettings("PrayerConfig/CalcMethod"_L1, this->m_calcMethodKey);
+    CoreEngine::instance()->writeSettings("PrayerConfig/Madhab"_L1, this->m_madhabKey);
 }
 
-void PrayerEngine::setPrayerConfig(const QVariantMap &prayerConfig)
+void PrayerEngine::setCalcMethod(const QString &method)
+{
+
+    const QWriteLocker lock{&varLock};
+
+    logDebug(prayerEngine) << "method: " << method;
+    if (setConfig(PrayerEngine::s_calcMethods, method, this->m_calcMethodKey))
+        emit this->invalidate();
+}
+
+void PrayerEngine::setMadhab(const QString &madhab)
+{
+    const QWriteLocker lock{&varLock};
+
+    logDebug(prayerEngine) << "madhab: " << madhab;
+    if (setConfig(PrayerEngine::s_madhab, madhab, this->m_madhabKey))
+        emit this->invalidate();
+}
+
+void PrayerEngine::setPrayerConfig(const QVariantHash &prayerConfig)
 {
     if (prayerConfig.isEmpty())
     {
@@ -304,16 +386,18 @@ void PrayerEngine::onInvalidate()
 {
     const QWriteLocker lock{&this->varLock};
 
-    this->m_calcParams->madhab = Adhan::CalculationMethod::MuslimWorldLeague().madhab;
+    *this->m_calcParams        = PrayerEngine::s_calcMethods.value(this->m_calcMethodKey)();
+    this->m_calcParams->madhab = PrayerEngine::s_madhab.value(this->m_madhabKey);
     this->m_calcParams->adjustments.fajr =
-        this->getPrayerConfig(Prayer::Fajr, "adjustment").toInt();
+        this->getPrayerConfig(Prayer::Fajr, "adjustment"_L1).toInt();
     this->m_calcParams->adjustments.dhuhr =
-        this->getPrayerConfig(Prayer::Dhuhr, "adjustment").toInt();
-    this->m_calcParams->adjustments.asr = this->getPrayerConfig(Prayer::Asr, "adjustment").toInt();
+        this->getPrayerConfig(Prayer::Dhuhr, "adjustment"_L1).toInt();
+    this->m_calcParams->adjustments.asr =
+        this->getPrayerConfig(Prayer::Asr, "adjustment"_L1).toInt();
     this->m_calcParams->adjustments.maghrib =
-        this->getPrayerConfig(Prayer::Maghrib, "adjustment").toInt();
+        this->getPrayerConfig(Prayer::Maghrib, "adjustment"_L1).toInt();
     this->m_calcParams->adjustments.isha =
-        this->getPrayerConfig(Prayer::Isha, "adjustment").toInt();
+        this->getPrayerConfig(Prayer::Isha, "adjustment"_L1).toInt();
 }
 
 } // namespace Munadi

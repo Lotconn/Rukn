@@ -11,7 +11,7 @@ ColumnLayout {
     TabBar {
         id: prayerTab
 
-        property string prayer: PrayerEngine.toString(prayerTab.currentIndex)
+        property string prayer: PrayerEngine.toString(PrayerEngine.Fajr)
 
         Layout.fillWidth: true
         width: parent.width
@@ -78,12 +78,9 @@ ColumnLayout {
             to: 60
             value: PrayerEngine.prayerConfig[prayerTab.prayer].adjustment
 
-            onMoved: {
-                PrayerEngine.modifyPrayerConfig(prayerTab.prayer, {
-                    "adjustment": minutesSlider.value
-                });
-                mm.invalidate();
-            }
+            onMoved: PrayerEngine.modifyPrayerConfig(prayerTab.prayer, {
+                "adjustment": minutesSlider.value
+            })
             onPressedChanged: {
                 if (pressed) {
                     settingsPopup.opacity = 0.3;

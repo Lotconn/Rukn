@@ -35,8 +35,9 @@ class CoreEngine : public QObject
     auto readSettings(QAnyStringView key, const QVariant &defaultValue = {}) -> QVariant;
     auto readSettingsArray(QAnyStringView group) -> QVariantList;
     // auto removeOldSettingsKey(QAnyStringView key) -> bool;
-    auto writeSettings(QAnyStringView key, const QVariant &value) -> void;
-    auto writeSettingsArray(QAnyStringView group, const QVariantList &entryMaps) -> void;
+    auto writeSettings(QAnyStringView key, const QVariant &value, bool flushOnWrite = true) -> void;
+    auto writeSettingsArray(QAnyStringView group, const QVariantList &entryMaps,
+                            bool flushOnWrite = true) -> void;
 
   protected:
     bool eventFilter(QObject *object, QEvent *event) override;

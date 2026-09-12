@@ -82,5 +82,20 @@ Pane {
                 onClicked: MultimediaEngine.athanStop()
             }
         }
+
+        Item {
+            Layout.fillHeight: true
+            Layout.minimumWidth: parent.height
+
+            RoundButton {
+                anchors.centerIn: parent
+                flat: true
+                icon.source: "qrc:/qt/qml/Munadi/img/compass.png"
+                icon.width: parent.width
+                opacity: 0.5
+
+                onClicked: compassPopup.open()
+            }
+        }
     }
 }
