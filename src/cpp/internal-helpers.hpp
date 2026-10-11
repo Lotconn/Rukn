@@ -27,6 +27,8 @@ using Qt::StringLiterals::operator""_L1; // NOLINT(*global-names-in-headers)
 
 bool checkIndex(const QVariant &index, const QVariantList &refList,
                 const std::optional<int> &idxVar = std::nullopt);
+auto connectToCoreOffline(QObject *context, std::function<void()> slot,
+                          const QLoggingCategory &category) -> void;
 auto fetchAndSetListIdx(const int &index, const QVariantList &refList, QAtomicInt &idxVar,
                         const std::function<void(const QString &)> &setFunc) -> void;
 auto isValidEntry(const QVariantHash &entryMaps, const qsizetype &refEntrySize,

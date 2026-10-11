@@ -75,7 +75,6 @@ class MultimediaEngine : public QObject
     //  Functions
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    auto connectToCoreOffline() const -> void;
     auto defaultAthanList() -> void;
     auto defaultAthanConfig() -> void;
     auto isAthanPlaying() -> bool;

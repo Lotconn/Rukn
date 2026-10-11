@@ -124,7 +124,7 @@ QtObject {
         console.debug('refreshTimeLeft()');
 
         if (MultimediaEngine.athanPlaying) {
-            mm.timeLeftStr = qsTr("%1 Athan ...").arg(UiEngine.prayerDisplayName(mm.currentPrayer));
+            mm.timeLeftStr = qsTr("%1 Athan ...").arg(UiEngine.prayerDisplayNames[mm.currentPrayer].trText);
         } else {
             if (!mm.timeForNextPrayer) {
                 mm.timeLeftStr = "";
@@ -155,7 +155,7 @@ QtObject {
                 mm.timeLeftStr += qsTr("Seconds until ");
             }
 
-            mm.timeLeftStr += UiEngine.prayerDisplayName(mm.nextPrayer);
+            mm.timeLeftStr += UiEngine.prayerDisplayNames[mm.nextPrayer].trText;
         }
         console.debug("timeLeftStr", mm.timeLeftStr);
     }

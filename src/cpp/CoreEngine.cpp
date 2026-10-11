@@ -78,19 +78,20 @@ bool CoreEngine::instanceExists() noexcept
 bool CoreEngine::isOnline() noexcept
 { return CoreEngine::s_online; }
 
-void CoreEngine::onceOnline(QObject *context, std::function<void()> slot, int retriesLeft)
+void CoreEngine::onceOnline(QObject *context, std::function<void()> slot,
+                            const QLoggingCategory &category, int retriesLeft)
 {
     if (!CoreEngine::instanceExists())
     {
         if (retriesLeft <= 0)
         {
-            logCritical(coreEngine) << "CoreEngine still not constructed after several retries";
+            logCritical(category) << "CoreEngine still not constructed after several retries";
 
             return;
         }
 
-        QTimer::singleShot(0, context, [context, slot, retriesLeft]() mutable {
-            CoreEngine::onceOnline(context, std::move(slot), retriesLeft - 1);
+        QTimer::singleShot(0, context, [&context, slot, &category, &retriesLeft]() mutable {
+            CoreEngine::onceOnline(context, std::move(slot), category, retriesLeft - 1);
         });
         return;
     }
@@ -98,9 +99,9 @@ void CoreEngine::onceOnline(QObject *context, std::function<void()> slot, int re
     if (const auto conn = QObject::connect(CoreEngine::instance(), &CoreEngine::coreOnline, context,
                                            slot, Qt::DirectConnection);
         conn == nullptr)
-        logWarning(coreEngine) << "coreOnline signal not connected";
+        logWarning(category) << "coreOnline signal not connected";
     else
-        logDebug(coreEngine) << "coreOnline signal connected";
+        logDebug(category) << "coreOnline signal connected";
 
     if (CoreEngine::isOnline())
         slot();

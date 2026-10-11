@@ -15,8 +15,8 @@ UiEngine::UiEngine(QObject *parent) : QObject{parent}
         logFatal(uiEngine)
             << "A second instance was constructed; only one instance may exist per process";
 
-    CoreEngine::onceOnline(this, [this] -> void { this->onCoreOnline(); });
-    PrayerEngine::onceOnline(this, [this] -> void { this->onPrayerEngineOnline(); });
+    CoreEngine::onceOnline(this, [this] -> void { this->onCoreOnline(); }, uiEngine());
+    PrayerEngine::onceOnline(this, [this] -> void { this->onPrayerEngineOnline(); }, uiEngine());
 
     UiEngine::s_singletonInstance = this;
 }
@@ -33,26 +33,13 @@ UiEngine *UiEngine::instance() noexcept
     return UiEngine::s_singletonInstance;
 }
 
-QString UiEngine::prayerDisplayName(Prayer prayerEnum)
-{ return this->m_prayerDisplayNames.value(prayerEnum); }
-
-QStringList UiEngine::prayerDisplayNamesList()
-{
-    QStringList list;
-
-    for (const auto &[key, value] : this->m_prayerDisplayNames.asKeyValueRange())
-        list << value;
-
-    return list;
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  Private Members
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void UiEngine::connectToCoreOffline() const
 {
-    if (const auto conn = QObject::connect(CoreEngine::instance(), &CoreEngine::coreOffline, this,
+    if (const auto conn = QObject::connect(core, &CoreEngine::coreOffline, this,
                                            &UiEngine::onCoreOffline, Qt::DirectConnection);
         conn == nullptr)
         logWarning(uiEngine) << "coreOffline signal not connected";
@@ -62,8 +49,8 @@ void UiEngine::connectToCoreOffline() const
 
 void UiEngine::connectToInvalidate() const
 {
-    if (const auto conn = QObject::connect(PrayerEngine::instance(), &PrayerEngine::invalidate,
-                                           this, &UiEngine::onInvalidate, Qt::DirectConnection);
+    if (const auto conn = QObject::connect(pEngine, &PrayerEngine::invalidate, this,
+                                           &UiEngine::onInvalidate, Qt::DirectConnection);
         conn == nullptr)
         logWarning(uiEngine) << "Invalidate signal not connected";
     else
@@ -72,8 +59,8 @@ void UiEngine::connectToInvalidate() const
 
 void UiEngine::connectToLocaleChanged() const
 {
-    if (const auto conn = QObject::connect(CoreEngine::instance(), &CoreEngine::localeChanged, this,
-                                           &UiEngine::onLocaleChanged);
+    if (const auto conn =
+            QObject::connect(core, &CoreEngine::localeChanged, this, &UiEngine::onLocaleChanged);
         conn == nullptr)
         logWarning(uiEngine) << "localeChanged signal not connected";
     else
@@ -82,17 +69,15 @@ void UiEngine::connectToLocaleChanged() const
 
 void UiEngine::initConfigs()
 {
-    this->m_calcMethodsDisplayIndex = UiEngine::indexOfValue(
-        this->m_calcMethodsDisplayNames, PrayerEngine::instance()->getCalcMethod());
+    this->m_calcMethodsDisplayIndex =
+        UiEngine::indexOfValue(this->m_calcMethodsDisplayNames, pEngine->getCalcMethod());
     this->m_madhabDisplayIndex =
-        UiEngine::indexOfValue(this->m_madhabDisplayNames, PrayerEngine::instance()->getMadhab());
+        UiEngine::indexOfValue(this->m_madhabDisplayNames, pEngine->getMadhab());
 
     logDebug(uiEngine) << "calcMethodsIdx inited as: [" << this->m_calcMethodsDisplayIndex << ", "
-                       << PrayerEngine::instance()->property(qPrintable("calcMethod"_L1)).toString()
-                       << "]";
+                       << pEngine->property(qPrintable("calcMethod"_L1)).toString() << "]";
     logDebug(uiEngine) << "madhabIdx inited as: [" << this->m_madhabDisplayIndex << ", "
-                       << PrayerEngine::instance()->property(qPrintable("madhab"_L1)).toString()
-                       << "]";
+                       << pEngine->property(qPrintable("madhab"_L1)).toString() << "]";
 }
 
 void UiEngine::defaultTheme()
@@ -138,12 +123,12 @@ void UiEngine::initTexts()
     };
 
     this->m_prayerDisplayNames = {
-        {   Prayer::Fajr,    tr("Fajr")},
-        {Prayer::Sunrise, tr("Sunrise")},
-        {  Prayer::Dhuhr,   tr("Dhuhr")},
-        {    Prayer::Asr,     tr("Asr")},
-        {Prayer::Maghrib, tr("Maghrib")},
-        {   Prayer::Isha,    tr("Isha")}
+        QVariantHash{   {"name"_L1, "Fajr"_L1},    {"trText"_L1, tr("Fajr")}},
+        QVariantHash{{"name"_L1, "Sunrise"_L1}, {"trText"_L1, tr("Sunrise")}},
+        QVariantHash{  {"name"_L1, "Dhuhr"_L1},   {"trText"_L1, tr("Dhuhr")}},
+        QVariantHash{    {"name"_L1, "Asr"_L1},     {"trText"_L1, tr("Asr")}},
+        QVariantHash{{"name"_L1, "Maghrib"_L1}, {"trText"_L1, tr("Maghrib")}},
+        QVariantHash{   {"name"_L1, "Isha"_L1},    {"trText"_L1, tr("Isha")}}
     };
 
     this->m_themeList = {tr("System"), tr("Light"), tr("Dark")};
@@ -158,24 +143,26 @@ void UiEngine::loadConfigs()
 
     loadConfigKey(
         "Adhan/calcMethodIndex"_L1, {}, migrateKey,
-        [&idxVar = this->oldCalcMethodsDisplayIndex](const QVariant &val) -> void {
-            fetchAndSetListIdx(
-                val.toInt(), UiEngine::oldCalcMethodsDisplayNames, idxVar,
-                [](const QString &name) -> void { PrayerEngine::instance()->setCalcMethod(name); });
+        [](const QVariant &val) -> void {
+            QAtomicInt null;
+
+            fetchAndSetListIdx(val.toInt(), UiEngine::oldCalcMethodsDisplayNames, null,
+                               [](const QString &name) -> void { pEngine->setCalcMethod(name); });
         },
         configMigrated);
 
     loadConfigKey(
         "Adhan/madhab"_L1, {}, migrateKey,
-        [&idxVar = this->oldMadhabDisplayIndex](const QVariant &val) -> void {
-            fetchAndSetListIdx(
-                val.toInt(), UiEngine::oldMadhabDisplayNames, idxVar,
-                [](const QString &name) -> void { PrayerEngine::instance()->setMadhab(name); });
+        [](const QVariant &val) -> void {
+            QAtomicInt null;
+
+            fetchAndSetListIdx(val.toInt(), UiEngine::oldMadhabDisplayNames, null,
+                               [](const QString &name) -> void { pEngine->setMadhab(name); });
         },
         configMigrated);
 
     if (configMigrated)
-        CoreEngine::instance()->writeSettings("UiEngineConfigMigrated"_L1, true, false);
+        core->writeSettings("UiEngineConfigMigrated"_L1, true, false);
 }
 
 int UiEngine::textsRefresher()
@@ -190,16 +177,15 @@ void UiEngine::saveConfigs()
 void UiEngine::setCalcMethodDisplayIdx(const QVariant &index)
 {
     qDebug() << "Received index: " << index;
-    fetchAndSetListIdx(
-        index.toInt(), this->m_calcMethodsDisplayNames, this->m_calcMethodsDisplayIndex,
-        [](const QString &name) -> void { PrayerEngine::instance()->setCalcMethod(name); });
+    fetchAndSetListIdx(index.toInt(), this->m_calcMethodsDisplayNames,
+                       this->m_calcMethodsDisplayIndex,
+                       [](const QString &name) -> void { pEngine->setCalcMethod(name); });
 }
 
 void UiEngine::setMadhabDisplayIdx(const QVariant &index)
 {
-    fetchAndSetListIdx(
-        index.toInt(), this->m_madhabDisplayNames, this->m_madhabDisplayIndex,
-        [](const QString &name) -> void { PrayerEngine::instance()->setMadhab(name); });
+    fetchAndSetListIdx(index.toInt(), this->m_madhabDisplayNames, this->m_madhabDisplayIndex,
+                       [](const QString &name) -> void { pEngine->setMadhab(name); });
 }
 
 void UiEngine::setThemeListIdx(int idx)
@@ -212,11 +198,9 @@ void UiEngine::setThemeListIdx(int idx)
 void UiEngine::onInvalidate()
 {
     this->m_calcMethodsDisplayIndex = UiEngine::indexOfValue(
-        this->m_calcMethodsDisplayNames,
-        PrayerEngine::instance()->property(qPrintable("calcMethod"_L1)).toString());
+        this->m_calcMethodsDisplayNames, pEngine->property(qPrintable("calcMethod"_L1)).toString());
     this->m_madhabDisplayIndex = UiEngine::indexOfValue(
-        this->m_madhabDisplayNames,
-        PrayerEngine::instance()->property(qPrintable("madhab"_L1)).toString());
+        this->m_madhabDisplayNames, pEngine->property(qPrintable("madhab"_L1)).toString());
 
     emit this->configChanged();
 }

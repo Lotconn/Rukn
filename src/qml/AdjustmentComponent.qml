@@ -14,17 +14,19 @@ ColumnLayout {
         property string prayer: PrayerEngine.toString(PrayerEngine.Fajr)
 
         Layout.fillWidth: true
-        width: parent.width
+        implicitWidth: parent.width
 
         Component.onCompleted: itemAt(PrayerEngine.Sunrise).width = 0 // Hide sunrise tab
 
         onCurrentIndexChanged: prayer = PrayerEngine.toString(prayerTab.currentIndex)
 
         Repeater {
-            model: UiEngine.prayerDisplayNamesList
+            model: UiEngine.prayerDisplayNames
 
             TabButton {
-                text: modelData
+                required property var modelData
+
+                text: modelData.trText
             }
         }
     }

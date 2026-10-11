@@ -24,7 +24,7 @@ class UiEngine : public QObject
     Q_PROPERTY(
         QVariantList madhabDisplayNames MEMBER m_madhabDisplayNames NOTIFY translationChanged)
     Q_PROPERTY(
-        QStringList prayerDisplayNamesList READ prayerDisplayNamesList NOTIFY translationChanged)
+        QVariantList prayerDisplayNames MEMBER m_prayerDisplayNames NOTIFY translationChanged)
     Q_PROPERTY(QStringList themeList MEMBER m_themeList WRITE dummy NOTIFY themeListChanged)
     Q_PROPERTY(int textsRefresher READ textsRefresher NOTIFY translationChanged)
     Q_PROPERTY(int themeListIndex READ themeListIndex WRITE setThemeListIdx RESET defaultTheme
@@ -40,8 +40,6 @@ class UiEngine : public QObject
     auto themeListIndex() -> int;
     auto setThemeListIdx(int) -> void;
 
-    Q_INVOKABLE [[nodiscard]] QString prayerDisplayName(PrayerEngine::Prayer prayerEnum);
-
   private:
     Q_DISABLE_COPY_MOVE(UiEngine);
 
@@ -49,7 +47,7 @@ class UiEngine : public QObject
     //  Variables
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    inline static QPointer<UiEngine> s_singletonInstance{nullptr};
+    inline static QPointer<UiEngine> s_singletonInstance;
 
     inline static QVariantList oldCalcMethodsDisplayNames{
         QLatin1StringView{"MuslimWorldLeague"},
@@ -72,16 +70,14 @@ class UiEngine : public QObject
         QLatin1StringView{"Hanafi"},
     };
 
-    QAtomicInt                          m_calcMethodsDisplayIndex;
-    QVariantList                        m_calcMethodsDisplayNames;
-    QAtomicInt                          m_madhabDisplayIndex;
-    QVariantList                        m_madhabDisplayNames;
-    QMap<PrayerEngine::Prayer, QString> m_prayerDisplayNames;
-    QAtomicInt                          m_themeListIdx;
-    QStringList                         m_themeList;
+    QAtomicInt   m_calcMethodsDisplayIndex;
+    QVariantList m_calcMethodsDisplayNames;
+    QAtomicInt   m_madhabDisplayIndex;
+    QVariantList m_madhabDisplayNames;
+    QVariantList m_prayerDisplayNames;
+    QAtomicInt   m_themeListIdx;
+    QStringList  m_themeList;
 
-    QAtomicInt     oldCalcMethodsDisplayIndex;
-    QAtomicInt     oldMadhabDisplayIndex;
     QReadWriteLock varLock;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,7 +92,6 @@ class UiEngine : public QObject
     auto connectToInvalidate() const -> void;
     auto connectToLocaleChanged() const -> void;
     auto defaultTheme() -> void;
-    auto prayerDisplayNamesList() -> QStringList;
     auto initConfigs() -> void;
     auto initTexts() -> void;
     auto loadConfigs() -> void;

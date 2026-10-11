@@ -9,6 +9,8 @@
 // #include <adhan/DateUtils.hpp>
 #include <adhan/PrayerTimes.hpp>
 
+#define pEngine PrayerEngine::instance()
+
 namespace Munadi
 {
 
@@ -54,6 +56,7 @@ class PrayerEngine : public QObject
     static auto fromString(QAnyStringView prayerName) -> Prayer;
     static auto metaPrayerEnum() -> const QMetaEnum &;
     static auto onceOnline(QObject *context, std::function<void()> slot,
+                           const QLoggingCategory &category,
                            int retriesLeft = 19) -> void; // NOLINT(*-magic-numbers)
 
     auto currentPrayer() -> Prayer;
@@ -144,18 +147,18 @@ class PrayerEngine : public QObject
     QString                                       m_madhabKey;
     QVariantHash                                  m_prayerConfig;
 
-    QHash<QString, int> prayerConfigFields;
-    QSet<QString>       prayerConfigKeys;
-    qsizetype           prayerConfigEntrySize;
-    qsizetype           prayerConfigMapSize;
-    QReadWriteLock      varLock{QReadWriteLock::Recursive};
+    const QLoggingCategory *logCat;
+    QHash<QString, int>     prayerConfigFields;
+    QSet<QString>           prayerConfigKeys;
+    qsizetype               prayerConfigEntrySize;
+    qsizetype               prayerConfigMapSize;
+    QReadWriteLock          varLock{QReadWriteLock::Recursive};
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //  Functions
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     // auto currentPrayer(Adhan::Instant when = Adhan::now()) -> PrayerEngine::Prayer;
-    auto connectToCoreOffline() const -> void;
     auto defaultCalcParams() -> void;
     auto defaultPrayerConfig() -> void;
     auto loadConfigs() -> void;

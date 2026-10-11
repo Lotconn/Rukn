@@ -37,10 +37,7 @@ Item {
                 font.bold: prayerRow.prayerId === mm.currentPrayer
                 font.pixelSize: Math.min(parent.height, parent.width) / prayerRow.pixelDiv
                 font.weight: Font.Thin
-                text: {
-                    const nothing = UiEngine.textsRefresher;
-                    UiEngine.prayerDisplayName(prayerRow.prayerId);
-                }
+                text: UiEngine.prayerDisplayNames[prayerRow.prayerId].trText
                 visible: !mm.locationNotSet
                 width: parent.width
             }

@@ -4,12 +4,6 @@
     "{git}:/**/*.ui": "default",
     "*.qrc": "qt-core.qrcEditor"
   },
-  "qt-core.additionalQtPaths": [
-    {
-      "name": "Qt-6.11.1-linux-g++-x86_64_from_PATH",
-      "path": "/usr/bin/qmake"
-    }
-  ],
   "[markdown]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
   },
@@ -29,8 +23,8 @@
   "editor.tabSize": 2,
   "editor.formatOnSave": true,
   "cmake.sourceDirectory": "${workspaceFolder}",
-  "cmake.buildDirectory": "${workspaceFolder}",
-  "cmake.generator": "Ninja",
+  "cmake.buildDirectory": "${workspaceFolder}/build",
+  "cmake.generator": "Ninja Multi-Config",
   "[qml]": {
     "editor.defaultFormatter": "theqtcompany.qt-qml"
   },

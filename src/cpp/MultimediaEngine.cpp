@@ -45,7 +45,7 @@ MultimediaEngine::MultimediaEngine(QObject *parent)
     else
         logDebug(multimediaEngine) << "Preview playback state connection established";
 
-    CoreEngine::onceOnline(this, [this] { this->onCoreOnline(); });
+    CoreEngine::onceOnline(this, [this] { this->onCoreOnline(); }, multimediaEngine());
 
     MultimediaEngine::s_singletonInstance = this;
 }
@@ -250,16 +250,6 @@ void MultimediaEngine::removeAthan(const qsizetype &rmIdx)
 //  Private Members
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void MultimediaEngine::connectToCoreOffline() const
-{
-    if (const auto conn = QObject::connect(CoreEngine::instance(), &CoreEngine::coreOffline, this,
-                                           &MultimediaEngine::onCoreOffline, Qt::DirectConnection);
-        conn == nullptr)
-        logWarning(multimediaEngine) << "coreOffline signal not connected";
-    else
-        logDebug(multimediaEngine) << "coreOffline signal connected";
-}
-
 void MultimediaEngine::defaultAthanConfig()
 {
     const std::double_t defaultVolume{1.0}; // 0.0 - 1.0
@@ -318,11 +308,10 @@ void MultimediaEngine::loadAthanConfig(bool &configMigrated)
 {
     QVariantHash cfgMap{this->m_athanConfig};
     QVariantList oldAthanConfig;
-    const bool   migrated{
-        CoreEngine::instance()->readSettings("MultimediaEngineConfigMigrated"_L1).toBool()};
+    const bool   migrated{core->readSettings("MultimediaEngineConfigMigrated"_L1).toBool()};
 
     if (!migrated)
-        oldAthanConfig = CoreEngine::instance()->readOldSettingsJsArray("Adhan/prayerConfig"_L1);
+        oldAthanConfig = core->readOldSettingsJsArray("Adhan/prayerConfig"_L1);
 
     if (!oldAthanConfig.isEmpty())
         logInfo(multimediaEngine) << "Migrating from old config";
@@ -351,11 +340,10 @@ void MultimediaEngine::loadAthanConfig(bool &configMigrated)
         {
             QVariant cfgVal;
 
-            cfgVal =
-                (oldAthanConfig.isEmpty())
-                    ? CoreEngine::instance()->readSettings(
-                          "AthanConfig/Prayer/"_L1 + prayerName + '/'_L1 + key, entry.value(key))
-                    : oldAthanConfig.at(i).toHash().value(key);
+            cfgVal = (oldAthanConfig.isEmpty())
+                         ? core->readSettings("AthanConfig/Prayer/"_L1 + prayerName + '/'_L1 + key,
+                                              entry.value(key))
+                         : oldAthanConfig.at(i).toHash().value(key);
 
             logDebug(multimediaEngine)
                 << "Value for key \"" << key << "\" in list item " << prayerName << ": " << cfgVal;
@@ -381,17 +369,16 @@ void MultimediaEngine::loadAthanConfig(bool &configMigrated)
 
 void MultimediaEngine::loadAthanList(bool &configMigrated)
 {
-    if (CoreEngine::instance()->readSettings("MultimediaEngineConfigMigrated"_L1).toBool())
+    if (core->readSettings("MultimediaEngineConfigMigrated"_L1).toBool())
     {
-        this->setAthanList(CoreEngine::instance()->readSettingsArray("Athans"_L1));
+        this->setAthanList(core->readSettingsArray("Athans"_L1));
 
         configMigrated = false;
 
         return;
     }
 
-    const QVariantList oldAthanList(
-        CoreEngine::instance()->readOldSettingsJsArray("Adhan/audioList"_L1));
+    const QVariantList oldAthanList(core->readOldSettingsJsArray("Adhan/audioList"_L1));
 
     this->setAthanList(oldAthanList);
     logInfo(multimediaEngine) << "Migrated from old config";
@@ -410,7 +397,7 @@ void MultimediaEngine::loadConfigs()
                   "athanMuted"_L1, configMigrated);
 
     if (configMigrated)
-        CoreEngine::instance()->writeSettings("MultimediaEngineConfigMigrated"_L1, true, false);
+        core->writeSettings("MultimediaEngineConfigMigrated"_L1, true, false);
 }
 
 void MultimediaEngine::saveConfigs()
@@ -424,14 +411,13 @@ void MultimediaEngine::saveConfigs()
             continue;
 
         for (const auto &[key, value] : m_athanConfig.value(prayerName).toHash().asKeyValueRange())
-            CoreEngine::instance()->writeSettings(
-                "AthanConfig/Prayer/"_L1 + prayerName + '/'_L1 + key, value);
+            core->writeSettings("AthanConfig/Prayer/"_L1 + prayerName + '/'_L1 + key, value);
     }
 
     logDebug(multimediaEngine) << "Saving athan list";
 
-    CoreEngine::instance()->writeSettingsArray("Athans"_L1, this->m_athanList);
-    CoreEngine::instance()->writeSettings("AthanConfig/AllMuted"_L1, this->m_athanMuted.load());
+    core->writeSettingsArray("Athans"_L1, this->m_athanList);
+    core->writeSettings("AthanConfig/AllMuted"_L1, this->m_athanMuted.load());
 }
 
 void MultimediaEngine::setAthanConfig(const QVariantHash &athanConfig)
@@ -516,7 +502,8 @@ void MultimediaEngine::onCoreOffline()
 void MultimediaEngine::onCoreOnline()
 {
     this->loadConfigs();
-    this->connectToCoreOffline();
+    connectToCoreOffline(
+        this, [this] -> void { MultimediaEngine::onCoreOffline(); }, multimediaEngine());
 }
 
 } // namespace Munadi

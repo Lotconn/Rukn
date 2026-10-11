@@ -9,6 +9,8 @@
 #include <QSettings>
 #include <QTranslator>
 
+#define core CoreEngine::instance()
+
 namespace Munadi
 {
 
@@ -27,6 +29,7 @@ class CoreEngine : public QObject
     static auto               instanceExists() noexcept -> bool;
     [[nodiscard]] static auto isOnline() noexcept -> bool;
     static auto               onceOnline(QObject *context, std::function<void()> slot,
+                                         const QLoggingCategory &category,
                                          int retriesLeft = 19) -> void; // NOLINT(*-magic-numbers)
 
     auto readOldSettings(QAnyStringView oldKey, const QVariant &defaultValue = {}) -> QVariant;
