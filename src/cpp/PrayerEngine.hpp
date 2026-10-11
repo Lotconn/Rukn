@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QQmlEngine>
 #include <QReadWriteLock>
+#include <QSet>
 
 #include <adhan/CalculationMethod.hpp>
 // #include <adhan/Coordinates.hpp>
@@ -147,12 +148,11 @@ class PrayerEngine : public QObject
     QString                                       m_madhabKey;
     QVariantHash                                  m_prayerConfig;
 
-    const QLoggingCategory *logCat;
-    QHash<QString, int>     prayerConfigFields;
-    QSet<QString>           prayerConfigKeys;
-    qsizetype               prayerConfigEntrySize;
-    qsizetype               prayerConfigMapSize;
-    QReadWriteLock          varLock{QReadWriteLock::Recursive};
+    QHash<QString, int> prayerConfigFields;
+    QSet<QString>       prayerConfigKeys;
+    qsizetype           prayerConfigEntrySize;
+    qsizetype           prayerConfigMapSize;
+    QReadWriteLock      varLock{QReadWriteLock::Recursive};
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //  Functions

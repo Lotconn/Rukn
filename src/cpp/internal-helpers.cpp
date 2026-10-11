@@ -1,6 +1,6 @@
 #include "internal-helpers.hpp"
 
-Q_LOGGING_CATEGORY(common, "Common")
+Q_STATIC_LOGGING_CATEGORY(common, "Common")
 
 bool checkIndex(const QVariant &index, const QVariantList &refList,
                 const std::optional<int> &idxVar)

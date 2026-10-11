@@ -7,8 +7,7 @@
 
 #include "internal-helpers.hpp"
 
-// Q_STATIC_LOGGING_CATEGORY(munadi, "CoreEngine") // Qt >= 6.9
-Q_LOGGING_CATEGORY(coreEngine, "CoreEngine")
+Q_STATIC_LOGGING_CATEGORY(munadi, "CoreEngine")
 
 namespace Munadi
 {
@@ -16,18 +15,18 @@ namespace Munadi
 CoreEngine::CoreEngine(QObject *parent) : QObject{parent}
 {
     if (CoreEngine::s_singletonInstance != nullptr)
-        logFatal(coreEngine)
+        logFatal(munadi)
             << "A second instance was constructed; only one instance may exist per process";
 
     if (const QString appName = QCoreApplication::applicationName(); appName.isEmpty())
-        logCritical(coreEngine) << "Not setting up persistnent config due to missing application "
-                                   "name. Settings won't be saved.";
+        logCritical(munadi) << "Not setting up persistnent config due to missing application "
+                               "name. Settings won't be saved.";
     else
     {
         this->settings = new QSettings(QSettings::IniFormat, QSettings::UserScope,
                                        QCoreApplication::organizationName(), appName, this);
 
-        logDebug(coreEngine) << "Settings file: " << this->settings->fileName();
+        logDebug(munadi) << "Settings file: " << this->settings->fileName();
 
         const QDir &configDir{QFileInfo(settings->fileName()).absolutePath()};
 
@@ -39,7 +38,7 @@ CoreEngine::CoreEngine(QObject *parent) : QObject{parent}
         oldConfigFile.exists())
     {
         const QString oldConfigPath{oldConfigFile.absoluteFilePath()};
-        logDebug(coreEngine) << "Old config detected at " << oldConfigPath;
+        logDebug(munadi) << "Old config detected at " << oldConfigPath;
 
         this->oldSettings = new QSettings(oldConfigPath, QSettings::NativeFormat, this);
     }
@@ -50,9 +49,9 @@ CoreEngine::CoreEngine(QObject *parent) : QObject{parent}
     if (const auto conn = QObject::connect(qApp, &QCoreApplication::aboutToQuit, this,
                                            &CoreEngine::onAboutToQuit, Qt::DirectConnection);
         conn == nullptr)
-        logWarning(coreEngine) << "aboutToQuit signal not connected";
+        logWarning(munadi) << "aboutToQuit signal not connected";
     else
-        logDebug(coreEngine) << "aboutToQuit signal connected";
+        logDebug(munadi) << "aboutToQuit signal connected";
 
     CoreEngine::s_singletonInstance = this;
     CoreEngine::s_online            = true;
@@ -65,7 +64,7 @@ CoreEngine::~CoreEngine() = default;
 CoreEngine *CoreEngine::instance() noexcept
 {
     if (CoreEngine::s_singletonInstance == nullptr)
-        logFatal(coreEngine)
+        logFatal(munadi)
             << "No instance constructed. Explicit instantiation is required before invoking "
                "the instance";
 
@@ -111,14 +110,14 @@ QVariant CoreEngine::readOldSettings(QAnyStringView oldKey, const QVariant &defa
 {
     if (this->oldSettings == nullptr)
     {
-        logDebug(coreEngine) << "Old settings doesn't exist, skipping migration";
+        logDebug(munadi) << "Old settings doesn't exist, skipping migration";
 
         return {};
     }
 
     if (oldKey.isEmpty())
     {
-        logCritical(coreEngine) << "Provided key is empty";
+        logCritical(munadi) << "Provided key is empty";
 
         return {};
     }
@@ -133,14 +132,14 @@ QVariantList CoreEngine::readOldSettingsJsArray(QAnyStringView    oldKey,
 {
     if (this->oldSettings == nullptr)
     {
-        logDebug(coreEngine) << "Old settings doesn't exist, skipping migration";
+        logDebug(munadi) << "Old settings doesn't exist, skipping migration";
 
         return {};
     }
 
     if (oldKey.isEmpty())
     {
-        logCritical(coreEngine) << "Provided key is empty";
+        logCritical(munadi) << "Provided key is empty";
 
         return {};
     }
@@ -153,22 +152,22 @@ QVariantList CoreEngine::readOldSettingsJsArray(QAnyStringView    oldKey,
 
     if (err.error != QJsonParseError::NoError)
     {
-        logWarning(coreEngine) << "Failed to parse JSON";
-        logDebug(coreEngine) << "Error at offset " << err.offset << ": " << err.errorString();
+        logWarning(munadi) << "Failed to parse JSON";
+        logDebug(munadi) << "Error at offset " << err.offset << ": " << err.errorString();
 
         return defaultArray.toVariantList();
     }
 
     if (jsonDoc.isEmpty() || jsonDoc.isNull())
     {
-        logWarning(coreEngine) << "Parsed JSON is empty, using default value";
+        logWarning(munadi) << "Parsed JSON is empty, using default value";
 
         return defaultArray.toVariantList();
     }
 
     if (!jsonDoc.isArray())
     {
-        logWarning(coreEngine) << "Parsed JSON is not an array, using default value";
+        logWarning(munadi) << "Parsed JSON is not an array, using default value";
 
         return defaultArray.toVariantList();
     }
@@ -180,7 +179,7 @@ QVariant CoreEngine::readSettings(QAnyStringView key, const QVariant &defaultVal
 {
     if (key.isEmpty())
     {
-        logCritical(coreEngine) << "Provided key is empty";
+        logCritical(munadi) << "Provided key is empty";
 
         return {};
     }
@@ -194,7 +193,7 @@ QVariantList CoreEngine::readSettingsArray(QAnyStringView group)
 {
     if (group.isEmpty())
     {
-        logCritical(coreEngine) << "Provided key group is empty";
+        logCritical(munadi) << "Provided key group is empty";
 
         return {};
     }
@@ -203,7 +202,7 @@ QVariantList CoreEngine::readSettingsArray(QAnyStringView group)
     QVariantList       list;
     const qsizetype    size{this->settings->beginReadArray(group)};
 
-    logDebug(coreEngine) << "Array size for \"" << group << "\" is " << size;
+    logDebug(munadi) << "Array size for \"" << group << "\" is " << size;
 
     for (qsizetype i = 0; i < size; ++i)
     {
@@ -211,13 +210,13 @@ QVariantList CoreEngine::readSettingsArray(QAnyStringView group)
 
         QVariantMap map;
 
-        logDebug(coreEngine) << "Child keys in array " << i << ": " << this->settings->childKeys();
+        logDebug(munadi) << "Child keys in array " << i << ": " << this->settings->childKeys();
 
         for (const QString &key : this->settings->childKeys())
         {
             const QVariant value{CoreEngine::readValueOfKey(*this->settings, key)};
 
-            logDebug(coreEngine) << "Value of key \"" << key << "\": " << value;
+            logDebug(munadi) << "Value of key \"" << key << "\": " << value;
 
             map.insert(key, value);
         }
@@ -234,7 +233,7 @@ QVariantList CoreEngine::readSettingsArray(QAnyStringView group)
 // {
 //     if (key.isEmpty())
 //     {
-//         logCritical(coreEngine) << "Provided key is empty";
+//         logCritical(munadi) << "Provided key is empty";
 
 //         return false;
 //     }
@@ -250,7 +249,7 @@ void CoreEngine::writeSettings(QAnyStringView key, const QVariant &value, bool f
 {
     if (key.isEmpty())
     {
-        logCritical(coreEngine) << "Provided key is empty";
+        logCritical(munadi) << "Provided key is empty";
 
         return;
     }
@@ -265,7 +264,7 @@ void CoreEngine::writeSettingsArray(QAnyStringView group, const QVariantList &en
 {
     if (group.isEmpty())
     {
-        logCritical(coreEngine) << "Provided key group is empty";
+        logCritical(munadi) << "Provided key group is empty";
 
         return;
     }
@@ -301,12 +300,12 @@ bool CoreEngine::eventFilter(QObject *object, QEvent *event)
     {
     case QEvent::LocaleChange:
         // OS-level change
-        logDebug(coreEngine) << "Locale change detected";
+        logDebug(munadi) << "Locale change detected";
         this->applyLocale();
         return true;
     case QEvent::LanguageChange:
         // App-level change, e.g. language selected from options
-        logDebug(coreEngine) << "New translations loaded";
+        logDebug(munadi) << "New translations loaded";
         emit this->localeChanged();
         return true;
     default:
@@ -335,15 +334,15 @@ bool CoreEngine::eventFilter(QObject *object, QEvent *event)
 //         switch (this->configLock->error())
 //         {
 //         case QLockFile::LockFailedError:
-//             logCritical(coreEngine) << "Config busy, could not acquire lock";
+//             logCritical(munadi) << "Config busy, could not acquire lock";
 //             e = EBUSY;
 //             break;
 //         case QLockFile::PermissionError:
-//             logCritical(coreEngine) << "Permission error in config, could not acquire lock";
+//             logCritical(munadi) << "Permission error in config, could not acquire lock";
 //             e = EACCES;
 //             break;
 //         default:
-//             logCritical(coreEngine) << "IO error in config, could not acquire lock";
+//             logCritical(munadi) << "IO error in config, could not acquire lock";
 //             break;
 //         }
 
@@ -386,11 +385,11 @@ QVariant CoreEngine::readValueOfKey(QSettings &settings, QAnyStringView key,
     switch (settings.status())
     {
     case QSettings::AccessError:
-        logWarning(coreEngine) << "Failed to read config";
+        logWarning(munadi) << "Failed to read config";
         return defaultValue;
     case QSettings::FormatError:
-        logWarning(coreEngine) << "Config for key \"" << key
-                               << "\" is malformed, returning default value";
+        logWarning(munadi) << "Config for key \"" << key
+                           << "\" is malformed, returning default value";
         return defaultValue;
     default:
         break;
@@ -398,8 +397,8 @@ QVariant CoreEngine::readValueOfKey(QSettings &settings, QAnyStringView key,
 
     if (value.isNull())
     {
-        logWarning(coreEngine) << "Failed to fetch a valid value for key \"" << key
-                               << "\", returning default value";
+        logWarning(munadi) << "Failed to fetch a valid value for key \"" << key
+                           << "\", returning default value";
 
         return defaultValue;
     }
@@ -416,7 +415,7 @@ void CoreEngine::setValueOfKey(QSettings &settings, QAnyStringView key, const QV
                                bool flushOnWrite)
 {
     if (value.isNull())
-        logWarning(coreEngine) << "Value is empty. Make sure this is intended.";
+        logWarning(munadi) << "Value is empty. Make sure this is intended.";
 
     settings.setValue(key, value);
 
@@ -426,11 +425,11 @@ void CoreEngine::setValueOfKey(QSettings &settings, QAnyStringView key, const QV
     switch (settings.status())
     {
     case QSettings::AccessError:
-        logWarning(coreEngine) << "Failed to read config";
+        logWarning(munadi) << "Failed to read config";
         break;
     case QSettings::FormatError:
-        logWarning(coreEngine) << "Config for key \"" << key
-                               << "\" is malformed, returning default value";
+        logWarning(munadi) << "Config for key \"" << key
+                           << "\" is malformed, returning default value";
         break;
     default:
         break;

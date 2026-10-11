@@ -1,30 +1,29 @@
 #include "internal-helpers.hpp"
 #include <PrayerEngine.hpp>
 
-// Q_STATIC_LOGGING_CATEGORY(munadi, "PrayerEngine") // Qt >= 6.9
-Q_LOGGING_CATEGORY(prayerEngine, "PrayerEngine")
+Q_STATIC_LOGGING_CATEGORY(munadi, "PrayerEngine")
 
 namespace Munadi
 {
 
 using Prayer = PrayerEngine::Prayer;
 
-PrayerEngine::PrayerEngine(QObject *parent) : QObject{parent}, logCat{&prayerEngine()}
+PrayerEngine::PrayerEngine(QObject *parent) : QObject{parent}
 {
     if (PrayerEngine::s_singletonInstance != nullptr)
-        logFatal(*logCat)
+        logFatal(munadi)
             << "A second instance was constructed; only one instance may exist per process";
 
     this->defaultCalcParams();
     this->defaultPrayerConfig();
-    CoreEngine::onceOnline(this, [this] { this->onCoreOnline(); }, prayerEngine());
+    CoreEngine::onceOnline(this, [this] { this->onCoreOnline(); }, munadi());
 
     if (const auto conn =
             QObject::connect(this, &PrayerEngine::invalidate, this, &PrayerEngine::onInvalidate);
         conn == nullptr)
-        logWarning(*logCat) << "Invalidate signal not connected";
+        logWarning(munadi) << "Invalidate signal not connected";
     else
-        logDebug(*logCat) << "Invalidate signal connected";
+        logDebug(munadi) << "Invalidate signal connected";
 
     PrayerEngine::s_singletonInstance = this;
     PrayerEngine::s_online            = true;
@@ -40,7 +39,7 @@ bool PrayerEngine::instanceExists() noexcept
 PrayerEngine *PrayerEngine::instance() noexcept
 {
     if (!PrayerEngine::instanceExists())
-        logFatal(prayerEngine)
+        logFatal(munadi)
             << "No instance constructed. Explicit instantiation is required before invoking "
                "the instance";
 
@@ -67,7 +66,7 @@ QVariant PrayerEngine::getPrayerConfig(Prayer prayerEnum, QAnyStringView field)
 {
     if (!this->prayerConfigFields.contains(field.toString()))
     {
-        logCritical(*logCat) << field << "is not a valid field in PrayerConfig";
+        logCritical(munadi) << field << "is not a valid field in PrayerConfig";
         return {};
     }
 
@@ -91,7 +90,7 @@ void PrayerEngine::modifyPrayerConfig(const QString &key, const QVariantHash &en
 
     if (enumVal == -1)
     {
-        logCritical(*logCat) << key << " resolves to unknown enum value";
+        logCritical(munadi) << key << " resolves to unknown enum value";
 
         return;
     }
@@ -101,14 +100,14 @@ void PrayerEngine::modifyPrayerConfig(const QString &key, const QVariantHash &en
     if (static_cast<Prayer>(enumVal) == Prayer::Sunrise ||
         static_cast<Prayer>(enumVal) == Prayer::None)
     {
-        logWarning(*logCat) << "Modifying \"" << enumName << "\" is not allowed";
+        logWarning(munadi) << "Modifying \"" << enumName << "\" is not allowed";
 
         return;
     }
 
     if (!isValidEntry(entry, this->prayerConfigEntrySize, this->prayerConfigFields))
     {
-        logCritical(*logCat) << "[" << entry << "] is not a valid entry in prayerConfig";
+        logCritical(munadi) << "[" << entry << "] is not a valid entry in prayerConfig";
 
         return;
     }
@@ -118,7 +117,7 @@ void PrayerEngine::modifyPrayerConfig(const QString &key, const QVariantHash &en
 
     if (tempMap == entry)
     {
-        logDebug(*logCat) << "Skipping setting identical entry";
+        logDebug(munadi) << "Skipping setting identical entry";
 
         return;
     }
@@ -136,8 +135,7 @@ QString PrayerEngine::toString(Prayer prayerEnum)
     // QML-side invalid int index -> Prayer enum cast guard
     if (key == nullptr)
     {
-        logCritical(prayerEngine) << "\"" << prayerEnum
-                                  << "\" does not resolve to a valid Prayer enum";
+        logCritical(munadi) << "\"" << prayerEnum << "\" does not resolve to a valid Prayer enum";
         return {};
     }
 
@@ -181,7 +179,7 @@ void PrayerEngine::defaultPrayerConfig()
 
 void PrayerEngine::loadConfigs()
 {
-    logDebug(*logCat) << "Loading prayer settings from config file";
+    logDebug(munadi) << "Loading prayer settings from config file";
 
     bool          configMigrated{true};
     const QString migrateKey{"PrayerEngineConfigMigrated"_L1};
@@ -206,7 +204,7 @@ void PrayerEngine::loadPrayerConfig(bool &configMigrated)
         oldPrayerConfig = core->readOldSettingsJsArray("Adhan/prayerConfig"_L1);
 
     if (!oldPrayerConfig.isEmpty())
-        logInfo(*logCat) << "Migrating from old config";
+        logInfo(munadi) << "Migrating from old config";
 
     for (const QString &prayerName : this->prayerConfigKeys)
     {
@@ -214,14 +212,14 @@ void PrayerEngine::loadPrayerConfig(bool &configMigrated)
 
         if (i == -1)
         {
-            logCritical(*logCat) << prayerName << " resolves to unknown enum value";
+            logCritical(munadi) << prayerName << " resolves to unknown enum value";
 
             continue;
         }
 
         if (static_cast<Prayer>(i) == Prayer::Sunrise || static_cast<Prayer>(i) == Prayer::None)
         {
-            logWarning(*logCat) << "Modifying \"" << prayerName << "\" is not allowed";
+            logWarning(munadi) << "Modifying \"" << prayerName << "\" is not allowed";
 
             return;
         }
@@ -237,13 +235,13 @@ void PrayerEngine::loadPrayerConfig(bool &configMigrated)
                                               entry.value(key))
                          : oldPrayerConfig.at(i).toHash().value(key);
 
-            logDebug(*logCat) << "Value for key \"" << key << "\" in list item " << prayerName
-                              << ": " << cfgVal;
+            logDebug(munadi) << "Value for key \"" << key << "\" in list item " << prayerName
+                             << ": " << cfgVal;
 
             if (!cfgVal.convert(QMetaType(this->prayerConfigFields.value(key))))
             {
-                logWarning(*logCat) << "Failed converting stored value for \"" << key
-                                    << "\" to expected type; keeping default";
+                logWarning(munadi) << "Failed converting stored value for \"" << key
+                                   << "\" to expected type; keeping default";
                 continue;
             }
 
@@ -291,7 +289,7 @@ void PrayerEngine::onceOnline(QObject *context, std::function<void()> slot,
 
 void PrayerEngine::saveConfigs()
 {
-    logDebug(*logCat) << "Saving prayer configurations";
+    logDebug(munadi) << "Saving prayer configurations";
 
     for (const QString &prayerName : this->prayerConfigKeys)
     {
@@ -312,7 +310,7 @@ void PrayerEngine::setCalcMethod(const QString &method)
 
     const QWriteLocker lock{&varLock};
 
-    logDebug(*logCat) << "method: " << method;
+    logDebug(munadi) << "method: " << method;
     if (setConfig(PrayerEngine::s_calcMethods, method, this->m_calcMethodKey))
         emit this->invalidate();
 }
@@ -321,7 +319,7 @@ void PrayerEngine::setMadhab(const QString &madhab)
 {
     const QWriteLocker lock{&varLock};
 
-    logDebug(*logCat) << "madhab: " << madhab;
+    logDebug(munadi) << "madhab: " << madhab;
     if (setConfig(PrayerEngine::s_madhab, madhab, this->m_madhabKey))
         emit this->invalidate();
 }
@@ -330,7 +328,7 @@ void PrayerEngine::setPrayerConfig(const QVariantHash &prayerConfig)
 {
     if (prayerConfig.isEmpty())
     {
-        logDebug(*logCat) << "Skipping empty config list";
+        logDebug(munadi) << "Skipping empty config list";
 
         return;
     }
@@ -339,7 +337,7 @@ void PrayerEngine::setPrayerConfig(const QVariantHash &prayerConfig)
 
     if (prayerConfig == this->m_prayerConfig)
     {
-        logDebug(*logCat) << "Skipping setting identical list";
+        logDebug(munadi) << "Skipping setting identical list";
 
         return;
     }
@@ -347,7 +345,7 @@ void PrayerEngine::setPrayerConfig(const QVariantHash &prayerConfig)
     if (!isValidEntry(prayerConfig, this->prayerConfigEntrySize, this->prayerConfigFields,
                       this->prayerConfigMapSize))
     {
-        logCritical(*logCat) << "Config [" << prayerConfig << "] is not a valid configuration";
+        logCritical(munadi) << "Config [" << prayerConfig << "] is not a valid configuration";
 
         return;
     }
@@ -367,7 +365,7 @@ void PrayerEngine::onCoreOffline()
 void PrayerEngine::onCoreOnline()
 {
     this->loadConfigs();
-    connectToCoreOffline(this, [this] -> void { PrayerEngine::onCoreOffline(); }, prayerEngine());
+    connectToCoreOffline(this, [this] -> void { PrayerEngine::onCoreOffline(); }, munadi());
 }
 
 void PrayerEngine::onInvalidate()

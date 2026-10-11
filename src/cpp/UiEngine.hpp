@@ -26,7 +26,7 @@ class UiEngine : public QObject
     Q_PROPERTY(
         QVariantList prayerDisplayNames MEMBER m_prayerDisplayNames NOTIFY translationChanged)
     Q_PROPERTY(QStringList themeList MEMBER m_themeList WRITE dummy NOTIFY themeListChanged)
-    Q_PROPERTY(int textsRefresher READ textsRefresher NOTIFY translationChanged)
+    // Q_PROPERTY(int textsRefresher READ textsRefresher NOTIFY translationChanged)
     Q_PROPERTY(int themeListIndex READ themeListIndex WRITE setThemeListIdx RESET defaultTheme
                    NOTIFY themeListIdxChanged)
 
@@ -85,7 +85,7 @@ class UiEngine : public QObject
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     static auto indexOfValue(const QVariantList &list, const QString &value) -> int;
-    static auto textsRefresher() -> int;
+    // static auto textsRefresher() -> int;
     static auto dummy(const QStringList &) -> void;
 
     auto connectToCoreOffline() const -> void;

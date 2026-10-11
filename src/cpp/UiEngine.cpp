@@ -1,8 +1,7 @@
 #include "internal-helpers.hpp"
 #include <UiEngine.hpp>
 
-// Q_STATIC_LOGGING_CATEGORY(munadi, "UiEngine") // Qt >= 6.9
-Q_LOGGING_CATEGORY(uiEngine, "UiEngine")
+Q_STATIC_LOGGING_CATEGORY(munadi, "UiEngine")
 
 namespace Munadi
 {
@@ -12,11 +11,11 @@ using Prayer = PrayerEngine::Prayer;
 UiEngine::UiEngine(QObject *parent) : QObject{parent}
 {
     if (UiEngine::s_singletonInstance != nullptr)
-        logFatal(uiEngine)
+        logFatal(munadi)
             << "A second instance was constructed; only one instance may exist per process";
 
-    CoreEngine::onceOnline(this, [this] -> void { this->onCoreOnline(); }, uiEngine());
-    PrayerEngine::onceOnline(this, [this] -> void { this->onPrayerEngineOnline(); }, uiEngine());
+    CoreEngine::onceOnline(this, [this] -> void { this->onCoreOnline(); }, munadi());
+    PrayerEngine::onceOnline(this, [this] -> void { this->onPrayerEngineOnline(); }, munadi());
 
     UiEngine::s_singletonInstance = this;
 }
@@ -26,7 +25,7 @@ UiEngine::~UiEngine() = default;
 UiEngine *UiEngine::instance() noexcept
 {
     if (UiEngine::s_singletonInstance == nullptr)
-        logFatal(uiEngine)
+        logFatal(munadi)
             << "No instance constructed. Explicit instantiation is required before invoking "
                "the instance";
 
@@ -42,9 +41,9 @@ void UiEngine::connectToCoreOffline() const
     if (const auto conn = QObject::connect(core, &CoreEngine::coreOffline, this,
                                            &UiEngine::onCoreOffline, Qt::DirectConnection);
         conn == nullptr)
-        logWarning(uiEngine) << "coreOffline signal not connected";
+        logWarning(munadi) << "coreOffline signal not connected";
     else
-        logDebug(uiEngine) << "coreOffline signal connected";
+        logDebug(munadi) << "coreOffline signal connected";
 }
 
 void UiEngine::connectToInvalidate() const
@@ -52,9 +51,9 @@ void UiEngine::connectToInvalidate() const
     if (const auto conn = QObject::connect(pEngine, &PrayerEngine::invalidate, this,
                                            &UiEngine::onInvalidate, Qt::DirectConnection);
         conn == nullptr)
-        logWarning(uiEngine) << "Invalidate signal not connected";
+        logWarning(munadi) << "Invalidate signal not connected";
     else
-        logDebug(uiEngine) << "Invalidate signal connected";
+        logDebug(munadi) << "Invalidate signal connected";
 }
 
 void UiEngine::connectToLocaleChanged() const
@@ -62,9 +61,9 @@ void UiEngine::connectToLocaleChanged() const
     if (const auto conn =
             QObject::connect(core, &CoreEngine::localeChanged, this, &UiEngine::onLocaleChanged);
         conn == nullptr)
-        logWarning(uiEngine) << "localeChanged signal not connected";
+        logWarning(munadi) << "localeChanged signal not connected";
     else
-        logDebug(uiEngine) << "localeChanged signal connected";
+        logDebug(munadi) << "localeChanged signal connected";
 }
 
 void UiEngine::initConfigs()
@@ -74,10 +73,10 @@ void UiEngine::initConfigs()
     this->m_madhabDisplayIndex =
         UiEngine::indexOfValue(this->m_madhabDisplayNames, pEngine->getMadhab());
 
-    logDebug(uiEngine) << "calcMethodsIdx inited as: [" << this->m_calcMethodsDisplayIndex << ", "
-                       << pEngine->property(qPrintable("calcMethod"_L1)).toString() << "]";
-    logDebug(uiEngine) << "madhabIdx inited as: [" << this->m_madhabDisplayIndex << ", "
-                       << pEngine->property(qPrintable("madhab"_L1)).toString() << "]";
+    logDebug(munadi) << "calcMethodsIdx inited as: [" << this->m_calcMethodsDisplayIndex << ", "
+                     << pEngine->property(qPrintable("calcMethod"_L1)).toString() << "]";
+    logDebug(munadi) << "madhabIdx inited as: [" << this->m_madhabDisplayIndex << ", "
+                     << pEngine->property(qPrintable("madhab"_L1)).toString() << "]";
 }
 
 void UiEngine::defaultTheme()
@@ -89,7 +88,7 @@ void UiEngine::dummy(const QStringList & /*unused*/)
 
 int UiEngine::indexOfValue(const QVariantList &list, const QString &value)
 {
-    logDebug(uiEngine) << "Value: " << value;
+    logDebug(munadi) << "Value: " << value;
     const auto it{std::ranges::find_if(list, [&value](const QVariant &item) -> bool {
         return item.toHash().value("name"_L1).toString() == value;
     })};
@@ -136,7 +135,7 @@ void UiEngine::initTexts()
 
 void UiEngine::loadConfigs()
 {
-    logDebug(uiEngine) << "Loading configs from persistent config file";
+    logDebug(munadi) << "Loading configs from persistent config file";
 
     bool          configMigrated{true};
     const QString migrateKey{"UiEngineConfigMigrated"_L1};
@@ -165,8 +164,8 @@ void UiEngine::loadConfigs()
         core->writeSettings("UiEngineConfigMigrated"_L1, true, false);
 }
 
-int UiEngine::textsRefresher()
-{ return textsRefresherReal(); }
+// int UiEngine::textsRefresher()
+// { return textsRefresherReal(); }
 
 int UiEngine::themeListIndex()
 { return this->m_themeListIdx; }
@@ -218,7 +217,7 @@ void UiEngine::onCoreOnline()
 
 void UiEngine::onPrayerEngineOnline()
 {
-    logDebug(uiEngine) << "Executing onPrayerEngineOnline()";
+    logDebug(munadi) << "Executing onPrayerEngineOnline()";
     this->connectToInvalidate();
     this->initConfigs();
 }

@@ -5,12 +5,6 @@
 
 #include <CoreEngine.hpp>
 
-Q_DECLARE_LOGGING_CATEGORY(coreEngine)
-Q_DECLARE_LOGGING_CATEGORY(multimediaEngine)
-Q_DECLARE_LOGGING_CATEGORY(prayerEngine)
-Q_DECLARE_LOGGING_CATEGORY(uiEngine)
-Q_DECLARE_LOGGING_CATEGORY(common)
-
 // NOLINTBEGIN(cppcoreguidelines-macro-usage)
 #define logDebug(logCategory) qCDebug(logCategory).noquote().nospace() << __func__ << ": debug: "_L1
 #define logInfo(logCategory)  qCInfo(logCategory).noquote().nospace() << __func__ << ": info: "_L1
@@ -48,23 +42,24 @@ auto preLoadConfigKey(QAnyStringView oldKey, QAnyStringView newKey, const QStrin
 auto textsRefresherReal() -> int;
 
 template <typename Key, typename T>
-auto setConfig(const QHash<Key, T> &table, const QString &key, QString &var) -> bool
+auto setConfig(const QHash<Key, T> &table, const QString &key, QString &var,
+               const QLoggingCategory &category = QLoggingCategory{"Common"}) -> bool
 {
     if (!table.contains(key))
     {
-        logCritical(common) << "Key " << key << " not recognized";
+        logCritical(category) << "Key " << key << " not recognized";
 
         return false;
     }
 
     if (var == key)
     {
-        logInfo(common) << "Skipping setting identical key";
+        logInfo(category) << "Skipping setting identical key";
 
         return true;
     }
 
-    logDebug(common) << "Replacing " << var << " with " << key;
+    logDebug(category) << "Replacing " << var << " with " << key;
     var = key;
 
     return true;

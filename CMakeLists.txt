@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16...4.4)
 
 project(munadi
-  VERSION 26.10
+  VERSION 26.11
   DESCRIPTION "Your Simple and Beautiful Athan App"
   LANGUAGES CXX C
 )
@@ -70,7 +70,7 @@ if(LINUX)
   find_package(Qt6 REQUIRED COMPONENTS DBus WaylandClient)
 endif()
 
-qt_standard_project_setup(REQUIRES 6.8 I18N_TRANSLATED_LANGUAGES ar bn)
+qt_standard_project_setup(REQUIRES 6.12 I18N_TRANSLATED_LANGUAGES ar bn)
 
 set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
 
@@ -261,7 +261,7 @@ qt_target_qml_sources(${PROJECT_NAME}
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
   $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>
-  QT_ENABLE_STRICT_MODE_UP_TO=0x060800
+  QT_ENABLE_STRICT_MODE_UP_TO=0x061200
 )
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23)
 target_compile_options(${PROJECT_NAME} PRIVATE

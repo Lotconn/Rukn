@@ -29,7 +29,7 @@ of thoughtful settings allows you to tailor the experience to your personal need
 
 ## Screenshots
 
-### Version 26.08
+### Version 26.11
 
 <div style="overflow-x: auto; white-space: nowrap;">
 
@@ -53,7 +53,7 @@ of thoughtful settings allows you to tailor the experience to your personal need
 
 | Packaging | Platform                      |                                                                                      Status                                                                                       |
 | --------- | ----------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| Makeself  | linux/x86_64                  |                        [![pipeline status](https://gitlab.com/munadi/munadi/badges/26.08/pipeline.svg)](https://gitlab.com/munadi/munadi/-/commits/26.08)                         |
+| Makeself  | linux/x86_64                  |                        [![pipeline status](https://gitlab.com/munadi/munadi/badges/26.11/pipeline.svg)](https://gitlab.com/munadi/munadi/-/commits/26.11)                         |
 | Flatpak   | linux/x86_64<br>linux/aarch64 | [![Build pipeline](https://github.com/flathub-infra/vorarbeiter/actions/workflows/build.yml/badge.svg)](https://github.com/flathub-infra/vorarbeiter/actions/workflows/build.yml) |
 | APK       | android/arm64-v8a             |                                                                                       Alpha                                                                                       |
 
@@ -75,7 +75,7 @@ of thoughtful settings allows you to tailor the experience to your personal need
 No dependencies required - just download & install:
 
 ```bash
-# Replace VER with the file's version, e.g. Munadi-26.08.run
+# Replace VER with the file's version, e.g. Munadi-26.11.run
 $ sh Munadi-<VER>.run -q
 ```
 
@@ -314,7 +314,7 @@ UI developments.
 
 > [!WARNING]
 >
-> Qt versions older than 6.9 may not be compatible. Build with project's latest tracking Qt version
+> Qt versions older than 6.12 may not be compatible. Build with project's latest tracking Qt version
 > before filing bugs. Alternatively,
 > [test build statically](#1-static-build-via-builder-image-recommended).
 
