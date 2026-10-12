@@ -14,6 +14,7 @@ include(FetchContent)
 # Setup variables
 #
 
+set(BUILD_SHARED_LIBS OFF)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -97,7 +98,6 @@ FetchContent_Declare(Adhan-cpp
   GIT_REPOSITORY https://github.com/lotconn/adhan-cpp
   GIT_TAG bf13ff4cbcc855756111cad1ee3d392d83c8b153
 )
-set(FM_BUILD_AS "STATIC" CACHE STRING "Build Adhan C++ as static")
 FetchContent_MakeAvailable(Adhan-cpp)
 
 # Lotconn/FileMan
@@ -105,7 +105,7 @@ FetchContent_Declare(FileMan
   GIT_REPOSITORY https://gitlab.com/lotconn/fileman
   GIT_TAG 830b671594be51131a3bc66b85454f7130174d8f
 )
-set(FM_BUILD_AS "STATIC" CACHE STRING "Build FileMan as static")
+# set(FM_BUILD_AS "STATIC" CACHE STRING "Build FileMan as static")
 FetchContent_MakeAvailable(FileMan)
 
 if(ANDROID)
@@ -323,6 +323,7 @@ target_link_options(${PROJECT_NAME} PRIVATE
   $<$<AND:$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>>,$<NOT:$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:
   -Wl,-z,relro,-z,now
   -Wl,--as-needed
+  -Wl,-Map=munadi.map
   >
   # MSVC / clang-cl linker hardening
   $<$<OR:$<CXX_COMPILER_ID:MSVC>,$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>:
