@@ -30,7 +30,7 @@ ApplicationWindow {
     background: Item {
         id: todw
 
-        visible: mm.bgImage
+        visible: UiEngine.bgImage
 
         Image {
             id: bgImg
@@ -38,15 +38,15 @@ ApplicationWindow {
             anchors.fill: parent
             fillMode: Image.PreserveAspectCrop
             mirror: Qt.application.layoutDirection === Qt.RightToLeft
-            source: "qrc:/qt/qml/Munadi/img/bg/" + (mm.currentPrayer % 6) + ".jpg"
+            source: "qrc:/qt/qml/Munadi/img/bg/" + (mm.currentPrayer % 6) + ".jpg" // does mm.currentPrayer exceed 6?
         }
 
         MultiEffect {
             anchors.fill: bgImg
             autoPaddingEnabled: false
-            blur: 1.0
-            blurEnabled: mm.bgImage
-            blurMax: mm.bg_img_blur
+            blur: UiEngine.blur
+            blurEnabled: UiEngine.bgImage
+            blurMax: 64
             source: bgImg
         }
     }
@@ -57,14 +57,11 @@ ApplicationWindow {
         // [BUG]: values are parsed as strings, not booleans
         // handle booleans with helper function
         autoStartUp = settingsBool("autoStartUp", false);
-        mm.bgImage = settingsBool("bgImage", mm.bgImage);
         mm.checkForUpdates = settingsBool("checkForUpdates", mm.checkForUpdates);
         mm.hideOnClose = settingsBool("hideOnClose", mm.hideOnClose);
         mm.isoClock = settingsBool("isoClock", mm.isoClock);
         mm.showOnAthan = settingsBool("showOnAthan", mm.showOnAthan);
 
-        mm.bg_img_blur = settings.value("blur", mm.bg_img_blur);
-        mm.rectangle_opacity = settings.value("opacity", mm.rectangle_opacity);
         mm.themeListIndex = settings.value("themeListIndex", mm.themeListIndex);
         newsVersion = settings.value("newsVersion", "");
 
@@ -115,12 +112,9 @@ ApplicationWindow {
     Component.onDestruction: {
         settings.category = "App";
         settings.setValue("autoStartUp", autoStartUp);
-        settings.setValue("bgImage", mm.bgImage);
-        settings.setValue("blur", mm.bg_img_blur);
         settings.setValue("hideOnClose", mm.hideOnClose);
         settings.setValue("isoClock", mm.isoClock);
         settings.setValue("newsVersion", newsVersion);
-        settings.setValue("opacity", mm.rectangle_opacity);
         settings.setValue("showOnAthan", mm.showOnAthan);
         settings.setValue("themeListIndex", mm.themeListIndex);
 

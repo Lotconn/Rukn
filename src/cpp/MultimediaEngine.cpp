@@ -47,6 +47,8 @@ MultimediaEngine::MultimediaEngine(QObject *parent)
     CoreEngine::onceOnline(this, [this] { this->onCoreOnline(); }, munadi());
 
     MultimediaEngine::s_singletonInstance = this;
+
+    logDebug(munadi) << "MultimediaEngine online";
 }
 
 MultimediaEngine::~MultimediaEngine() = default;

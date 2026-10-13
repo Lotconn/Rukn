@@ -28,6 +28,8 @@ PrayerEngine::PrayerEngine(QObject *parent) : QObject{parent}
     PrayerEngine::s_singletonInstance = this;
     PrayerEngine::s_online            = true;
 
+    logDebug(munadi) << "PrayerEngine online";
+
     emit this->engineOnline();
 }
 

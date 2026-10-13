@@ -150,6 +150,7 @@ set(MUNADI_QML_FILES
   src/qml/SettingsPage.qml
   src/qml/SettingSubtitle.qml
   src/qml/SettingTitle.qml
+  src/qml/SpinBoxComp.qml
   src/qml/TextButton.qml
   src/qml/Theme.qml
   src/qml/TimeLeftRow.qml

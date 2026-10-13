@@ -9,7 +9,7 @@
 #include <QSettings>
 #include <QTranslator>
 
-#define core CoreEngine::instance()
+#define core Munadi::CoreEngine::instance()
 
 namespace Munadi
 {

@@ -10,7 +10,7 @@
 // #include <adhan/DateUtils.hpp>
 #include <adhan/PrayerTimes.hpp>
 
-#define pEngine PrayerEngine::instance()
+#define pEngine Munadi::PrayerEngine::instance()
 
 namespace Munadi
 {

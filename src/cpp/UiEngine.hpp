@@ -15,6 +15,8 @@ class UiEngine : public QObject
     QML_ELEMENT
     QML_SINGLETON
 
+    Q_PROPERTY(bool bgImage MEMBER m_bgImage NOTIFY bgImageChanged)
+    Q_PROPERTY(double blur MEMBER m_blur NOTIFY blurChanged RESET resetBlur)
     Q_PROPERTY(int calcMethodDisplayIndex MEMBER m_calcMethodsDisplayIndex WRITE
                    setCalcMethodDisplayIdx NOTIFY configChanged)
     Q_PROPERTY(QVariantList calcMethodsDisplayNames MEMBER m_calcMethodsDisplayNames NOTIFY
@@ -23,12 +25,13 @@ class UiEngine : public QObject
                    configChanged)
     Q_PROPERTY(
         QVariantList madhabDisplayNames MEMBER m_madhabDisplayNames NOTIFY translationChanged)
+    Q_PROPERTY(double opacity MEMBER m_opacity NOTIFY opacityChanged RESET resetOpacity)
     Q_PROPERTY(
         QVariantList prayerDisplayNames MEMBER m_prayerDisplayNames NOTIFY translationChanged)
     Q_PROPERTY(QStringList themeList MEMBER m_themeList WRITE dummy NOTIFY themeListChanged)
     // Q_PROPERTY(int textsRefresher READ textsRefresher NOTIFY translationChanged)
-    Q_PROPERTY(int themeListIndex READ themeListIndex WRITE setThemeListIdx RESET defaultTheme
-                   NOTIFY themeListIdxChanged)
+    Q_PROPERTY(int themeListIndex READ themeListIndex WRITE setThemeListIdx RESET resetTheme NOTIFY
+                   themeListIdxChanged)
 
   public:
     explicit UiEngine(QObject *parent = nullptr);
@@ -70,13 +73,19 @@ class UiEngine : public QObject
         QLatin1StringView{"Hanafi"},
     };
 
-    QAtomicInt   m_calcMethodsDisplayIndex;
-    QVariantList m_calcMethodsDisplayNames;
-    QAtomicInt   m_madhabDisplayIndex;
-    QVariantList m_madhabDisplayNames;
-    QVariantList m_prayerDisplayNames;
-    QAtomicInt   m_themeListIdx;
-    QStringList  m_themeList;
+    constexpr static double defaultBlur{0.45};    // NOLINT(*-magic-numbers)
+    constexpr static double defaultOpacity{0.77}; // NOLINT(*-magic-numbers)
+
+    std::atomic<bool>   m_bgImage{true};
+    std::atomic<double> m_blur{defaultBlur};      // NOLINT(*-magic-numbers)
+    QAtomicInt          m_calcMethodsDisplayIndex;
+    QVariantList        m_calcMethodsDisplayNames;
+    QAtomicInt          m_madhabDisplayIndex;
+    QVariantList        m_madhabDisplayNames;
+    std::atomic<double> m_opacity{defaultOpacity};
+    QVariantList        m_prayerDisplayNames;
+    QAtomicInt          m_themeListIdx;
+    QStringList         m_themeList;
 
     QReadWriteLock varLock;
 
@@ -91,16 +100,21 @@ class UiEngine : public QObject
     auto connectToCoreOffline() const -> void;
     auto connectToInvalidate() const -> void;
     auto connectToLocaleChanged() const -> void;
-    auto defaultTheme() -> void;
     auto initConfigs() -> void;
     auto initTexts() -> void;
     auto loadConfigs() -> void;
+    auto resetBlur() -> void;
+    auto resetOpacity() -> void;
+    auto resetTheme() -> void;
     auto saveConfigs() -> void;
     auto setCalcMethodDisplayIdx(const QVariant &index) -> void;
     auto setMadhabDisplayIdx(const QVariant &index) -> void;
 
   signals:
+    auto bgImageChanged() -> void;
+    auto blurChanged() -> void;
     auto configChanged() -> void;
+    auto opacityChanged() -> void;
     auto translationChanged() -> void;
     auto themeListChanged() -> void;
     auto themeListIdxChanged(int) -> void;

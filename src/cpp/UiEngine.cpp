@@ -18,6 +18,8 @@ UiEngine::UiEngine(QObject *parent) : QObject{parent}
     PrayerEngine::onceOnline(this, [this] -> void { this->onPrayerEngineOnline(); }, munadi());
 
     UiEngine::s_singletonInstance = this;
+
+    logDebug(munadi) << "UiEngine online";
 }
 
 UiEngine::~UiEngine() = default;
@@ -79,9 +81,6 @@ void UiEngine::initConfigs()
                      << pEngine->getMadhab() << "]";
 }
 
-void UiEngine::defaultTheme()
-{ this->setThemeListIdx(0); }
-
 void UiEngine::dummy(const QStringList & /*unused*/)
 {
 }
@@ -141,6 +140,28 @@ void UiEngine::loadConfigs()
     const QString migrateKey{"UiEngineConfigMigrated"_L1};
 
     loadConfigKey(
+        "App/bgImage"_L1, "App/bgImage"_L1, migrateKey,
+        [this](const QVariant &value) -> void {
+            logDebug(munadi) << "bgImage: " << value.toBool();
+            this->setProperty("bgImage", value.toBool());
+        },
+        configMigrated);
+
+    loadConfigKey(
+        "App/blur"_L1, "App/blur"_L1, migrateKey,
+        [this, &migrateKey](const QVariant &value) -> void {
+            const double maxBlur{64};
+            double       realValue{value.toDouble()};
+
+            if (!core->readSettings(migrateKey).toBool())
+                realValue /= maxBlur;
+
+            logDebug(munadi) << "blur: " << realValue;
+            this->setProperty("blur", realValue);
+        },
+        configMigrated);
+
+    loadConfigKey(
         "Adhan/calcMethodIndex"_L1, {}, migrateKey,
         [](const QVariant &val) -> void {
             QAtomicInt null;
@@ -160,18 +181,36 @@ void UiEngine::loadConfigs()
         },
         configMigrated);
 
+    loadConfigKey(
+        "App/opacity"_L1, "App/opacity"_L1, migrateKey,
+        [this](const QVariant &value) -> void {
+            // const double maxBlur{64};
+            logDebug(munadi) << "opacity: " << value.toDouble();
+            this->setProperty("opacity", value.toDouble());
+        },
+        configMigrated);
+
     if (configMigrated)
         core->writeSettings("UiEngineConfigMigrated"_L1, true, false);
 }
 
-// int UiEngine::textsRefresher()
-// { return textsRefresherReal(); }
+void UiEngine::resetBlur()
+{ this->m_blur.store(UiEngine::defaultBlur); }
 
-int UiEngine::themeListIndex()
-{ return this->m_themeListIdx; }
+void UiEngine::resetOpacity()
+{ this->m_opacity.store(UiEngine::defaultOpacity); }
+
+void UiEngine::resetTheme()
+{ this->setThemeListIdx(0); }
 
 void UiEngine::saveConfigs()
-{ return; }
+{
+    logDebug(munadi) << "Saving UI configurations";
+
+    core->writeSettings("App/bgImage"_L1, this->m_bgImage.load());
+    core->writeSettings("App/blur"_L1, this->m_blur.load());
+    core->writeSettings("App/opacity"_L1, this->m_opacity.load());
+}
 
 void UiEngine::setCalcMethodDisplayIdx(const QVariant &index)
 {
@@ -189,6 +228,12 @@ void UiEngine::setMadhabDisplayIdx(const QVariant &index)
 
 void UiEngine::setThemeListIdx(int idx)
 { this->m_themeListIdx = idx; }
+
+// int UiEngine::textsRefresher()
+// { return textsRefresherReal(); }
+
+int UiEngine::themeListIndex()
+{ return this->m_themeListIdx; }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  Private Slots
@@ -211,7 +256,6 @@ void UiEngine::onCoreOnline()
 {
     this->connectToLocaleChanged();
     this->initTexts();
-    this->loadConfigs();
     this->connectToCoreOffline();
 }
 
@@ -219,6 +263,7 @@ void UiEngine::onPrayerEngineOnline()
 {
     logDebug(munadi) << "Executing onPrayerEngineOnline()";
     this->connectToInvalidate();
+    this->loadConfigs(); // loadConfigs() needs to be before initConfigs()
     this->initConfigs();
 }
 

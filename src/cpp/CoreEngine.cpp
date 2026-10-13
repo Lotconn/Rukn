@@ -56,6 +56,8 @@ CoreEngine::CoreEngine(QObject *parent) : QObject{parent}
     CoreEngine::s_singletonInstance = this;
     CoreEngine::s_online            = true;
 
+    logDebug(munadi) << "CoreEngine online";
+
     emit this->coreOnline();
 }
 

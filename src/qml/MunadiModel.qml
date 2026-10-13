@@ -1,5 +1,4 @@
 import QtQuick
-// import QtCore
 import QtQuick.Controls.Material
 import "qrc:/qt/qml/Munadi/data/Adhan.js" as Adhan
 import Munadi
@@ -8,8 +7,6 @@ QtObject {
     id: munadiModel
 
     property string asr: sysLocale.toString(prayerTimes.asr, isoClock ? "hh:mm" : "hh:mm ap")
-    property bool bgImage: true
-    property int bg_img_blur: 29
     property var calendarPreference: [
         {
             "name": qsTr("Both"),
@@ -33,7 +30,6 @@ QtObject {
     property int calendarPreferenceIndex: 0
     property bool checkForUpdates: true
     property string cityName
-    property double content_opacity: 1.0
     property string countryName
     property date currentDate
     property string currentDateStr: calendarPreference[calendarPreferenceIndex]['method']()
@@ -62,7 +58,6 @@ QtObject {
     property int pane_elevation: 6
     property var params: new Adhan.adhan.CalculationMethod.MuslimWorldLeague()
     property var prayerTimes
-    property double rectangle_opacity: 0.77
     property int rectangle_radius: 3
     property bool showOnAthan: false
     property string srise: sysLocale.toString(prayerTimes.sunrise, isoClock ? "hh:mm" : "hh:mm ap")

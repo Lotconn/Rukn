@@ -88,63 +88,85 @@ Page {
             }
 
             GridLayout {
-                columns: 2
+                columns: 3
                 rows: 2
 
                 Text {
+                    id: blurLabel
+
                     color: Material.secondaryTextColor
                     text: qsTr("Blur")
                 }
 
                 Slider {
-                    id: blur
+                    id: blurSlider
 
                     Layout.fillWidth: true
-                    from: 0
-                    stepSize: 1
-                    to: 64
-                    value: mm.bg_img_blur
+                    from: 0.0
+                    snapMode: Slider.SnapAlways
+                    stepSize: 0.01
+                    to: 1.0
+                    value: UiEngine.blur
 
-                    onMoved: {
-                        mm.bg_img_blur = value;
-                    }
                     onPressedChanged: {
                         if (pressed) {
-                            settingsPopup.opacity = 0;
+                            settingsPopup.opacity = 0.1;
                             settingsPopup.modal = false;
                         } else {
                             settingsPopup.opacity = 1;
                             settingsPopup.modal = true;
                         }
                     }
+                    onValueChanged: {
+                        UiEngine.blur = value;
+                    }
+                }
+
+                SpinBoxComp {
+                    id: blurValue
+
+                    storeVar: blurSlider.value
+
+                    onEdited: newValue => blurSlider.value = newValue
                 }
 
                 Text {
+                    id: opacityLabel
+
                     color: Material.secondaryTextColor
                     text: qsTr("Opacity")
                 }
 
                 Slider {
-                    id: opacity
+                    id: opacitySlider
 
                     Layout.fillWidth: true
                     from: 0
-                    stepSize: .01
+                    snapMode: Slider.SnapAlways
+                    stepSize: 0.01
                     to: 1
-                    value: mm.rectangle_opacity
+                    value: UiEngine.opacity
 
-                    onMoved: {
-                        mm.rectangle_opacity = value;
-                    }
                     onPressedChanged: {
                         if (pressed) {
-                            settingsPopup.opacity = 0;
+                            settingsPopup.opacity = 0.1;
                             settingsPopup.modal = false;
                         } else {
                             settingsPopup.opacity = 1;
                             settingsPopup.modal = true;
                         }
                     }
+                    onValueChanged: {
+                        UiEngine.opacity = value;
+                    }
+                }
+
+                SpinBoxComp {
+                    id: opacityValue
+
+                    storeVar: opacitySlider.value
+
+                    onEdited: newValue => opacitySlider.value = newValue
                 }
             }
 
@@ -163,9 +185,9 @@ Page {
                 }
 
                 Switch {
-                    checked: mm.bgImage
+                    checked: UiEngine.bgImage
 
-                    onClicked: mm.bgImage = checked
+                    onClicked: UiEngine.bgImage = checked
                 }
             }
 

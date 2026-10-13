@@ -6,6 +6,7 @@
 #include <QStyleFactory>
 
 #include <CoreEngine.hpp>
+#include <PrayerEngine.hpp>
 #include <SingleApplication>
 #include <alarm.h>
 #include <engine.h>
@@ -74,6 +75,7 @@ int main(int argc, char *argv[])
     // This nudge is necessary for satisfying the dependencies, and should be earliest before
     // anything
     qae.singletonInstance<Munadi::CoreEngine *>("Munadi", "CoreEngine");
+    qae.singletonInstance<Munadi::PrayerEngine *>("Munadi", "PrayerEngine");
 
     Engine engine;
     auto  *alarm = createAlarm(&app);

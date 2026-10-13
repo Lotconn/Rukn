@@ -22,7 +22,7 @@ ColumnLayout {
         Layout.fillHeight: true
         Layout.preferredHeight: 40
         Layout.preferredWidth: parentBox.isWide ? parent.height * theme.uiPortraitRatio : parent.width
-        background.opacity: mm.rectangle_opacity
+        background.opacity: UiEngine.opacity
     }
 
     Pane {
@@ -37,7 +37,7 @@ ColumnLayout {
         Layout.preferredWidth: parentBox.isWide ? parent.height * theme.uiPortraitRatio : parent.width
         Layout.topMargin: 20
         Material.elevation: mm.pane_elevation
-        background.opacity: mm.rectangle_opacity
+        background.opacity: UiEngine.opacity
 
         ColumnLayout {
             anchors.fill: parent
@@ -114,7 +114,7 @@ ColumnLayout {
         Layout.fillHeight: true
         Layout.preferredHeight: 40
         Layout.preferredWidth: parentBox.isWide ? parent.height * theme.uiPortraitRatio : parent.width
-        background.opacity: mm.rectangle_opacity
+        background.opacity: UiEngine.opacity
         text: mm.timeLeftStr
         visible: !mm.locationNotSet
     }

@@ -157,7 +157,7 @@ QVariant preLoadConfigKey(QAnyStringView oldKey, QAnyStringView newKey, const QS
         return {};
     }
 
-    const bool migrated{Munadi::CoreEngine::instance()->readSettings(migrateKey).toBool()};
+    const bool migrated{core->readSettings(migrateKey).toBool()};
 
     QVariant cfgVal;
 
@@ -171,7 +171,7 @@ QVariant preLoadConfigKey(QAnyStringView oldKey, QAnyStringView newKey, const QS
     if (migrated || cfgVal.isNull())
     {
         if (!newKey.isEmpty())
-            cfgVal = Munadi::CoreEngine::instance()->readSettings(newKey);
+            cfgVal = core->readSettings(newKey);
 
         if (configMigrated.has_value())
             configMigrated = false;
@@ -179,7 +179,8 @@ QVariant preLoadConfigKey(QAnyStringView oldKey, QAnyStringView newKey, const QS
 
     if (cfgVal.isNull())
     {
-        logCritical(common) << "Couldn't read valid value from config file";
+        if (!migrated)
+            logCritical(common) << "Couldn't read valid value from config file";
 
         return {};
     }
