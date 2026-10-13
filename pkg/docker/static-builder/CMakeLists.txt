@@ -48,20 +48,20 @@ set(FFMPEG_CONF
     --disable-xlib # disable all x11 dependencies
 
     # Toolchain options: using clang+llvm; other tools need to be explicitly defined
+    --nm=llvm-nm
     --ar=llvm-ar
     --cc=clang
     --cxx=clang++
     --ld=clang
-    --nm=llvm-nm
     --ranlib=llvm-ranlib
     --enable-lto
 
     # Advanced options:
 
-    # don't use single quotes
+    # don't use single quotes only
     # extra hardening flags were added
-    --extra-cflags=" -O3 -pipe -Wp,-D_FORTIFY_SOURCE=3 -fasynchronous-unwind-tables -fstack-protector-strong -fcf-protection -fstack-clash-protection -mno-omit-leaf-frame-pointer "
-    --extra-ldflags=" -fuse-ld=lld -Wl,-z,relro,-z,now -Wl,--as-needed "
+    --extra-cflags="' -O3 -pipe -Wp,-D_FORTIFY_SOURCE=3 -fasynchronous-unwind-tables -fstack-protector-strong -fcf-protection -fstack-clash-protection -mno-omit-leaf-frame-pointer '"
+    --extra-ldflags="' -fuse-ld=lld -Wl,-z,relro,-z,now -Wl,--as-needed '"
 
     # Developer options:
     --disable-debug
@@ -94,14 +94,14 @@ set(QT_CONF
     -no-feature-wasmdeployqt
 
     # Build options:
-    -cmake-generator Ninja  # no need to pass -G Ninja anymore
+    -cmake-generator Ninja
     -release
     -static
     -no-sbom
     -reduce-exports
     -reduce-relocations
     -ltcg
-    -linker lld             # using clang+llvm with lld
+    -linker lld # using clang+llvm with lld
     -ccache
 
     # Component selection:
@@ -111,7 +111,7 @@ set(QT_CONF
     -nomake manual-tests
     -nomake minimal-static-tests
     -nomake doc-snippets
-    -force-bundled-libs     # _always_ use the bundled libs
+    -force-bundled-libs # _always_ use the bundled libs
 
     # Core options:
     -qt-doubleconversion
@@ -123,7 +123,7 @@ set(QT_CONF
     -qt-zlib
 
     # Network options:
-    -ssl                # use system-installed OpenSSL (shared) lib
+    -ssl # use system-installed OpenSSL (shared) lib
 
     # Gui, printing, widget options:
     -no-cups
@@ -160,48 +160,46 @@ set(QT_CONF
     -qt-sqlite
 
     # Build environment
-    " -DCMAKE_C_FLAGS= -O3 -pipe "      #
-    " -DCMAKE_CXX_FLAGS= -O3 -pipe "    # quotes are necessary
+    CMAKE_C_FLAGS=-pipe #
+    CMAKE_CXX_FLAGS=-pipe # quotes are necessary
     CMAKE_C_COMPILER=clang
     CMAKE_CXX_COMPILER=clang++
+    FEATURE_optimize_full=ON
     FEATURE_optimized_tools=ON
-    FEATURE_egl_x11=OFF         #
-    FEATURE_xlib=OFF            # these two help to disable X11 deps completely
+    FEATURE_egl_x11=OFF #
+    FEATURE_xlib=OFF # these two help to disable X11 deps completely
     QT_BUILD_DOCS=OFF
     QT_BUILD_TOOLS_BY_DEFAULT=OFF
 )
-
-add_definitions('QT_QPA_PLATFORMS=wayland\;xcb')
 
 # Qt
 ExternalProject_Add(qtbase
     URL https://download.qt.io/archive/qt/${QT_V}/${QT_VV}/submodules/qtbase-everywhere-src-${QT_VV}.tar.xz
     URL_HASH SHA256=a951bd163c7b80fc6b8c88d7668fb56abf91c152373e13c10666763238131307
     BUILD_IN_SOURCE ON
-    CONFIGURE_COMMAND ${QT_CONF}
-    # -G is not needed anymore
+    CONFIGURE_COMMAND ${QT_CONF} && cat config.summary
     BUILD_COMMAND cmake --build . --parallel
     INSTALL_COMMAND cmake --install .
     STEP_TARGETS download
     # suppress unnecessary noise
     DOWNLOAD_NO_PROGRESS ON
 )
-ExternalProject_Add_StepDependencies(qtbase configure)
+# ExternalProject_Add_StepDependencies(qtbase configure)
 
-# Modules may have multiple dependencies; see dependencies.yaml in each module archives 
+# Modules may have multiple dependencies; see dependencies.yaml in each module's archive
 set(QT_SRC
     # Module            Depnds on       SHA256
-    qtimageformats qtbase 0943132b5db8de6b6a7f1d162682173e8763c7ed94e80fd39113292845f67762
-    qtlanguageserver qtbase 552119e37360c06c5fb0b54e91bbfdf8da5a80d2cb1441ef93e966eb3b7a426d
-    qtshadertools qtbase c7d84f436e1aaef39fdcadebf2bd71bdf24dc69497e13f2e0198873cbbfea2ab
-    qtsvg qtbase e4ab39534ec97987b1b9b60ef7f4d3253d5912a69f8c713a01753174a4029331
-    qtdeclarative qtbase,qtimageformats,qtlanguageserver,qtshadertools,qtsvg 311f3a2603e1973bb59baef9dfa740a376de713157d4782ee043681e889c9260
-    qtmultimedia ffmpeg,qtdeclarative 3143f53b64257ba2a0685c940f5dce476c75871ff86b516de45cfd54ea93a62d
-    qtpositioning qtdeclarative b060d410fac7413b05a0e7938bbf3325f7ad08d7df14af3956270f0696e76763
-    qttools qtdeclarative 8dab8f3611496486a470ad5f115ceea584f36bc22a2b8b6f6ebdbafbb8160693
-    qtwayland qtdeclarative ae14d9bcf1bb3c300a3ab2e6a53f50284e5c6c966a4ac4cc5aedcb1bc74e4d02
-    qtlocation qtpositioning 218696d57c9eb95e8756e9fda62a8eabf94badc507db5f6e8ab9a640c4b0f50d
-    qtvirtualkeyboard qtmultimedia 2aae3628f4648f86959d7853e7e1f50ee96a7f1bb5497afb62b7deff6c350170
+    qtimageformats      qtbase          0943132b5db8de6b6a7f1d162682173e8763c7ed94e80fd39113292845f67762
+    qtlanguageserver    qtbase          552119e37360c06c5fb0b54e91bbfdf8da5a80d2cb1441ef93e966eb3b7a426d
+    qtshadertools       qtbase          c7d84f436e1aaef39fdcadebf2bd71bdf24dc69497e13f2e0198873cbbfea2ab
+    qtsvg               qtbase          e4ab39534ec97987b1b9b60ef7f4d3253d5912a69f8c713a01753174a4029331
+    qtdeclarative       qtbase,qtimageformats,qtlanguageserver,qtshadertools,qtsvg 311f3a2603e1973bb59baef9dfa740a376de713157d4782ee043681e889c9260
+    qtmultimedia        ffmpeg,qtdeclarative 3143f53b64257ba2a0685c940f5dce476c75871ff86b516de45cfd54ea93a62d
+    qtpositioning       qtdeclarative   b060d410fac7413b05a0e7938bbf3325f7ad08d7df14af3956270f0696e76763
+    qttools             qtdeclarative   8dab8f3611496486a470ad5f115ceea584f36bc22a2b8b6f6ebdbafbb8160693
+    qtwayland           qtdeclarative   ae14d9bcf1bb3c300a3ab2e6a53f50284e5c6c966a4ac4cc5aedcb1bc74e4d02
+    qtlocation          qtpositioning   218696d57c9eb95e8756e9fda62a8eabf94badc507db5f6e8ab9a640c4b0f50d
+    # qtvirtualkeyboard qtmultimedia    2aae3628f4648f86959d7853e7e1f50ee96a7f1bb5497afb62b7deff6c350170
 )
 
 # Flags passed to every sub-module cmake invocation, unique or common to each module.
@@ -220,7 +218,7 @@ set(QT_CONFIG_ARGS-qttools
     -no-feature-pixeltool
     -no-feature-qdoc
 )
-set(QT_CONFIG_ARGS-qtvirtualkeyboard -no-feature-example-hwr)
+# set(QT_CONFIG_ARGS-qtvirtualkeyboard -no-feature-example-hwr)
 set(QT_CONFIG_ARGS-qtwayland -no-feature-wayland-compositor-quick)
 
 while(QT_SRC)
@@ -231,7 +229,7 @@ while(QT_SRC)
         URL https://download.qt.io/archive/qt/${QT_V}/${QT_VV}/submodules/${QT_LIB_NAME}-everywhere-src-${QT_VV}.tar.xz
         URL_HASH SHA256=${QT_LIB_HASH}
         BUILD_IN_SOURCE ON
-        CONFIGURE_COMMAND /usr/bin/qt-configure-module . ${QT_CONFIG_ARGS-${QT_LIB_NAME}} -- ${QT_SUBMODULE_CMAKE_ARGS} ${QT_CMAKE_ARGS-${QT_LIB_NAME}}
+        CONFIGURE_COMMAND /usr/bin/qt-configure-module . ${QT_CONFIG_ARGS-${QT_LIB_NAME}} -- ${QT_CMAKE_ARGS} ${QT_CMAKE_ARGS-${QT_LIB_NAME}} && cat config.summary && cmake -N -L .
         BUILD_COMMAND cmake --build . --parallel
         INSTALL_COMMAND cmake --install .
         STEP_TARGETS download

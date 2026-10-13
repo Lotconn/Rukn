@@ -21,8 +21,9 @@ RUN \
     # Build utils & required libraries
     dnf install -y --installroot=/mnt/rootfs --releasever=10.2 --setopt=install_weak_deps=False \
         --nodocs --setopt=reposdir=/etc/yum.repos.d/ \
-        dnf epel-release ccache clang cmake diffutils gcc-c++ lld llvm nasm ninja-build \
-        libglvnd-devel libxkbcommon-devel openssl-devel pipewire-devel wayland-devel
+        dnf epel-release ccache clang cmake dbus-devel diffutils gcc-c++ lld llvm ninja-build nasm \
+        libglvnd-devel libxkbcommon-devel libzstd-devel openssl-devel pipewire-devel \
+        vulkan-loader-devel wayland-devel
 RUN \
     # Other necessary utils
     dnf install -y --installroot=/mnt/rootfs --releasever=10.2 --setopt=install_weak_deps=False \
@@ -47,7 +48,7 @@ LABEL org.opencontainers.image.authors="Abou Abbad, Hasan Esa"
 LABEL org.opencontainers.image.url="https://gitlab.com/munadi/munadi/container_registry"
 LABEL org.opencontainers.image.source="https://gitlab.com/munadi/munadi"
 LABEL org.opencontainers.image.version="26.11"
-LABEL org.opencontainers.image.revision="1"
+LABEL org.opencontainers.image.revision="2"
 LABEL org.opencontainers.image.vendor="Munadi.org"
 LABEL org.opencontainers.image.licenses="AGPL-3.0, GPL-3.0 or LGPL"
 LABEL org.opencontainers.image.title="Munadi static builder image"
@@ -65,9 +66,8 @@ ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
 RUN \
     --mount=type=cache,target=/root/.ccache --mount=type=cache,target=/root/.cache,sharing=locked \
-    # Note -G and BUILD_TYPE is also set in the CMakeLists, this might as well be omitted
-    cmake -S . -B . -GNinja -DCMAKE_BUILD_TYPE=Release && \
-    cmake --build . --parallel && rm -rf /tmp/{,.}*
+    # Note -G and BUILD_TYPE has no effect in CMakeLists.txt
+    cmake -S . -B . && cmake --build . --parallel && rm -rf /tmp/{,.}*
 
 RUN \
     cp /usr/share/rootfiles/.* /root && \
