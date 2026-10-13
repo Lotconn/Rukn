@@ -74,9 +74,9 @@ void UiEngine::initConfigs()
         UiEngine::indexOfValue(this->m_madhabDisplayNames, pEngine->getMadhab());
 
     logDebug(munadi) << "calcMethodsIdx inited as: [" << this->m_calcMethodsDisplayIndex << ", "
-                     << pEngine->property(qPrintable("calcMethod"_L1)).toString() << "]";
+                     << pEngine->getCalcMethod() << "]";
     logDebug(munadi) << "madhabIdx inited as: [" << this->m_madhabDisplayIndex << ", "
-                     << pEngine->property(qPrintable("madhab"_L1)).toString() << "]";
+                     << pEngine->getMadhab() << "]";
 }
 
 void UiEngine::defaultTheme()
@@ -196,10 +196,10 @@ void UiEngine::setThemeListIdx(int idx)
 
 void UiEngine::onInvalidate()
 {
-    this->m_calcMethodsDisplayIndex = UiEngine::indexOfValue(
-        this->m_calcMethodsDisplayNames, pEngine->property(qPrintable("calcMethod"_L1)).toString());
-    this->m_madhabDisplayIndex = UiEngine::indexOfValue(
-        this->m_madhabDisplayNames, pEngine->property(qPrintable("madhab"_L1)).toString());
+    this->m_calcMethodsDisplayIndex =
+        UiEngine::indexOfValue(this->m_calcMethodsDisplayNames, pEngine->getCalcMethod());
+    this->m_madhabDisplayIndex =
+        UiEngine::indexOfValue(this->m_madhabDisplayNames, pEngine->getMadhab());
 
     emit this->configChanged();
 }

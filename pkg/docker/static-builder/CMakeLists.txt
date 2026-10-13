@@ -184,7 +184,6 @@ ExternalProject_Add(qtbase
     # suppress unnecessary noise
     DOWNLOAD_NO_PROGRESS ON
 )
-# ExternalProject_Add_StepDependencies(qtbase configure)
 
 # Modules may have multiple dependencies; see dependencies.yaml in each module's archive
 set(QT_SRC

@@ -105,7 +105,6 @@ FetchContent_Declare(FileMan
   GIT_REPOSITORY https://gitlab.com/lotconn/fileman
   GIT_TAG 830b671594be51131a3bc66b85454f7130174d8f
 )
-# set(FM_BUILD_AS "STATIC" CACHE STRING "Build FileMan as static")
 FetchContent_MakeAvailable(FileMan)
 
 if(ANDROID)

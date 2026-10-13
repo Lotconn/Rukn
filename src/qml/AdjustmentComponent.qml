@@ -11,6 +11,7 @@ ColumnLayout {
     TabBar {
         id: prayerTab
 
+        // for init purposes only
         property string prayer: PrayerEngine.toString(PrayerEngine.Fajr)
 
         Layout.fillWidth: true
@@ -18,7 +19,7 @@ ColumnLayout {
 
         Component.onCompleted: itemAt(PrayerEngine.Sunrise).width = 0 // Hide sunrise tab
 
-        onCurrentIndexChanged: prayer = PrayerEngine.toString(prayerTab.currentIndex)
+        onCurrentIndexChanged: prayer = UiEngine.prayerDisplayNames[currentIndex].name
 
         Repeater {
             model: UiEngine.prayerDisplayNames

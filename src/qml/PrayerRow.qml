@@ -10,7 +10,7 @@ Item {
     property string athanTime
     //property alias iqamaTime: iqamaLabel.text
     property double pixelDiv: 3
-    property var prayerId
+    property int prayerId
     property alias prayerLabel: prayerLabel.text
 
     Layout.fillHeight: true
