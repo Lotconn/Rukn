@@ -18,6 +18,8 @@ CoreEngine::CoreEngine(QObject *parent) : QObject{parent}
         logFatal(munadi)
             << "A second instance was constructed; only one instance may exist per process";
 
+    logDebug(munadi) << "Booting engine...";
+
     if (const QString appName = QCoreApplication::applicationName(); appName.isEmpty())
         logCritical(munadi) << "Not setting up persistnent config due to missing application "
                                "name. Settings won't be saved.";
@@ -38,7 +40,8 @@ CoreEngine::CoreEngine(QObject *parent) : QObject{parent}
         oldConfigFile.exists())
     {
         const QString oldConfigPath{oldConfigFile.absoluteFilePath()};
-        logDebug(munadi) << "Old config detected at " << oldConfigPath;
+        logInfo(munadi) << "Old config detected, relevant configurations will be migrated";
+        logDebug(munadi) << "Old config path: " << oldConfigPath;
 
         this->oldSettings = new QSettings(oldConfigPath, QSettings::NativeFormat, this);
     }
@@ -56,8 +59,7 @@ CoreEngine::CoreEngine(QObject *parent) : QObject{parent}
     CoreEngine::s_singletonInstance = this;
     CoreEngine::s_online            = true;
 
-    logDebug(munadi) << "CoreEngine online";
-
+    logDebug(munadi) << "Engine online";
     emit this->coreOnline();
 }
 
@@ -247,6 +249,17 @@ QVariantList CoreEngine::readSettingsArray(QAnyStringView group)
 //     return true;
 // }
 
+void CoreEngine::setLang(const QString &lang)
+{
+    // const QWriteLocker lock{&varLock};
+
+    logDebug(munadi) << "lang: " << lang;
+    logDebug(munadi) << "locale: " << CoreEngine::s_lang.value(lang);
+
+    if (QString dummy; setConfig(CoreEngine::s_lang, lang, dummy))
+        this->applyLocale(CoreEngine::s_lang.value(lang));
+}
+
 void CoreEngine::writeSettings(QAnyStringView key, const QVariant &value, bool flushOnWrite)
 {
     if (key.isEmpty())
@@ -356,15 +369,15 @@ bool CoreEngine::eventFilter(QObject *object, QEvent *event)
 //     return 0;
 // }
 
-void CoreEngine::applyLocale()
+void CoreEngine::applyLocale(const QLocale &locale)
 {
     qApp->removeTranslator(&translator); // no-op if none installed
 
-    QLocale l(QLocale::system());
+    QLocale l{locale};
 
     if (l.language() == QLocale::Arabic || l.language() == QLocale::Bangla)
     {
-        l = QLocale(l.language(), l.territory());
+        l = QLocale{l.language(), l.territory()};
         QLocale::setDefault(l);
         if (translator.load(l, QLatin1String("munadi"), QLatin1String("_"),
                             QLatin1String(":/qt/qml/Munadi/i18n")))
@@ -372,7 +385,13 @@ void CoreEngine::applyLocale()
     }
     else
     {
-        QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
+        QLocale::setDefault(QLocale{QLocale::English, QLocale::UnitedStates});
+    }
+
+    if (QQmlEngine *engine = qmlEngine(this))
+    {
+        logDebug(munadi) << "Reloading Qml";
+        engine->retranslate();
     }
 }
 

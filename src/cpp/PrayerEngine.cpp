@@ -14,6 +14,8 @@ PrayerEngine::PrayerEngine(QObject *parent) : QObject{parent}
         logFatal(munadi)
             << "A second instance was constructed; only one instance may exist per process";
 
+    logDebug(munadi) << "Booting engine...";
+
     this->defaultCalcParams();
     this->defaultPrayerConfig();
     CoreEngine::onceOnline(this, [this] { this->onCoreOnline(); }, munadi());
@@ -28,8 +30,7 @@ PrayerEngine::PrayerEngine(QObject *parent) : QObject{parent}
     PrayerEngine::s_singletonInstance = this;
     PrayerEngine::s_online            = true;
 
-    logDebug(munadi) << "PrayerEngine online";
-
+    logDebug(munadi) << "Engine online";
     emit this->engineOnline();
 }
 
@@ -124,6 +125,7 @@ void PrayerEngine::modifyPrayerConfig(const QString &key, const QVariantHash &en
         return;
     }
 
+    logDebug(munadi) << "Assigning value " << entry << " to key " << key;
     tempMap.insert(entry);
     this->m_prayerConfig.insert(key, tempMap);
     emit this->prayerConfigChanged(this->m_prayerConfig);
@@ -362,7 +364,10 @@ void PrayerEngine::setPrayerConfig(const QVariantHash &prayerConfig)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void PrayerEngine::onCoreOffline()
-{ this->saveConfigs(); }
+{
+    logDebug(munadi) << "Going offline, executing offline hooks";
+    this->saveConfigs();
+}
 
 void PrayerEngine::onCoreOnline()
 {

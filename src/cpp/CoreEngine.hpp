@@ -38,6 +38,7 @@ class CoreEngine : public QObject
     auto readSettings(QAnyStringView key, const QVariant &defaultValue = {}) -> QVariant;
     auto readSettingsArray(QAnyStringView group) -> QVariantList;
     // auto removeOldSettingsKey(QAnyStringView key) -> bool;
+    auto setLang(const QString &lang) -> void;
     auto writeSettings(QAnyStringView key, const QVariant &value, bool flushOnWrite = true) -> void;
     auto writeSettingsArray(QAnyStringView group, const QVariantList &entryMaps,
                             bool flushOnWrite = true) -> void;
@@ -54,6 +55,15 @@ class CoreEngine : public QObject
 
     inline static QPointer<CoreEngine> s_singletonInstance;
     inline static bool                 s_online{false};
+
+    inline static const QHash<QString, QLocale> s_lang{
+        { QLatin1StringView("System"),                                QLocale::system()},
+        {QLatin1StringView("English"), QLocale{QLocale::English, QLocale::UnitedStates}},
+        { QLatin1StringView("Arabic"),   QLocale{QLocale::Arabic, QLocale::SaudiArabia}},
+        { QLatin1StringView("Bangla"),    QLocale{QLocale::Bangla, QLocale::Bangladesh}},
+    };
+
+    // QString m_langKey;
 
     QLockFile     *configLock{nullptr};
     QSettings     *oldSettings{nullptr};
@@ -72,7 +82,7 @@ class CoreEngine : public QObject
                               bool flushOnWrite = false) -> void;
 
     // auto acquireConfigLock() -> int;
-    auto applyLocale() -> void;
+    auto applyLocale(const QLocale &locale = QLocale::system()) -> void;
     // auto releaseConfigLock() -> void;
 
   signals:

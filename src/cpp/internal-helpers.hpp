@@ -41,6 +41,19 @@ auto preLoadConfigKey(QAnyStringView oldKey, QAnyStringView newKey, const QStrin
                       std::optional<bool> configMigrated) -> QVariant;
 auto textsRefresherReal() -> int;
 
+/**
+ * @brief Set `key` to `var` if it's a valid key from `table`, optionally set the logging category
+ * to `category`
+ *
+ * @tparam Key  : QHash key type
+ * @tparam T    : QHash value type
+ * @param table : Reference QHash<Key, T> table to check against
+ * @param key   : Key to be stored
+ * @param var   : Variable where `key` will be stored to
+ * @param category  : (Optional) QLogging category for logging purposes
+ * @return true : If `var` is set to `key` or `var` and `key` are same
+ * @return false : If `key` is an invalid key in `table`
+ */
 template <typename Key, typename T>
 auto setConfig(const QHash<Key, T> &table, const QString &key, QString &var,
                const QLoggingCategory &category = QLoggingCategory{"Common"}) -> bool

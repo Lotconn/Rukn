@@ -71,6 +71,26 @@ Page {
             RowLayout {
                 Text {
                     color: Material.secondaryTextColor
+                    text: qsTr("Language")
+                }
+
+                ComboBox {
+                    id: langChoice
+
+                    Layout.fillWidth: true
+                    currentIndex: UiEngine.langDisplayIndex
+                    model: UiEngine.langDisplayNames
+                    textRole: "trText"
+
+                    onActivated: {
+                        UiEngine.langDisplayIndex = currentIndex;
+                    }
+                }
+            }
+
+            RowLayout {
+                Text {
+                    color: Material.secondaryTextColor
                     text: qsTr("Theme")
                 }
 

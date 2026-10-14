@@ -18,6 +18,7 @@ MultimediaEngine::MultimediaEngine(QObject *parent)
         logFatal(munadi)
             << "A second instance was constructed; only one instance may exist per process";
 
+    logDebug(munadi) << "Booting engine...";
     logDebug(munadi) << "FileMan::refreshStore() return: " << fileman->refreshStore();
 
     this->athanPlayer->setAudioOutput(this->athanOutput);
@@ -48,7 +49,7 @@ MultimediaEngine::MultimediaEngine(QObject *parent)
 
     MultimediaEngine::s_singletonInstance = this;
 
-    logDebug(munadi) << "MultimediaEngine online";
+    logDebug(munadi) << "Engine online";
 }
 
 MultimediaEngine::~MultimediaEngine() = default;
@@ -495,7 +496,10 @@ void MultimediaEngine::setAthanList(const QVariantList &athanList)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void MultimediaEngine::onCoreOffline()
-{ this->saveConfigs(); }
+{
+    logDebug(munadi) << "Going offline, executing offline hooks";
+    this->saveConfigs();
+}
 
 void MultimediaEngine::onCoreOnline()
 {

@@ -16,22 +16,25 @@ class UiEngine : public QObject
     QML_SINGLETON
 
     Q_PROPERTY(bool bgImage MEMBER m_bgImage NOTIFY bgImageChanged)
-    Q_PROPERTY(double blur MEMBER m_blur NOTIFY blurChanged RESET resetBlur)
+    Q_PROPERTY(double blur MEMBER m_blur NOTIFY blurChanged)
     Q_PROPERTY(int calcMethodDisplayIndex MEMBER m_calcMethodsDisplayIndex WRITE
                    setCalcMethodDisplayIdx NOTIFY configChanged)
     Q_PROPERTY(QVariantList calcMethodsDisplayNames MEMBER m_calcMethodsDisplayNames NOTIFY
                    translationChanged)
+    Q_PROPERTY(
+        int langDisplayIndex MEMBER m_langDisplayIndex WRITE setLangDisplayIdx NOTIFY configChanged)
+    Q_PROPERTY(QVariantList langDisplayNames MEMBER m_langDisplayNames NOTIFY translationChanged)
     Q_PROPERTY(int madhabDisplayIndex MEMBER m_madhabDisplayIndex WRITE setMadhabDisplayIdx NOTIFY
                    configChanged)
     Q_PROPERTY(
         QVariantList madhabDisplayNames MEMBER m_madhabDisplayNames NOTIFY translationChanged)
-    Q_PROPERTY(double opacity MEMBER m_opacity NOTIFY opacityChanged RESET resetOpacity)
+    Q_PROPERTY(double opacity MEMBER m_opacity NOTIFY opacityChanged)
     Q_PROPERTY(
         QVariantList prayerDisplayNames MEMBER m_prayerDisplayNames NOTIFY translationChanged)
     Q_PROPERTY(QStringList themeList MEMBER m_themeList WRITE dummy NOTIFY themeListChanged)
     // Q_PROPERTY(int textsRefresher READ textsRefresher NOTIFY translationChanged)
-    Q_PROPERTY(int themeListIndex READ themeListIndex WRITE setThemeListIdx RESET resetTheme NOTIFY
-                   themeListIdxChanged)
+    Q_PROPERTY(
+        int themeListIndex READ themeListIndex WRITE setThemeListIdx NOTIFY themeListIdxChanged)
 
   public:
     explicit UiEngine(QObject *parent = nullptr);
@@ -73,16 +76,15 @@ class UiEngine : public QObject
         QLatin1StringView{"Hanafi"},
     };
 
-    constexpr static double defaultBlur{0.45};    // NOLINT(*-magic-numbers)
-    constexpr static double defaultOpacity{0.77}; // NOLINT(*-magic-numbers)
-
-    std::atomic<bool>   m_bgImage{true};
-    std::atomic<double> m_blur{defaultBlur};      // NOLINT(*-magic-numbers)
+    std::atomic<bool>   m_bgImage;
+    std::atomic<double> m_blur; // NOLINT(*-magic-numbers)
     QAtomicInt          m_calcMethodsDisplayIndex;
     QVariantList        m_calcMethodsDisplayNames;
+    QAtomicInt          m_langDisplayIndex;
+    QVariantList        m_langDisplayNames;
     QAtomicInt          m_madhabDisplayIndex;
     QVariantList        m_madhabDisplayNames;
-    std::atomic<double> m_opacity{defaultOpacity};
+    std::atomic<double> m_opacity;
     QVariantList        m_prayerDisplayNames;
     QAtomicInt          m_themeListIdx;
     QStringList         m_themeList;
@@ -100,14 +102,14 @@ class UiEngine : public QObject
     auto connectToCoreOffline() const -> void;
     auto connectToInvalidate() const -> void;
     auto connectToLocaleChanged() const -> void;
+    auto defaultConfigs() -> void;
+    auto getLangKey() -> QString;
     auto initConfigs() -> void;
     auto initTexts() -> void;
     auto loadConfigs() -> void;
-    auto resetBlur() -> void;
-    auto resetOpacity() -> void;
-    auto resetTheme() -> void;
     auto saveConfigs() -> void;
     auto setCalcMethodDisplayIdx(const QVariant &index) -> void;
+    auto setLangDisplayIdx(const QVariant &index) -> void;
     auto setMadhabDisplayIdx(const QVariant &index) -> void;
 
   signals:

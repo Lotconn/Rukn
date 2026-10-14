@@ -17,12 +17,19 @@ ColumnLayout {
         Layout.fillWidth: true
         implicitWidth: parent.width
 
-        Component.onCompleted: itemAt(PrayerEngine.Sunrise).width = 0 // Hide sunrise tab
-
-        onCurrentIndexChanged: prayer = UiEngine.prayerDisplayNames[currentIndex].name
+        onCurrentIndexChanged: {
+            const entry = UiEngine.prayerDisplayNames[currentIndex];
+            if (entry)
+                prayer = entry.name;
+        }
 
         Repeater {
             model: UiEngine.prayerDisplayNames
+
+            onItemAdded: (index, item) => {
+                if (index === PrayerEngine.Sunrise)
+                    item.width = 0; // Hide sunrise tab
+            }
 
             TabButton {
                 required property var modelData
@@ -32,9 +39,7 @@ ColumnLayout {
         }
     }
 
-    GridLayout {
-        columns: 3
-
+    RowLayout {
         Text {
             id: volumeLabel
 
@@ -56,13 +61,19 @@ ColumnLayout {
             })
         }
 
-        Text {
+        SpinBoxComp {
             id: volumeValue
 
-            Layout.minimumWidth: volumeLabel.width
-            color: Material.secondaryTextColor
-            text: qsTr("%L1 %").arg(Math.round(volumeSlider.value * 100))
+            storeVar: volumeSlider.value
+
+            onEdited: newValue => MultimediaEngine.modifyAthanConfig(prayerTab.prayer, {
+                    "volume": newValue
+                })
         }
+    }
+
+    GridLayout {
+        columns: 3
 
         Text {
             id: minutesLabel
@@ -77,6 +88,7 @@ ColumnLayout {
             Layout.fillWidth: true
             enabled: prayerTab.currentIndex !== PrayerEngine.Sunrise
             from: -30
+            snapMode: Slider.SnapAlways
             stepSize: 1
             to: 60
             value: PrayerEngine.prayerConfig[prayerTab.prayer].adjustment

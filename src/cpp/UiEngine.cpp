@@ -14,12 +14,15 @@ UiEngine::UiEngine(QObject *parent) : QObject{parent}
         logFatal(munadi)
             << "A second instance was constructed; only one instance may exist per process";
 
+    logDebug(munadi) << "Booting engine...";
+
+    this->defaultConfigs();
     CoreEngine::onceOnline(this, [this] -> void { this->onCoreOnline(); }, munadi());
     PrayerEngine::onceOnline(this, [this] -> void { this->onPrayerEngineOnline(); }, munadi());
 
     UiEngine::s_singletonInstance = this;
 
-    logDebug(munadi) << "UiEngine online";
+    logDebug(munadi) << "Engine online";
 }
 
 UiEngine::~UiEngine() = default;
@@ -68,6 +71,28 @@ void UiEngine::connectToLocaleChanged() const
         logDebug(munadi) << "localeChanged signal connected";
 }
 
+void UiEngine::defaultConfigs()
+{
+    constexpr static double defaultBlur{0.45};    // NOLINT(*-magic-numbers)
+    constexpr static double defaultOpacity{0.77}; // NOLINT(*-magic-numbers)
+    constexpr static quint8 defaultLangIdx{0};
+    constexpr static quint8 defaultThemeIdx{0};
+
+    this->m_bgImage          = true;
+    this->m_blur             = defaultBlur;
+    this->m_opacity          = defaultOpacity;
+    this->m_langDisplayIndex = defaultLangIdx;
+
+    this->setThemeListIdx(defaultThemeIdx);
+}
+
+void UiEngine::dummy(const QStringList & /*unused*/)
+{
+}
+
+QString UiEngine::getLangKey()
+{ return this->m_langDisplayNames[this->m_langDisplayIndex].toMap().value("name"_L1).toString(); }
+
 void UiEngine::initConfigs()
 {
     this->m_calcMethodsDisplayIndex =
@@ -79,10 +104,6 @@ void UiEngine::initConfigs()
                      << pEngine->getCalcMethod() << "]";
     logDebug(munadi) << "madhabIdx inited as: [" << this->m_madhabDisplayIndex << ", "
                      << pEngine->getMadhab() << "]";
-}
-
-void UiEngine::dummy(const QStringList & /*unused*/)
-{
 }
 
 int UiEngine::indexOfValue(const QVariantList &list, const QString &value)
@@ -115,6 +136,13 @@ void UiEngine::initTexts()
         QVariantHash{                {"name"_L1, "Other"_L1},                {"trText"_L1, tr("Other")}}
     };
 
+    this->m_langDisplayNames = {
+        QVariantHash{ {"name"_L1, "System"_L1}, {"trText"_L1, tr("System (default)")}},
+        QVariantHash{{"name"_L1, "English"_L1},           {"trText"_L1, "English"_L1}},
+        QVariantHash{ {"name"_L1, "Arabic"_L1},              {"trText"_L1, "العربية"}},
+        QVariantHash{ {"name"_L1, "Bangla"_L1},                {"trText"_L1, "বাংলা"}}
+    };
+
     this->m_madhabDisplayNames = {
         QVariantHash{ {"name"_L1, "Shafi"_L1}, {"trText"_L1, tr("Majority")}},
         QVariantHash{{"name"_L1, "Hanafi"_L1},   {"trText"_L1, tr("Hanafi")}},
@@ -139,13 +167,8 @@ void UiEngine::loadConfigs()
     bool          configMigrated{true};
     const QString migrateKey{"UiEngineConfigMigrated"_L1};
 
-    loadConfigKey(
-        "App/bgImage"_L1, "App/bgImage"_L1, migrateKey,
-        [this](const QVariant &value) -> void {
-            logDebug(munadi) << "bgImage: " << value.toBool();
-            this->setProperty("bgImage", value.toBool());
-        },
-        configMigrated);
+    loadConfigKey("App/bgImage"_L1, "App/bgImage"_L1, migrateKey, this, "bgImage"_L1,
+                  configMigrated);
 
     loadConfigKey(
         "App/blur"_L1, "App/blur"_L1, migrateKey,
@@ -171,6 +194,13 @@ void UiEngine::loadConfigs()
         },
         configMigrated);
 
+    loadConfigKey({}, "App/Language"_L1, {}, [this](const QVariant &value) -> void {
+        const int index = UiEngine::indexOfValue(this->m_langDisplayNames, value.toString());
+
+        logDebug(munadi) << "Loaded from config: langIdx: " << index;
+        this->setLangDisplayIdx(index);
+    });
+
     loadConfigKey(
         "Adhan/madhab"_L1, {}, migrateKey,
         [](const QVariant &val) -> void {
@@ -181,27 +211,12 @@ void UiEngine::loadConfigs()
         },
         configMigrated);
 
-    loadConfigKey(
-        "App/opacity"_L1, "App/opacity"_L1, migrateKey,
-        [this](const QVariant &value) -> void {
-            // const double maxBlur{64};
-            logDebug(munadi) << "opacity: " << value.toDouble();
-            this->setProperty("opacity", value.toDouble());
-        },
-        configMigrated);
+    loadConfigKey("App/opacity"_L1, "App/opacity"_L1, migrateKey, this, "opacity"_L1,
+                  configMigrated);
 
     if (configMigrated)
         core->writeSettings("UiEngineConfigMigrated"_L1, true, false);
 }
-
-void UiEngine::resetBlur()
-{ this->m_blur.store(UiEngine::defaultBlur); }
-
-void UiEngine::resetOpacity()
-{ this->m_opacity.store(UiEngine::defaultOpacity); }
-
-void UiEngine::resetTheme()
-{ this->setThemeListIdx(0); }
 
 void UiEngine::saveConfigs()
 {
@@ -209,19 +224,28 @@ void UiEngine::saveConfigs()
 
     core->writeSettings("App/bgImage"_L1, this->m_bgImage.load());
     core->writeSettings("App/blur"_L1, this->m_blur.load());
+    core->writeSettings("App/Language"_L1, this->getLangKey());
     core->writeSettings("App/opacity"_L1, this->m_opacity.load());
 }
 
 void UiEngine::setCalcMethodDisplayIdx(const QVariant &index)
 {
-    qDebug() << "Received index: " << index;
+    logDebug(munadi) << "Received index: " << index;
     fetchAndSetListIdx(index.toInt(), this->m_calcMethodsDisplayNames,
                        this->m_calcMethodsDisplayIndex,
                        [](const QString &name) -> void { pEngine->setCalcMethod(name); });
 }
 
+void UiEngine::setLangDisplayIdx(const QVariant &index)
+{
+    logDebug(munadi) << "Received index: " << index;
+    fetchAndSetListIdx(index.toInt(), this->m_langDisplayNames, this->m_langDisplayIndex,
+                       [](const QString &name) -> void { core->setLang(name); });
+}
+
 void UiEngine::setMadhabDisplayIdx(const QVariant &index)
 {
+    logDebug(munadi) << "Received index: " << index;
     fetchAndSetListIdx(index.toInt(), this->m_madhabDisplayNames, this->m_madhabDisplayIndex,
                        [](const QString &name) -> void { pEngine->setMadhab(name); });
 }
@@ -250,7 +274,10 @@ void UiEngine::onInvalidate()
 }
 
 void UiEngine::onCoreOffline()
-{ this->saveConfigs(); }
+{
+    logDebug(munadi) << "Going offline, executing offline hooks";
+    this->saveConfigs();
+}
 
 void UiEngine::onCoreOnline()
 {
@@ -269,8 +296,8 @@ void UiEngine::onPrayerEngineOnline()
 
 void UiEngine::onLocaleChanged()
 {
+    logDebug(munadi) << "Detected language change, refreshing texts...";
     this->initTexts();
-
     emit this->translationChanged();
 }
 } // namespace Munadi
