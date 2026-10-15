@@ -23,6 +23,7 @@ ApplicationWindow {
     Material.primary: theme.materialAccentDark
     color: Material.dialogColor
     height: 768
+    locale: Qt.locale()
     minimumHeight: 350
     minimumWidth: minimumHeight * theme.uiPortraitRatio
     width: 432
@@ -53,6 +54,10 @@ ApplicationWindow {
 
     Component.onCompleted: {
         console.log("App completion started");
+
+        const theme = UiEngine.themeDisplayNames[UiEngine.themeDisplayIndex].name;
+        mm.applyTheme(theme);
+
         settings.category = "App";
         // [BUG]: values are parsed as strings, not booleans
         // handle booleans with helper function
@@ -62,7 +67,6 @@ ApplicationWindow {
         mm.isoClock = settingsBool("isoClock", mm.isoClock);
         mm.showOnAthan = settingsBool("showOnAthan", mm.showOnAthan);
 
-        mm.themeListIndex = settings.value("themeListIndex", mm.themeListIndex);
         newsVersion = settings.value("newsVersion", "");
 
         settings.category = "Adhan";
@@ -102,9 +106,8 @@ ApplicationWindow {
         mm.set_60s_ticker();
         mm.refreshTable();
 
-        if (mm.themeListIndex === 0) {
-            mm.applySystemTheme();
-        }
+        if (theme === "System")
+            Material.theme = Material.System;
 
         if (Qt.application.layoutDirection === Qt.RightToLeft)
             console.debug("Layout is" + qsTr("QT_LAYOUT_DIRECTION", "QGuiApplication"));
@@ -116,7 +119,6 @@ ApplicationWindow {
         settings.setValue("isoClock", mm.isoClock);
         settings.setValue("newsVersion", newsVersion);
         settings.setValue("showOnAthan", mm.showOnAthan);
-        settings.setValue("themeListIndex", mm.themeListIndex);
 
         settings.category = "Adhan";
         settings.setValue("calendarPreferenceIndex", mm.calendarPreferenceIndex);

@@ -98,11 +98,14 @@ Page {
                     id: themeChoice
 
                     Layout.fillWidth: true
-                    currentIndex: mm.themeListIndex
-                    model: UiEngine.themeList
+                    currentIndex: UiEngine.themeDisplayIndex
+                    model: UiEngine.themeDisplayNames
+                    textRole: "trText"
 
                     onActivated: {
-                        mm.themeListIndex = currentIndex;
+                        UiEngine.themeDisplayIndex = currentIndex;
+
+                        mm.applyTheme(currentValue.name);
                     }
                 }
             }
@@ -128,6 +131,7 @@ Page {
                     to: 1.0
                     value: UiEngine.blur
 
+                    onMoved: UiEngine.blur = value
                     onPressedChanged: {
                         if (pressed) {
                             settingsPopup.opacity = 0.1;
@@ -137,17 +141,14 @@ Page {
                             settingsPopup.modal = true;
                         }
                     }
-                    onValueChanged: {
-                        UiEngine.blur = value;
-                    }
                 }
 
                 SpinBoxComp {
                     id: blurValue
 
-                    storeVar: blurSlider.value
+                    storeVar: UiEngine.blur
 
-                    onEdited: newValue => blurSlider.value = newValue
+                    onEdited: newValue => UiEngine.blur = newValue
                 }
 
                 Text {
@@ -167,6 +168,7 @@ Page {
                     to: 1
                     value: UiEngine.opacity
 
+                    onMoved: UiEngine.opacity = value
                     onPressedChanged: {
                         if (pressed) {
                             settingsPopup.opacity = 0.1;
@@ -176,17 +178,14 @@ Page {
                             settingsPopup.modal = true;
                         }
                     }
-                    onValueChanged: {
-                        UiEngine.opacity = value;
-                    }
                 }
 
                 SpinBoxComp {
                     id: opacityValue
 
-                    storeVar: opacitySlider.value
+                    storeVar: UiEngine.opacity
 
-                    onEdited: newValue => opacitySlider.value = newValue
+                    onEdited: newValue => UiEngine.opacity = newValue
                 }
             }
 

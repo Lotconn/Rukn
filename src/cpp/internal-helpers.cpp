@@ -165,7 +165,7 @@ QVariant preLoadConfigKey(QAnyStringView oldKey, QAnyStringView newKey, const QS
     {
         logDebug(common) << "Migrating from old config";
 
-        cfgVal = Munadi::CoreEngine::instance()->readOldSettings(oldKey);
+        cfgVal = core->readOldSettings(oldKey);
     }
 
     if (migrated || cfgVal.isNull())

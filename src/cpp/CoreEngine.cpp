@@ -93,7 +93,7 @@ void CoreEngine::onceOnline(QObject *context, std::function<void()> slot,
             return;
         }
 
-        QTimer::singleShot(0, context, [&context, slot, &category, &retriesLeft]() mutable {
+        QTimer::singleShot(0, context, [context, slot, &category, &retriesLeft]() mutable {
             CoreEngine::onceOnline(context, std::move(slot), category, retriesLeft - 1);
         });
         return;
@@ -256,7 +256,11 @@ void CoreEngine::setLang(const QString &lang)
     logDebug(munadi) << "lang: " << lang;
     logDebug(munadi) << "locale: " << CoreEngine::s_lang.value(lang);
 
-    if (QString dummy; setConfig(CoreEngine::s_lang, lang, dummy))
+    QString currLang{QLocale::languageToString(QLocale{}.language())};
+
+    logDebug(munadi) << "current lang: " << currLang;
+
+    if (setConfig(CoreEngine::s_lang, lang, currLang))
         this->applyLocale(CoreEngine::s_lang.value(lang));
 }
 
@@ -311,6 +315,9 @@ void CoreEngine::writeSettingsArray(QAnyStringView group, const QVariantList &en
 
 bool CoreEngine::eventFilter(QObject *object, QEvent *event)
 {
+    if (object != qApp)
+        return QObject::eventFilter(object, event);
+
     switch (event->type())
     {
     case QEvent::LocaleChange:
@@ -320,8 +327,7 @@ bool CoreEngine::eventFilter(QObject *object, QEvent *event)
         return true;
     case QEvent::LanguageChange:
         // App-level change, e.g. language selected from options
-        logDebug(munadi) << "New translations loaded";
-        emit this->localeChanged();
+        logDebug(munadi) << "Translations changed";
         return true;
     default:
         return QObject::eventFilter(object, event);
@@ -371,20 +377,28 @@ bool CoreEngine::eventFilter(QObject *object, QEvent *event)
 
 void CoreEngine::applyLocale(const QLocale &locale)
 {
-    qApp->removeTranslator(&translator); // no-op if none installed
+    logDebug(munadi) << "Removing current translator: " << this->translator.language();
+    qApp->removeTranslator(&this->translator); // no-op if none installed
 
     QLocale l{locale};
 
-    if (l.language() == QLocale::Arabic || l.language() == QLocale::Bangla)
+    if (l.language() == QLocale::English || l.language() == QLocale::Arabic ||
+        l.language() == QLocale::Bangla)
     {
         l = QLocale{l.language(), l.territory()};
+
         QLocale::setDefault(l);
-        if (translator.load(l, QLatin1String("munadi"), QLatin1String("_"),
-                            QLatin1String(":/qt/qml/Munadi/i18n")))
-            qApp->installTranslator(&translator);
+
+        if (this->translator.load(l, QLatin1String("munadi"), QLatin1String("_"),
+                                  QLatin1String(":/qt/qml/Munadi/i18n")))
+        {
+            logDebug(munadi) << "Installing updated translator: " << this->translator.language();
+            qApp->installTranslator(&this->translator);
+        }
     }
     else
     {
+        logInfo(munadi) << "Language not supported, using en_US as fallback";
         QLocale::setDefault(QLocale{QLocale::English, QLocale::UnitedStates});
     }
 
@@ -393,6 +407,8 @@ void CoreEngine::applyLocale(const QLocale &locale)
         logDebug(munadi) << "Reloading Qml";
         engine->retranslate();
     }
+
+    emit this->localeChanged();
 }
 
 void CoreEngine::onAboutToQuit()

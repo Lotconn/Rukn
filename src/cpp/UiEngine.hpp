@@ -15,36 +15,31 @@ class UiEngine : public QObject
     QML_ELEMENT
     QML_SINGLETON
 
-    Q_PROPERTY(bool bgImage MEMBER m_bgImage NOTIFY bgImageChanged)
-    Q_PROPERTY(double blur MEMBER m_blur NOTIFY blurChanged)
+    Q_PROPERTY(bool bgImage MEMBER m_bgImage NOTIFY uiConfigChanged)
+    Q_PROPERTY(double blur MEMBER m_blur NOTIFY uiConfigChanged)
     Q_PROPERTY(int calcMethodDisplayIndex MEMBER m_calcMethodsDisplayIndex WRITE
                    setCalcMethodDisplayIdx NOTIFY configChanged)
     Q_PROPERTY(QVariantList calcMethodsDisplayNames MEMBER m_calcMethodsDisplayNames NOTIFY
                    translationChanged)
-    Q_PROPERTY(
-        int langDisplayIndex MEMBER m_langDisplayIndex WRITE setLangDisplayIdx NOTIFY configChanged)
+    Q_PROPERTY(int langDisplayIndex MEMBER m_langDisplayIndex WRITE setLangDisplayIdx NOTIFY
+                   uiConfigChanged)
     Q_PROPERTY(QVariantList langDisplayNames MEMBER m_langDisplayNames NOTIFY translationChanged)
     Q_PROPERTY(int madhabDisplayIndex MEMBER m_madhabDisplayIndex WRITE setMadhabDisplayIdx NOTIFY
                    configChanged)
     Q_PROPERTY(
         QVariantList madhabDisplayNames MEMBER m_madhabDisplayNames NOTIFY translationChanged)
-    Q_PROPERTY(double opacity MEMBER m_opacity NOTIFY opacityChanged)
+    Q_PROPERTY(double opacity MEMBER m_opacity NOTIFY uiConfigChanged)
     Q_PROPERTY(
         QVariantList prayerDisplayNames MEMBER m_prayerDisplayNames NOTIFY translationChanged)
-    Q_PROPERTY(QStringList themeList MEMBER m_themeList WRITE dummy NOTIFY themeListChanged)
     // Q_PROPERTY(int textsRefresher READ textsRefresher NOTIFY translationChanged)
-    Q_PROPERTY(
-        int themeListIndex READ themeListIndex WRITE setThemeListIdx NOTIFY themeListIdxChanged)
+    Q_PROPERTY(int themeDisplayIndex MEMBER m_themeDisplayIndex NOTIFY uiConfigChanged)
+    Q_PROPERTY(QVariantList themeDisplayNames MEMBER m_themeDisplayNames NOTIFY translationChanged)
 
   public:
     explicit UiEngine(QObject *parent = nullptr);
     ~UiEngine() override;
 
     static auto instance() noexcept -> UiEngine *;
-
-    auto themeList() -> QStringList;
-    auto themeListIndex() -> int;
-    auto setThemeListIdx(int) -> void;
 
   private:
     Q_DISABLE_COPY_MOVE(UiEngine);
@@ -76,6 +71,12 @@ class UiEngine : public QObject
         QLatin1StringView{"Hanafi"},
     };
 
+    inline static QVariantList oldThemeDisplayNames{
+        QLatin1StringView{"System"},
+        QLatin1StringView{"Light"},
+        QLatin1StringView{"Dark"},
+    };
+
     std::atomic<bool>   m_bgImage;
     std::atomic<double> m_blur; // NOLINT(*-magic-numbers)
     QAtomicInt          m_calcMethodsDisplayIndex;
@@ -86,8 +87,8 @@ class UiEngine : public QObject
     QVariantList        m_madhabDisplayNames;
     std::atomic<double> m_opacity;
     QVariantList        m_prayerDisplayNames;
-    QAtomicInt          m_themeListIdx;
-    QStringList         m_themeList;
+    QAtomicInt          m_themeDisplayIndex;
+    QVariantList        m_themeDisplayNames;
 
     QReadWriteLock varLock;
 
@@ -103,7 +104,8 @@ class UiEngine : public QObject
     auto connectToInvalidate() const -> void;
     auto connectToLocaleChanged() const -> void;
     auto defaultConfigs() -> void;
-    auto getLangKey() -> QString;
+    auto getCurrentLang() -> QString;
+    auto getCurrentTheme() -> QString;
     auto initConfigs() -> void;
     auto initTexts() -> void;
     auto loadConfigs() -> void;
@@ -118,8 +120,7 @@ class UiEngine : public QObject
     auto configChanged() -> void;
     auto opacityChanged() -> void;
     auto translationChanged() -> void;
-    auto themeListChanged() -> void;
-    auto themeListIdxChanged(int) -> void;
+    auto uiConfigChanged() -> void;
 
   private slots: // NOLINT(*-redundant-access-specifiers)
     auto onPrayerEngineOnline() -> void;

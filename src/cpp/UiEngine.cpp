@@ -78,20 +78,32 @@ void UiEngine::defaultConfigs()
     constexpr static quint8 defaultLangIdx{0};
     constexpr static quint8 defaultThemeIdx{0};
 
-    this->m_bgImage          = true;
-    this->m_blur             = defaultBlur;
-    this->m_opacity          = defaultOpacity;
-    this->m_langDisplayIndex = defaultLangIdx;
-
-    this->setThemeListIdx(defaultThemeIdx);
+    this->m_bgImage           = true;
+    this->m_blur              = defaultBlur;
+    this->m_opacity           = defaultOpacity;
+    this->m_langDisplayIndex  = defaultLangIdx;
+    this->m_themeDisplayIndex = defaultThemeIdx;
 }
 
 void UiEngine::dummy(const QStringList & /*unused*/)
 {
 }
 
-QString UiEngine::getLangKey()
-{ return this->m_langDisplayNames[this->m_langDisplayIndex].toMap().value("name"_L1).toString(); }
+QString UiEngine::getCurrentLang()
+{
+    return this->m_langDisplayNames[this->m_langDisplayIndex.loadRelaxed()]
+        .toMap()
+        .value("name"_L1)
+        .toString();
+}
+
+QString UiEngine::getCurrentTheme()
+{
+    return this->m_themeDisplayNames[this->m_themeDisplayIndex.loadRelaxed()]
+        .toMap()
+        .value("name"_L1)
+        .toString();
+}
 
 void UiEngine::initConfigs()
 {
@@ -157,7 +169,11 @@ void UiEngine::initTexts()
         QVariantHash{   {"name"_L1, "Isha"_L1},    {"trText"_L1, tr("Isha")}}
     };
 
-    this->m_themeList = {tr("System"), tr("Light"), tr("Dark")};
+    this->m_themeDisplayNames = {
+        QVariantHash{{"name"_L1, "System"_L1}, {"trText"_L1, tr("System (default)")}},
+        QVariantHash{ {"name"_L1, "Light"_L1},            {"trText"_L1, tr("Light")}},
+        QVariantHash{  {"name"_L1, "Dark"_L1},             {"trText"_L1, tr("Dark")}}
+    };
 }
 
 void UiEngine::loadConfigs()
@@ -167,11 +183,11 @@ void UiEngine::loadConfigs()
     bool          configMigrated{true};
     const QString migrateKey{"UiEngineConfigMigrated"_L1};
 
-    loadConfigKey("App/bgImage"_L1, "App/bgImage"_L1, migrateKey, this, "bgImage"_L1,
+    loadConfigKey("App/bgImage"_L1, "App/BackgroundImage"_L1, migrateKey, this, "bgImage"_L1,
                   configMigrated);
 
     loadConfigKey(
-        "App/blur"_L1, "App/blur"_L1, migrateKey,
+        "App/blur"_L1, "App/Blur"_L1, migrateKey,
         [this, &migrateKey](const QVariant &value) -> void {
             const double maxBlur{64};
             double       realValue{value.toDouble()};
@@ -211,8 +227,25 @@ void UiEngine::loadConfigs()
         },
         configMigrated);
 
-    loadConfigKey("App/opacity"_L1, "App/opacity"_L1, migrateKey, this, "opacity"_L1,
+    loadConfigKey("App/opacity"_L1, "App/Opacity"_L1, migrateKey, this, "opacity"_L1,
                   configMigrated);
+
+    loadConfigKey(
+        "App/themeListIndex"_L1, "App/Theme"_L1, migrateKey,
+        [this](const QVariant &val) -> void {
+            bool      ok{false};
+            const int value{val.toInt(&ok)};
+
+            if (ok)
+                fetchAndSetListIdx(value, UiEngine::oldThemeDisplayNames, this->m_themeDisplayIndex,
+                                   [](const QString & /*unused*/) -> void {});
+            else
+                this->m_themeDisplayIndex =
+                    UiEngine::indexOfValue(this->m_themeDisplayNames, val.toString());
+
+            emit this->uiConfigChanged();
+        },
+        configMigrated);
 
     if (configMigrated)
         core->writeSettings("UiEngineConfigMigrated"_L1, true, false);
@@ -222,10 +255,11 @@ void UiEngine::saveConfigs()
 {
     logDebug(munadi) << "Saving UI configurations";
 
-    core->writeSettings("App/bgImage"_L1, this->m_bgImage.load());
-    core->writeSettings("App/blur"_L1, this->m_blur.load());
-    core->writeSettings("App/Language"_L1, this->getLangKey());
-    core->writeSettings("App/opacity"_L1, this->m_opacity.load());
+    core->writeSettings("App/BackgroundImage"_L1, this->m_bgImage.load());
+    core->writeSettings("App/Blur"_L1, this->m_blur.load());
+    core->writeSettings("App/Language"_L1, this->getCurrentLang());
+    core->writeSettings("App/Opacity"_L1, this->m_opacity.load());
+    core->writeSettings("App/Theme"_L1, this->getCurrentTheme());
 }
 
 void UiEngine::setCalcMethodDisplayIdx(const QVariant &index)
@@ -241,6 +275,7 @@ void UiEngine::setLangDisplayIdx(const QVariant &index)
     logDebug(munadi) << "Received index: " << index;
     fetchAndSetListIdx(index.toInt(), this->m_langDisplayNames, this->m_langDisplayIndex,
                        [](const QString &name) -> void { core->setLang(name); });
+    emit this->uiConfigChanged();
 }
 
 void UiEngine::setMadhabDisplayIdx(const QVariant &index)
@@ -250,14 +285,8 @@ void UiEngine::setMadhabDisplayIdx(const QVariant &index)
                        [](const QString &name) -> void { pEngine->setMadhab(name); });
 }
 
-void UiEngine::setThemeListIdx(int idx)
-{ this->m_themeListIdx = idx; }
-
 // int UiEngine::textsRefresher()
 // { return textsRefresherReal(); }
-
-int UiEngine::themeListIndex()
-{ return this->m_themeListIdx; }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  Private Slots

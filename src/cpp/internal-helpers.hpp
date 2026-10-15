@@ -69,7 +69,7 @@ auto setConfig(const QHash<Key, T> &table, const QString &key, QString &var,
     {
         logInfo(category) << "Skipping setting identical key";
 
-        return true;
+        return false;
     }
 
     logDebug(category) << "Replacing " << var << " with " << key;

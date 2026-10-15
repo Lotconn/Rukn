@@ -57,10 +57,10 @@ class CoreEngine : public QObject
     inline static bool                 s_online{false};
 
     inline static const QHash<QString, QLocale> s_lang{
-        { QLatin1StringView("System"),                                QLocale::system()},
-        {QLatin1StringView("English"), QLocale{QLocale::English, QLocale::UnitedStates}},
-        { QLatin1StringView("Arabic"),   QLocale{QLocale::Arabic, QLocale::SaudiArabia}},
-        { QLatin1StringView("Bangla"),    QLocale{QLocale::Bangla, QLocale::Bangladesh}},
+        { QLatin1StringView("System"),                   QLocale::system()},
+        {QLatin1StringView("English"), QLocale{QLatin1StringView{"en_US"}}},
+        { QLatin1StringView("Arabic"), QLocale{QLatin1StringView{"ar_SA"}}},
+        { QLatin1StringView("Bangla"), QLocale{QLatin1StringView{"bn_BD"}}},
     };
 
     // QString m_langKey;

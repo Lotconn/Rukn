@@ -43,7 +43,10 @@ QtObject {
     property string gregorianDateStr: sysLocale.toString(currentDate, "dd-MMM-yyyy")
     property bool hideOnClose: false
     property int hijriDateOffset: 0
-    property string hijriDateStr: engine.getDate(currentDate, "dd-MMM-yyyy", "IslamicCivil", hijriDateOffset)
+    property string hijriDateStr: {
+        sysLocale;
+        return engine.getDate(currentDate, "dd-MMM-yyyy", "IslamicCivil", hijriDateOffset);
+    }
     property int isToday: dateNavOffset === 0
     property string isha: sysLocale.toString(prayerTimes.isha, isoClock ? "hh:mm" : "hh:mm ap")
     property bool isoClock: false
@@ -63,16 +66,21 @@ QtObject {
     property string srise: sysLocale.toString(prayerTimes.sunrise, isoClock ? "hh:mm" : "hh:mm ap")
     property bool stickerMode: false
     property var sysLocale: Qt.locale()
-    property var themeList: [qsTr("System"), qsTr("Light"), qsTr("Dark")]
-    property int themeListIndex: 0
     property var timeForCurrentPrayer
     property var timeForNextPrayer
     property string timeLeftStr
 
     signal invalidate
 
-    function applySystemTheme() {
-        mainWindow.Material.theme = Material.System;
+    function applyTheme(theme) {
+        if (theme === "System")
+            mainWindow.Material.theme = Material.System;
+        else if (theme === "Light")
+            mainWindow.Material.theme = Material.Light;
+        else if (theme === "Dark")
+            mainWindow.Material.theme = Material.Dark;
+        else
+            console.error("Invalid theme:", theme);
     }
 
     function nextDate() {
@@ -205,17 +213,5 @@ QtObject {
 
         refreshTable();
     }
-    onThemeListIndexChanged: {
-        switch (themeListIndex) {
-        case 0:
-            applySystemTheme();
-            break;
-        case 1:
-            mainWindow.Material.theme = Material.Light;
-            break;
-        case 2:
-            mainWindow.Material.theme = Material.Dark;
-            break;
-        }
-    }
+    onSysLocaleChanged: refreshTimeLeft()
 }

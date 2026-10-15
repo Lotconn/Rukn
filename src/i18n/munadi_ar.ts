@@ -4,32 +4,27 @@
 <context>
     <name>AdjustmentComponent</name>
     <message>
-        <location filename="../qml/AdjustmentComponent.qml" line="41"/>
+        <location filename="../qml/AdjustmentComponent.qml" line="47"/>
         <source>Volume</source>
         <translation>الصوت</translation>
     </message>
     <message>
-        <location filename="../qml/AdjustmentComponent.qml" line="63"/>
-        <source>%L1 %</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../qml/AdjustmentComponent.qml" line="70"/>
+        <location filename="../qml/AdjustmentComponent.qml" line="82"/>
         <source>Minutes</source>
         <translation>الدقائق</translation>
     </message>
     <message>
-        <location filename="../qml/AdjustmentComponent.qml" line="99"/>
+        <location filename="../qml/AdjustmentComponent.qml" line="112"/>
         <source>+%L1</source>
         <translation>%L1+</translation>
     </message>
     <message>
-        <location filename="../qml/AdjustmentComponent.qml" line="99"/>
+        <location filename="../qml/AdjustmentComponent.qml" line="112"/>
         <source>%L1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/AdjustmentComponent.qml" line="107"/>
+        <location filename="../qml/AdjustmentComponent.qml" line="120"/>
         <source>Athan</source>
         <translation>أذان</translation>
     </message>
@@ -108,22 +103,22 @@
         <translation>RTL</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="326"/>
+        <location filename="../qml/Main.qml" line="324"/>
         <source>Munadi</source>
         <translation>منادي</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="376"/>
+        <location filename="../qml/Main.qml" line="374"/>
         <source>Show</source>
         <translation>أظهر</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="376"/>
+        <location filename="../qml/Main.qml" line="374"/>
         <source>Hide</source>
         <translation>أخف</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="382"/>
+        <location filename="../qml/Main.qml" line="380"/>
         <source>Quit</source>
         <translation>أغلق</translation>
     </message>
@@ -131,122 +126,123 @@
 <context>
     <name>Munadi::UiEngine</name>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="102"/>
+        <location filename="../cpp/UiEngine.cpp" line="134"/>
         <source>Muslim World League</source>
         <translation>رابطة العالم الإسلامي</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="105"/>
+        <location filename="../cpp/UiEngine.cpp" line="137"/>
         <source>Umm al-Qura</source>
         <translation>أم القري</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="104"/>
+        <location filename="../cpp/UiEngine.cpp" line="136"/>
         <source>Moonsighting Committee</source>
         <translation>لجنة رؤية الهلال</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="106"/>
+        <location filename="../cpp/UiEngine.cpp" line="138"/>
         <source>Dubai</source>
         <translation>دبي</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="107"/>
+        <location filename="../cpp/UiEngine.cpp" line="139"/>
         <source>Egyptian</source>
         <translation>مصري</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="108"/>
+        <location filename="../cpp/UiEngine.cpp" line="140"/>
         <source>Karachi</source>
         <translation>كراتشي</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="109"/>
+        <location filename="../cpp/UiEngine.cpp" line="141"/>
         <source>Kuwait</source>
         <translation>الكويت</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="111"/>
+        <location filename="../cpp/UiEngine.cpp" line="143"/>
         <source>Islamic Society of North America</source>
         <translation>أمريكا الشمالية</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="112"/>
+        <location filename="../cpp/UiEngine.cpp" line="144"/>
         <source>Qatar</source>
         <translation>قطر</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="113"/>
+        <location filename="../cpp/UiEngine.cpp" line="145"/>
         <source>Singapore</source>
         <translation>سنغافورة</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="114"/>
+        <location filename="../cpp/UiEngine.cpp" line="146"/>
         <source>Diyanet, Turkey</source>
         <translation>تركيا</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="115"/>
+        <location filename="../cpp/UiEngine.cpp" line="147"/>
         <source>University of Tehran</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="116"/>
+        <location filename="../cpp/UiEngine.cpp" line="148"/>
         <source>Other</source>
         <translation>أخري</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="120"/>
+        <location filename="../cpp/UiEngine.cpp" line="152"/>
+        <location filename="../cpp/UiEngine.cpp" line="173"/>
+        <source>System (default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../cpp/UiEngine.cpp" line="159"/>
         <source>Majority</source>
         <translation>الجمهور</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="121"/>
+        <location filename="../cpp/UiEngine.cpp" line="160"/>
         <source>Hanafi</source>
         <translation>حنفي</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="125"/>
+        <location filename="../cpp/UiEngine.cpp" line="164"/>
         <source>Fajr</source>
         <translation>الفجر</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="126"/>
+        <location filename="../cpp/UiEngine.cpp" line="165"/>
         <source>Sunrise</source>
         <translation>الشروق</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="127"/>
+        <location filename="../cpp/UiEngine.cpp" line="166"/>
         <source>Dhuhr</source>
         <translation>الظهر</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="128"/>
+        <location filename="../cpp/UiEngine.cpp" line="167"/>
         <source>Asr</source>
         <translation>العصر</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="129"/>
+        <location filename="../cpp/UiEngine.cpp" line="168"/>
         <source>Maghrib</source>
         <translation>المغرب</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="130"/>
+        <location filename="../cpp/UiEngine.cpp" line="169"/>
         <source>Isha</source>
         <translation>العشاء</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="133"/>
-        <source>System</source>
-        <translation>النظام</translation>
-    </message>
-    <message>
-        <location filename="../cpp/UiEngine.cpp" line="133"/>
+        <location filename="../cpp/UiEngine.cpp" line="174"/>
         <source>Light</source>
         <translation>فاتح</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="133"/>
+        <location filename="../cpp/UiEngine.cpp" line="175"/>
         <source>Dark</source>
         <translation>مظلم</translation>
     </message>
@@ -254,65 +250,50 @@
 <context>
     <name>MunadiModel</name>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="15"/>
+        <location filename="../qml/MunadiModel.qml" line="12"/>
         <source>Both</source>
         <translation>كلاهما</translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="21"/>
+        <location filename="../qml/MunadiModel.qml" line="18"/>
         <source>Hijri</source>
         <translation>هجري</translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="27"/>
+        <location filename="../qml/MunadiModel.qml" line="24"/>
         <source>Gregorian</source>
         <translation>ميلادي</translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="127"/>
+        <location filename="../qml/MunadiModel.qml" line="145"/>
         <source>%1 Athan ...</source>
         <translation>%1 أذان ...</translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="148"/>
-        <location filename="../qml/MunadiModel.qml" line="150"/>
+        <location filename="../qml/MunadiModel.qml" line="166"/>
+        <location filename="../qml/MunadiModel.qml" line="168"/>
         <source>%L1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="148"/>
+        <location filename="../qml/MunadiModel.qml" line="166"/>
         <source>h </source>
         <translation>ساعة </translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="150"/>
+        <location filename="../qml/MunadiModel.qml" line="168"/>
         <source>m </source>
         <translation>دقيقة </translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="153"/>
+        <location filename="../qml/MunadiModel.qml" line="171"/>
         <source>until </source>
         <translation>حتي </translation>
     </message>
     <message>
-        <location filename="../qml/MunadiModel.qml" line="155"/>
+        <location filename="../qml/MunadiModel.qml" line="173"/>
         <source>Seconds until </source>
         <translation>ثواني حتي </translation>
-    </message>
-    <message>
-        <location filename="../qml/MunadiModel.qml" line="71"/>
-        <source>System</source>
-        <translation>النظام</translation>
-    </message>
-    <message>
-        <location filename="../qml/MunadiModel.qml" line="71"/>
-        <source>Light</source>
-        <translation>فاتح</translation>
-    </message>
-    <message>
-        <location filename="../qml/MunadiModel.qml" line="71"/>
-        <source>Dark</source>
-        <translation>مظلم</translation>
     </message>
 </context>
 <context>
@@ -324,141 +305,146 @@
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="74"/>
+        <source>Language</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="94"/>
         <source>Theme</source>
         <translation>المظهر</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="96"/>
+        <location filename="../qml/SettingsPage.qml" line="121"/>
         <source>Blur</source>
         <translation>تمويه</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="124"/>
+        <location filename="../qml/SettingsPage.qml" line="158"/>
         <source>Opacity</source>
         <translation>العتامة</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="157"/>
+        <location filename="../qml/SettingsPage.qml" line="198"/>
         <source>Background Images</source>
         <translation>صور الخلفية</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="161"/>
+        <location filename="../qml/SettingsPage.qml" line="202"/>
         <source>Show time-of-the-day wallpapers.</source>
         <translation>أظهر خلفيات وقت اليوم </translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="178"/>
+        <location filename="../qml/SettingsPage.qml" line="219"/>
         <source>Hide on close</source>
         <translation>أخف عند الإغلاق</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="182"/>
+        <location filename="../qml/SettingsPage.qml" line="223"/>
         <source>When closing Munadi, hide it instead.</source>
         <translation>عند إغلاق منادي أخفه بدلا من ذلك.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="199"/>
+        <location filename="../qml/SettingsPage.qml" line="240"/>
         <source>24-Hour Format</source>
         <translation>صيغة 24 ساعة</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="203"/>
+        <location filename="../qml/SettingsPage.qml" line="244"/>
         <source>Show clock times in 24-hour format.</source>
         <translation>أظهر الساعة في صيغة 24-ساعة.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="220"/>
+        <location filename="../qml/SettingsPage.qml" line="261"/>
         <source>Show on Athan</source>
         <translation>أظهر عند الأذان</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="224"/>
+        <location filename="../qml/SettingsPage.qml" line="265"/>
         <source>Try to show window on Athan.</source>
         <translation>حاول أظهر النافذة عند الأذان.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="241"/>
+        <location filename="../qml/SettingsPage.qml" line="282"/>
         <source>Autostart</source>
         <translation>ابدأ تلقائيا</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="245"/>
+        <location filename="../qml/SettingsPage.qml" line="286"/>
         <source>Try to start minimised after login.</source>
         <translation>حاول البدء مصغراً عند تسجيل الدخول.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="267"/>
+        <location filename="../qml/SettingsPage.qml" line="308"/>
         <source>Check for updates</source>
         <translation>تحقق من التحديثات</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="271"/>
+        <location filename="../qml/SettingsPage.qml" line="312"/>
         <source>Munadi will check for updates when it first starts.</source>
         <translation>سيتحقق منادي من التحديثات عند البدء لأول مرة.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="285"/>
+        <location filename="../qml/SettingsPage.qml" line="326"/>
         <source>Athan</source>
         <translation>أذان</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="297"/>
+        <location filename="../qml/SettingsPage.qml" line="338"/>
         <source>Mute all Athans</source>
         <translation>اكتم كل الأذان</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="318"/>
+        <location filename="../qml/SettingsPage.qml" line="359"/>
         <source>Prayer</source>
         <translation>الصلاة</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="332"/>
+        <location filename="../qml/SettingsPage.qml" line="373"/>
         <source>Other</source>
         <translation>أخري</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="344"/>
+        <location filename="../qml/SettingsPage.qml" line="385"/>
         <source>Mathhab</source>
         <translation>مذهب</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="364"/>
+        <location filename="../qml/SettingsPage.qml" line="405"/>
         <source>Algorithm</source>
         <translation>الخوارزمية</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="384"/>
+        <location filename="../qml/SettingsPage.qml" line="425"/>
         <source>Calendar</source>
         <translation>التقويم</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="415"/>
+        <location filename="../qml/SettingsPage.qml" line="456"/>
         <source>+%L1</source>
         <translation>%L1+</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="415"/>
+        <location filename="../qml/SettingsPage.qml" line="456"/>
         <source>%L1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="426"/>
+        <location filename="../qml/SettingsPage.qml" line="467"/>
         <source>About Munadi</source>
         <translation>عن منادي</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="440"/>
+        <location filename="../qml/SettingsPage.qml" line="481"/>
         <source>Version</source>
         <translation>الإصدار</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="455"/>
+        <location filename="../qml/SettingsPage.qml" line="496"/>
         <source>Website</source>
         <translation>الموقع</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="484"/>
+        <location filename="../qml/SettingsPage.qml" line="525"/>
         <source>Support</source>
         <translation>الدعم</translation>
     </message>
