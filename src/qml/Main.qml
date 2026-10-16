@@ -23,7 +23,7 @@ ApplicationWindow {
     Material.primary: theme.materialAccentDark
     color: Material.dialogColor
     height: 768
-    locale: Qt.locale()
+    locale: CoreEngine.appLocale
     minimumHeight: 350
     minimumWidth: minimumHeight * theme.uiPortraitRatio
     width: 432

@@ -8,17 +8,11 @@ namespace Munadi
 
 using Prayer = PrayerEngine::Prayer;
 
-PrayerEngine::PrayerEngine(QObject *parent) : QObject{parent}
+PrayerEngine::PrayerEngine(QObject *parent) : MunadiEngine<PrayerEngine>{parent}
 {
-    if (PrayerEngine::s_singletonInstance != nullptr)
-        logFatal(munadi)
-            << "A second instance was constructed; only one instance may exist per process";
 
-    logDebug(munadi) << "Booting engine...";
-
-    this->defaultCalcParams();
-    this->defaultPrayerConfig();
-    CoreEngine::onceOnline(this, [this] { this->onCoreOnline(); }, munadi());
+    this->bootEngine();
+    CoreEngine::onceOnline(this, [this] -> void { this->onCoreOnline(); });
 
     if (const auto conn =
             QObject::connect(this, &PrayerEngine::invalidate, this, &PrayerEngine::onInvalidate);
@@ -27,30 +21,8 @@ PrayerEngine::PrayerEngine(QObject *parent) : QObject{parent}
     else
         logDebug(munadi) << "Invalidate signal connected";
 
-    PrayerEngine::s_singletonInstance = this;
-    PrayerEngine::s_online            = true;
-
-    logDebug(munadi) << "Engine online";
-    emit this->engineOnline();
+    this->makeOnline();
 }
-
-PrayerEngine::~PrayerEngine() = default;
-
-bool PrayerEngine::instanceExists() noexcept
-{ return PrayerEngine::s_singletonInstance != nullptr; }
-
-PrayerEngine *PrayerEngine::instance() noexcept
-{
-    if (!PrayerEngine::instanceExists())
-        logFatal(munadi)
-            << "No instance constructed. Explicit instantiation is required before invoking "
-               "the instance";
-
-    return PrayerEngine::s_singletonInstance;
-}
-
-bool PrayerEngine::isOnline() noexcept
-{ return PrayerEngine::s_online; }
 
 Prayer PrayerEngine::currentPrayer()
 { return Prayer::Maghrib; }
@@ -83,6 +55,9 @@ QString PrayerEngine::getCalcMethod()
 
 QString PrayerEngine::getMadhab()
 { return this->m_madhabKey; }
+
+const QLoggingCategory &PrayerEngine::logCategory()
+{ return munadi(); }
 
 const QMetaEnum &PrayerEngine::metaPrayerEnum()
 { return PrayerEngine::s_metaPrayerEnum; }
@@ -159,6 +134,12 @@ void PrayerEngine::defaultCalcParams()
 
     // Adhan::CalculationMethod() defaults to madhab == Shafi and all prayer times adjustments to 0
     // except Dhuhr == 1
+}
+
+void PrayerEngine::defaultConfigs()
+{
+    this->defaultCalcParams();
+    this->defaultPrayerConfig();
 }
 
 void PrayerEngine::defaultPrayerConfig()
@@ -261,36 +242,6 @@ void PrayerEngine::loadPrayerConfig(bool &configMigrated)
         configMigrated = false;
 }
 
-void PrayerEngine::onceOnline(QObject *context, std::function<void()> slot,
-                              const QLoggingCategory &category, int retriesLeft)
-{
-    if (!PrayerEngine::instanceExists())
-    {
-        if (retriesLeft <= 0)
-        {
-            logCritical(category) << "PrayerEngine still not constructed after several retries";
-
-            return;
-        }
-
-        QTimer::singleShot(0, context, [&context, slot, &category, &retriesLeft]() mutable {
-            PrayerEngine::onceOnline(context, std::move(slot), category, retriesLeft - 1);
-        });
-
-        return;
-    }
-
-    if (const auto conn = QObject::connect(PrayerEngine::instance(), &PrayerEngine::engineOnline,
-                                           context, slot, Qt::DirectConnection);
-        conn == nullptr)
-        logWarning(category) << "prayerOnline signal not connected";
-    else
-        logDebug(category) << "prayerOnline signal connected";
-
-    if (PrayerEngine::isOnline())
-        slot();
-}
-
 void PrayerEngine::saveConfigs()
 {
     logDebug(munadi) << "Saving prayer configurations";
@@ -362,18 +313,6 @@ void PrayerEngine::setPrayerConfig(const QVariantHash &prayerConfig)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  Private Slots
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void PrayerEngine::onCoreOffline()
-{
-    logDebug(munadi) << "Going offline, executing offline hooks";
-    this->saveConfigs();
-}
-
-void PrayerEngine::onCoreOnline()
-{
-    this->loadConfigs();
-    connectToCoreOffline(this, [this] -> void { PrayerEngine::onCoreOffline(); }, munadi());
-}
 
 void PrayerEngine::onInvalidate()
 {

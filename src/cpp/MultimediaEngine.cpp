@@ -10,20 +10,16 @@ namespace Munadi
 using Prayer = PrayerEngine::Prayer;
 
 MultimediaEngine::MultimediaEngine(QObject *parent)
-    : QObject{parent}, athanOutput{new QAudioOutput(this)}, athanPlayer{new QMediaPlayer(this)},
-      fileman{new FileMan(this)}, previewOutput{new QAudioOutput(this)},
-      previewPlayer{new QMediaPlayer(this)}
+    : MunadiEngine<MultimediaEngine>{parent}, athanOutput{new QAudioOutput(this)},
+      athanPlayer{new QMediaPlayer(this)}, fileman{new FileMan(this)},
+      previewOutput{new QAudioOutput(this)}, previewPlayer{new QMediaPlayer(this)}
 {
-    if (MultimediaEngine::s_singletonInstance != nullptr)
-        logFatal(munadi)
-            << "A second instance was constructed; only one instance may exist per process";
+    this->bootEngine();
+    CoreEngine::onceOnline(this, [this] -> void { this->onCoreOnline(); });
 
-    logDebug(munadi) << "Booting engine...";
     logDebug(munadi) << "FileMan::refreshStore() return: " << fileman->refreshStore();
 
     this->athanPlayer->setAudioOutput(this->athanOutput);
-    this->defaultAthanConfig();
-    this->defaultAthanList();
 
     if (const QMetaObject::Connection conn = QObject::connect(
             this->athanPlayer, &QMediaPlayer::playbackStateChanged, this,
@@ -45,23 +41,7 @@ MultimediaEngine::MultimediaEngine(QObject *parent)
     else
         logDebug(munadi) << "Preview playback state connection established";
 
-    CoreEngine::onceOnline(this, [this] { this->onCoreOnline(); }, munadi());
-
-    MultimediaEngine::s_singletonInstance = this;
-
-    logDebug(munadi) << "Engine online";
-}
-
-MultimediaEngine::~MultimediaEngine() = default;
-
-MultimediaEngine *MultimediaEngine::instance() noexcept
-{
-    if (MultimediaEngine::s_singletonInstance == nullptr)
-        logFatal(munadi)
-            << "No instance constructed. Explicit instantiation is required before invoking "
-               "the instance";
-
-    return MultimediaEngine::s_singletonInstance;
+    this->makeOnline();
 }
 
 QVariant MultimediaEngine::getAthanConfig(Prayer prayerEnum, QAnyStringView field)
@@ -106,6 +86,9 @@ void MultimediaEngine::athanStop()
     else
         logDebug(munadi) << "Stop ignored; media is not playing";
 }
+
+const QLoggingCategory &MultimediaEngine::logCategory()
+{ return munadi(); }
 
 void MultimediaEngine::modifyAthanConfig(const QString &key, const QVariantHash &entry)
 {
@@ -296,6 +279,12 @@ void MultimediaEngine::defaultAthanList()
 
     for (const auto &[key, value] : maps.asKeyValueRange())
         this->athanListKeys.insert(key, value.typeId());
+}
+
+void MultimediaEngine::defaultConfigs()
+{
+    this->defaultAthanConfig();
+    this->defaultAthanList();
 }
 
 bool MultimediaEngine::isAthanPlaying()
@@ -494,17 +483,5 @@ void MultimediaEngine::setAthanList(const QVariantList &athanList)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  Private Slots
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void MultimediaEngine::onCoreOffline()
-{
-    logDebug(munadi) << "Going offline, executing offline hooks";
-    this->saveConfigs();
-}
-
-void MultimediaEngine::onCoreOnline()
-{
-    this->loadConfigs();
-    connectToCoreOffline(this, [this] -> void { MultimediaEngine::onCoreOffline(); }, munadi());
-}
 
 } // namespace Munadi

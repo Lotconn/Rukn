@@ -164,8 +164,10 @@ set(MUNADI_SOURCES
   src/cpp/alarm.h
   src/cpp/engine.h
   src/cpp/CoreEngine.hpp
+  src/cpp/LocationEngine.hpp
   src/cpp/PrayerEngine.hpp
   src/cpp/MultimediaEngine.hpp
+  src/cpp/MunadiEngine.hpp
   src/cpp/UiEngine.hpp
   src/cpp/internal-helpers.hpp
   src/cpp/macos_window.h
@@ -173,8 +175,10 @@ set(MUNADI_SOURCES
   src/cpp/engine.cpp
   src/cpp/internal-helpers.cpp
   src/cpp/CoreEngine.cpp
+  src/cpp/LocationEngine.cpp
   src/cpp/PrayerEngine.cpp
   src/cpp/MultimediaEngine.cpp
+  src/cpp/MunadiEngine.cpp
   src/cpp/UiEngine.cpp
   src/cpp/updater.cpp
 )

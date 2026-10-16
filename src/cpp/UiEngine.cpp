@@ -8,48 +8,20 @@ namespace Munadi
 
 using Prayer = PrayerEngine::Prayer;
 
-UiEngine::UiEngine(QObject *parent) : QObject{parent}
+UiEngine::UiEngine(QObject *parent) : MunadiEngine<UiEngine>{parent}
 {
-    if (UiEngine::s_singletonInstance != nullptr)
-        logFatal(munadi)
-            << "A second instance was constructed; only one instance may exist per process";
-
-    logDebug(munadi) << "Booting engine...";
-
-    this->defaultConfigs();
-    CoreEngine::onceOnline(this, [this] -> void { this->onCoreOnline(); }, munadi());
-    PrayerEngine::onceOnline(this, [this] -> void { this->onPrayerEngineOnline(); }, munadi());
-
-    UiEngine::s_singletonInstance = this;
-
-    logDebug(munadi) << "Engine online";
+    this->bootEngine();
+    CoreEngine::onceOnline(this, [this] -> void { this->onCoreOnline(); });
+    PrayerEngine::onceOnline(this, [this] -> void { this->onPrayerEngineOnline(); });
+    this->makeOnline();
 }
 
-UiEngine::~UiEngine() = default;
-
-UiEngine *UiEngine::instance() noexcept
-{
-    if (UiEngine::s_singletonInstance == nullptr)
-        logFatal(munadi)
-            << "No instance constructed. Explicit instantiation is required before invoking "
-               "the instance";
-
-    return UiEngine::s_singletonInstance;
-}
+const QLoggingCategory &UiEngine::logCategory()
+{ return munadi(); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  Private Members
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void UiEngine::connectToCoreOffline() const
-{
-    if (const auto conn = QObject::connect(core, &CoreEngine::coreOffline, this,
-                                           &UiEngine::onCoreOffline, Qt::DirectConnection);
-        conn == nullptr)
-        logWarning(munadi) << "coreOffline signal not connected";
-    else
-        logDebug(munadi) << "coreOffline signal connected";
-}
 
 void UiEngine::connectToInvalidate() const
 {
@@ -300,12 +272,6 @@ void UiEngine::onInvalidate()
         UiEngine::indexOfValue(this->m_madhabDisplayNames, pEngine->getMadhab());
 
     emit this->configChanged();
-}
-
-void UiEngine::onCoreOffline()
-{
-    logDebug(munadi) << "Going offline, executing offline hooks";
-    this->saveConfigs();
 }
 
 void UiEngine::onCoreOnline()

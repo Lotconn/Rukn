@@ -27,18 +27,6 @@ bool checkIndex(const QVariant &index, const QVariantList &refList,
     return true;
 }
 
-void connectToCoreOffline(QObject *context, std::function<void()> slot,
-                          const QLoggingCategory &category)
-{
-    if (const auto conn =
-            QObject::connect(Munadi::CoreEngine::instance(), &Munadi::CoreEngine::coreOffline,
-                             context, slot, Qt::DirectConnection);
-        conn == nullptr)
-        logWarning(category) << "coreOffline signal not connected";
-    else
-        logDebug(category) << "coreOffline signal connected";
-}
-
 auto fetchAndSetListIdx(const int &index, const QVariantList &refList, QAtomicInt &idxVar,
                         const std::function<void(const QString &)> &setFunc) -> void
 {

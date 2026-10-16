@@ -12,13 +12,9 @@ Q_STATIC_LOGGING_CATEGORY(munadi, "CoreEngine")
 namespace Munadi
 {
 
-CoreEngine::CoreEngine(QObject *parent) : QObject{parent}
+CoreEngine::CoreEngine(QObject *parent) : MunadiEngine<CoreEngine>{parent}
 {
-    if (CoreEngine::s_singletonInstance != nullptr)
-        logFatal(munadi)
-            << "A second instance was constructed; only one instance may exist per process";
-
-    logDebug(munadi) << "Booting engine...";
+    this->bootEngine();
 
     if (const QString appName = QCoreApplication::applicationName(); appName.isEmpty())
         logCritical(munadi) << "Not setting up persistnent config due to missing application "
@@ -56,59 +52,11 @@ CoreEngine::CoreEngine(QObject *parent) : QObject{parent}
     else
         logDebug(munadi) << "aboutToQuit signal connected";
 
-    CoreEngine::s_singletonInstance = this;
-    CoreEngine::s_online            = true;
-
-    logDebug(munadi) << "Engine online";
-    emit this->coreOnline();
+    this->makeOnline();
 }
 
-CoreEngine::~CoreEngine() = default;
-
-CoreEngine *CoreEngine::instance() noexcept
-{
-    if (CoreEngine::s_singletonInstance == nullptr)
-        logFatal(munadi)
-            << "No instance constructed. Explicit instantiation is required before invoking "
-               "the instance";
-
-    return CoreEngine::s_singletonInstance;
-}
-
-bool CoreEngine::instanceExists() noexcept
-{ return CoreEngine::s_singletonInstance != nullptr; }
-
-bool CoreEngine::isOnline() noexcept
-{ return CoreEngine::s_online; }
-
-void CoreEngine::onceOnline(QObject *context, std::function<void()> slot,
-                            const QLoggingCategory &category, int retriesLeft)
-{
-    if (!CoreEngine::instanceExists())
-    {
-        if (retriesLeft <= 0)
-        {
-            logCritical(category) << "CoreEngine still not constructed after several retries";
-
-            return;
-        }
-
-        QTimer::singleShot(0, context, [context, slot, &category, &retriesLeft]() mutable {
-            CoreEngine::onceOnline(context, std::move(slot), category, retriesLeft - 1);
-        });
-        return;
-    }
-
-    if (const auto conn = QObject::connect(CoreEngine::instance(), &CoreEngine::coreOnline, context,
-                                           slot, Qt::DirectConnection);
-        conn == nullptr)
-        logWarning(category) << "coreOnline signal not connected";
-    else
-        logDebug(category) << "coreOnline signal connected";
-
-    if (CoreEngine::isOnline())
-        slot();
-}
+const QLoggingCategory &CoreEngine::logCategory()
+{ return munadi(); }
 
 QVariant CoreEngine::readOldSettings(QAnyStringView oldKey, const QVariant &defaultValue)
 {
@@ -411,8 +359,11 @@ void CoreEngine::applyLocale(const QLocale &locale)
     emit this->localeChanged();
 }
 
+QLocale CoreEngine::getCurrentLocale()
+{ return QLocale{}; }
+
 void CoreEngine::onAboutToQuit()
-{ emit this->coreOffline(); }
+{ emit this->engineOffline(); }
 
 QVariant CoreEngine::readValueOfKey(QSettings &settings, QAnyStringView key,
                                     const QVariant &defaultValue)

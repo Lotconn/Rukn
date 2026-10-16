@@ -1,14 +1,14 @@
 #pragma once
 
-#include <QObject>
 #include <QQmlEngine>
 
+#include <MunadiEngine.hpp>
 #include <PrayerEngine.hpp>
 
 namespace Munadi
 {
 
-class UiEngine : public QObject
+class UiEngine : public MunadiEngine<UiEngine>
 {
     Q_OBJECT
     Q_CLASSINFO("RegisterEnumClassesUnscoped", "false")
@@ -37,9 +37,8 @@ class UiEngine : public QObject
 
   public:
     explicit UiEngine(QObject *parent = nullptr);
-    ~UiEngine() override;
 
-    static auto instance() noexcept -> UiEngine *;
+    static auto logCategory() -> const QLoggingCategory &;
 
   private:
     Q_DISABLE_COPY_MOVE(UiEngine);
@@ -47,8 +46,6 @@ class UiEngine : public QObject
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //  Variables
     ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    inline static QPointer<UiEngine> s_singletonInstance;
 
     inline static QVariantList oldCalcMethodsDisplayNames{
         QLatin1StringView{"MuslimWorldLeague"},
@@ -90,8 +87,6 @@ class UiEngine : public QObject
     QAtomicInt          m_themeDisplayIndex;
     QVariantList        m_themeDisplayNames;
 
-    QReadWriteLock varLock;
-
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //  Functions
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -100,16 +95,15 @@ class UiEngine : public QObject
     // static auto textsRefresher() -> int;
     static auto dummy(const QStringList &) -> void;
 
-    auto connectToCoreOffline() const -> void;
     auto connectToInvalidate() const -> void;
     auto connectToLocaleChanged() const -> void;
-    auto defaultConfigs() -> void;
+    auto defaultConfigs() -> void override;
     auto getCurrentLang() -> QString;
     auto getCurrentTheme() -> QString;
     auto initConfigs() -> void;
     auto initTexts() -> void;
-    auto loadConfigs() -> void;
-    auto saveConfigs() -> void;
+    auto loadConfigs() -> void override;
+    auto saveConfigs() -> void override;
     auto setCalcMethodDisplayIdx(const QVariant &index) -> void;
     auto setLangDisplayIdx(const QVariant &index) -> void;
     auto setMadhabDisplayIdx(const QVariant &index) -> void;
@@ -123,11 +117,10 @@ class UiEngine : public QObject
     auto uiConfigChanged() -> void;
 
   private slots: // NOLINT(*-redundant-access-specifiers)
-    auto onPrayerEngineOnline() -> void;
-    auto onCoreOffline() -> void;
-    auto onCoreOnline() -> void;
-    auto onInvalidate() -> void;
-    auto onLocaleChanged() -> void;
+    void onPrayerEngineOnline();
+    void onCoreOnline() override;
+    void onInvalidate();
+    void onLocaleChanged();
 };
 
 } // namespace Munadi

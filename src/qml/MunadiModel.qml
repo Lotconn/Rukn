@@ -65,7 +65,7 @@ QtObject {
     property bool showOnAthan: false
     property string srise: sysLocale.toString(prayerTimes.sunrise, isoClock ? "hh:mm" : "hh:mm ap")
     property bool stickerMode: false
-    property var sysLocale: Qt.locale()
+    property var sysLocale: CoreEngine.appLocale
     property var timeForCurrentPrayer
     property var timeForNextPrayer
     property string timeLeftStr

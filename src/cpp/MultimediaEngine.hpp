@@ -8,7 +8,7 @@
 namespace Munadi
 {
 
-class MultimediaEngine : public QObject
+class MultimediaEngine : public MunadiEngine<MultimediaEngine>
 {
     Q_OBJECT
     Q_CLASSINFO("RegisterEnumClassesUnscoped", "false")
@@ -25,9 +25,8 @@ class MultimediaEngine : public QObject
 
   public:
     explicit MultimediaEngine(QObject *parent = nullptr);
-    ~MultimediaEngine() override;
 
-    static auto instance() noexcept -> MultimediaEngine *;
+    static auto logCategory() -> const QLoggingCategory &;
 
     auto getAthanConfig(PrayerEngine::Prayer prayerEnum, QAnyStringView field) -> QVariant;
 
@@ -45,8 +44,6 @@ class MultimediaEngine : public QObject
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //  Variables
     ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    inline static QPointer<MultimediaEngine> s_singletonInstance;
 
     QVariantList      m_athanList;
     QVariantHash      m_athanConfig;
@@ -69,7 +66,6 @@ class MultimediaEngine : public QObject
     FileMan            *fileman{nullptr};
     QAudioOutput       *previewOutput;
     QMediaPlayer       *previewPlayer;
-    QReadWriteLock      varLock;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //  Functions
@@ -77,12 +73,13 @@ class MultimediaEngine : public QObject
 
     auto defaultAthanList() -> void;
     auto defaultAthanConfig() -> void;
+    auto defaultConfigs() -> void override;
     auto isAthanPlaying() -> bool;
     auto isPreviewPlaying() -> bool;
     auto loadAthanConfig(bool &configMigrated) -> void;
     auto loadAthanList(bool &configMigrated) -> void;
-    auto loadConfigs() -> void;
-    auto saveConfigs() -> void;
+    auto loadConfigs() -> void override;
+    auto saveConfigs() -> void override;
     auto setAthanConfig(const QVariantHash &athanConfig) -> void;
     auto setAthanList(const QVariantList &athanList) -> void;
 
@@ -92,10 +89,6 @@ class MultimediaEngine : public QObject
     auto athanMutedChanged(bool athanMuted) -> void;
     auto athanPlayingChanged(bool playing) -> void;
     auto previewPlayingChanged(bool playing) -> void;
-
-  private slots: // NOLINT(*-redundant-access-specifiers)
-    auto onCoreOffline() -> void;
-    auto onCoreOnline() -> void;
 };
 
 } // namespace Munadi

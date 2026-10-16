@@ -4,18 +4,19 @@
 #include <QQmlEngine>
 #include <QReadWriteLock>
 #include <QSet>
-
 #include <adhan/CalculationMethod.hpp>
 // #include <adhan/Coordinates.hpp>
 // #include <adhan/DateUtils.hpp>
 #include <adhan/PrayerTimes.hpp>
+
+#include <MunadiEngine.hpp>
 
 #define pEngine Munadi::PrayerEngine::instance()
 
 namespace Munadi
 {
 
-class PrayerEngine : public QObject
+class PrayerEngine : public MunadiEngine<PrayerEngine>
 {
     Q_OBJECT
     Q_CLASSINFO("RegisterEnumClassesUnscoped", "false")
@@ -28,11 +29,6 @@ class PrayerEngine : public QObject
 
   public:
     explicit PrayerEngine(QObject *parent = nullptr);
-    ~PrayerEngine() override;
-
-    static auto               instanceExists() noexcept -> bool;
-    static auto               instance() noexcept -> PrayerEngine *;
-    [[nodiscard]] static auto isOnline() noexcept -> bool;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //  Types & Enums
@@ -55,10 +51,8 @@ class PrayerEngine : public QObject
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     static auto fromString(QAnyStringView prayerName) -> Prayer;
+    static auto logCategory() -> const QLoggingCategory &;
     static auto metaPrayerEnum() -> const QMetaEnum &;
-    static auto onceOnline(QObject *context, std::function<void()> slot,
-                           const QLoggingCategory &category,
-                           int retriesLeft = 19) -> void; // NOLINT(*-magic-numbers)
 
     auto currentPrayer() -> Prayer;
     auto getCalcMethod() -> QString;
@@ -78,9 +72,6 @@ class PrayerEngine : public QObject
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //  Variables
     ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    inline static QPointer<PrayerEngine> s_singletonInstance;
-    inline static bool                   s_online{false};
 
     inline static const QHash<QString, std::function<Adhan::CalculationParameters()>> s_calcMethods{
         {    QLatin1StringView{"MuslimWorldLeague"},
@@ -152,7 +143,6 @@ class PrayerEngine : public QObject
     QSet<QString>       prayerConfigKeys;
     qsizetype           prayerConfigEntrySize;
     qsizetype           prayerConfigMapSize;
-    QReadWriteLock      varLock{QReadWriteLock::Recursive};
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //  Functions
@@ -160,20 +150,18 @@ class PrayerEngine : public QObject
 
     // auto currentPrayer(Adhan::Instant when = Adhan::now()) -> PrayerEngine::Prayer;
     auto defaultCalcParams() -> void;
+    auto defaultConfigs() -> void override;
     auto defaultPrayerConfig() -> void;
-    auto loadConfigs() -> void;
+    auto loadConfigs() -> void override;
     auto loadPrayerConfig(bool &configMigrated) -> void;
-    auto saveConfigs() -> void;
+    auto saveConfigs() -> void override;
     auto setPrayerConfig(const QVariantHash &prayerConfig) -> void;
 
   signals:
-    auto engineOnline() -> void;
     auto invalidate() -> void;
     auto prayerConfigChanged(QVariantHash prayerConfig) -> void;
 
   private slots: // NOLINT(*-redundant-access-specifiers)
-    auto onCoreOffline() -> void;
-    auto onCoreOnline() -> void;
     auto onInvalidate() -> void;
 };
 
