@@ -1,4 +1,4 @@
-#include <QCoreApplication>
+#include <QApplication>
 #include <QDir>
 #include <QEvent>
 #include <QScopeGuard>
@@ -342,6 +342,9 @@ void CoreEngine::applyLocale(const QLocale &locale)
         {
             logDebug(munadi) << "Installing updated translator: " << this->translator.language();
             qApp->installTranslator(&this->translator);
+
+            (l.language() == QLocale::Arabic) ? QApplication::setLayoutDirection(Qt::RightToLeft)
+                                              : QApplication::setLayoutDirection(Qt::LeftToRight);
         }
     }
     else
