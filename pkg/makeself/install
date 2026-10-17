@@ -15,14 +15,25 @@ declare -i _verbose=0                # bool
 
 _script=install
 _arch=x86_64
-_errout="${TMPROOT:-/tmp}/munadi-stderr.$RANDOM"
-_logfile="${TMPROOT:-/tmp}/munadi-$_script-$RANDOM.log"
+_errout=$(mktemp "${TMPROOT:-/tmp}/munadi-stderr.XXXXXX")
+_logfile="$(mktemp -u ${TMPROOT:-/tmp}/munadi-$_script-XXXXXX).log"
 _v_args=''
 _ver=26.11
 _trapexec=('rm -f "$_errout"')
 
 trap 'for handler in "${_trapexec[@]}"; do eval "$handler"; done' \
 	ERR EXIT ABRT INT QUIT SEGV TERM
+
+# Scratch file for command output (RAM-backed when possible), see run_logged()
+_trapexec+=('rm -f "$_cmdout"')
+
+dir=""
+for dir in "${XDG_RUNTIME_DIR:-}" /dev/shm "${TMPROOT:-/tmp}"; do
+	[[ -d "$dir" && -w "$dir" ]] && break
+done
+
+_cmdout=$(mktemp "$dir/munadi-cmd.XXXXXX")
+unset -v dir
 
 log() {
 	echo -e "$(date --rfc-3339 ns):munadi:$_script:$*" &>>"$_logfile"
@@ -57,9 +68,14 @@ info_print() {
 }
 
 log_cmd() {
-	while read -e line; do
+	local rc
+	"$@" &>"$_cmdout" && rc=0 || rc=$?
+
+	while IFS= read -r line || [[ -n $line ]]; do
 		info_print "$line"
-	done
+	done <"$_cmdout"
+
+	return "$rc"
 }
 
 show_help() {
@@ -245,17 +261,9 @@ if ((!_noscript)); then
 	# We currently check for lib basename, although older lib versions found may
 	# potentially raise unexpected bugs.
 	for lib in \
-		libEGL.so libFLAC.so libGLdispatch.so \
-		libOpenGL.so libX11.so libXau.so \
-		libXext.so libXrandr.so libXrender.so \
-		libasyncns.so libc.so libcap.so \
-		libcrypto.so libdbus-1.so libffi.so \
-		libgcc_s.so libm.so libmp3lame.so \
-		libmpg123.so libogg.so libopus.so \
-		libpulse.so libsndfile.so libssl.so \
-		libstdc++.so libvorbis.so libvorbisenc.so \
-		libwayland-client.so libwayland-cursor.so libwayland-egl.so \
-		libxcb.so libxkbcommon.so libz.so; do
+		libEGL.so.1 libOpenGL.so.0 libc.so.6 libdbus-1.so.3 \
+		libgcc_s.so.1 libm.so.6 libstdc++.so.6 libwayland-client.so.0 \
+		libwayland-cursor.so.0 libwayland-egl.so.1 libxkbcommon.so.0 libz.so.1 libzstd.so.1; do
 		if [[ -z "$_syslibs" ]]; then
 			_out="$(find -O3 -H /lib /lib64 /usr/lib /usr/lib64 \
 				\( -type l -o -type f \) -iname "$lib*" -print -quit 2>/dev/null)" || :
@@ -327,8 +335,8 @@ _trapexec+=('rm -f ./munadi.version')
 info_print "Installing Munadi $_ver under $_prefix ..."
 debug_print 'Install phase in progress...'
 
-debug_print "Changing mode of munadi.desktop to 0755"
-chmod $_v_args 0755 ./org.munadi.Munadi.desktop &> >(log_cmd)
+debug_print "Changing mode of desktop file to 0755"
+log_cmd chmod $_v_args 0755 ./org.munadi.Munadi.desktop
 
 debug_print "Attempting to uninstall previous installation"
 hash -p "$_prefix/libexec/munadi/uninstall" uninstall_old
@@ -343,32 +351,28 @@ info_print "\n$(<"$_errout")"
 debug_print "====== BEGIN from $(hash -t install) ======"
 # (( _debug )) && _v_args+=" --debug "   # Doesn't work on many systems
 _trapexec+=('if (( $? )); then ./uninstall -qs; fi')
-install $_v_args -D --mode 0755 --strip ./munadi \
-	--target "$_prefix/bin" &> >(log_cmd)
-install $_v_args -D --mode 0755 ./{,un}install \
-	--target "$_prefix/libexec/munadi" &> >(log_cmd)
-install $_v_args -D --mode 0444 ./munadi.version \
-	--target "$_prefix/libexec/munadi" &> >(log_cmd)
-install $_v_args -D --mode 0644 ./LICENSE \
-	--target "$_prefix/share/licenses/munadi" &> >(log_cmd)
+log_cmd install $_v_args -D --mode 0755 --strip ./munadi --target "$_prefix/bin"
+log_cmd install $_v_args -D --mode 0755 ./{,un}install --target "$_prefix/libexec/munadi"
+log_cmd install $_v_args -D --mode 0444 ./munadi.version --target "$_prefix/libexec/munadi"
+log_cmd install $_v_args -D --mode 0644 ./LICENSE --target "$_prefix/share/licenses/munadi"
 if ((_priv)); then
-	install $_v_args -D --mode 0644 ./org.munadi.Munadi.metainfo.xml \
-		--target "/usr/share/metainfo" &> >(log_cmd)
-	install $_v_args -D --mode 0644 \
+	log_cmd install $_v_args -D --mode 0644 ./org.munadi.Munadi.metainfo.xml \
+		--target "/usr/share/metainfo"
+	log_cmd install $_v_args -D --mode 0644 \
 		./icons/hicolor/scalable/apps/org.munadi.Munadi-symbolic.svg \
-		--target "/usr/share/icons/hicolor/scalable/apps" &> >(log_cmd)
-	install $_v_args -D --mode 0644 \
+		--target "/usr/share/icons/hicolor/scalable/apps"
+	log_cmd install $_v_args -D --mode 0644 \
 		./icons/hicolor/symbolic/apps/org.munadi.Munadi-symbolic.svg \
-		--target "/usr/share/icons/hicolor/symbolic/apps" &> >(log_cmd)
+		--target "/usr/share/icons/hicolor/symbolic/apps"
 else
-	install $_v_args -D --mode 0644 ./org.munadi.Munadi.metainfo.xml \
-		--target "$_prefix/share/metainfo" &> >(log_cmd)
-	install $_v_args -D --mode 0644 \
+	log_cmd install $_v_args -D --mode 0644 ./org.munadi.Munadi.metainfo.xml \
+		--target "$_prefix/share/metainfo"
+	log_cmd install $_v_args -D --mode 0644 \
 		./icons/hicolor/scalable/apps/org.munadi.Munadi-symbolic.svg \
-		--target "$_prefix/share/icons/hicolor/scalable/apps" &> >(log_cmd)
-	install $_v_args -D --mode 0644 \
+		--target "$_prefix/share/icons/hicolor/scalable/apps"
+	log_cmd install $_v_args -D --mode 0644 \
 		./icons/hicolor/symbolic/apps/org.munadi.Munadi-symbolic.svg \
-		--target "$_prefix/share/icons/hicolor/symbolic/apps" &> >(log_cmd)
+		--target "$_prefix/share/icons/hicolor/symbolic/apps"
 fi
 debug_print "======== END from $(hash -t install) ======"
 
@@ -379,16 +383,17 @@ _trapexec+=('unset -v XDG_UTILS_DEBUG_LEVEL')
 ((XDG_UTILS_DEBUG_LEVEL = _debug ? 3 : (_verbose ? 1 : 0))) || :
 sed -i -r "/^Exec/c\Exec=$_prefix/bin/munadi" ./org.munadi.Munadi.desktop
 echo -e "\n[Desktop Action Remove]\nName=Uninstall Munadi\nExec=$_prefix/libexec/munadi/uninstall" >>./org.munadi.Munadi.desktop
+mv $_v_args ./org.munadi.Munadi{,-sfx}.desktop
 debug_print "====== BEGIN from $(hash -t xdg-desktop-menu) ======"
-xdg-desktop-menu install --novendor ./org.munadi.Munadi.desktop &> >(log_cmd)
+log_cmd xdg-desktop-menu install --novendor ./org.munadi.Munadi-sfx.desktop
 debug_print "======== END from $(hash -t xdg-desktop-menu) ======"
 debug_print "====== BEGIN from $(hash -t xdg-icon-resource) ======"
 for size in 16 22 24 32 36 48 64 72 80 96 128 192 256 480 512; do
-	xdg-icon-resource install --noupdate --novendor --size $size \
+	log_cmd xdg-icon-resource install --noupdate --novendor --size $size \
 		./icons/hicolor/${size}x${size}/apps/org.munadi.Munadi.png \
-		org.munadi.Munadi &> >(log_cmd)
+		org.munadi.Munadi
 done
-xdg-icon-resource forceupdate &> >(log_cmd)
+log_cmd xdg-icon-resource forceupdate
 debug_print "======== END from $(hash -t xdg-icon-resource) ======"
 #---------------------------------------------------
 
@@ -400,7 +405,7 @@ if ((!_noscript)); then
 	# Terminate all instances of the program
 	((_verbose)) && _v_args=' --echo '
 	debug_print "====== BEGIN from $(hash -t pkill) ======"
-	pkill $_v_args --exact --signal SIGTERM munadi &> >(log_cmd) ||
+	log_cmd pkill $_v_args --exact --signal SIGTERM munadi ||
 		debug_print 'No other instances of munadi found.' && :
 	debug_print "======== END from $(hash -t pkill) ======"
 fi

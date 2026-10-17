@@ -198,13 +198,13 @@ set(QT_SRC
     qttools             qtdeclarative   8dab8f3611496486a470ad5f115ceea584f36bc22a2b8b6f6ebdbafbb8160693
     qtwayland           qtdeclarative   ae14d9bcf1bb3c300a3ab2e6a53f50284e5c6c966a4ac4cc5aedcb1bc74e4d02
     qtlocation          qtpositioning   218696d57c9eb95e8756e9fda62a8eabf94badc507db5f6e8ab9a640c4b0f50d
-    # qtvirtualkeyboard qtmultimedia    2aae3628f4648f86959d7853e7e1f50ee96a7f1bb5497afb62b7deff6c350170
 )
 
 # Flags passed to every sub-module cmake invocation, unique or common to each module.
 
 # As cmake args:
 set(QT_CMAKE_ARGS -DQT_BUILD_DOCS=OFF -DQT_GENERATE_SBOM=OFF)
+set(QT_CMAKE_ARGS-qtdeclarative -DFEATURE_qml_debug=OFF)
 set(QT_CMAKE_ARGS-qtmultimedia -DFFMPEG_DIR=/usr -DFEATURE_linux_v4l=OFF -DFEATURE_pipewire=ON)
 
 # As options in `configure` helper script
@@ -217,7 +217,6 @@ set(QT_CONFIG_ARGS-qttools
     -no-feature-pixeltool
     -no-feature-qdoc
 )
-# set(QT_CONFIG_ARGS-qtvirtualkeyboard -no-feature-example-hwr)
 set(QT_CONFIG_ARGS-qtwayland -no-feature-wayland-compositor-quick)
 
 while(QT_SRC)

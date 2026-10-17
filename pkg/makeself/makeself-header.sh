@@ -124,25 +124,33 @@ MS_Version_show()
   cat << EOH >&2
  Munadi - Simple athan app.
  version: \$VER (static; \$ARCH)
- List of linked libraries:
-    libb2.so.1          libblkid.so.1       libbrotlicommon.so.1
-    libbrotlidec.so.1   libbz2.so.1         libcom_err.so.2
-    libcrypt.so.2       libcurl.so.4        libdouble-conversion.so.3
-    libduktape.so.207   libevent-2.1.so.7   libfontconfig.so.1
-    libfreetype.so.6    libgio-2.0.so.0     libglib-2.0.so.0
-    libGLX.so.0         libgmodule-2.0.so.0 libgobject-2.0.so.0
-    libgomp.so.1        libgraphite2.so.3   libgssapi_krb5.so.2
-    libharfbuzz.so.0    libicudata.so.77    libicui18n.so.77
-    libicuuc.so.77      libidn2.so.0        libk5crypto.so.3
-    libkeyutils.so.1    libkrb5.so.3        libkrb5support.so.0
-    liblber.so.2        libldap.so.2        liblzma.so.5
-    libmount.so.1       libnghttp2.so.14    libpcre2-16.so.0
-    libpcre2-8.so.0     libpng16.so.16      libproxy.so.1
-    libpsl.so.5         libpxbackend-1.0.so libQt6Core.so.6
-    libQt6DBus.so.6     libQt6Gui.so.6      libQt6Network.so.6
-    libQt6Qml.so.6      libQt6Widgets.so.6  libresolv.so.2
-    libsasl2.so.3       libselinux.so.1     libssh.so.4
-    libunistring.so.5   libxml2.so.2        libzstd.so.1
+ List of statically linked libraries:
+    libadhan              libadwaita                libavcodec
+    libavutil             libbradient               libivi-shell
+    libswresample         libswscale                libdrm-egl-server
+    libfileman            libfullscreen-shell-v1    libqjpeg
+    libqnetworkmanager    libqopensslbackend        libqt-plugin-wayland-egl
+    libQt6BundledFreetype libQt6BundledHarfbuzz     libQt6BundledLibjpeg
+    libQt6BundledLibpng   libQt6BundledPcre2        libQt6BundledZLIB
+    libQt6Core            libQt6DBus                libQt6FFmpegMediaPluginImpl
+    libQt6Gui             libQt6LabsAnimation       libQt6LabsFolderListModel
+    libQt6LabsPlatform    libQt6Location            libQt6Multimedia
+    libQt6Network         libQt6OpenGL              libQt6PacketProtocol
+    libQt6Positioning     libQt6PositioningQuick    libQt6Qml
+    libQt6QmlCore         libQt6QmlMeta             libQt6QmlModels
+    libQt6QmlPreview      libQt6QmlWorkerScript     libQt6Quick
+    libQt6QuickControls2  libQt6QuickControls2Basic libQt6QuickControls2BasicStyleImpl
+    libQt6QuickControls2FluentWinUI3        libQt6QuickControls2FluentWinUI3StyleImpl
+    libQt6QuickControls2Fusion              libQt6QuickControls2FusionStyleImpl
+    libQt6QuickControls2Imagine             libQt6QuickControls2ImagineStyleImpl
+    libQt6QuickControls2Impl                libQt6QuickControls2Material
+    libQt6QuickControls2MaterialStyleImpl   libQt6QuickControls2Universal
+    libQt6QuickControls2UniversalStyleImpl  libQt6QuickDialogs2     libQt6QuickDialogs2QuickImpl
+    libQt6QuickDialogs2Utils                libQt6QuickEffects      libQt6QuickLayouts
+    libQt6QuickShapes                       libQt6QuickTemplates2   libQt6Svg
+    libQt6WaylandClient                     libQt6Widgets           libQt6WlShellIntegration
+    libqwayland                             libshm-emulation-server libSingleApplication
+    libvulkan-server                        libxdg-shell
 
 EOH
 }
@@ -273,9 +281,11 @@ MS_Check()
 }
 
 MS_Preextract() {
+  set -eo pipefail
+
   _errout="\$(mktemp "\$tmpdir/munadi.makeself.pre-extract.XXXXXX")"
-  _logfile="\$(mktemp munadi.makeself.pre-extract-XXXXXX.log)" # Log to current
-                                                               # dir
+  _logfile="\$(mktemp -u munadi.makeself.pre-extract-XXXXXX).log" # Log to current
+                                                                  # dir
   _sane=1         # psuedo-bool
   _syslibs=''
 
@@ -415,17 +425,9 @@ MS_Preextract() {
   # We currently check for lib basename, although older lib versions found may
   # potentially raise unexpected bugs.
   for lib in \\
-    libEGL.so             libFLAC.so            libGLdispatch.so \\
-    libOpenGL.so          libX11.so             libXau.so \\
-    libXext.so            libXrandr.so          libXrender.so \\
-    libasyncns.so         libc.so               libcap.so \\
-    libcrypto.so          libdbus-1.so          libffi.so \\
-    libgcc_s.so           libm.so               libmp3lame.so \\
-    libmpg123.so          libogg.so             libopus.so \\
-    libpulse.so           libsndfile.so         libssl.so \\
-    libstdc++.so          libvorbis.so          libvorbisenc.so \\
-    libwayland-client.so  libwayland-cursor.so  libwayland-egl.so \\
-    libxcb.so             libxkbcommon.so       libz.so
+    libEGL.so.1             libOpenGL.so.0      libc.so.6         libdbus-1.so.3 \\
+    libgcc_s.so.1           libm.so.6           libstdc++.so.6    libwayland-client.so.0 \\
+    libwayland-cursor.so.0  libwayland-egl.so.1 libxkbcommon.so.0 libz.so.1 libzstd.so.1
   do
     if [ -z "\$_syslibs" ]; then
     _out="\$(find -H /lib /lib64 /usr/lib /usr/lib64 \\
@@ -454,7 +456,9 @@ MS_Preextract() {
 
   rm -f "\$_errout"
   # Exit if one or more sanity checks fail
-  [ "\$_sane" = 0 ] && error_print 'Pre-check failed!' && exit 1
+  [ "\$_sane" == 0 ] && error_print 'Pre-check failed!' && exit 1
+
+  set +eo pipefail
   info_print 'All checks succeeded.'
 }
 

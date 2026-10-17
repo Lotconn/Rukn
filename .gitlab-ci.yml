@@ -43,8 +43,8 @@ build-web-server:
         --tag "$BUILDER_IMAGE" \
         --file pkg/docker/web-server/Dockerfile \
         pkg/docker/web-server
-    - docker push "$BUILDER_IMAGE"
-    - docker push "$BUILDER_IMAGE" "$CI_REGISTRY_IMAGE/web-server:latest"
+    - docker tag "$BUILDER_IMAGE" "$CI_REGISTRY_IMAGE/web-server:latest"
+    - docker push -a "$BUILDER_IMAGE"
 
 build-static:
   stage: build
