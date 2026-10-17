@@ -55,6 +55,7 @@ ColumnLayout {
             snapMode: Slider.SnapAlways
             stepSize: 0.05
             value: MultimediaEngine.athanConfig[prayerTab.prayer].volume
+            wheelEnabled: true
 
             onMoved: MultimediaEngine.modifyAthanConfig(prayerTab.prayer, {
                 "volume": volumeSlider.value
@@ -92,6 +93,7 @@ ColumnLayout {
             stepSize: 1
             to: 60
             value: PrayerEngine.prayerConfig[prayerTab.prayer].adjustment
+            wheelEnabled: true
 
             onMoved: PrayerEngine.modifyPrayerConfig(prayerTab.prayer, {
                 "adjustment": minutesSlider.value

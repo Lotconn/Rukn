@@ -130,6 +130,7 @@ Page {
                     stepSize: 0.01
                     to: 1.0
                     value: UiEngine.blur
+                    wheelEnabled: true
 
                     onMoved: UiEngine.blur = value
                     onPressedChanged: {
@@ -167,6 +168,7 @@ Page {
                     stepSize: 0.01
                     to: 1
                     value: UiEngine.opacity
+                    wheelEnabled: true
 
                     onMoved: UiEngine.opacity = value
                     onPressedChanged: {
@@ -447,6 +449,7 @@ Page {
                         snapMode: Slider.SnapAlways
                         stepSize: 1
                         to: 4
+                        wheelEnabled: true
 
                         onValueChanged: mm.hijriDateOffset = value
                     }

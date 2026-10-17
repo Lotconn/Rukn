@@ -23,6 +23,7 @@ SpinBox {
             return value;   // keep the current value when input is unparsable
         }
     }
+    wheelEnabled: true
 
     onValueModified: {
         edited(value / 100);
