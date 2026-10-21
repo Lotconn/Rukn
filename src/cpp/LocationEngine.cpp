@@ -128,7 +128,7 @@ bool LocationEngine::isLocationSet() noexcept
 {
     const QReadLocker lock{&this->varLock};
 
-    return !this->m_location.isEmpty();
+    return this->m_location.coordinate().isValid();
 }
 
 QVariantHash LocationEngine::getCurrentLocation() noexcept
@@ -200,18 +200,34 @@ void LocationEngine::loadConfigs() noexcept
     loadConfigKey(
         "Adhan/latitude"_L1, "Location/Latitude"_L1, migrateKey,
         [this](const QVariant &latitude) -> void {
+            const double lat{latitude.toDouble()};
+
+            if (lat < -90.0 || lat > 90.0) // NOLINT(*-magic-numbers)
+            {
+                logWarning(munadi) << "Not setting invalid latitude value: " << lat;
+                return;
+            }
+
             const QWriteLocker lock{&this->varLock};
 
-            this->coordinates.setLatitude(latitude.toDouble());
+            this->coordinates.setLatitude(lat);
         },
         configMigrated);
 
     loadConfigKey(
         "Adhan/longitude"_L1, "Location/Longitude"_L1, migrateKey,
         [this](const QVariant &longitude) -> void {
+            const double lng{longitude.toDouble()};
+
+            if (lng < -180.0 || lng > 180.0) // NOLINT(*-magic-numbers)
+            {
+                logWarning(munadi) << "Not setting invalid longitude value: " << lng;
+                return;
+            }
+
             const QWriteLocker lock{&this->varLock};
 
-            this->coordinates.setLongitude(longitude.toDouble());
+            this->coordinates.setLongitude(lng);
         },
         configMigrated);
 
