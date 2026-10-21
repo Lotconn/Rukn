@@ -21,14 +21,14 @@ CoreEngine::CoreEngine(QObject *parent) : MunadiEngine<CoreEngine>{parent}
                                "name. Settings won't be saved.";
     else
     {
-        this->settings = new QSettings(QSettings::IniFormat, QSettings::UserScope,
-                                       QCoreApplication::organizationName(), appName, this);
+        this->settings = new QSettings{QSettings::IniFormat, QSettings::UserScope,
+                                       QCoreApplication::organizationName(), appName, this};
 
         logDebug(munadi) << "Settings file: " << this->settings->fileName();
 
         const QDir &configDir{QFileInfo(settings->fileName()).absolutePath()};
 
-        this->configLock = new QLockFile(configDir.absoluteFilePath(".settings.lock"_L1));
+        this->configLock = new QLockFile{configDir.absoluteFilePath(".settings.lock"_L1)};
     }
 
     if (const QFileInfo oldConfigFile{
@@ -55,11 +55,13 @@ CoreEngine::CoreEngine(QObject *parent) : MunadiEngine<CoreEngine>{parent}
     this->makeOnline();
 }
 
-const QLoggingCategory &CoreEngine::logCategory()
+const QLoggingCategory &CoreEngine::logCategory() noexcept
 { return munadi(); }
 
-QVariant CoreEngine::readOldSettings(QAnyStringView oldKey, const QVariant &defaultValue)
+QVariant CoreEngine::readOldSettings(QAnyStringView oldKey, const QVariant &defaultValue) noexcept
 {
+    const QWriteLocker lock{&this->varLock};
+
     if (this->oldSettings == nullptr)
     {
         logDebug(munadi) << "Old settings doesn't exist, skipping migration";
@@ -73,15 +75,15 @@ QVariant CoreEngine::readOldSettings(QAnyStringView oldKey, const QVariant &defa
 
         return {};
     }
-
-    const QWriteLocker lock{&varLock};
 
     return CoreEngine::readValueOfKey(*this->oldSettings, oldKey, defaultValue);
 }
 
 QVariantList CoreEngine::readOldSettingsJsArray(QAnyStringView    oldKey,
-                                                const QJsonArray &defaultArray)
+                                                const QJsonArray &defaultArray) noexcept
 {
+    const QWriteLocker lock{&this->varLock};
+
     if (this->oldSettings == nullptr)
     {
         logDebug(munadi) << "Old settings doesn't exist, skipping migration";
@@ -96,10 +98,8 @@ QVariantList CoreEngine::readOldSettingsJsArray(QAnyStringView    oldKey,
         return {};
     }
 
-    const QWriteLocker lock{&varLock};
-    const QVariant     oldValue{CoreEngine::readValueOfKey(*this->oldSettings, oldKey)};
-
     QJsonParseError     err;
+    const QVariant      oldValue{CoreEngine::readValueOfKey(*this->oldSettings, oldKey)};
     const QJsonDocument jsonDoc{QJsonDocument::fromJson(oldValue.toByteArray(), &err)};
 
     if (err.error != QJsonParseError::NoError)
@@ -127,7 +127,7 @@ QVariantList CoreEngine::readOldSettingsJsArray(QAnyStringView    oldKey,
     return jsonDoc.array().toVariantList();
 }
 
-QVariant CoreEngine::readSettings(QAnyStringView key, const QVariant &defaultValue)
+QVariant CoreEngine::readSettings(QAnyStringView key, const QVariant &defaultValue) noexcept
 {
     if (key.isEmpty())
     {
@@ -136,12 +136,15 @@ QVariant CoreEngine::readSettings(QAnyStringView key, const QVariant &defaultVal
         return {};
     }
 
-    const QWriteLocker lock{&varLock};
+    const QWriteLocker lock{&this->varLock};
+
+    if (this->settings == nullptr)
+        return defaultValue;
 
     return CoreEngine::readValueOfKey(*this->settings, key, defaultValue);
 }
 
-QVariantList CoreEngine::readSettingsArray(QAnyStringView group)
+QVariantList CoreEngine::readSettingsArray(QAnyStringView group) noexcept
 {
     if (group.isEmpty())
     {
@@ -150,9 +153,12 @@ QVariantList CoreEngine::readSettingsArray(QAnyStringView group)
         return {};
     }
 
-    const QWriteLocker lock{&varLock};
     QVariantList       list;
+    const QWriteLocker lock{&this->varLock};
     const qsizetype    size{this->settings->beginReadArray(group)};
+
+    if (this->settings == nullptr)
+        return {};
 
     logDebug(munadi) << "Array size for \"" << group << "\" is " << size;
 
@@ -190,29 +196,34 @@ QVariantList CoreEngine::readSettingsArray(QAnyStringView group)
 //         return false;
 //     }
 
-//     const QWriteLocker lock{&varLock};
+//     const QWriteLocker lock{&this->varLock};
 
 //     this->oldSettings->remove(key);
 
 //     return true;
 // }
 
-void CoreEngine::setLang(const QString &lang)
+void CoreEngine::setLang(const QString &lang) noexcept
 {
-    // const QWriteLocker lock{&varLock};
 
     logDebug(munadi) << "lang: " << lang;
     logDebug(munadi) << "locale: " << CoreEngine::s_lang.value(lang);
 
-    QString currLang{QLocale::languageToString(QLocale{}.language())};
+    bool configSet{false};
+    {
+        const QWriteLocker lock{&this->varLock};
+        QString            currLang{QLocale::languageToString(QLocale{}.language())};
 
-    logDebug(munadi) << "current lang: " << currLang;
+        logDebug(munadi) << "current lang: " << currLang;
+        configSet = setConfig(CoreEngine::s_lang, lang, currLang);
+    }
 
-    if (setConfig(CoreEngine::s_lang, lang, currLang))
+    if (configSet)
         this->applyLocale(CoreEngine::s_lang.value(lang));
 }
 
-void CoreEngine::writeSettings(QAnyStringView key, const QVariant &value, bool flushOnWrite)
+void CoreEngine::writeSettings(QAnyStringView key, const QVariant &value,
+                               bool flushOnWrite) noexcept
 {
     if (key.isEmpty())
     {
@@ -221,13 +232,16 @@ void CoreEngine::writeSettings(QAnyStringView key, const QVariant &value, bool f
         return;
     }
 
-    const QWriteLocker lock{&varLock};
+    const QWriteLocker lock{&this->varLock};
+
+    if (this->settings == nullptr)
+        return;
 
     CoreEngine::setValueOfKey(*this->settings, key, value, flushOnWrite);
 }
 
 void CoreEngine::writeSettingsArray(QAnyStringView group, const QVariantList &entryMaps,
-                                    bool flushOnWrite)
+                                    bool flushOnWrite) noexcept
 {
     if (group.isEmpty())
     {
@@ -236,7 +250,10 @@ void CoreEngine::writeSettingsArray(QAnyStringView group, const QVariantList &en
         return;
     }
 
-    const QWriteLocker lock{&varLock};
+    const QWriteLocker lock{&this->varLock};
+
+    if (this->settings == nullptr)
+        return;
 
     this->settings->remove(group);
     this->settings->beginWriteArray(group);
@@ -261,7 +278,7 @@ void CoreEngine::writeSettingsArray(QAnyStringView group, const QVariantList &en
 //  Protected Members
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool CoreEngine::eventFilter(QObject *object, QEvent *event)
+bool CoreEngine::eventFilter(QObject *object, QEvent *event) noexcept
 {
     if (object != qApp)
         return QObject::eventFilter(object, event);
@@ -276,6 +293,7 @@ bool CoreEngine::eventFilter(QObject *object, QEvent *event)
     case QEvent::LanguageChange:
         // App-level change, e.g. language selected from options
         logDebug(munadi) << "Translations changed";
+
         return true;
     default:
         return QObject::eventFilter(object, event);
@@ -323,7 +341,7 @@ bool CoreEngine::eventFilter(QObject *object, QEvent *event)
 //     return 0;
 // }
 
-void CoreEngine::applyLocale(const QLocale &locale)
+void CoreEngine::applyLocale(const QLocale &locale) noexcept
 {
     logDebug(munadi) << "Removing current translator: " << this->translator.language();
     qApp->removeTranslator(&this->translator); // no-op if none installed
@@ -342,9 +360,6 @@ void CoreEngine::applyLocale(const QLocale &locale)
         {
             logDebug(munadi) << "Installing updated translator: " << this->translator.language();
             qApp->installTranslator(&this->translator);
-
-            (l.language() == QLocale::Arabic) ? QApplication::setLayoutDirection(Qt::RightToLeft)
-                                              : QApplication::setLayoutDirection(Qt::LeftToRight);
         }
     }
     else
@@ -352,6 +367,9 @@ void CoreEngine::applyLocale(const QLocale &locale)
         logInfo(munadi) << "Language not supported, using en_US as fallback";
         QLocale::setDefault(QLocale{QLocale::English, QLocale::UnitedStates});
     }
+
+    QApplication::setLayoutDirection(QLocale{}.language() == QLocale::Arabic ? Qt::RightToLeft
+                                                                             : Qt::LeftToRight);
 
     if (QQmlEngine *engine = qmlEngine(this))
     {
@@ -362,15 +380,14 @@ void CoreEngine::applyLocale(const QLocale &locale)
     emit this->localeChanged();
 }
 
-QLocale CoreEngine::getCurrentLocale()
+QLocale CoreEngine::getCurrentLocale() noexcept
 { return QLocale{}; }
 
-void CoreEngine::onAboutToQuit()
-{ emit this->engineOffline(); }
-
 QVariant CoreEngine::readValueOfKey(QSettings &settings, QAnyStringView key,
-                                    const QVariant &defaultValue)
+                                    const QVariant &defaultValue) noexcept
 {
+    logDebug(munadi) << "Fetching value of key \"" << key << "\"";
+
     QVariant value{settings.value(key)};
 
     switch (settings.status())
@@ -394,6 +411,8 @@ QVariant CoreEngine::readValueOfKey(QSettings &settings, QAnyStringView key,
         return defaultValue;
     }
 
+    logDebug(munadi) << "Key: \"" << key << "\"; Value: \"" << value << "\"";
+
     return value;
 }
 
@@ -403,7 +422,7 @@ QVariant CoreEngine::readValueOfKey(QSettings &settings, QAnyStringView key,
 // }
 
 void CoreEngine::setValueOfKey(QSettings &settings, QAnyStringView key, const QVariant &value,
-                               bool flushOnWrite)
+                               bool flushOnWrite) noexcept
 {
     if (value.isNull())
         logWarning(munadi) << "Value is empty. Make sure this is intended.";
@@ -426,4 +445,12 @@ void CoreEngine::setValueOfKey(QSettings &settings, QAnyStringView key, const QV
         break;
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//  Private Slots
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void CoreEngine::onAboutToQuit() noexcept
+{ emit this->engineOffline(); }
+
 } // namespace Munadi

@@ -15,10 +15,9 @@ class MultimediaEngine : public MunadiEngine<MultimediaEngine>
     QML_ELEMENT
     QML_SINGLETON
 
-    Q_PROPERTY(QVariantList athanList MEMBER m_athanList WRITE setAthanList RESET defaultAthanList
-                   NOTIFY athanListChanged)
-    Q_PROPERTY(QVariantHash athanConfig MEMBER m_athanConfig WRITE setAthanConfig RESET
-                   defaultAthanConfig NOTIFY athanConfigChanged)
+    Q_PROPERTY(QVariantList athanList READ getAthanList NOTIFY athanListChanged)
+    Q_PROPERTY(QVariantHash athanConfig MEMBER m_athanConfig WRITE setAthanConfig NOTIFY
+                   athanConfigChanged)
     Q_PROPERTY(bool athanPlaying READ isAthanPlaying NOTIFY athanPlayingChanged)
     Q_PROPERTY(bool athanMuted MEMBER m_athanMuted NOTIFY athanMutedChanged)
     Q_PROPERTY(bool previewPlaying READ isPreviewPlaying NOTIFY previewPlayingChanged)
@@ -26,17 +25,17 @@ class MultimediaEngine : public MunadiEngine<MultimediaEngine>
   public:
     explicit MultimediaEngine(QObject *parent = nullptr);
 
-    static auto logCategory() -> const QLoggingCategory &;
+    static auto logCategory() noexcept -> const QLoggingCategory &;
 
-    auto getAthanConfig(PrayerEngine::Prayer prayerEnum, QAnyStringView field) -> QVariant;
+    auto getAthanConfig(PrayerEngine::Prayer prayerEnum, QAnyStringView field) noexcept -> QVariant;
 
-    Q_INVOKABLE void addAthan(const QUrl &fileUrl);
-    Q_INVOKABLE void athanPlay();
-    Q_INVOKABLE void athanStop();
-    Q_INVOKABLE void modifyAthanConfig(const QString &key, const QVariantHash &entry);
-    Q_INVOKABLE void previewPlay(int athanListIdx);
-    Q_INVOKABLE void previewStop();
-    Q_INVOKABLE void removeAthan(const qsizetype &rmIdx);
+    Q_INVOKABLE void addAthan(const QUrl &fileUrl) noexcept;
+    Q_INVOKABLE void athanPlay() noexcept;
+    Q_INVOKABLE void athanStop() noexcept;
+    Q_INVOKABLE void modifyAthanConfig(const QString &key, const QVariantHash &entry) noexcept;
+    Q_INVOKABLE void previewPlay(int athanListIdx) noexcept;
+    Q_INVOKABLE void previewStop() noexcept;
+    Q_INVOKABLE void removeAthan(const qsizetype &rmIdx) noexcept;
 
   private:
     Q_DISABLE_COPY_MOVE(MultimediaEngine);
@@ -47,7 +46,7 @@ class MultimediaEngine : public MunadiEngine<MultimediaEngine>
 
     QVariantList      m_athanList;
     QVariantHash      m_athanConfig;
-    std::atomic<bool> m_athanMuted{false};
+    std::atomic<bool> m_athanMuted;
 
     static constexpr int defaultAthan{0};
     static constexpr int defaultFajrAthan{2};
@@ -55,14 +54,14 @@ class MultimediaEngine : public MunadiEngine<MultimediaEngine>
 
     QHash<QString, int> athanConfigFields;
     QSet<QString>       athanConfigKeys;
-    qsizetype           athanConfigEntrySize;
-    qsizetype           athanConfigMapSize;
+    qsizetype           athanConfigEntrySize{};
+    qsizetype           athanConfigMapSize{};
     QHash<QString, int> athanListKeys;
-    qsizetype           athanListMapSize;
+    qsizetype           athanListMapSize{};
     QAudioOutput       *athanOutput;
     QMediaPlayer       *athanPlayer{nullptr};
     QHash<QString, int> configFields;
-    qsizetype           defaultAthans;
+    qsizetype           defaultAthans{};
     FileMan            *fileman{nullptr};
     QAudioOutput       *previewOutput;
     QMediaPlayer       *previewPlayer;
@@ -71,22 +70,23 @@ class MultimediaEngine : public MunadiEngine<MultimediaEngine>
     //  Functions
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    auto defaultAthanList() -> void;
-    auto defaultAthanConfig() -> void;
-    auto defaultConfigs() -> void override;
-    auto isAthanPlaying() -> bool;
-    auto isPreviewPlaying() -> bool;
-    auto loadAthanConfig(bool &configMigrated) -> void;
-    auto loadAthanList(bool &configMigrated) -> void;
-    auto loadConfigs() -> void override;
-    auto saveConfigs() -> void override;
-    auto setAthanConfig(const QVariantHash &athanConfig) -> void;
-    auto setAthanList(const QVariantList &athanList) -> void;
+    auto defaultAthanList() noexcept -> void;
+    auto defaultAthanConfig() noexcept -> void;
+    auto defaultConfigs() noexcept -> void override;
+    auto getAthanList() noexcept -> QVariantList &;
+    auto isAthanPlaying() noexcept -> bool;
+    auto isPreviewPlaying() noexcept -> bool;
+    auto loadAthanConfig(bool &configMigrated) noexcept -> void;
+    auto loadAthanList(bool &configMigrated) noexcept -> void;
+    auto loadConfigs() noexcept -> void override;
+    auto saveConfigs() noexcept -> void override;
+    auto setAthanConfig(const QVariantHash &athanConfig) noexcept -> void;
+    auto setAthanList(const QVariantList &athanList) noexcept -> void;
 
   signals:
-    auto athanConfigChanged(QVariantHash athanConfig) -> void;
-    auto athanListChanged(QVariantList athanList) -> void;
-    auto athanMutedChanged(bool athanMuted) -> void;
+    auto athanConfigChanged() -> void;
+    auto athanListChanged() -> void;
+    auto athanMutedChanged() -> void;
     auto athanPlayingChanged(bool playing) -> void;
     auto previewPlayingChanged(bool playing) -> void;
 };

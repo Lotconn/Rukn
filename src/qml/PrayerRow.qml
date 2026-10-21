@@ -38,7 +38,7 @@ Item {
                 font.pixelSize: Math.min(parent.height, parent.width) / prayerRow.pixelDiv
                 font.weight: Font.Thin
                 text: UiEngine.prayerDisplayNames[prayerRow.prayerId].trText
-                visible: !mm.locationNotSet
+                visible: LocationEngine.isLocationSet
                 width: parent.width
             }
         }
@@ -51,7 +51,7 @@ Item {
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 1
-                visible: !mm.locationNotSet
+                visible: LocationEngine.isLocationSet
 
                 Text {
                     id: athanLabel

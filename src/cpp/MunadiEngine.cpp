@@ -26,8 +26,10 @@ template <typename Engine_t> bool MunadiEngine<Engine_t>::isOnline() noexcept
 
 template <typename Engine_t>
 void MunadiEngine<Engine_t>::onceOnline(QObject *context, std::function<void()> slot,
-                                        int retriesLeft)
+                                        int retriesLeft) noexcept
 {
+    const static int retryStart{retriesLeft};
+
     if (!MunadiEngine::instanceExists())
     {
         if (retriesLeft <= 0)
@@ -50,7 +52,8 @@ void MunadiEngine<Engine_t>::onceOnline(QObject *context, std::function<void()> 
         conn == nullptr)
         logWarning(Engine_t::logCategory()) << "engineOnline signal not connected";
     else
-        logDebug(Engine_t::logCategory()) << "engineOnline signal connected";
+        logDebug(Engine_t::logCategory())
+            << "engineOnline signal connected after " << retryStart - retriesLeft << " attempts";
 
     if (MunadiEngine::isOnline())
         slot();
@@ -60,18 +63,7 @@ void MunadiEngine<Engine_t>::onceOnline(QObject *context, std::function<void()> 
 //  Protected Members
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename Engine_t> void MunadiEngine<Engine_t>::bootEngine()
-{
-    if (MunadiEngine::instanceExists())
-        logFatal(Engine_t::logCategory())
-            << "A second instance was constructed; only one instance may exist per process";
-
-    logDebug(Engine_t::logCategory()) << "Booting engine...";
-
-    this->defaultConfigs();
-}
-
-void MunadiBase::connectToCoreOffline()
+void MunadiBase::connectToCoreOffline() const noexcept
 {
     if (const auto conn = QObject::connect(core, &CoreEngine::engineOffline, this,
                                            &MunadiBase::onCoreOffline, Qt::DirectConnection);
@@ -79,15 +71,6 @@ void MunadiBase::connectToCoreOffline()
         logWarning(this->logCategory_p()) << "coreOffline signal not connected";
     else
         logDebug(this->logCategory_p()) << "coreOffline signal connected";
-}
-
-template <typename Engine_t> void MunadiEngine<Engine_t>::makeOnline()
-{
-    MunadiEngine::s_singletonInstance = static_cast<Engine_t *>(this);
-    MunadiEngine::s_online.store(true);
-
-    logDebug(Engine_t::logCategory()) << "Engine online";
-    emit this->engineOnline();
 }
 
 void MunadiBase::onCoreOffline()
@@ -100,6 +83,26 @@ void MunadiBase::onCoreOnline()
 {
     this->loadConfigs();
     this->connectToCoreOffline();
+}
+
+template <typename Engine_t> void MunadiEngine<Engine_t>::bootEngine()
+{
+    if (MunadiEngine::instanceExists())
+        logFatal(Engine_t::logCategory())
+            << "A second instance was constructed; only one instance may exist per process";
+
+    logDebug(Engine_t::logCategory()) << "Booting engine...";
+
+    this->defaultConfigs();
+}
+
+template <typename Engine_t> void MunadiEngine<Engine_t>::makeOnline()
+{
+    MunadiEngine::s_singletonInstance = static_cast<Engine_t *>(this);
+    MunadiEngine::s_online.store(true);
+
+    logDebug(Engine_t::logCategory()) << "Engine online";
+    emit this->engineOnline();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

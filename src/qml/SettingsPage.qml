@@ -40,19 +40,25 @@ Page {
 
 
             ColumnLayout {
-                width: parent.width
+                SettingTitle {
+                    font.italic: true
+                    horizontalAlignment: Text.AlignHCenter
+                    text: qsTr("Location")
+                }
 
                 Line {
                     Layout.fillWidth: true
                 }
+            }
+
+            ColumnLayout {
+                implicitWidth: parent.width
 
                 LocationInfoRow {
                     id: locationInfoRow
 
-                    Layout.preferredHeight: 30
                     Layout.preferredWidth: parent.width
-                    cityName: mm.cityName
-                    countryName: mm.countryName
+                    address: LocationEngine.location.address
                 }
             }
 

@@ -16,14 +16,21 @@ UiEngine::UiEngine(QObject *parent) : MunadiEngine<UiEngine>{parent}
     this->makeOnline();
 }
 
-const QLoggingCategory &UiEngine::logCategory()
+const QLoggingCategory &UiEngine::logCategory() noexcept
 { return munadi(); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  Private Members
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void UiEngine::connectToInvalidate() const
+QVariantList &UiEngine::calcMethodsDisplayNames() noexcept
+{
+    const QReadLocker lock{&this->varLock};
+
+    return this->m_calcMethodsDisplayNames;
+}
+
+void UiEngine::connectToInvalidate() const noexcept
 {
     if (const auto conn = QObject::connect(pEngine, &PrayerEngine::invalidate, this,
                                            &UiEngine::onInvalidate, Qt::DirectConnection);
@@ -33,7 +40,7 @@ void UiEngine::connectToInvalidate() const
         logDebug(munadi) << "Invalidate signal connected";
 }
 
-void UiEngine::connectToLocaleChanged() const
+void UiEngine::connectToLocaleChanged() const noexcept
 {
     if (const auto conn =
             QObject::connect(core, &CoreEngine::localeChanged, this, &UiEngine::onLocaleChanged);
@@ -43,54 +50,54 @@ void UiEngine::connectToLocaleChanged() const
         logDebug(munadi) << "localeChanged signal connected";
 }
 
-void UiEngine::defaultConfigs()
+void UiEngine::defaultConfigs() noexcept
 {
     constexpr static double defaultBlur{0.45};    // NOLINT(*-magic-numbers)
     constexpr static double defaultOpacity{0.77}; // NOLINT(*-magic-numbers)
     constexpr static quint8 defaultLangIdx{0};
     constexpr static quint8 defaultThemeIdx{0};
+    const QWriteLocker      lock{&this->varLock};
 
-    this->m_bgImage           = true;
-    this->m_blur              = defaultBlur;
-    this->m_opacity           = defaultOpacity;
-    this->m_langDisplayIndex  = defaultLangIdx;
-    this->m_themeDisplayIndex = defaultThemeIdx;
+    this->m_bgImage.store(true);
+    this->m_blur.store(defaultBlur);
+    this->m_opacity.store(defaultOpacity);
+    this->m_langDisplayIndex.storeRelaxed(defaultLangIdx);
+    this->m_themeDisplayIndex.storeRelaxed(defaultThemeIdx);
 }
 
-void UiEngine::dummy(const QStringList & /*unused*/)
+QString UiEngine::getCurrentLang() const noexcept
 {
-}
-
-QString UiEngine::getCurrentLang()
-{
-    return this->m_langDisplayNames[this->m_langDisplayIndex.loadRelaxed()]
+    return this->m_langDisplayNames.at(this->m_langDisplayIndex.loadRelaxed())
         .toMap()
         .value("name"_L1)
         .toString();
 }
 
-QString UiEngine::getCurrentTheme()
+QString UiEngine::getCurrentTheme() const noexcept
 {
-    return this->m_themeDisplayNames[this->m_themeDisplayIndex.loadRelaxed()]
+    return this->m_themeDisplayNames.at(this->m_themeDisplayIndex.loadRelaxed())
         .toMap()
         .value("name"_L1)
         .toString();
 }
 
-void UiEngine::initConfigs()
+void UiEngine::initConfigs() noexcept
 {
-    this->m_calcMethodsDisplayIndex =
-        UiEngine::indexOfValue(this->m_calcMethodsDisplayNames, pEngine->getCalcMethod());
-    this->m_madhabDisplayIndex =
-        UiEngine::indexOfValue(this->m_madhabDisplayNames, pEngine->getMadhab());
+    const QWriteLocker lock{&this->varLock};
 
-    logDebug(munadi) << "calcMethodsIdx inited as: [" << this->m_calcMethodsDisplayIndex << ", "
+    this->m_calcMethodsDisplayIndex.storeRelaxed(
+        UiEngine::indexOfValue(this->m_calcMethodsDisplayNames, pEngine->getCalcMethod()));
+    this->m_madhabDisplayIndex.storeRelaxed(
+        UiEngine::indexOfValue(this->m_madhabDisplayNames, pEngine->getMadhab()));
+
+    logDebug(munadi) << "calcMethodsIdx inited as: ["
+                     << this->m_calcMethodsDisplayIndex.loadRelaxed() << ", "
                      << pEngine->getCalcMethod() << "]";
-    logDebug(munadi) << "madhabIdx inited as: [" << this->m_madhabDisplayIndex << ", "
+    logDebug(munadi) << "madhabIdx inited as: [" << this->m_madhabDisplayIndex.loadRelaxed() << ", "
                      << pEngine->getMadhab() << "]";
 }
 
-int UiEngine::indexOfValue(const QVariantList &list, const QString &value)
+int UiEngine::indexOfValue(const QVariantList &list, const QString &value) noexcept
 {
     logDebug(munadi) << "Value: " << value;
     const auto it{std::ranges::find_if(list, [&value](const QVariant &item) -> bool {
@@ -100,8 +107,10 @@ int UiEngine::indexOfValue(const QVariantList &list, const QString &value)
     return (it == list.end()) ? -1 : static_cast<int>(std::distance(list.begin(), it));
 }
 
-void UiEngine::initTexts()
+void UiEngine::initTexts() noexcept
 {
+    const QWriteLocker lock{&this->varLock};
+
     this->m_calcMethodsDisplayNames = {
         QVariantHash{    {"name"_L1, "MuslimWorldLeague"_L1},{"trText"_L1, tr("Muslim World League")}                                                             },
         QVariantHash{{"name"_L1, "MoonsightingCommittee"_L1},
@@ -148,7 +157,14 @@ void UiEngine::initTexts()
     };
 }
 
-void UiEngine::loadConfigs()
+QVariantList &UiEngine::langDisplayNames() noexcept
+{
+    const QReadLocker lock{&this->varLock};
+
+    return this->m_langDisplayNames;
+}
+
+void UiEngine::loadConfigs() noexcept
 {
     logDebug(munadi) << "Loading configs from persistent config file";
 
@@ -208,23 +224,41 @@ void UiEngine::loadConfigs()
             bool      ok{false};
             const int value{val.toInt(&ok)};
 
+            // A readlock isn't necessary
+
             if (ok)
                 fetchAndSetListIdx(value, UiEngine::oldThemeDisplayNames, this->m_themeDisplayIndex,
                                    [](const QString & /*unused*/) -> void {});
             else
-                this->m_themeDisplayIndex =
-                    UiEngine::indexOfValue(this->m_themeDisplayNames, val.toString());
+                this->m_themeDisplayIndex.storeRelaxed(
+                    UiEngine::indexOfValue(this->m_themeDisplayNames, val.toString()));
 
             emit this->uiConfigChanged();
         },
         configMigrated);
 
     if (configMigrated)
-        core->writeSettings("UiEngineConfigMigrated"_L1, true, false);
+        core->writeSettings("UiEngineConfigMigrated"_L1, true);
 }
 
-void UiEngine::saveConfigs()
+QVariantList &UiEngine::madhabDisplayNames() noexcept
 {
+    const QReadLocker lock{&this->varLock};
+
+    return this->m_madhabDisplayNames;
+}
+
+QVariantList &UiEngine::prayerDisplayNames() noexcept
+{
+    const QReadLocker lock{&this->varLock};
+
+    return this->m_prayerDisplayNames;
+}
+
+void UiEngine::saveConfigs() noexcept
+{
+    const QReadLocker lock{&this->varLock};
+
     logDebug(munadi) << "Saving UI configurations";
 
     core->writeSettings("App/BackgroundImage"_L1, this->m_bgImage.load());
@@ -234,7 +268,7 @@ void UiEngine::saveConfigs()
     core->writeSettings("App/Theme"_L1, this->getCurrentTheme());
 }
 
-void UiEngine::setCalcMethodDisplayIdx(const QVariant &index)
+void UiEngine::setCalcMethodDisplayIdx(const QVariant &index) noexcept
 {
     logDebug(munadi) << "Received index: " << index;
     fetchAndSetListIdx(index.toInt(), this->m_calcMethodsDisplayNames,
@@ -242,15 +276,17 @@ void UiEngine::setCalcMethodDisplayIdx(const QVariant &index)
                        [](const QString &name) -> void { pEngine->setCalcMethod(name); });
 }
 
-void UiEngine::setLangDisplayIdx(const QVariant &index)
+void UiEngine::setLangDisplayIdx(const QVariant &index) noexcept
 {
+    // Taking a readlock isn't necessary
+
     logDebug(munadi) << "Received index: " << index;
     fetchAndSetListIdx(index.toInt(), this->m_langDisplayNames, this->m_langDisplayIndex,
                        [](const QString &name) -> void { core->setLang(name); });
     emit this->uiConfigChanged();
 }
 
-void UiEngine::setMadhabDisplayIdx(const QVariant &index)
+void UiEngine::setMadhabDisplayIdx(const QVariant &index) noexcept
 {
     logDebug(munadi) << "Received index: " << index;
     fetchAndSetListIdx(index.toInt(), this->m_madhabDisplayNames, this->m_madhabDisplayIndex,
@@ -260,39 +296,48 @@ void UiEngine::setMadhabDisplayIdx(const QVariant &index)
 // int UiEngine::textsRefresher()
 // { return textsRefresherReal(); }
 
+QVariantList &UiEngine::themeDisplayNames() noexcept
+{
+    const QReadLocker lock{&this->varLock};
+
+    return this->m_themeDisplayNames;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  Private Slots
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void UiEngine::onInvalidate()
-{
-    this->m_calcMethodsDisplayIndex =
-        UiEngine::indexOfValue(this->m_calcMethodsDisplayNames, pEngine->getCalcMethod());
-    this->m_madhabDisplayIndex =
-        UiEngine::indexOfValue(this->m_madhabDisplayNames, pEngine->getMadhab());
-
-    emit this->configChanged();
-}
-
-void UiEngine::onCoreOnline()
+void UiEngine::onCoreOnline() noexcept
 {
     this->connectToLocaleChanged();
     this->initTexts();
     this->connectToCoreOffline();
 }
 
-void UiEngine::onPrayerEngineOnline()
+void UiEngine::onInvalidate() noexcept
+{
+    const QWriteLocker lock{&this->varLock};
+
+    this->m_calcMethodsDisplayIndex.storeRelaxed(
+        UiEngine::indexOfValue(this->m_calcMethodsDisplayNames, pEngine->getCalcMethod()));
+    this->m_madhabDisplayIndex.storeRelaxed(
+        UiEngine::indexOfValue(this->m_madhabDisplayNames, pEngine->getMadhab()));
+
+    emit this->configChanged();
+}
+
+void UiEngine::onLocaleChanged() noexcept
+{
+    logDebug(munadi) << "Detected language change, refreshing texts...";
+    this->initTexts();
+    emit this->translationChanged();
+}
+
+void UiEngine::onPrayerEngineOnline() noexcept
 {
     logDebug(munadi) << "Executing onPrayerEngineOnline()";
     this->connectToInvalidate();
     this->loadConfigs(); // loadConfigs() needs to be before initConfigs()
     this->initConfigs();
-}
-
-void UiEngine::onLocaleChanged()
-{
-    logDebug(munadi) << "Detected language change, refreshing texts...";
-    this->initTexts();
-    emit this->translationChanged();
 }
 } // namespace Munadi

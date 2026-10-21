@@ -1,19 +1,22 @@
 import QtQuick
 import QtQuick.Controls.Material
 
+import Munadi
+
 Item {
-    property string cityName
-    property string countryName
+    property string address
+
+    implicitHeight: textId.visible ? textId.height : 0
 
     Text {
         anchors.centerIn: parent
         color: Material.secondaryTextColor
         elide: Text.ElideRight
         font.italic: true
-        font.pixelSize: parent.height / 2
+        font.pixelSize: 12
         font.underline: textId.font.underline
         text: qsTr("Set your location ...")
-        visible: mm.locationNotSet
+        visible: !LocationEngine.isLocationSet
     }
 
     Text {
@@ -22,9 +25,13 @@ Item {
         anchors.centerIn: parent
         color: Material.primaryTextColor
         elide: Text.ElideRight
-        font.pixelSize: parent.height / 2
-        text: `${cityName}, <i>${countryName}</i>`
-        visible: !mm.locationNotSet
+        font.pixelSize: 12
+        horizontalAlignment: Text.AlignHCenter
+        text: parent.address
+        verticalAlignment: Text.AlignVCenter
+        visible: LocationEngine.isLocationSet
+        width: parent.width - 10
+        wrapMode: Text.Wrap
     }
 
     MouseArea {

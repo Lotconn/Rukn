@@ -26,21 +26,23 @@ class CoreEngine : public MunadiEngine<CoreEngine>
   public:
     explicit CoreEngine(QObject *parent = nullptr);
 
-    static auto logCategory() -> const QLoggingCategory &;
+    static auto logCategory() noexcept -> const QLoggingCategory &;
 
-    auto readOldSettings(QAnyStringView oldKey, const QVariant &defaultValue = {}) -> QVariant;
-    auto readOldSettingsJsArray(QAnyStringView oldKey, const QJsonArray &defaultArray = {})
+    auto readOldSettings(QAnyStringView oldKey, const QVariant &defaultValue = {}) noexcept
+        -> QVariant;
+    auto readOldSettingsJsArray(QAnyStringView oldKey, const QJsonArray &defaultArray = {}) noexcept
         -> QVariantList;
-    auto readSettings(QAnyStringView key, const QVariant &defaultValue = {}) -> QVariant;
-    auto readSettingsArray(QAnyStringView group) -> QVariantList;
-    // auto removeOldSettingsKey(QAnyStringView key) -> bool;
-    auto setLang(const QString &lang) -> void;
-    auto writeSettings(QAnyStringView key, const QVariant &value, bool flushOnWrite = true) -> void;
+    auto readSettings(QAnyStringView key, const QVariant &defaultValue = {}) noexcept -> QVariant;
+    auto readSettingsArray(QAnyStringView group) noexcept -> QVariantList;
+    // auto removeOldSettingsKey(QAnyStringView key) noexcept -> bool;
+    auto setLang(const QString &lang) noexcept -> void;
+    auto writeSettings(QAnyStringView key, const QVariant &value,
+                       bool flushOnWrite = false) noexcept -> void;
     auto writeSettingsArray(QAnyStringView group, const QVariantList &entryMaps,
-                            bool flushOnWrite = true) -> void;
+                            bool flushOnWrite = false) noexcept -> void;
 
   protected:
-    bool eventFilter(QObject *object, QEvent *event) override;
+    bool eventFilter(QObject *object, QEvent *event) noexcept override;
 
   private:
     Q_DISABLE_COPY_MOVE(CoreEngine);
@@ -66,21 +68,21 @@ class CoreEngine : public MunadiEngine<CoreEngine>
     //  Functions
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
+    static auto getCurrentLocale() noexcept -> QLocale;
     static auto readValueOfKey(QSettings &settings, QAnyStringView key,
-                               const QVariant &defaultValue = {}) -> QVariant;
+                               const QVariant &defaultValue = {}) noexcept -> QVariant;
     static auto setValueOfKey(QSettings &settings, QAnyStringView key, const QVariant &value,
-                              bool flushOnWrite = false) -> void;
+                              bool flushOnWrite = false) noexcept -> void;
 
     // auto acquireConfigLock() -> int;
-    auto               applyLocale(const QLocale &locale = QLocale::system()) -> void;
-    [[nodiscard]] auto getCurrentLocale() -> QLocale;
+    auto applyLocale(const QLocale &locale = QLocale::system()) noexcept -> void;
     // auto releaseConfigLock() -> void;
 
   signals:
     auto localeChanged() -> void;
 
   private slots: // NOLINT(*-redundant-access-specifiers)
-    auto onAboutToQuit() -> void;
+    auto onAboutToQuit() noexcept -> void;
 };
 
 } // namespace Munadi

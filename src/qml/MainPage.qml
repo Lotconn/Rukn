@@ -116,6 +116,6 @@ ColumnLayout {
         Layout.preferredWidth: parentBox.isWide ? parent.height * theme.uiPortraitRatio : parent.width
         background.opacity: UiEngine.opacity
         text: mm.timeLeftStr
-        visible: !mm.locationNotSet
+        visible: LocationEngine.isLocationSet
     }
 }

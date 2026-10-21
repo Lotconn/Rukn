@@ -23,8 +23,8 @@ class PrayerEngine : public MunadiEngine<PrayerEngine>
     QML_ELEMENT
     QML_SINGLETON
 
-    Q_PROPERTY(QVariantHash prayerConfig MEMBER m_prayerConfig WRITE setPrayerConfig RESET
-                   defaultPrayerConfig NOTIFY prayerConfigChanged)
+    Q_PROPERTY(QVariantHash prayerConfig MEMBER m_prayerConfig WRITE setPrayerConfig NOTIFY
+                   prayerConfigChanged)
     // Q_PROPERTY(PrayerEngine::Prayer currentPrayer READ currentPrayer NOTIFY timeChanged)
 
   public:
@@ -50,19 +50,19 @@ class PrayerEngine : public MunadiEngine<PrayerEngine>
     //  Functions
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    static auto fromString(QAnyStringView prayerName) -> Prayer;
-    static auto logCategory() -> const QLoggingCategory &;
-    static auto metaPrayerEnum() -> const QMetaEnum &;
+    static auto fromString(QAnyStringView prayerName) noexcept -> Prayer;
+    static auto logCategory() noexcept -> const QLoggingCategory &;
+    static auto metaPrayerEnum() noexcept -> const QMetaEnum &;
 
-    auto currentPrayer() -> Prayer;
-    auto getCalcMethod() -> QString;
-    auto getMadhab() -> QString;
-    auto getPrayerConfig(Prayer prayerEnum, QAnyStringView field) -> QVariant;
-    auto setCalcMethod(const QString &method) -> void;
-    auto setMadhab(const QString &madhab) -> void;
+    auto currentPrayer() noexcept -> Prayer;
+    auto getCalcMethod() noexcept -> const QString &;
+    auto getMadhab() noexcept -> const QString &;
+    auto getPrayerConfig(Prayer prayerEnum, QAnyStringView field) noexcept -> QVariant;
+    auto setCalcMethod(const QString &method) noexcept -> void;
+    auto setMadhab(const QString &madhab) noexcept -> void;
 
-    Q_INVOKABLE void           modifyPrayerConfig(const QString &key, const QVariantHash &entry);
-    Q_INVOKABLE static QString toString(Prayer prayerEnum);
+    Q_INVOKABLE void modifyPrayerConfig(const QString &key, const QVariantHash &entry) noexcept;
+    Q_INVOKABLE static QString toString(Prayer prayerEnum) noexcept;
 
     // void timeChanged();
 
@@ -141,28 +141,32 @@ class PrayerEngine : public MunadiEngine<PrayerEngine>
 
     QHash<QString, int> prayerConfigFields;
     QSet<QString>       prayerConfigKeys;
-    qsizetype           prayerConfigEntrySize;
-    qsizetype           prayerConfigMapSize;
+    qsizetype           prayerConfigEntrySize{};
+    qsizetype           prayerConfigMapSize{};
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //  Functions
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     // auto currentPrayer(Adhan::Instant when = Adhan::now()) -> PrayerEngine::Prayer;
-    auto defaultCalcParams() -> void;
-    auto defaultConfigs() -> void override;
-    auto defaultPrayerConfig() -> void;
-    auto loadConfigs() -> void override;
-    auto loadPrayerConfig(bool &configMigrated) -> void;
-    auto saveConfigs() -> void override;
-    auto setPrayerConfig(const QVariantHash &prayerConfig) -> void;
+    auto               connectToInvalidate() const noexcept -> void;
+    auto               defaultCalcParams() noexcept -> void;
+    auto               defaultConfigs() noexcept -> void override;
+    auto               defaultPrayerConfig() noexcept -> void;
+    [[nodiscard]] auto getPrayerConfig_p(Prayer prayerEnum, QAnyStringView field) const noexcept
+        -> QVariant;
+    auto loadConfigs() noexcept -> void override;
+    auto loadPrayerConfig(bool &configMigrated) noexcept -> void;
+    auto saveConfigs() noexcept -> void override;
+    auto setPrayerConfig(const QVariantHash &prayerConfig) noexcept -> void;
 
   signals:
     auto invalidate() -> void;
-    auto prayerConfigChanged(QVariantHash prayerConfig) -> void;
+    auto prayerConfigChanged() -> void;
 
   private slots: // NOLINT(*-redundant-access-specifiers)
-    auto onInvalidate() -> void;
+    auto onInvalidate() noexcept -> void;
+    auto onLocationEngineOnline() noexcept -> void;
 };
 
 } // namespace Munadi

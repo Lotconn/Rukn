@@ -50,9 +50,6 @@ QtObject {
     property int isToday: dateNavOffset === 0
     property string isha: sysLocale.toString(prayerTimes.isha, isoClock ? "hh:mm" : "hh:mm ap")
     property bool isoClock: false
-    property double latitude
-    property bool locationNotSet: latitude == 0 || longitude == 0
-    property double longitude
     property int madhab: Adhan.adhan.Madhab.Shafi
     property string mgrb: sysLocale.toString(prayerTimes.maghrib, isoClock ? "hh:mm" : "hh:mm ap")
     property var nextPrayer
@@ -113,7 +110,7 @@ QtObject {
         if (nextPrayer === Adhan.Prayer.None && dateNavOffset === 0) {
             var tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
-            var tomorrowPT = new Adhan.adhan.PrayerTimes(new Adhan.adhan.Coordinates(latitude, longitude), tomorrow, params);
+            var tomorrowPT = new Adhan.adhan.PrayerTimes(new Adhan.adhan.Coordinates(LocationEngine.location.latitude, LocationEngine.location.longitude), tomorrow, params);
             nextPrayer = Adhan.Prayer.Fajr;
             timeForNextPrayer = tomorrowPT.fajr;
         } else {
@@ -199,7 +196,7 @@ QtObject {
         params.adjustments.isha = PrayerEngine.prayerConfig.Isha.adjustment;
         mm.params = params;
 
-        var coordinates = new Adhan.adhan.Coordinates(latitude, longitude);
+        var coordinates = new Adhan.adhan.Coordinates(LocationEngine.location.latitude, LocationEngine.location.longitude);
         mm.prayerTimes = new Adhan.adhan.PrayerTimes(coordinates, currentDate, params);
     }
     onPrayerTimesChanged: {

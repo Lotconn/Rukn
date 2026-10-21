@@ -72,10 +72,10 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine qae;
 
-    // This nudge is necessary for satisfying the dependencies, and should be earliest before
+    // This nudge may be necessary for satisfying the dependencies, and should be earliest before
     // anything
-    qae.singletonInstance<Munadi::CoreEngine *>("Munadi", "CoreEngine");
-    qae.singletonInstance<Munadi::PrayerEngine *>("Munadi", "PrayerEngine");
+    // qae.singletonInstance<Munadi::CoreEngine *>("Munadi", "CoreEngine");
+    // qae.singletonInstance<Munadi::PrayerEngine *>("Munadi", "PrayerEngine");
 
     Engine engine;
     auto  *alarm = createAlarm(&app);

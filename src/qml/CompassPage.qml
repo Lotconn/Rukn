@@ -3,6 +3,9 @@ import QtQuick
 import QtQuick.Controls
 
 Page {
+    LayoutMirroring.childrenInherit: true
+    LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft
+
     Text {
         id: qiblaLabel
 

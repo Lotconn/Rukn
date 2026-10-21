@@ -141,7 +141,6 @@ set(MUNADI_QML_FILES
   src/qml/Line.qml
   src/qml/LocationInfoRow.qml
   src/qml/LocationSearchComponent.qml
-  src/qml/LocationService.qml
   src/qml/Main.qml
   src/qml/MainPage.qml
   src/qml/MunadiModel.qml

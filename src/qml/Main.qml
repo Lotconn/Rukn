@@ -71,11 +71,7 @@ ApplicationWindow {
 
         settings.category = "Adhan";
         mm.calendarPreferenceIndex = settings.value("calendarPreferenceIndex", mm.calendarPreferenceIndex);
-        mm.cityName = settings.value("cityName", mm.cityName);
-        mm.countryName = settings.value("countryName", mm.countryName);
         mm.hijriDateOffset = settings.value("hijriDateOffset", mm.hijriDateOffset);
-        mm.latitude = settings.value("latitude", mm.latitude);
-        mm.longitude = settings.value("longitude", mm.longitude);
         mm.overrideOffsetBy = settings.value("overrideOffsetBy", mm.overrideOffsetBy);
 
         settings.category = "Window";
@@ -123,11 +119,7 @@ ApplicationWindow {
         settings.category = "Adhan";
         settings.setValue("calendarPreferenceIndex", mm.calendarPreferenceIndex);
         settings.setValue("checkForUpdates", mm.checkForUpdates);
-        settings.setValue("cityName", mm.cityName);
-        settings.setValue("countryName", mm.countryName);
         settings.setValue("hijriDateOffset", mm.hijriDateOffset);
-        settings.setValue("latitude", mm.latitude);
-        settings.setValue("longitude", mm.longitude);
         settings.setValue("overrideOffsetBy", mm.overrideOffsetBy);
 
         settings.category = "Window";
@@ -157,10 +149,6 @@ ApplicationWindow {
 
     Settings {
         id: settings
-    }
-
-    LocationService {
-        id: ls
     }
 
     MainPage {
@@ -199,8 +187,10 @@ ApplicationWindow {
         x: (parent.width - width) / 2
         y: (parent.height - height) / 2
 
-        onClosed: if (mm.locationNotSet)
-            locationPopup.open()
+        onClosed: {
+            if (!LocationEngine.isLocationSet)
+                locationPopup.open();
+        }
 
         Flickable {
             id: flickable
@@ -258,7 +248,7 @@ ApplicationWindow {
     Popup {
         id: locationPopup
 
-        closePolicy: mm.locationNotSet ? Popup.NoAutoClose : (Popup.CloseOnEscape | Popup.CloseOnPressOutside)
+        closePolicy: LocationEngine.isLocationSet ? (Popup.CloseOnEscape | Popup.CloseOnPressOutside) : Popup.NoAutoClose
         focus: true
         modal: true
         parent: Overlay.overlay
@@ -266,18 +256,23 @@ ApplicationWindow {
         x: (parent.width - width) / 2
         y: (parent.height - height) / 4
 
+        onClosed: {
+            if (LocationEngine.isLoading)
+                LocationEngine.abortQuery();
+        }
+
         LocationSearchComponent {
             focus: true
 
             Component.onCompleted: {
                 forceActiveFocus();
-                if (mm.locationNotSet && !whatsNewPopup.visible) {
+
+                if (!LocationEngine.isLocationSet && !whatsNewPopup.visible)
                     locationPopup.open();
-                }
             }
             Keys.onPressed: event => {
                 if (event.key === Qt.Key_Escape) {
-                    if (mm.locationNotSet && mainWindow.visibility === ApplicationWindow.FullScreen) {
+                    if (!LocationEngine.isLocationSet && mainWindow.visibility === ApplicationWindow.FullScreen) {
                         mainWindow.visibility = ApplicationWindow.Windowed;
                         event.accepted = true;
                         return;

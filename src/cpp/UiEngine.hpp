@@ -15,30 +15,28 @@ class UiEngine : public MunadiEngine<UiEngine>
     QML_ELEMENT
     QML_SINGLETON
 
-    Q_PROPERTY(bool bgImage MEMBER m_bgImage NOTIFY uiConfigChanged)
-    Q_PROPERTY(double blur MEMBER m_blur NOTIFY uiConfigChanged)
+    Q_PROPERTY(bool bgImage MEMBER m_bgImage NOTIFY guiConfigChanged)
+    Q_PROPERTY(double blur MEMBER m_blur NOTIFY guiConfigChanged)
     Q_PROPERTY(int calcMethodDisplayIndex MEMBER m_calcMethodsDisplayIndex WRITE
                    setCalcMethodDisplayIdx NOTIFY configChanged)
-    Q_PROPERTY(QVariantList calcMethodsDisplayNames MEMBER m_calcMethodsDisplayNames NOTIFY
-                   translationChanged)
+    Q_PROPERTY(
+        QVariantList calcMethodsDisplayNames READ calcMethodsDisplayNames NOTIFY translationChanged)
     Q_PROPERTY(int langDisplayIndex MEMBER m_langDisplayIndex WRITE setLangDisplayIdx NOTIFY
                    uiConfigChanged)
-    Q_PROPERTY(QVariantList langDisplayNames MEMBER m_langDisplayNames NOTIFY translationChanged)
+    Q_PROPERTY(QVariantList langDisplayNames READ langDisplayNames NOTIFY translationChanged)
     Q_PROPERTY(int madhabDisplayIndex MEMBER m_madhabDisplayIndex WRITE setMadhabDisplayIdx NOTIFY
                    configChanged)
-    Q_PROPERTY(
-        QVariantList madhabDisplayNames MEMBER m_madhabDisplayNames NOTIFY translationChanged)
-    Q_PROPERTY(double opacity MEMBER m_opacity NOTIFY uiConfigChanged)
-    Q_PROPERTY(
-        QVariantList prayerDisplayNames MEMBER m_prayerDisplayNames NOTIFY translationChanged)
+    Q_PROPERTY(QVariantList madhabDisplayNames READ madhabDisplayNames NOTIFY translationChanged)
+    Q_PROPERTY(double opacity MEMBER m_opacity NOTIFY guiConfigChanged)
+    Q_PROPERTY(QVariantList prayerDisplayNames READ prayerDisplayNames NOTIFY translationChanged)
     // Q_PROPERTY(int textsRefresher READ textsRefresher NOTIFY translationChanged)
     Q_PROPERTY(int themeDisplayIndex MEMBER m_themeDisplayIndex NOTIFY uiConfigChanged)
-    Q_PROPERTY(QVariantList themeDisplayNames MEMBER m_themeDisplayNames NOTIFY translationChanged)
+    Q_PROPERTY(QVariantList themeDisplayNames READ themeDisplayNames NOTIFY translationChanged)
 
   public:
     explicit UiEngine(QObject *parent = nullptr);
 
-    static auto logCategory() -> const QLoggingCategory &;
+    static auto logCategory() noexcept -> const QLoggingCategory &;
 
   private:
     Q_DISABLE_COPY_MOVE(UiEngine);
@@ -47,7 +45,7 @@ class UiEngine : public MunadiEngine<UiEngine>
     //  Variables
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    inline static QVariantList oldCalcMethodsDisplayNames{
+    inline static const QVariantList oldCalcMethodsDisplayNames{
         QLatin1StringView{"MuslimWorldLeague"},
         QLatin1StringView{"Egyptian"},
         QLatin1StringView{"Karachi"},
@@ -62,13 +60,13 @@ class UiEngine : public MunadiEngine<UiEngine>
         QLatin1StringView{"Other"},
     };
 
-    inline static QVariantList oldMadhabDisplayNames{
+    inline static const QVariantList oldMadhabDisplayNames{
         QLatin1StringView{},
         QLatin1StringView{"Shafi"},
         QLatin1StringView{"Hanafi"},
     };
 
-    inline static QVariantList oldThemeDisplayNames{
+    inline static const QVariantList oldThemeDisplayNames{
         QLatin1StringView{"System"},
         QLatin1StringView{"Light"},
         QLatin1StringView{"Dark"},
@@ -91,36 +89,38 @@ class UiEngine : public MunadiEngine<UiEngine>
     //  Functions
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    static auto indexOfValue(const QVariantList &list, const QString &value) -> int;
+    static auto indexOfValue(const QVariantList &list, const QString &value) noexcept -> int;
     // static auto textsRefresher() -> int;
-    static auto dummy(const QStringList &) -> void;
 
-    auto connectToInvalidate() const -> void;
-    auto connectToLocaleChanged() const -> void;
-    auto defaultConfigs() -> void override;
-    auto getCurrentLang() -> QString;
-    auto getCurrentTheme() -> QString;
-    auto initConfigs() -> void;
-    auto initTexts() -> void;
-    auto loadConfigs() -> void override;
-    auto saveConfigs() -> void override;
-    auto setCalcMethodDisplayIdx(const QVariant &index) -> void;
-    auto setLangDisplayIdx(const QVariant &index) -> void;
-    auto setMadhabDisplayIdx(const QVariant &index) -> void;
+    auto               calcMethodsDisplayNames() noexcept -> QVariantList &;
+    auto               connectToInvalidate() const noexcept -> void;
+    auto               connectToLocaleChanged() const noexcept -> void;
+    auto               defaultConfigs() noexcept -> void override;
+    [[nodiscard]] auto getCurrentLang() const noexcept -> QString;
+    [[nodiscard]] auto getCurrentTheme() const noexcept -> QString;
+    auto               initConfigs() noexcept -> void;
+    auto               initTexts() noexcept -> void;
+    auto               langDisplayNames() noexcept -> QVariantList &;
+    auto               loadConfigs() noexcept -> void override;
+    auto               madhabDisplayNames() noexcept -> QVariantList &;
+    auto               prayerDisplayNames() noexcept -> QVariantList &;
+    auto               saveConfigs() noexcept -> void override;
+    auto               setCalcMethodDisplayIdx(const QVariant &index) noexcept -> void;
+    auto               setLangDisplayIdx(const QVariant &index) noexcept -> void;
+    auto               setMadhabDisplayIdx(const QVariant &index) noexcept -> void;
+    auto               themeDisplayNames() noexcept -> QVariantList &;
 
   signals:
-    auto bgImageChanged() -> void;
-    auto blurChanged() -> void;
     auto configChanged() -> void;
-    auto opacityChanged() -> void;
+    auto guiConfigChanged() -> void;
     auto translationChanged() -> void;
     auto uiConfigChanged() -> void;
 
   private slots: // NOLINT(*-redundant-access-specifiers)
-    void onPrayerEngineOnline();
-    void onCoreOnline() override;
-    void onInvalidate();
-    void onLocaleChanged();
+    void onPrayerEngineOnline() noexcept;
+    void onCoreOnline() noexcept override;
+    void onInvalidate() noexcept;
+    void onLocaleChanged() noexcept;
 };
 
 } // namespace Munadi
