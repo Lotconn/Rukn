@@ -5,6 +5,11 @@
 #include <QSettings>
 #include <QStandardPaths>
 
+#ifdef Q_OS_UNIX
+#include <csignal>
+#include <sys/socket.h>
+#endif
+
 #include "internal-helpers.hpp"
 
 Q_STATIC_LOGGING_CATEGORY(munadi, "CoreEngine")
@@ -22,6 +27,18 @@ const QHash<QString, std::function<void(CoreEngine *)>> CoreEngine::doTrigger{
 CoreEngine::CoreEngine(QObject *parent) : MunadiBase{munadi(), parent}, alarm{createAlarm(this)}
 {
     this->bootEngine();
+
+#ifdef Q_OS_UNIX
+    logDebug(munadi) << "Unix signal connection status: "
+                     << CoreEngine::installUnixSignalHandlers();
+
+    if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sigtermFd.data()) != 0)
+        logFatal(munadi) << "Couldn't create TERM socketpair";
+
+    snTerm = new QSocketNotifier(sigtermFd[1], QSocketNotifier::Read, this);
+
+    QObject::connect(snTerm, &QSocketNotifier::activated, this, &CoreEngine::onUnixSigTerm);
+#endif
 
     if (const QString appName = QCoreApplication::applicationName(); appName.isEmpty())
         logCritical(munadi) << "Not setting up persistnent config due to missing application "
@@ -213,7 +230,6 @@ void CoreEngine::set60sTicker() noexcept
 
 void CoreEngine::setLang(const QString &lang) noexcept
 {
-
     logDebug(munadi) << "lang: " << lang;
     logDebug(munadi) << "locale: " << CoreEngine::s_lang.value(lang);
 
@@ -228,6 +244,15 @@ void CoreEngine::setLang(const QString &lang) noexcept
 
     if (configSet)
         this->applyLocale(CoreEngine::s_lang.value(lang));
+}
+
+void CoreEngine::termSignalHandler(int /* unused */)
+{
+#ifdef Q_OS_UNIX
+    const char    a{1};
+    const ssize_t ret{::write(sigtermFd[0], &a, sizeof(a))};
+    Q_UNUSED(ret)
+#endif
 }
 
 void CoreEngine::writeSettings(QAnyStringView key, const QVariant &value,
@@ -283,14 +308,27 @@ void CoreEngine::writeSettingsArray(QAnyStringView group, const QVariantList &en
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-//  Private Slots
+//  Public Slots
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void CoreEngine::onReceivedMessage(quint32 instanceId, QByteArray message)
+void CoreEngine::onReceivedMessage(quint32 instanceId, QByteArray message) // NOLINT(*value*param)
 {
     logDebug(munadi) << "Received message from instance: " << instanceId;
     logInfo(munadi) << "Received Message: " << message;
     emit this->exposeInstance();
+}
+
+void CoreEngine::onUnixSigTerm()
+{
+#ifdef Q_OS_UNIX
+    snTerm->setEnabled(false);
+
+    char          tmp{0};
+    const ssize_t ret{::read(sigtermFd[1], &tmp, sizeof(tmp))};
+    Q_UNUSED(ret)
+
+    qApp->quit();
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -430,6 +468,26 @@ void CoreEngine::installTickers() noexcept
     this->set60sTicker();
 }
 
+int CoreEngine::installUnixSignalHandlers()
+{
+#ifdef Q_OS_UNIX
+    struct sigaction term{};
+
+    term.sa_handler = CoreEngine::termSignalHandler;
+    sigemptyset(&term.sa_mask);
+    term.sa_flags  = 0;
+    term.sa_flags |= SA_RESTART;
+
+    if (sigaction(SIGINT, &term, nullptr) != 0)
+        return ENOTCONN;
+
+    if (sigaction(SIGTERM, &term, nullptr) != 0)
+        return ENOTCONN;
+
+    return 0;
+#endif
+}
+
 QVariant CoreEngine::readValueOfKey(QSettings &settings, QAnyStringView key,
                                     const QVariant &defaultValue) noexcept
 {
@@ -498,7 +556,14 @@ void CoreEngine::setValueOfKey(QSettings &settings, QAnyStringView key, const QV
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void CoreEngine::onAboutToQuit() noexcept
-{ emit this->engineOffline(); }
+{
+    emit this->engineOffline();
+
+#ifdef Q_OS_UNIX
+    ::close(sigtermFd[0]);
+    ::close(sigtermFd[1]);
+#endif
+}
 
 void CoreEngine::onTrigger(const QString &id) noexcept
 {

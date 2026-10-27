@@ -14,7 +14,6 @@ UiEngine *UiEngine::create(QQmlEngine *qmlEngine, QJSEngine * /* jsEngine */)
 {
     logDebug(munadi) << "Creating instance from QML call";
 
-    // qmlEngine->singletonInstance<PrayerEngine *>("Munadi"_L1, "PrayerEngine"_L1);
     qmlEngine->singletonInstance<MultimediaEngine *>("Munadi"_L1, "MultimediaEngine"_L1);
 
     return new UiEngine{};

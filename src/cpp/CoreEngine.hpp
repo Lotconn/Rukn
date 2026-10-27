@@ -6,6 +6,7 @@
 #include <QQmlEngine>
 #include <QSet>
 #include <QSettings>
+#include <QSocketNotifier>
 #include <QTranslator>
 
 #include <MunadiEngine.hpp>
@@ -30,6 +31,7 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
     explicit CoreEngine(QObject *parent = nullptr);
 
     static auto logCategory() noexcept -> const QLoggingCategory &;
+    static auto termSignalHandler(int /* unused */) -> void;
 
     Q_INVOKABLE static QString getAppVersion() noexcept;
 
@@ -51,6 +53,7 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
 
   public slots: // NOLINT(*redundant-access-specifiers)
     void onReceivedMessage(quint32 instanceId, QByteArray message);
+    void onUnixSigTerm();
 
   protected:
     bool eventFilter(QObject *object, QEvent *event) noexcept override;
@@ -71,17 +74,21 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
 
     static const QHash<QString, std::function<void(CoreEngine *)>> doTrigger;
 
-    Alarm      *alarm{};
-    QLockFile  *configLock{};
-    QSettings  *oldSettings{};
-    QSettings  *settings{};
-    QMutex      threadLock;
-    QTranslator translator;
+    inline static std::array<int, 2> sigtermFd{0, 0};
+
+    Alarm           *alarm{};
+    QLockFile       *configLock{};
+    QSettings       *oldSettings{};
+    QSettings       *settings{};
+    QSocketNotifier *snTerm;
+    QMutex           threadLock;
+    QTranslator      translator;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //  Functions
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
+    static auto installUnixSignalHandlers() -> int;
     static auto getCurrentLocale() noexcept -> QLocale;
     static auto readValueOfKey(QSettings &settings, QAnyStringView key,
                                const QVariant &defaultValue = {}) noexcept -> QVariant;

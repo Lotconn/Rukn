@@ -4,6 +4,7 @@
 #include <QQuickWindow>
 #include <QSocketNotifier>
 #include <QStyleFactory>
+#include <print>
 
 #include <CoreEngine.hpp>
 #include <SingleApplication>
@@ -17,26 +18,8 @@
 #include <macos_window.h>
 #endif
 
-#ifdef Q_OS_LINUX
-#include <csignal>
-#include <print>
-#include <sys/socket.h>
-#include <unistd.h>
-
-static int sigFd[2] = {-1, -1};
-
-static void unixSignalHandler(int)
-{
-    char                  a     = 'A';
-    [[maybe_unused]] auto trash = ::write(sigFd[1], &a, sizeof(a));
-    // just to avoid compiler warnings
-}
-#endif
-
 int main(int argc, char *argv[])
 {
-    // qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
-
     SingleApplication app(argc, argv, true);
 
     if (app.isSecondary())
@@ -104,32 +87,5 @@ int main(int argc, char *argv[])
         makeTitleBarTransparent(window);
 #endif
 
-#ifdef Q_OS_LINUX
-    if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sigFd) != 0)
-        qFatal("Failed to create signal socket pair");
-
-    QSocketNotifier sigNotifier(sigFd[0], QSocketNotifier::Read);
-    QObject::connect(&sigNotifier, &QSocketNotifier::activated, &app, [](QSocketDescriptor) {
-        char                  tmp   = 0;
-        [[maybe_unused]] auto trash = ::read(sigFd[0], &tmp, sizeof(tmp));
-        // just to avoid compiler warnings
-        QCoreApplication::quit();
-    });
-
-    struct sigaction sa{};
-    sa.sa_handler = unixSignalHandler;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = SA_RESTART;
-    sigaction(SIGINT, &sa, nullptr);
-    sigaction(SIGTERM, &sa, nullptr);
-#endif
-
-    int ret = QApplication::exec();
-
-#ifdef Q_OS_LINUX
-    ::close(sigFd[0]);
-    ::close(sigFd[1]);
-#endif
-
-    return ret;
+    return QApplication::exec();
 }
