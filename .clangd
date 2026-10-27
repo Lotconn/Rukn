@@ -14,6 +14,7 @@ Diagnostics:
       - "*owning-memory"
       - fuchsia-default-arguments-calls
       - fuchsia-default-arguments-declarations
+      - fuchsia-multiple-inheritance
       - fuchsia-statically-constructed-objects
       - fuchsia-trailing-return
       - hicpp-signed-bitwise

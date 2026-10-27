@@ -48,11 +48,15 @@ class UiEngine : public MunadiBase, public MunadiEngine<UiEngine>
     Q_PROPERTY(double timeLeftProgress READ timeLeftProgress NOTIFY timeChanged)
 
   public:
-    explicit UiEngine(QObject *parent = nullptr);
-
+    static auto create(QQmlEngine *qmlEngine, QJSEngine *jsEngine) -> UiEngine *;
     static auto logCategory() noexcept -> const QLoggingCategory &;
 
-  public slots: // NOLINT(*redundant-access-specifiers)
+    Q_INVOKABLE static QString getFormFactor() noexcept;
+
+  protected:
+    explicit UiEngine(QObject *parent = nullptr);
+
+  public slots:
     void resetDateOffset() noexcept;
 
   private:

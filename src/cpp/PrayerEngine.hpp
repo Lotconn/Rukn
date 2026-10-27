@@ -30,7 +30,7 @@ class PrayerEngine : public MunadiBase, public MunadiEngine<PrayerEngine>
     Q_PROPERTY(double qibla READ getQiblaDegrees NOTIFY calcChanged)
 
   public:
-    explicit PrayerEngine(QObject *parent = nullptr);
+    static auto create(QQmlEngine *qmlEngine, QJSEngine *jsEngine) -> PrayerEngine *;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //  Types & Enums
@@ -100,7 +100,8 @@ class PrayerEngine : public MunadiBase, public MunadiEngine<PrayerEngine>
     Q_INVOKABLE static QString toString(Prayer prayerEnum) noexcept;
     Q_INVOKABLE static QString toString(Sunnah sunnahEnum) noexcept;
 
-    // void timeChanged();
+  protected:
+    explicit PrayerEngine(QObject *parent = nullptr);
 
   private:
     Q_DISABLE_COPY_MOVE(PrayerEngine);

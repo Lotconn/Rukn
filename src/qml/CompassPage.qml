@@ -52,7 +52,7 @@ Page {
 
     //        RotationSensor {
     //            id: sensor
-    //            active: engine.ff() === "m" ? true : false
+    //            active: UiEngine.getFormFactor() === "mobile" ? true : false
     //            onReadingChanged: {
     //                settingsCache.refresh();
     //                qiblaInfo.text = "";
@@ -75,7 +75,7 @@ Page {
         anchors.top: compass.bottom
         color: theme.fontColour
         font.pixelSize: qiblaLabel.font.pixelSize
-        //text: sensor.hasZ && engine.ff() === "m" ? qsTr("Please wait ...") : qsTr("%1° with respect to North").arg(engine.getQibla().toFixed(0));
+        //text: sensor.hasZ && UiEngine.getFormFactor() === "mobile" ? qsTr("Please wait ...") : qsTr("%1° with respect to North").arg(engine.getQibla().toFixed(0));
         text: qsTr("%1° with respect to North").arg(PrayerEngine.qibla.toFixed(2))
     }
 }

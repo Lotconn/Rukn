@@ -25,8 +25,7 @@ class MultimediaEngine : public MunadiBase, public MunadiEngine<MultimediaEngine
     Q_PROPERTY(bool previewPlaying READ isPreviewPlaying NOTIFY previewPlayingChanged)
 
   public:
-    explicit MultimediaEngine(QObject *parent = nullptr);
-
+    static auto create(QQmlEngine *qmlEngine, QJSEngine *jsEngine) -> MultimediaEngine *;
     static auto logCategory() noexcept -> const QLoggingCategory &;
 
     auto getAthanConfig(PrayerEngine::Prayer prayerEnum, const QString &field) noexcept -> QVariant;
@@ -39,6 +38,9 @@ class MultimediaEngine : public MunadiBase, public MunadiEngine<MultimediaEngine
     Q_INVOKABLE void previewPlay(int athanListIdx) noexcept;
     Q_INVOKABLE void previewStop() noexcept;
     Q_INVOKABLE void removeAthan(const qsizetype &rmIdx) noexcept;
+
+  protected:
+    explicit MultimediaEngine(QObject *parent = nullptr);
 
   private:
     Q_DISABLE_COPY_MOVE(MultimediaEngine);

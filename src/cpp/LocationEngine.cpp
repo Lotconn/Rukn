@@ -6,27 +6,11 @@ Q_STATIC_LOGGING_CATEGORY(munadi, "LocationEngine")
 namespace Munadi
 {
 
-LocationEngine::LocationEngine(QObject *parent)
-    : MunadiBase{munadi(), parent}, geoProvider{u"osm"_s},
-      manager{this->geoProvider.geocodingManager()}
+LocationEngine *LocationEngine::create(QQmlEngine * /* qmlEngine */, QJSEngine * /* jsEngine */)
 {
-    this->bootEngine();
+    logDebug(munadi) << "Creating instance from QML call";
 
-    if (this->geoProvider.error() != QGeoServiceProvider::NoError)
-        logCritical(munadi) << "Geocoding unavailable: [" << this->geoProvider.error() << "] "
-                            << this->geoProvider.errorString();
-    else
-    {
-        logDebug(munadi) << "Geolocation provider: " << this->manager->managerName()
-                         << "; version: " << this->manager->managerVersion();
-        logDebug(munadi) << "Using locale: " << this->manager->locale();
-        logDebug(munadi) << "Features set: "
-                         << QMetaEnum{QMetaEnum::fromType<QGeoServiceProvider::GeocodingFeatures>()}
-                                .valueToKeys(this->geoProvider.geocodingFeatures());
-    }
-
-    CoreEngine::onceOnline(this, [this] -> void { this->onCoreOnline(); });
-    this->makeOnline();
+    return new LocationEngine{};
 }
 
 const QLoggingCategory &LocationEngine::logCategory() noexcept
@@ -73,6 +57,33 @@ void LocationEngine::search(const QString &query) noexcept
     }
     else
         emit this->loadingChanged();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//  Protected Members
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+LocationEngine::LocationEngine(QObject *parent)
+    : MunadiBase{munadi(), parent}, geoProvider{u"osm"_s},
+      manager{this->geoProvider.geocodingManager()}
+{
+    this->bootEngine();
+
+    if (this->geoProvider.error() != QGeoServiceProvider::NoError)
+        logCritical(munadi) << "Geocoding unavailable: [" << this->geoProvider.error() << "] "
+                            << this->geoProvider.errorString();
+    else
+    {
+        logDebug(munadi) << "Geolocation provider: " << this->manager->managerName()
+                         << "; version: " << this->manager->managerVersion();
+        logDebug(munadi) << "Using locale: " << this->manager->locale();
+        logDebug(munadi) << "Features set: "
+                         << QMetaEnum{QMetaEnum::fromType<QGeoServiceProvider::GeocodingFeatures>()}
+                                .valueToKeys(this->geoProvider.geocodingFeatures());
+    }
+
+    CoreEngine::onceOnline(this, [this] -> void { this->onCoreOnline(); });
+    this->makeOnline();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

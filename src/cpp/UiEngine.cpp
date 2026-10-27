@@ -10,6 +10,39 @@ namespace Munadi
 using Prayer = PrayerEngine::Prayer;
 using Sunnah = PrayerEngine::Sunnah;
 
+UiEngine *UiEngine::create(QQmlEngine *qmlEngine, QJSEngine * /* jsEngine */)
+{
+    logDebug(munadi) << "Creating instance from QML call";
+
+    // qmlEngine->singletonInstance<PrayerEngine *>("Munadi"_L1, "PrayerEngine"_L1);
+    qmlEngine->singletonInstance<MultimediaEngine *>("Munadi"_L1, "MultimediaEngine"_L1);
+
+    return new UiEngine{};
+}
+
+const QLoggingCategory &UiEngine::logCategory() noexcept
+{ return munadi(); }
+
+QString UiEngine::getFormFactor() noexcept
+{
+#if defined Q_OS_WIN || defined Q_OS_MACOS || (defined Q_OS_LINUX && !defined Q_OS_ANDROID)
+    return u"desktop"_s;
+#else
+    return u"mobile"_s;
+#endif
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//  Public Slots
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void UiEngine::resetDateOffset() noexcept
+{ this->setDateOffset(0); }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//  Protected Members
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 UiEngine::UiEngine(QObject *parent) : MunadiBase{munadi(), parent}
 {
     this->bootEngine();
@@ -18,16 +51,6 @@ UiEngine::UiEngine(QObject *parent) : MunadiBase{munadi(), parent}
     MultimediaEngine::onceOnline(this, [this] -> void { this->onMultimediaEngineOnline(); });
     this->makeOnline();
 }
-
-const QLoggingCategory &UiEngine::logCategory() noexcept
-{ return munadi(); }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-//  Public Slots
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void UiEngine::resetDateOffset() noexcept
-{ this->setDateOffset(0); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  Private Members

@@ -88,9 +88,7 @@ FetchContent_Declare(SingleApplication
   GIT_TAG v3.5.6
 )
 set(QT_DEFAULT_MAJOR_VERSION 6 CACHE STRING "Qt version to use, defaults to 6")
-set(QAPPLICATION_CLASS FreeStandingSingleApplication CACHE STRING
-  "Inheritance class for SingleApplication"
-)
+set(QAPPLICATION_CLASS QApplication CACHE STRING "Inheritance class for SingleApplication")
 FetchContent_MakeAvailable(SingleApplication)
 
 # Lotconn/adhan-cpp

@@ -84,10 +84,10 @@ ApplicationWindow {
             updater.check();
 
         // Only display what's new once
-        if (newsVersion !== engine.getVersionNo()) {
+        if (newsVersion !== CoreEngine.getAppVersion()) {
             whatsNewPopup.text = engine.getWhatsNew();
             whatsNewPopup.open();
-            newsVersion = engine.getVersionNo();
+            newsVersion = CoreEngine.getAppVersion();
         }
 
         if (theme === "System")
@@ -384,13 +384,13 @@ ApplicationWindow {
     }
 
     Connections {
-        function onReceivedMessage() {
+        function onExposeInstance() {
             mainWindow.show();
             mainWindow.raise();
             mainWindow.requestActivate();
         }
 
-        target: sapp
+        target: CoreEngine
     }
 
     Connections {

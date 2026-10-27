@@ -65,6 +65,9 @@ const QLoggingCategory &CoreEngine::logCategory() noexcept
 Alarm &CoreEngine::alarmManager() const noexcept
 { return *this->alarm; }
 
+QString CoreEngine::getAppVersion() noexcept
+{ return APP_VERSION; }
+
 QVariant CoreEngine::readOldSettings(QAnyStringView oldKey, const QVariant &defaultValue) noexcept
 {
     if (oldKey.isEmpty())
@@ -277,6 +280,17 @@ void CoreEngine::writeSettingsArray(QAnyStringView group, const QVariantList &en
 
     if (flushOnWrite)
         this->settings->sync();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//  Private Slots
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void CoreEngine::onReceivedMessage(quint32 instanceId, QByteArray message)
+{
+    logDebug(munadi) << "Received message from instance: " << instanceId;
+    logInfo(munadi) << "Received Message: " << message;
+    emit this->exposeInstance();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

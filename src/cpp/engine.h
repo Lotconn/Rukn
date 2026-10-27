@@ -5,8 +5,6 @@
 #include <QtDebug>
 #include <QtGui>
 
-#include <version.hpp>
-
 #define MUNADI_API_URL "https://munadi.org/"
 
 #include <updater.h>
@@ -25,21 +23,10 @@ class Engine : public QObject
   public:
     Engine();
 
-    Q_INVOKABLE QString getVersionNo()
-    { return APP_VERSION; }
     Q_INVOKABLE QString getWhatsNew();
     QString             show_help(bool);
 
     Q_INVOKABLE void autostart(bool set);
-
-    Q_INVOKABLE QString ff() // Form factor
-    {
-#if defined Q_OS_WIN || defined Q_OS_MACOS || (defined Q_OS_LINUX && !defined Q_OS_ANDROID)
-        return "d";
-#else
-        return "m";
-#endif
-    }
 
     Updater         *updater;
     void             autostart_hidden(bool);

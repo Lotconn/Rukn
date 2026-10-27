@@ -1,5 +1,6 @@
 #include <engine.h>
 #include <updater.h>
+#include <version.hpp>
 
 #include <QSettings>
 #include <QUrl>

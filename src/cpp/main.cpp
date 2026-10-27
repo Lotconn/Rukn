@@ -6,9 +6,6 @@
 #include <QStyleFactory>
 
 #include <CoreEngine.hpp>
-#include <LocationEngine.hpp>
-#include <MultimediaEngine.hpp>
-#include <PrayerEngine.hpp>
 #include <SingleApplication>
 #include <engine.h>
 
@@ -40,23 +37,22 @@ int main(int argc, char *argv[])
 {
     // qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
 
-    QApplication app(argc, argv);
+    SingleApplication app(argc, argv, true);
 
-    QApplication::setStyle(QStyleFactory::create("gnome"));
-
-    SingleApplication sapp(argc, argv, true);
-    if (sapp.isSecondary())
+    if (app.isSecondary())
     {
 #ifdef Q_OS_WINDOWS
-        AllowSetForegroundWindow(DWORD(sapp.primaryPid()));
+        AllowSetForegroundWindow(DWORD(app.primaryPid()));
 #endif
-        sapp.sendMessage(QApplication::arguments().join(' ').toUtf8());
+        app.sendMessage(QApplication::arguments().join(' ').toUtf8());
         qWarning() << "Munadi is already running.";
-        qDebug() << "Primary instance PID: " << sapp.primaryPid();
-        qDebug() << "Primary instance user: " << sapp.primaryUser().toLatin1().constData();
+        qDebug() << "Primary instance PID: " << app.primaryPid();
+        qDebug() << "Primary instance user: " << app.primaryUser().toLatin1().constData();
+
         return 0;
     }
 
+    QApplication::setStyle(QStyleFactory::create("gnome"));
     QApplication::setWindowIcon(QIcon(":/qt/qml/Munadi/img/munadi.png"));
     QApplication::setOrganizationDomain("munadi.org");
     QApplication::setOrganizationName("munadi");
@@ -73,12 +69,16 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine qae;
 
-    // These nudges are necessary for satisfying the dependencies, and should be earliest before
-    // anything
+    // These call is necessary for making `core` available before connection
     qae.singletonInstance<Munadi::CoreEngine *>("Munadi", "CoreEngine");
-    qae.singletonInstance<Munadi::LocationEngine *>("Munadi", "LocationEngine");
-    qae.singletonInstance<Munadi::PrayerEngine *>("Munadi", "PrayerEngine");
-    qae.singletonInstance<Munadi::MultimediaEngine *>("Munadi", "MultimediaEngine");
+
+    if (const auto conn = QObject::connect(&app, &SingleApplication::receivedMessage, core,
+                                           &Munadi::CoreEngine::onReceivedMessage);
+
+        conn == nullptr)
+        qWarning() << "Connection not established with SingleApplication";
+    else
+        qDebug() << "Connection established with SingleApplication";
 
     Engine engine;
 
@@ -96,7 +96,6 @@ int main(int argc, char *argv[])
     }
 
     qae.rootContext()->setContextProperty("engine", &engine);
-    qae.rootContext()->setContextProperty("sapp", &sapp);
     qae.rootContext()->setContextProperty("updater", engine.updater);
     qae.loadFromModule("Munadi", "Main");
 

@@ -10,6 +10,7 @@
 
 #include <MunadiEngine.hpp>
 #include <alarm.h>
+#include <version.hpp>
 
 #define core Munadi::CoreEngine::instance()
 
@@ -30,6 +31,8 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
 
     static auto logCategory() noexcept -> const QLoggingCategory &;
 
+    Q_INVOKABLE static QString getAppVersion() noexcept;
+
     [[nodiscard]] auto alarmManager() const noexcept -> Alarm &;
     auto readOldSettings(QAnyStringView oldKey, const QVariant &defaultValue = {}) noexcept
         -> QVariant;
@@ -45,6 +48,9 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
                             bool flushOnWrite = false) noexcept -> void;
 
     Q_INVOKABLE void set60sTicker() noexcept;
+
+  public slots: // NOLINT(*redundant-access-specifiers)
+    void onReceivedMessage(quint32 instanceId, QByteArray message);
 
   protected:
     bool eventFilter(QObject *object, QEvent *event) noexcept override;
@@ -93,6 +99,7 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
     auto alarmsReset() -> void;
     auto athanAlarm() -> void;
     auto dateChanged() -> void;
+    auto exposeInstance() -> void;
     auto minuteChanged() -> void;
     auto localeChanged() -> void;
 

@@ -29,14 +29,16 @@ class LocationEngine : public MunadiBase, public MunadiEngine<LocationEngine>
                    loadingChanged)
 
   public:
-    explicit LocationEngine(QObject *parent = nullptr);
-
+    static auto create(QQmlEngine *qmlEngine, QJSEngine *jsEngine) -> LocationEngine *;
     static auto logCategory() noexcept -> const QLoggingCategory &;
 
     Q_INVOKABLE void abortQuery() noexcept;
     Q_INVOKABLE void search(const QString &query) noexcept;
 
     auto getLocation() noexcept -> const QGeoLocation &;
+
+  protected:
+    explicit LocationEngine(QObject *parent = nullptr);
 
   private:
     Q_DISABLE_COPY_MOVE(LocationEngine);

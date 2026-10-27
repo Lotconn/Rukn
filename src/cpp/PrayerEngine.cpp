@@ -11,14 +11,13 @@ namespace Munadi
 
 using Prayer = PrayerEngine::Prayer;
 
-PrayerEngine::PrayerEngine(QObject *parent) : MunadiBase{munadi(), parent}
+PrayerEngine *PrayerEngine::create(QQmlEngine *qmlEngine, QJSEngine * /* jsEngine */)
 {
-    this->bootEngine();
+    logDebug(munadi) << "Creating instance from QML call";
 
-    this->connectToInvalidate();
-    CoreEngine::onceOnline(this, [this] -> void { this->onCoreOnline(); });
-    LocationEngine::onceOnline(this, [this] -> void { this->onLocationEngineOnline(); });
-    this->makeOnline();
+    qmlEngine->singletonInstance<LocationEngine *>("Munadi"_L1, "LocationEngine"_L1);
+
+    return new PrayerEngine{};
 }
 
 PrayerEngine::Prayer PrayerEngine::currentPrayer() noexcept
@@ -381,6 +380,20 @@ QString PrayerEngine::toString(Sunnah sunnahEnum) noexcept
     }
 
     return key;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//  Protected Members
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+PrayerEngine::PrayerEngine(QObject *parent) : MunadiBase{munadi(), parent}
+{
+    this->bootEngine();
+
+    this->connectToInvalidate();
+    CoreEngine::onceOnline(this, [this] -> void { this->onCoreOnline(); });
+    LocationEngine::onceOnline(this, [this] -> void { this->onLocationEngineOnline(); });
+    this->makeOnline();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

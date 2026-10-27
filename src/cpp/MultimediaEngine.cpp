@@ -9,35 +9,13 @@ namespace Munadi
 
 using Prayer = PrayerEngine::Prayer;
 
-MultimediaEngine::MultimediaEngine(QObject *parent)
-    : MunadiBase{munadi(), parent}, athanOutput{new QAudioOutput{this}},
-      athanPlayer{new QMediaPlayer{this}}, fileman{new FileMan{this}},
-      previewOutput{new QAudioOutput{this}}, previewPlayer{new QMediaPlayer{this}}
+MultimediaEngine *MultimediaEngine::create(QQmlEngine *qmlEngine, QJSEngine * /* jsEngine */)
 {
-    this->bootEngine();
-    CoreEngine::onceOnline(this, [this] -> void { this->onCoreOnline(); });
+    logDebug(munadi) << "Creating instance from QML call";
 
-    logDebug(munadi) << "FileMan::refreshStore() return: " << this->fileman->refreshStore();
+    qmlEngine->singletonInstance<PrayerEngine *>("Munadi"_L1, "PrayerEngine"_L1);
 
-    this->athanPlayer->setAudioOutput(this->athanOutput);
-
-    if (const QMetaObject::Connection conn =
-            QObject::connect(this->athanPlayer, &QMediaPlayer::playbackStateChanged, this,
-                             &MultimediaEngine::onAthanPlaybackChanged);
-        conn == nullptr)
-        logWarning(munadi) << "Failed to establish athan playback state connection";
-    else
-        logDebug(munadi) << "Athan playback state connection established";
-
-    if (const QMetaObject::Connection conn =
-            QObject::connect(this->previewPlayer, &QMediaPlayer::playbackStateChanged, this,
-                             &MultimediaEngine::onPreviewPlaybackChanged);
-        conn == nullptr)
-        logWarning(munadi) << "Failed to establish preview playback state connection";
-    else
-        logDebug(munadi) << "Preview playback state connection established";
-
-    this->makeOnline();
+    return new MultimediaEngine{};
 }
 
 void MultimediaEngine::addAthan(const QUrl &fileUrl) noexcept
@@ -257,6 +235,41 @@ void MultimediaEngine::removeAthan(const qsizetype &rmIdx) noexcept
 
     emit this->athanListChanged();
     emit this->athanConfigChanged();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//  Protected Members
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+MultimediaEngine::MultimediaEngine(QObject *parent)
+    : MunadiBase{munadi(), parent}, athanOutput{new QAudioOutput{this}},
+      athanPlayer{new QMediaPlayer{this}}, fileman{new FileMan{this}},
+      previewOutput{new QAudioOutput{this}}, previewPlayer{new QMediaPlayer{this}}
+{
+    this->bootEngine();
+    CoreEngine::onceOnline(this, [this] -> void { this->onCoreOnline(); });
+
+    logDebug(munadi) << "FileMan::refreshStore() return: " << this->fileman->refreshStore();
+
+    this->athanPlayer->setAudioOutput(this->athanOutput);
+
+    if (const QMetaObject::Connection conn =
+            QObject::connect(this->athanPlayer, &QMediaPlayer::playbackStateChanged, this,
+                             &MultimediaEngine::onAthanPlaybackChanged);
+        conn == nullptr)
+        logWarning(munadi) << "Failed to establish athan playback state connection";
+    else
+        logDebug(munadi) << "Athan playback state connection established";
+
+    if (const QMetaObject::Connection conn =
+            QObject::connect(this->previewPlayer, &QMediaPlayer::playbackStateChanged, this,
+                             &MultimediaEngine::onPreviewPlaybackChanged);
+        conn == nullptr)
+        logWarning(munadi) << "Failed to establish preview playback state connection";
+    else
+        logDebug(munadi) << "Preview playback state connection established";
+
+    this->makeOnline();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

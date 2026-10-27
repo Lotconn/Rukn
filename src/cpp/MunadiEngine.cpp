@@ -28,8 +28,6 @@ template <typename Engine_t>
 void MunadiEngine<Engine_t>::onceOnline(QObject *context, std::function<void()> slot,
                                         int retriesLeft) noexcept
 {
-    const static int retryStart{retriesLeft};
-
     if (!MunadiEngine::instanceExists())
     {
         if (retriesLeft <= 0)
@@ -40,6 +38,8 @@ void MunadiEngine<Engine_t>::onceOnline(QObject *context, std::function<void()> 
             return;
         }
 
+        logDebug(Engine_t::logCategory())
+            << "Retrying connection... (attempts left: " << retriesLeft << ")";
         QTimer::singleShot(0, context, [context, slot, retriesLeft]() mutable {
             MunadiEngine::onceOnline(context, std::move(slot), retriesLeft - 1);
         });
@@ -52,8 +52,7 @@ void MunadiEngine<Engine_t>::onceOnline(QObject *context, std::function<void()> 
         conn == nullptr)
         logWarning(Engine_t::logCategory()) << "engineOnline signal not connected";
     else
-        logDebug(Engine_t::logCategory())
-            << "engineOnline signal connected after " << retryStart - retriesLeft << " attempts";
+        logDebug(Engine_t::logCategory()) << "engineOnline signal connected";
 
     if (MunadiEngine::isOnline())
         slot();
@@ -100,6 +99,10 @@ template <typename Engine_t> void MunadiEngine<Engine_t>::makeOnline()
 {
     MunadiEngine::s_singletonInstance = static_cast<Engine_t *>(this);
     MunadiEngine::s_online.store(true);
+
+    // The singleton's lifetime is owned by this TU (main()/first construction), not by the
+    // QQmlEngine. Make that explicit so the engine never attempts to garbage-collect or delete it.
+    QQmlEngine::setObjectOwnership(MunadiEngine::instance(), QQmlEngine::CppOwnership);
 
     logDebug(Engine_t::logCategory()) << "Engine online";
     emit this->base()->engineOnline();

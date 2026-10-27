@@ -193,7 +193,7 @@ Page {
             }
 
             RowLayout {
-                enabled: engine.ff() === "d"
+                enabled: UiEngine.getFormFactor() === "desktop"
                 visible: enabled
 
                 ColumnLayout {
@@ -214,7 +214,7 @@ Page {
             }
 
             RowLayout {
-                enabled: engine.ff() === "d"
+                enabled: UiEngine.getFormFactor() === "desktop"
                 visible: enabled
 
                 ColumnLayout {
@@ -235,7 +235,7 @@ Page {
             }
 
             RowLayout {
-                enabled: engine.ff() === "d"
+                enabled: UiEngine.getFormFactor() === "desktop"
                 visible: enabled
 
                 ColumnLayout {
@@ -256,7 +256,7 @@ Page {
             }
 
             RowLayout {
-                enabled: engine.ff() === "d"
+                enabled: UiEngine.getFormFactor() === "desktop"
                 visible: enabled
 
                 ColumnLayout {
@@ -277,7 +277,7 @@ Page {
             }
 
             RowLayout {
-                enabled: engine.ff() === "d"
+                enabled: UiEngine.getFormFactor() === "desktop"
                 visible: enabled
 
                 ColumnLayout {
@@ -303,7 +303,7 @@ Page {
             }
 
             RowLayout {
-                enabled: engine.ff() === "d"
+                enabled: UiEngine.getFormFactor() === "desktop"
                 visible: enabled
 
                 ColumnLayout {
@@ -477,7 +477,7 @@ Page {
                 }
 
                 TextButton {
-                    text: engine.getVersionNo()
+                    text: CoreEngine.getAppVersion()
 
                     onClicked: {
                         whatsNewPopup.text = engine.getWhatsNew();
