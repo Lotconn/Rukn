@@ -7,7 +7,7 @@ namespace Munadi
 {
 
 LocationEngine::LocationEngine(QObject *parent)
-    : MunadiEngine<LocationEngine>{parent}, geoProvider{u"osm"_s},
+    : MunadiBase{munadi(), parent}, geoProvider{u"osm"_s},
       manager{this->geoProvider.geocodingManager()}
 {
     this->bootEngine();

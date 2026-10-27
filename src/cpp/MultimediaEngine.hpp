@@ -10,7 +10,7 @@
 namespace Munadi
 {
 
-class MultimediaEngine : public MunadiEngine<MultimediaEngine>
+class MultimediaEngine : public MunadiBase, public MunadiEngine<MultimediaEngine>
 {
     Q_OBJECT
     Q_CLASSINFO("RegisterEnumClassesUnscoped", "false")

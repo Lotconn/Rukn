@@ -10,7 +10,7 @@ namespace Munadi
 using Prayer = PrayerEngine::Prayer;
 using Sunnah = PrayerEngine::Sunnah;
 
-UiEngine::UiEngine(QObject *parent) : MunadiEngine<UiEngine>{parent}
+UiEngine::UiEngine(QObject *parent) : MunadiBase{munadi(), parent}
 {
     this->bootEngine();
     CoreEngine::onceOnline(this, [this] -> void { this->onCoreOnline(); });

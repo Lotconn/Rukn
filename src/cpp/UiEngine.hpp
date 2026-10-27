@@ -8,7 +8,7 @@
 namespace Munadi
 {
 
-class UiEngine : public MunadiEngine<UiEngine>
+class UiEngine : public MunadiBase, public MunadiEngine<UiEngine>
 {
     Q_OBJECT
     Q_CLASSINFO("RegisterEnumClassesUnscoped", "false")

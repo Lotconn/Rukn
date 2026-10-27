@@ -75,15 +75,13 @@ ApplicationWindow {
         mainWindow.x = settings.value("x", mainWindow.x);
         mainWindow.y = settings.value("y", mainWindow.y);
 
-        if (engine.autostart_hidden()) {
+        if (engine.autostart_hidden())
             hide();
-        } else {
+        else
             engine.fullscreen() ? showFullScreen() : show();
-        }
 
-        if (mm.checkForUpdates) {
+        if (mm.checkForUpdates)
             updater.check();
-        }
 
         // Only display what's new once
         if (newsVersion !== engine.getVersionNo()) {

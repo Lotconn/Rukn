@@ -93,7 +93,7 @@ template <typename Engine_t> void MunadiEngine<Engine_t>::bootEngine()
 
     logDebug(Engine_t::logCategory()) << "Booting engine...";
 
-    this->defaultConfigs();
+    this->base()->defaultConfigs();
 }
 
 template <typename Engine_t> void MunadiEngine<Engine_t>::makeOnline()
@@ -102,7 +102,7 @@ template <typename Engine_t> void MunadiEngine<Engine_t>::makeOnline()
     MunadiEngine::s_online.store(true);
 
     logDebug(Engine_t::logCategory()) << "Engine online";
-    emit this->engineOnline();
+    emit this->base()->engineOnline();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

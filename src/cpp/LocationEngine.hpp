@@ -14,7 +14,7 @@
 namespace Munadi
 {
 
-class LocationEngine : public MunadiEngine<LocationEngine>
+class LocationEngine : public MunadiBase, public MunadiEngine<LocationEngine>
 {
     Q_OBJECT
     Q_CLASSINFO("RegisterEnumClassesUnscoped", "false")

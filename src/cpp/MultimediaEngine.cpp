@@ -10,7 +10,7 @@ namespace Munadi
 using Prayer = PrayerEngine::Prayer;
 
 MultimediaEngine::MultimediaEngine(QObject *parent)
-    : MunadiEngine<MultimediaEngine>{parent}, athanOutput{new QAudioOutput{this}},
+    : MunadiBase{munadi(), parent}, athanOutput{new QAudioOutput{this}},
       athanPlayer{new QMediaPlayer{this}}, fileman{new FileMan{this}},
       previewOutput{new QAudioOutput{this}}, previewPlayer{new QMediaPlayer{this}}
 {
@@ -585,7 +585,7 @@ void MultimediaEngine::onAthanPlaybackChanged(QMediaPlayer::PlaybackState state)
 
 void MultimediaEngine::onCoreOnline() noexcept
 {
-    MunadiEngine<MultimediaEngine>::onCoreOnline();
+    MunadiBase::onCoreOnline();
     this->connectToAthanAlarm();
 }
 

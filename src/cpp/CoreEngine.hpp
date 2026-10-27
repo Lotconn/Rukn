@@ -16,7 +16,7 @@
 namespace Munadi
 {
 
-class CoreEngine : public MunadiEngine<CoreEngine>
+class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
 {
     Q_OBJECT
     Q_CLASSINFO("RegisterEnumClassesUnscoped", "false")

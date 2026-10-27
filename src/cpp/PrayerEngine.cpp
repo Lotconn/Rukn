@@ -11,7 +11,7 @@ namespace Munadi
 
 using Prayer = PrayerEngine::Prayer;
 
-PrayerEngine::PrayerEngine(QObject *parent) : MunadiEngine<PrayerEngine>{parent}
+PrayerEngine::PrayerEngine(QObject *parent) : MunadiBase{munadi(), parent}
 {
     this->bootEngine();
 
@@ -666,7 +666,7 @@ void PrayerEngine::updateCalc()
 
 void PrayerEngine::onCoreOnline() noexcept
 {
-    MunadiEngine<PrayerEngine>::onCoreOnline();
+    MunadiBase::onCoreOnline();
     this->connectToAlarmsReset();
     this->connectToAthanAlarm();
     this->connectToDateChanged();

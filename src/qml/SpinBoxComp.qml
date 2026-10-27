@@ -10,7 +10,8 @@ SpinBox {
 
     editable: true
     from: 0
-    implicitWidth: 120
+    implicitHeight: 31
+    implicitWidth: 97
     inputMethodHints: Qt.ImhDigitsOnly
     textFromValue: (value, locale) => Number(value).toLocaleString(locale, 'f', 0) + "%"
     to: 100
@@ -25,7 +26,5 @@ SpinBox {
     }
     wheelEnabled: true
 
-    onValueModified: {
-        edited(value / 100);
-    }
+    onValueModified: edited(value / 100)
 }

@@ -19,7 +19,7 @@ const QHash<QString, std::function<void(CoreEngine *)>> CoreEngine::doTrigger{
     {u"athan"_s,        &CoreEngine::athanAlarm   }
 };
 
-CoreEngine::CoreEngine(QObject *parent) : MunadiEngine<CoreEngine>{parent}, alarm{createAlarm(this)}
+CoreEngine::CoreEngine(QObject *parent) : MunadiBase{munadi(), parent}, alarm{createAlarm(this)}
 {
     this->bootEngine();
 

@@ -16,7 +16,7 @@
 namespace Munadi
 {
 
-class PrayerEngine : public MunadiEngine<PrayerEngine>
+class PrayerEngine : public MunadiBase, public MunadiEngine<PrayerEngine>
 {
     Q_OBJECT
     Q_CLASSINFO("RegisterEnumClassesUnscoped", "false")
