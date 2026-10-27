@@ -182,7 +182,7 @@ qint64 PrayerEngine::timeBetweenPrayers(Prayer current, Prayer next,
 
         if (next == Prayer::None)
             return (current_date.has_value()) ? current_date->addDays(1)
-                                              : QDateTime::currentDateTimeUtc().addDays(1).date();
+                                              : QDateTime::currentDateTime().addDays(1).date();
 
         return current_date;
     }())};
@@ -335,15 +335,13 @@ qint64 PrayerEngine::timeToNextPrayer(const std::optional<QDateTime> &since_ms) 
     //                         currentPT->currentPrayer(since.toStdSysMilliseconds()));
     // logDebug(munadi) << "Next prayer: " << Adhan::PrayerUtils::to_string(next);
 
-    if (currentPT->date == since.toUTC().date() && next == Adhan::Prayer::None)
+    if (currentPT->date == since.date() && next == Adhan::Prayer::None)
     {
-        next = nextPT->nextPrayer(since.toStdSysMilliseconds());
-        nextTime =
-            this->timeForPrayer(PrayerEngine::s_revPrayerEnumMap.value(next), nextDay).toUTC();
+        next     = nextPT->nextPrayer(since.toStdSysMilliseconds());
+        nextTime = this->timeForPrayer(PrayerEngine::s_revPrayerEnumMap.value(next), nextDay);
     }
     else
-        nextTime =
-            this->timeForPrayer(PrayerEngine::s_revPrayerEnumMap.value(next), since.date()).toUTC();
+        nextTime = this->timeForPrayer(PrayerEngine::s_revPrayerEnumMap.value(next), since.date());
 
     // logDebug(munadi) << "Resolved next prayer: " << Adhan::PrayerUtils::to_string(next);
     // logDebug(munadi) << "Next prayer at: " << nextTime.toString();
