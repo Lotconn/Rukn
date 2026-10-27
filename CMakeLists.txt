@@ -96,7 +96,7 @@ FetchContent_MakeAvailable(SingleApplication)
 # Lotconn/adhan-cpp
 FetchContent_Declare(Adhan-cpp
   GIT_REPOSITORY https://github.com/lotconn/adhan-cpp
-  GIT_TAG bf13ff4cbcc855756111cad1ee3d392d83c8b153
+  GIT_TAG 5b1d3d29f7a312f5df6409197a4189ff0691aaf2
 )
 FetchContent_MakeAvailable(Adhan-cpp)
 

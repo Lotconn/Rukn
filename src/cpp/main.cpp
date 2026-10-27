@@ -6,9 +6,10 @@
 #include <QStyleFactory>
 
 #include <CoreEngine.hpp>
+#include <LocationEngine.hpp>
+#include <MultimediaEngine.hpp>
 #include <PrayerEngine.hpp>
 #include <SingleApplication>
-#include <alarm.h>
 #include <engine.h>
 
 #ifdef Q_OS_WINDOWS
@@ -72,13 +73,14 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine qae;
 
-    // This nudge may be necessary for satisfying the dependencies, and should be earliest before
+    // These nudges are necessary for satisfying the dependencies, and should be earliest before
     // anything
-    // qae.singletonInstance<Munadi::CoreEngine *>("Munadi", "CoreEngine");
-    // qae.singletonInstance<Munadi::PrayerEngine *>("Munadi", "PrayerEngine");
+    qae.singletonInstance<Munadi::CoreEngine *>("Munadi", "CoreEngine");
+    qae.singletonInstance<Munadi::LocationEngine *>("Munadi", "LocationEngine");
+    qae.singletonInstance<Munadi::PrayerEngine *>("Munadi", "PrayerEngine");
+    qae.singletonInstance<Munadi::MultimediaEngine *>("Munadi", "MultimediaEngine");
 
     Engine engine;
-    auto  *alarm = createAlarm(&app);
 
     if (argc > 1)
     {
@@ -93,7 +95,6 @@ int main(int argc, char *argv[])
         }
     }
 
-    qae.rootContext()->setContextProperty("alarm", alarm);
     qae.rootContext()->setContextProperty("engine", &engine);
     qae.rootContext()->setContextProperty("sapp", &sapp);
     qae.rootContext()->setContextProperty("updater", engine.updater);

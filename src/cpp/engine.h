@@ -25,11 +25,6 @@ class Engine : public QObject
   public:
     Engine();
 
-    Q_INVOKABLE QString getDate(const QDate   &date      = QDate::currentDate(),
-                                const QString &format    = QString(),
-                                const QString &calSystem = QLatin1String("Gregorian"),
-                                const int     &offset    = 0) const;
-
     Q_INVOKABLE QString getVersionNo()
     { return APP_VERSION; }
     Q_INVOKABLE QString getWhatsNew();

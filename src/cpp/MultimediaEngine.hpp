@@ -5,6 +5,8 @@
 
 #include <PrayerEngine.hpp>
 
+#define mEngine Munadi::MultimediaEngine::instance()
+
 namespace Munadi
 {
 
@@ -27,7 +29,8 @@ class MultimediaEngine : public MunadiEngine<MultimediaEngine>
 
     static auto logCategory() noexcept -> const QLoggingCategory &;
 
-    auto getAthanConfig(PrayerEngine::Prayer prayerEnum, QAnyStringView field) noexcept -> QVariant;
+    auto getAthanConfig(PrayerEngine::Prayer prayerEnum, const QString &field) noexcept -> QVariant;
+    auto isAthanPlaying() noexcept -> bool;
 
     Q_INVOKABLE void addAthan(const QUrl &fileUrl) noexcept;
     Q_INVOKABLE void athanPlay() noexcept;
@@ -70,11 +73,11 @@ class MultimediaEngine : public MunadiEngine<MultimediaEngine>
     //  Functions
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
+    auto connectToAthanAlarm() const noexcept -> void;
     auto defaultAthanList() noexcept -> void;
     auto defaultAthanConfig() noexcept -> void;
     auto defaultConfigs() noexcept -> void override;
     auto getAthanList() noexcept -> QVariantList &;
-    auto isAthanPlaying() noexcept -> bool;
     auto isPreviewPlaying() noexcept -> bool;
     auto loadAthanConfig(bool &configMigrated) noexcept -> void;
     auto loadAthanList(bool &configMigrated) noexcept -> void;
@@ -89,6 +92,12 @@ class MultimediaEngine : public MunadiEngine<MultimediaEngine>
     auto athanMutedChanged() -> void;
     auto athanPlayingChanged(bool playing) -> void;
     auto previewPlayingChanged(bool playing) -> void;
+
+  private slots:
+    void onAthanAlarm() noexcept;
+    void onAthanPlaybackChanged(QMediaPlayer::PlaybackState state);
+    void onCoreOnline() noexcept override;
+    void onPreviewPlaybackChanged(QMediaPlayer::PlaybackState state);
 };
 
 } // namespace Munadi

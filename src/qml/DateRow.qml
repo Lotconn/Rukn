@@ -23,7 +23,7 @@ Pane {
                 opacity: 0.5
                 text: qsTr("<")
 
-                onPressed: mm.prevDate()
+                onPressed: --UiEngine.dateOffset
             }
         }
 
@@ -40,7 +40,7 @@ Pane {
                 font.pixelSize: height / 2
                 font.weight: Font.DemiBold
                 horizontalAlignment: Text.AlignHCenter
-                text: mm.currentDateStr
+                text: UiEngine.calendarDateDisplay
                 verticalAlignment: Text.AlignVCenter
 
                 MouseArea {
@@ -51,13 +51,8 @@ Pane {
                     hoverEnabled: true
 
                     onHoveredChanged: containsMouse ? dateText.font.underline = true : dateText.font.underline = false
-                    onPressed: mm.todayDate()
-                    onWheel: {
-                        if (wheel.angleDelta.x < 0 || wheel.angleDelta.y > 0)
-                            mm.nextDate();
-                        else
-                            mm.prevDate();
-                    }
+                    onPressed: UiEngine.dateOffset = undefined
+                    onWheel: wheel => (wheel.angleDelta.x < 0 || wheel.angleDelta.y > 0) ? ++UiEngine.dateOffset : --UiEngine.dateOffset
                 }
             }
         }
@@ -74,7 +69,7 @@ Pane {
                 opacity: 0.5
                 text: qsTr(">")
 
-                onPressed: mm.nextDate()
+                onPressed: ++UiEngine.dateOffset
             }
         }
     }

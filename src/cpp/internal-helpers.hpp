@@ -17,10 +17,6 @@
     qCFatal(logCategory).noquote().nospace() << "fatal: " << __func__ << ": "
 // NOLINTEND(cppcoreguidelines-macro-usage)
 
-// Allows shorthand QLatin1StringView ""_L1 operators
-// Included in this internal header for all sources to utilize
-using Qt::StringLiterals::operator""_L1; // NOLINT(*global-names-in-headers)
-
 template <typename T>
 auto checkIndex(const QVariant &index, const QList<T> &refList,
                 const std::optional<int> &idxVar = std::nullopt) noexcept -> bool
@@ -60,7 +56,7 @@ auto isValidEntry(const QVariantList &entryList, const qsizetype &refMapSize,
 auto isValidMap(const QVariantHash &entry, const qsizetype &refMapSize,
                 const QHash<QString, int> &refFields) noexcept -> bool;
 auto loadConfigKey(QAnyStringView oldKey, QAnyStringView newKey, const QString &migrateKey,
-                   QObject *obj, QAnyStringView property,
+                   QObject *obj, const QString &property,
                    std::optional<bool> configMigrated = std::nullopt) noexcept -> void;
 auto loadConfigKey(QAnyStringView oldKey, QAnyStringView newKey, const QString &migrateKey,
                    const std::function<void(const QVariant &)> &setFunc,

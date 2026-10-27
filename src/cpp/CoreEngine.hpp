@@ -4,10 +4,12 @@
 #include <QLockFile>
 #include <QMutex>
 #include <QQmlEngine>
+#include <QSet>
 #include <QSettings>
 #include <QTranslator>
 
 #include <MunadiEngine.hpp>
+#include <alarm.h>
 
 #define core Munadi::CoreEngine::instance()
 
@@ -28,6 +30,7 @@ class CoreEngine : public MunadiEngine<CoreEngine>
 
     static auto logCategory() noexcept -> const QLoggingCategory &;
 
+    [[nodiscard]] auto alarmManager() const noexcept -> Alarm &;
     auto readOldSettings(QAnyStringView oldKey, const QVariant &defaultValue = {}) noexcept
         -> QVariant;
     auto readOldSettingsJsArray(QAnyStringView oldKey, const QJsonArray &defaultArray = {}) noexcept
@@ -41,6 +44,8 @@ class CoreEngine : public MunadiEngine<CoreEngine>
     auto writeSettingsArray(QAnyStringView group, const QVariantList &entryMaps,
                             bool flushOnWrite = false) noexcept -> void;
 
+    Q_INVOKABLE void set60sTicker() noexcept;
+
   protected:
     bool eventFilter(QObject *object, QEvent *event) noexcept override;
 
@@ -52,15 +57,18 @@ class CoreEngine : public MunadiEngine<CoreEngine>
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     inline static const QHash<QString, QLocale> s_lang{
-        { QLatin1StringView("System"),                   QLocale::system()},
-        {QLatin1StringView("English"), QLocale{QLatin1StringView{"en_US"}}},
-        { QLatin1StringView("Arabic"), QLocale{QLatin1StringView{"ar_SA"}}},
-        { QLatin1StringView("Bangla"), QLocale{QLatin1StringView{"bn_BD"}}},
+        {u"System"_s,  QLocale::system()  },
+        {u"English"_s, QLocale{u"en_US"_s}},
+        {u"Arabic"_s,  QLocale{u"ar_SA"_s}},
+        {u"Bangla"_s,  QLocale{u"bn_BD"_s}},
     };
 
-    QLockFile  *configLock{nullptr};
-    QSettings  *oldSettings{nullptr};
-    QSettings  *settings{nullptr};
+    static const QHash<QString, std::function<void(CoreEngine *)>> doTrigger;
+
+    Alarm      *alarm{};
+    QLockFile  *configLock{};
+    QSettings  *oldSettings{};
+    QSettings  *settings{};
     QMutex      threadLock;
     QTranslator translator;
 
@@ -76,13 +84,21 @@ class CoreEngine : public MunadiEngine<CoreEngine>
 
     // auto acquireConfigLock() -> int;
     auto applyLocale(const QLocale &locale = QLocale::system()) noexcept -> void;
+    auto connectToAboutToQuit() const noexcept -> void;
+    auto connectToTrigger() const noexcept -> void;
+    auto installTickers() noexcept -> void;
     // auto releaseConfigLock() -> void;
 
   signals:
+    auto alarmsReset() -> void;
+    auto athanAlarm() -> void;
+    auto dateChanged() -> void;
+    auto minuteChanged() -> void;
     auto localeChanged() -> void;
 
   private slots: // NOLINT(*-redundant-access-specifiers)
-    auto onAboutToQuit() noexcept -> void;
+    void onAboutToQuit() noexcept;
+    void onTrigger(const QString &id) noexcept;
 };
 
 } // namespace Munadi

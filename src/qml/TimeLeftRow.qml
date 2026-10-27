@@ -3,7 +3,6 @@ import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.Layouts
 
-import "qrc:/qt/qml/Munadi/data/Adhan.js" as Adhan
 import Munadi
 
 Pane {
@@ -54,16 +53,8 @@ Pane {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: timeLeftLabel.bottom
                 anchors.topMargin: 2
-                from: if (mm.timeForCurrentPrayer)
-                    mm.timeForCurrentPrayer.getTime()
-                else
-                    0
-                to: if (mm.timeForNextPrayer)
-                    mm.timeForNextPrayer.getTime()
-                else
-                    0
-                value: mm.currentTime.getTime()
-                visible: mm.currentPrayer !== PrayerEngine.None && mm.nextPrayer !== PrayerEngine.None && !MultimediaEngine.athanPlaying && mm.dateNavOffset === 0
+                value: UiEngine.timeLeftProgress
+                visible: timeLeftLabel.text !== ""
                 width: parent.width / 1.5
             }
         }

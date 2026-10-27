@@ -23,26 +23,8 @@ Engine::Engine()
 { init(); }
 
 using namespace Qt::StringLiterals;
-QString Engine::getDate(const QDate &date, const QString &format, const QString &calSystem,
-                        const int &offset) const
-{
-    static const QHash<QString, QCalendar::System> calendarNames{
-        {   "Gregorian"_L1,    QCalendar::System::Gregorian},
-        {      "Julian"_L1,       QCalendar::System::Julian},
-        {  "Milankovic"_L1,   QCalendar::System::Milankovic},
-        {      "Jalali"_L1,       QCalendar::System::Jalali},
-        {"IslamicCivil"_L1, QCalendar::System::IslamicCivil},
-    };
 
-    const auto val = calendarNames.constFind(calSystem);
-    QCalendar  cal = (val != calendarNames.constEnd()) ? QCalendar(*val) : QCalendar(calSystem);
-    if (!cal.isValid())
-        cal = QCalendar();
-
-    return QLocale().toString(date.addDays(offset), format, cal);
-}
-
-QString Engine::show_help(bool flag)
+QString Engine::show_help(bool /*flag*/)
 {
     return "\nUsage: munadi [options]\n"
            "Options:\n"

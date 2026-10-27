@@ -12,7 +12,7 @@ ColumnLayout {
         id: prayerTab
 
         // for init purposes only
-        property string prayer: PrayerEngine.toString(PrayerEngine.Fajr)
+        property string prayer: PrayerEngine.toString(PrayerEngine.Prayer.Fajr)
 
         Layout.fillWidth: true
         implicitWidth: parent.width
@@ -27,7 +27,7 @@ ColumnLayout {
             model: UiEngine.prayerDisplayNames
 
             onItemAdded: (index, item) => {
-                if (index === PrayerEngine.Sunrise)
+                if (index === PrayerEngine.Prayer.Sunrise || index > PrayerEngine.Prayer.Isha)
                     item.width = 0; // Hide sunrise tab
             }
 
@@ -51,7 +51,7 @@ ColumnLayout {
             id: volumeSlider
 
             Layout.fillWidth: true
-            enabled: prayerTab.currentIndex !== PrayerEngine.Sunrise
+            enabled: prayerTab.currentIndex !== PrayerEngine.Prayer.Sunrise
             snapMode: Slider.SnapAlways
             stepSize: 0.05
             value: MultimediaEngine.athanConfig[prayerTab.prayer].volume
@@ -67,8 +67,8 @@ ColumnLayout {
 
             storeVar: volumeSlider.value
 
-            onEdited: newValue => MultimediaEngine.modifyAthanConfig(prayerTab.prayer, {
-                    "volume": newValue
+            onEdited: value => MultimediaEngine.modifyAthanConfig(prayerTab.prayer, {
+                    "volume": value
                 })
         }
     }
@@ -127,7 +127,7 @@ ColumnLayout {
 
             Layout.fillWidth: true
             currentIndex: MultimediaEngine.athanConfig[prayerTab.prayer].athan_idx
-            enabled: prayerTab.currentIndex !== PrayerEngine.Sunrise
+            enabled: prayerTab.currentIndex !== PrayerEngine.Prayer.Sunrise
             model: MultimediaEngine.athanList
             textRole: "name"
 

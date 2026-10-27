@@ -5,11 +5,6 @@ import QtQuick.Layouts
 import Munadi
 
 Page {
-    Component.onCompleted: {
-        hijriSlider.value = mm.hijriDateOffset;
-        calendar.currentIndex = mm.calendarPreferenceIndex;
-    }
-
     Flickable {
         LayoutMirroring.childrenInherit: true
         LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft
@@ -254,9 +249,9 @@ Page {
                 }
 
                 Switch {
-                    checked: mm.isoClock
+                    checked: UiEngine.isoClock
 
-                    onClicked: mm.isoClock = checked
+                    onClicked: UiEngine.isoClock = checked
                 }
             }
 
@@ -275,9 +270,9 @@ Page {
                 }
 
                 Switch {
-                    checked: mm.showOnAthan
+                    checked: UiEngine.showOnAthan
 
-                    onClicked: mm.showOnAthan = checked
+                    onClicked: UiEngine.showOnAthan = checked
                 }
             }
 
@@ -401,11 +396,7 @@ Page {
                     model: UiEngine.madhabDisplayNames
                     textRole: "trText"
 
-                    onActivated: {
-                        UiEngine.madhabDisplayIndex = currentIndex;
-                        console.debug("currentIndex", currentIndex);
-                        console.debug("UiE madhabIdx", UiEngine.madhabDisplayIndex);
-                    }
+                    onActivated: UiEngine.madhabDisplayIndex = currentIndex
                 }
 
                 Text {
@@ -421,11 +412,7 @@ Page {
                     model: UiEngine.calcMethodsDisplayNames
                     textRole: 'trText'
 
-                    onActivated: {
-                        UiEngine.calcMethodDisplayIndex = currentIndex;
-                        console.debug("currentIndex", currentIndex);
-                        console.debug("UiE calcIdx", UiEngine.calcMethodDisplayIndex);
-                    }
+                    onActivated: UiEngine.calcMethodDisplayIndex = currentIndex
                 }
 
                 Text {
@@ -438,13 +425,11 @@ Page {
                         id: calendar
 
                         Layout.fillWidth: true
-                        model: mm.calendarPreference
-                        textRole: 'name'
+                        currentIndex: UiEngine.calendarDisplayIndex
+                        model: UiEngine.calendarDisplayNames
+                        textRole: 'trText'
 
-                        onActivated: {
-                            mm.calendarPreferenceIndex = currentIndex;
-                            console.debug('calPrefIdx: ', mm.calendarPreferenceIndex);
-                        }
+                        onActivated: UiEngine.calendarDisplayIndex = currentIndex
                     }
 
                     Slider {
@@ -455,9 +440,10 @@ Page {
                         snapMode: Slider.SnapAlways
                         stepSize: 1
                         to: 4
+                        value: UiEngine.hijriOffset
                         wheelEnabled: true
 
-                        onValueChanged: mm.hijriDateOffset = value
+                        onValueChanged: UiEngine.hijriOffset = value
                     }
 
                     Text {

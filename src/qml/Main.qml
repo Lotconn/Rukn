@@ -38,8 +38,7 @@ ApplicationWindow {
 
             anchors.fill: parent
             fillMode: Image.PreserveAspectCrop
-            mirror: Qt.application.layoutDirection === Qt.RightToLeft
-            source: "qrc:/qt/qml/Munadi/img/bg/" + (mm.currentPrayer % 6) + ".jpg" // does mm.currentPrayer exceed 6?
+            source: "qrc:/qt/qml/Munadi/img/bg/" + (PrayerEngine.currentPrayer % 6) + ".jpg"
         }
 
         MultiEffect {
@@ -64,14 +63,10 @@ ApplicationWindow {
         autoStartUp = settingsBool("autoStartUp", false);
         mm.checkForUpdates = settingsBool("checkForUpdates", mm.checkForUpdates);
         mm.hideOnClose = settingsBool("hideOnClose", mm.hideOnClose);
-        mm.isoClock = settingsBool("isoClock", mm.isoClock);
-        mm.showOnAthan = settingsBool("showOnAthan", mm.showOnAthan);
 
         newsVersion = settings.value("newsVersion", "");
 
         settings.category = "Adhan";
-        mm.calendarPreferenceIndex = settings.value("calendarPreferenceIndex", mm.calendarPreferenceIndex);
-        mm.hijriDateOffset = settings.value("hijriDateOffset", mm.hijriDateOffset);
         mm.overrideOffsetBy = settings.value("overrideOffsetBy", mm.overrideOffsetBy);
 
         settings.category = "Window";
@@ -79,8 +74,6 @@ ApplicationWindow {
         mainWindow.height = settings.value("height", mainWindow.height);
         mainWindow.x = settings.value("x", mainWindow.x);
         mainWindow.y = settings.value("y", mainWindow.y);
-
-        mm.invalidate();
 
         if (engine.autostart_hidden()) {
             hide();
@@ -98,9 +91,6 @@ ApplicationWindow {
             whatsNewPopup.open();
             newsVersion = engine.getVersionNo();
         }
-        mm.set_24h_ticker();
-        mm.set_60s_ticker();
-        mm.refreshTable();
 
         if (theme === "System")
             Material.theme = Material.System;
@@ -112,14 +102,10 @@ ApplicationWindow {
         settings.category = "App";
         settings.setValue("autoStartUp", autoStartUp);
         settings.setValue("hideOnClose", mm.hideOnClose);
-        settings.setValue("isoClock", mm.isoClock);
         settings.setValue("newsVersion", newsVersion);
-        settings.setValue("showOnAthan", mm.showOnAthan);
 
         settings.category = "Adhan";
-        settings.setValue("calendarPreferenceIndex", mm.calendarPreferenceIndex);
         settings.setValue("checkForUpdates", mm.checkForUpdates);
-        settings.setValue("hijriDateOffset", mm.hijriDateOffset);
         settings.setValue("overrideOffsetBy", mm.overrideOffsetBy);
 
         settings.category = "Window";
@@ -130,14 +116,7 @@ ApplicationWindow {
 
         settings.sync();
     }
-    onVisibilityChanged: {
-        alarm.clear("60s_tick");
-
-        mm.set_60s_ticker();
-        if (mainWindow.visibility !== ApplicationWindow.Hidden) {
-            mm.refreshTable();
-        }
-    }
+    onVisibilityChanged: CoreEngine.set60sTicker()
 
     Theme {
         id: theme
@@ -314,38 +293,42 @@ ApplicationWindow {
     SystemTrayIcon {
         icon.name: "org.munadi.Munadi-symbolic"
         icon.source: "qrc:/qt/qml/Munadi/img/munadi-symbolic.svg"
-        tooltip: qsTr("Munadi") + (mm.timeLeftStr ? "\n" + mm.timeLeftStr : "")
+        tooltip: qsTr("Munadi") + (UiEngine.timeLeftDisplay ? "\n" + UiEngine.timeLeftDisplay : "")
         visible: true
 
         menu: Menu {
             visible: false
 
-            onAboutToShow: {
-                mm.refreshTimeLeft();
+            MenuItem {
+                text: '🌙    ' + UiEngine.prayerDisplayTimes.Fajr
             }
 
             MenuItem {
-                text: '🌙    ' + mm.fajr
+                text: '🌄    ' + UiEngine.prayerDisplayTimes.Sunrise
             }
 
             MenuItem {
-                text: '🌄    ' + mm.srise
+                text: '🌞    ' + UiEngine.prayerDisplayTimes.Dhuhr
             }
 
             MenuItem {
-                text: '🌞    ' + mm.duhr
+                text: '⛅    ' + UiEngine.prayerDisplayTimes.Asr
             }
 
             MenuItem {
-                text: '⛅    ' + mm.asr
+                text: '🌇    ' + UiEngine.prayerDisplayTimes.Maghrib
             }
 
             MenuItem {
-                text: '🌇    ' + mm.mgrb
+                text: '🌆    ' + UiEngine.prayerDisplayTimes.Isha
             }
 
             MenuItem {
-                text: '🌃    ' + mm.isha
+                text: '🌃    ' + UiEngine.prayerDisplayTimes.Midnight
+            }
+
+            MenuItem {
+                text: '🌌    ' + UiEngine.prayerDisplayTimes.LastThirdNight
             }
 
             MenuSeparator {}
@@ -353,7 +336,7 @@ ApplicationWindow {
             MenuItem {
                 id: timeleft
 
-                text: mm.timeLeftStr + (MultimediaEngine.athanPlaying ? " 🔇" : "")
+                text: UiEngine.timeLeftDisplay + (MultimediaEngine.athanPlaying ? " 🔇" : "")
                 visible: text.length > 0
 
                 onTriggered: MultimediaEngine.athanPlaying ? MultimediaEngine.athanStop() : mainWindow.show()
@@ -391,46 +374,15 @@ ApplicationWindow {
     }
 
     Connections {
-        function onTrigger(id) {
-            console.debug("onTrigger(", id, ")");
-
-            switch (id) {
-            case "24h_tick":
-                mm.currentDate = new Date(); // Recalc
-                break;
-            case "60s_tick":
-                mm.refreshTable();
-                break;
-            case "alarms_reset": // Happens when clock change or wakeup after sleep for e.g.
-                mm.set_24h_ticker();
-                mm.set_60s_ticker();
-                mm.currentDate = new Date(); // Recalc
-                break;
-            case "athan":
-                console.debug('athan triggered: ', new Date(), ' id: ', id);
-
-                mm.refreshTable();
-
-                MultimediaEngine.athanPlay();
-
-                if (mm.showOnAthan) {
-                    mainWindow.show();
-                    mainWindow.raise();
-                    mainWindow.requestActivate();
-                }
-                break;
+        function onAthanAlarm() {
+            if (UiEngine.showOnAthan) {
+                mainWindow.show();
+                mainWindow.raise();
+                mainWindow.requestActivate();
             }
         }
 
-        target: alarm
-    }
-
-    Connections {
-        function onAthanPlayingChanged(athanPlaying) {
-            mm.refreshTimeLeft();
-        }
-
-        target: MultimediaEngine
+        target: CoreEngine
     }
 
     Connections {
@@ -468,14 +420,14 @@ ApplicationWindow {
         context: Qt.WindowShortcut
         sequences: [StandardKey.MoveToNextPage]
 
-        onActivated: mm.nextDate()
+        onActivated: ++UiEngine.dateOffset
     }
 
     Shortcut {
         context: Qt.WindowShortcut
         sequences: [StandardKey.MoveToPreviousPage]
 
-        onActivated: mm.prevDate()
+        onActivated: --UiEngine.dateOffset
     }
 
     Shortcut {
@@ -483,11 +435,10 @@ ApplicationWindow {
         sequences: [StandardKey.Cancel]
 
         onActivated: {
-            if (!mm.isToday) {
-                mm.todayDate();
-            } else if (mainWindow.visibility === ApplicationWindow.FullScreen) {
+            if (UiEngine.dateOffset !== 0)
+                UiEngine.dateOffset = undefined;
+            else if (mainWindow.visibility === ApplicationWindow.FullScreen)
                 mainWindow.visibility = ApplicationWindow.Windowed;
-            }
         }
     }
 
@@ -495,9 +446,9 @@ ApplicationWindow {
         acceptedButtons: Qt.BackButton
         anchors.fill: parent
 
-        onClicked: {
+        onClicked: mouse => {
             if (mouse.button === Qt.BackButton) {
-                mm.todayDate();
+                UiEngine.dateOffset = undefined;
                 mouse.accepted = true;
             }
         }

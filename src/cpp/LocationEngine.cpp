@@ -7,7 +7,7 @@ namespace Munadi
 {
 
 LocationEngine::LocationEngine(QObject *parent)
-    : MunadiEngine<LocationEngine>{parent}, geoProvider{"osm"_L1},
+    : MunadiEngine<LocationEngine>{parent}, geoProvider{u"osm"_s},
       manager{this->geoProvider.geocodingManager()}
 {
     this->bootEngine();
@@ -57,9 +57,9 @@ void LocationEngine::search(const QString &query) noexcept
     logDebug(munadi) << "Dispatching geocoder workers...";
 
     QGeoCodeReply *reply{this->manager->geocode(query)};
-
     {
         const QWriteLocker lock{&this->varLock};
+
         this->geoCodeReply = reply;
         this->connectToFinished();
     }
@@ -131,23 +131,14 @@ bool LocationEngine::isLocationSet() noexcept
     return this->m_location.coordinate().isValid();
 }
 
-QVariantHash LocationEngine::getCurrentLocation() noexcept
+const QGeoLocation &LocationEngine::getLocation() noexcept
 {
     const QReadLocker lock{&this->varLock};
 
-    return QVariantHash{
-        {    "address"_L1,         this->m_location.address().text()},
-        {  "streetNum"_L1, this->m_location.address().streetNumber()},
-        {     "street"_L1,       this->m_location.address().street()},
-        {       "city"_L1,         this->m_location.address().city()},
-        {   "district"_L1,     this->m_location.address().district()},
-        {      "state"_L1,        this->m_location.address().state()},
-        {    "country"_L1,      this->m_location.address().country()},
-        {"countryCode"_L1,  this->m_location.address().countryCode()},
-        { "postalCode"_L1,   this->m_location.address().postalCode()},
-        {   "latitude"_L1,  this->m_location.coordinate().latitude()},
-        {  "longitude"_L1, this->m_location.coordinate().longitude()},
-    };
+    if (!this->isLocationSet())
+        logCritical(munadi) << "Location isn't set, object is invalid";
+
+    return this->m_location;
 }
 
 QStringList LocationEngine::getLocationResults() noexcept
@@ -163,12 +154,31 @@ QStringList LocationEngine::getLocationResults() noexcept
            std::ranges::to<QStringList>();
 }
 
+QVariantHash LocationEngine::getParsableLocation() noexcept
+{
+    const QReadLocker lock{&this->varLock};
+
+    return QVariantHash{
+        {u"address"_s,     this->m_location.address().text()        },
+        {u"streetNum"_s,   this->m_location.address().streetNumber()},
+        {u"street"_s,      this->m_location.address().street()      },
+        {u"city"_s,        this->m_location.address().city()        },
+        {u"district"_s,    this->m_location.address().district()    },
+        {u"state"_s,       this->m_location.address().state()       },
+        {u"country"_s,     this->m_location.address().country()     },
+        {u"countryCode"_s, this->m_location.address().countryCode() },
+        {u"postalCode"_s,  this->m_location.address().postalCode()  },
+        {u"latitude"_s,    this->m_location.coordinate().latitude() },
+        {u"longitude"_s,   this->m_location.coordinate().longitude()},
+    };
+}
+
 void LocationEngine::loadConfigs() noexcept
 {
     logDebug(munadi) << "Loading configs from persistent config file";
 
     bool          configMigrated{true};
-    const QString migrateKey{"LocationEngineConfigMigrated"_L1};
+    const QString migrateKey{u"LocationEngineConfigMigrated"_s};
 
     // Adding a QReadLocker/QWriteLocker here is strongly discouraged. Acquiring a locker here may
     // deadlock. Put it inside setter functions if necessary.
@@ -239,9 +249,9 @@ void LocationEngine::loadConfigs() noexcept
 
 void LocationEngine::saveConfigs() noexcept
 {
-    const QReadLocker lock{&this->varLock};
-
     logDebug(munadi) << "Saving location configurations";
+
+    const QReadLocker lock{&this->varLock};
 
     core->writeSettings("Location/Address"_L1, this->m_location.address().text());
     core->writeSettings("Location/Latitude"_L1, this->m_location.coordinate().latitude());
@@ -337,7 +347,7 @@ void LocationEngine::onFinished() noexcept
     {
         const QWriteLocker lock{&this->varLock};
 
-        logDebug(munadi) << "Working on geocode query...";
+        logDebug(munadi) << "Processing geocode query...";
 
         this->geoLocations.clear();
         this->geoLocations.squeeze();
@@ -367,7 +377,7 @@ void LocationEngine::onLocaleChanged() noexcept
 
     logDebug(munadi) << "Detected language change, refreshing locale...";
 
-    this->manager->setLocale(core->property("locale").toLocale());
+    this->manager->setLocale(QLocale{});
 
     logDebug(munadi) << "Using locale: " << this->manager->locale();
 }

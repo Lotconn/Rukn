@@ -47,8 +47,8 @@ ColumnLayout {
 
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
-                athanTime: mm.fajr
-                prayerId: PrayerEngine.Fajr
+                athanTime: UiEngine.prayerDisplayTimes.Fajr
+                prayerId: PrayerEngine.Prayer.Fajr
             }
 
             PrayerRow {
@@ -57,8 +57,8 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 30
                 Layout.topMargin: -20
-                athanTime: mm.srise
-                prayerId: PrayerEngine.Sunrise
+                athanTime: UiEngine.prayerDisplayTimes.Sunrise
+                prayerId: PrayerEngine.Prayer.Sunrise
             }
 
             Line {}
@@ -68,8 +68,8 @@ ColumnLayout {
 
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
-                athanTime: mm.duhr
-                prayerId: PrayerEngine.Dhuhr
+                athanTime: UiEngine.prayerDisplayTimes.Dhuhr
+                prayerId: PrayerEngine.Prayer.Dhuhr
             }
 
             Line {}
@@ -79,8 +79,8 @@ ColumnLayout {
 
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
-                athanTime: mm.asr
-                prayerId: PrayerEngine.Asr
+                athanTime: UiEngine.prayerDisplayTimes.Asr
+                prayerId: PrayerEngine.Prayer.Asr
             }
 
             Line {}
@@ -90,8 +90,8 @@ ColumnLayout {
 
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
-                athanTime: mm.mgrb
-                prayerId: PrayerEngine.Maghrib
+                athanTime: UiEngine.prayerDisplayTimes.Maghrib
+                prayerId: PrayerEngine.Prayer.Maghrib
             }
 
             Line {}
@@ -101,9 +101,33 @@ ColumnLayout {
 
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
-                athanTime: mm.isha
-                prayerId: PrayerEngine.Isha
+                athanTime: UiEngine.prayerDisplayTimes.Isha
+                prayerId: PrayerEngine.Prayer.Isha
             }
+
+            Line {}
+
+            PrayerRow {
+                id: midnight
+
+                Layout.bottomMargin: -20
+                Layout.fillWidth: true
+                Layout.preferredHeight: 30
+                athanTime: UiEngine.prayerDisplayTimes.Midnight
+                prayerId: PrayerEngine.Prayer.Isha + PrayerEngine.Sunnah.Midnight
+            }
+
+            PrayerRow {
+                id: lastThirdNight
+
+                Layout.bottomMargin: -20
+                Layout.fillWidth: true
+                Layout.preferredHeight: 30
+                athanTime: UiEngine.prayerDisplayTimes.LastThirdNight
+                prayerId: PrayerEngine.Prayer.Isha + PrayerEngine.Sunnah.LastThirdNight
+            }
+
+            Item {}
         }
     }
 
@@ -115,7 +139,7 @@ ColumnLayout {
         Layout.preferredHeight: 40
         Layout.preferredWidth: parentBox.isWide ? parent.height * theme.uiPortraitRatio : parent.width
         background.opacity: UiEngine.opacity
-        text: mm.timeLeftStr
+        text: UiEngine.timeLeftDisplay
         visible: LocationEngine.isLocationSet
     }
 }

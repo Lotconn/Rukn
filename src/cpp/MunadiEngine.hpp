@@ -6,6 +6,9 @@
 namespace Munadi
 {
 
+using Qt::StringLiterals::operator""_s;
+using Qt::StringLiterals::operator""_L1;
+
 class MunadiBase : public QObject
 {
     Q_OBJECT

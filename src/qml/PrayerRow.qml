@@ -9,7 +9,7 @@ Item {
 
     property string athanTime
     //property alias iqamaTime: iqamaLabel.text
-    property double pixelDiv: 3
+    readonly property double pixelDiv: 3
     property int prayerId
     property alias prayerLabel: prayerLabel.text
 
@@ -29,15 +29,14 @@ Item {
             Text {
                 id: prayerLabel
 
-                anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
-                //color: Material.primaryTextColor
                 color: Material.secondaryTextColor
                 elide: Text.ElideRight
-                font.bold: prayerRow.prayerId === mm.currentPrayer
                 font.pixelSize: Math.min(parent.height, parent.width) / prayerRow.pixelDiv
-                font.weight: Font.Thin
+                font.weight: (prayerRow.prayerId === PrayerEngine.currentPrayer) ? Font.DemiBold : Font.Light
+                horizontalAlignment: Text.AlignLeft
                 text: UiEngine.prayerDisplayNames[prayerRow.prayerId].trText
+                verticalAlignment: Text.AlignVCenter
                 visible: LocationEngine.isLocationSet
                 width: parent.width
             }
@@ -54,22 +53,22 @@ Item {
                 visible: LocationEngine.isLocationSet
 
                 Text {
-                    id: athanLabel
+                    id: prayerTime
 
                     color: prayerLabel.color
-                    font.pixelSize: Math.min(parent.parent.height, parent.parent.width) / pixelDiv
+                    font.pixelSize: prayerLabel.font.pixelSize
                     font.weight: prayerLabel.font.weight
+                    horizontalAlignment: Text.AlignRight
                     text: prayerRow.athanTime.substring(0, 5)
+                    verticalAlignment: prayerLabel.verticalAlignment
                 }
 
                 Text {
-                    id: ttt
-
-                    anchors.baseline: athanLabel.baseline
-                    color: athanLabel.color
-                    font.bold: athanLabel.font.bold
-                    font.pixelSize: athanLabel.font.pixelSize / 2
-                    font.weight: athanLabel.font.weight
+                    anchors.baseline: prayerTime.baseline
+                    color: prayerTime.color
+                    font.pixelSize: prayerTime.font.pixelSize / 2
+                    font.weight: prayerTime.font.weight
+                    horizontalAlignment: prayerTime.horizontalAlignment
                     text: prayerRow.athanTime.substring(5)
                 }
             }

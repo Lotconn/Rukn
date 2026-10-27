@@ -2,6 +2,9 @@
 
 Q_STATIC_LOGGING_CATEGORY(common, "Common")
 
+// using Qt::StringLiterals::operator""_s;
+using Qt::StringLiterals::operator""_L1;
+
 void fetchAndSetListIdx(const int &index, const QVariantList &refList, QAtomicInt &idxVar,
                         const std::function<void(const QString &)> &setFunc) noexcept
 {
@@ -32,7 +35,7 @@ void fetchAndSetListIdx(const int &index, const QVariantList &refList, QAtomicIn
 
     setFunc(entry.toString());
 
-    logDebug(common) << "Replacing " << idxVar.fetchAndStoreRelaxed(index) << " with " << index;
+    logDebug(common) << "Replaced " << idxVar.fetchAndStoreRelaxed(index) << " with " << index;
 }
 
 bool isValidMap(const QVariantHash &entry, const qsizetype &refMapSize,
@@ -75,7 +78,7 @@ bool isValidEntry(const QVariantList &entryList, const qsizetype &refMapSize,
 }
 
 void loadConfigKey(QAnyStringView oldKey, QAnyStringView newKey, const QString &migrateKey,
-                   QObject *obj, QAnyStringView property,
+                   QObject *obj, const QString &property,
                    std::optional<bool> configMigrated) noexcept
 {
     if (const QVariant cfgVal{preLoadConfigKey(oldKey, newKey, migrateKey, configMigrated)};
@@ -83,9 +86,9 @@ void loadConfigKey(QAnyStringView oldKey, QAnyStringView newKey, const QString &
     {
         // logDebug(common) << "Value of provided key " << cfgVal;
 
-        if (!obj->property(qPrintable(property.toString())).isValid())
+        if (!obj->property(qPrintable(property)).isValid())
             logCritical(common) << "Property \"" << property << "\" doesn't exist";
-        else if (!obj->setProperty(qPrintable(property.toString()), cfgVal))
+        else if (!obj->setProperty(qPrintable(property), cfgVal))
             logWarning(common) << "Failed to set config value \"" << cfgVal << "\" to property "
                                << property;
 

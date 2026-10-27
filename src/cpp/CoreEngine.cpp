@@ -12,7 +12,14 @@ Q_STATIC_LOGGING_CATEGORY(munadi, "CoreEngine")
 namespace Munadi
 {
 
-CoreEngine::CoreEngine(QObject *parent) : MunadiEngine<CoreEngine>{parent}
+const QHash<QString, std::function<void(CoreEngine *)>> CoreEngine::doTrigger{
+    {u"24h_tick"_s,     &CoreEngine::dateChanged  },
+    {u"60s_tick"_s,     &CoreEngine::minuteChanged},
+    {u"alarms_reset"_s, &CoreEngine::alarmsReset  },
+    {u"athan"_s,        &CoreEngine::athanAlarm   }
+};
+
+CoreEngine::CoreEngine(QObject *parent) : MunadiEngine<CoreEngine>{parent}, alarm{createAlarm(this)}
 {
     this->bootEngine();
 
@@ -28,11 +35,11 @@ CoreEngine::CoreEngine(QObject *parent) : MunadiEngine<CoreEngine>{parent}
 
         const QDir &configDir{QFileInfo(settings->fileName()).absolutePath()};
 
-        this->configLock = new QLockFile{configDir.absoluteFilePath(".settings.lock"_L1)};
+        this->configLock = new QLockFile{configDir.absoluteFilePath(u".settings.lock"_s)};
     }
 
     if (const QFileInfo oldConfigFile{
-            QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + ".conf"_L1};
+            QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + u".conf"_s};
         oldConfigFile.exists())
     {
         const QString oldConfigPath{oldConfigFile.absoluteFilePath()};
@@ -42,36 +49,36 @@ CoreEngine::CoreEngine(QObject *parent) : MunadiEngine<CoreEngine>{parent}
         this->oldSettings = new QSettings(oldConfigPath, QSettings::NativeFormat, this);
     }
 
-    this->applyLocale();
+    // These are in order of dependency, not in lexical order
     qApp->installEventFilter(this);
-
-    if (const auto conn = QObject::connect(qApp, &QCoreApplication::aboutToQuit, this,
-                                           &CoreEngine::onAboutToQuit, Qt::DirectConnection);
-        conn == nullptr)
-        logWarning(munadi) << "aboutToQuit signal not connected";
-    else
-        logDebug(munadi) << "aboutToQuit signal connected";
+    this->connectToAboutToQuit();
+    this->connectToTrigger();
 
     this->makeOnline();
+    this->applyLocale();
+    this->installTickers();
 }
 
 const QLoggingCategory &CoreEngine::logCategory() noexcept
 { return munadi(); }
 
+Alarm &CoreEngine::alarmManager() const noexcept
+{ return *this->alarm; }
+
 QVariant CoreEngine::readOldSettings(QAnyStringView oldKey, const QVariant &defaultValue) noexcept
 {
+    if (oldKey.isEmpty())
+    {
+        logCritical(munadi) << "Provided key is empty";
+
+        return {};
+    }
+
     const QWriteLocker lock{&this->varLock};
 
     if (this->oldSettings == nullptr)
     {
         logDebug(munadi) << "Old settings doesn't exist, skipping migration";
-
-        return {};
-    }
-
-    if (oldKey.isEmpty())
-    {
-        logCritical(munadi) << "Provided key is empty";
 
         return {};
     }
@@ -82,24 +89,8 @@ QVariant CoreEngine::readOldSettings(QAnyStringView oldKey, const QVariant &defa
 QVariantList CoreEngine::readOldSettingsJsArray(QAnyStringView    oldKey,
                                                 const QJsonArray &defaultArray) noexcept
 {
-    const QWriteLocker lock{&this->varLock};
-
-    if (this->oldSettings == nullptr)
-    {
-        logDebug(munadi) << "Old settings doesn't exist, skipping migration";
-
-        return {};
-    }
-
-    if (oldKey.isEmpty())
-    {
-        logCritical(munadi) << "Provided key is empty";
-
-        return {};
-    }
-
     QJsonParseError     err;
-    const QVariant      oldValue{CoreEngine::readValueOfKey(*this->oldSettings, oldKey)};
+    const QVariant      oldValue{this->readOldSettings(oldKey)};
     const QJsonDocument jsonDoc{QJsonDocument::fromJson(oldValue.toByteArray(), &err)};
 
     if (err.error != QJsonParseError::NoError)
@@ -202,6 +193,20 @@ QVariantList CoreEngine::readSettingsArray(QAnyStringView group) noexcept
 
 //     return true;
 // }
+
+void CoreEngine::set60sTicker() noexcept
+{
+    constexpr static quint8 minSecs{60};
+
+    logDebug(munadi) << "Registering 60s_ticker";
+
+    this->alarm->clear("60s_tick"_L1);
+    // This is not regular arithmetic, do not simplify the math here
+    this->alarm->add("60s_tick"_L1,
+                     QDateTime::fromSecsSinceEpoch(
+                         ((QDateTime::currentSecsSinceEpoch() / minSecs) + 1) * minSecs),
+                     minSecs);
+}
 
 void CoreEngine::setLang(const QString &lang) noexcept
 {
@@ -355,8 +360,7 @@ void CoreEngine::applyLocale(const QLocale &locale) noexcept
 
         QLocale::setDefault(l);
 
-        if (this->translator.load(l, QLatin1String("munadi"), QLatin1String("_"),
-                                  QLatin1String(":/qt/qml/Munadi/i18n")))
+        if (this->translator.load(l, "munadi"_L1, "_"_L1, ":/qt/qml/Munadi/i18n"_L1))
         {
             logDebug(munadi) << "Installing updated translator: " << this->translator.language();
             qApp->installTranslator(&this->translator);
@@ -380,8 +384,37 @@ void CoreEngine::applyLocale(const QLocale &locale) noexcept
     emit this->localeChanged();
 }
 
+void CoreEngine::connectToAboutToQuit() const noexcept
+{
+    if (const auto conn = QObject::connect(qApp, &QCoreApplication::aboutToQuit, this,
+                                           &CoreEngine::onAboutToQuit, Qt::DirectConnection);
+        conn == nullptr)
+        logWarning(munadi) << "aboutToQuit signal not connected";
+    else
+        logDebug(munadi) << "aboutToQuit signal connected";
+}
+
+void CoreEngine::connectToTrigger() const noexcept
+{
+    if (const auto conn =
+            QObject::connect(this->alarm, &Alarm::trigger, this, &CoreEngine::onTrigger);
+        conn == nullptr)
+        logWarning(munadi) << "Trigger signal not connected";
+    else
+        logDebug(munadi) << "Trigger signal connected";
+}
+
 QLocale CoreEngine::getCurrentLocale() noexcept
 { return QLocale{}; }
+
+void CoreEngine::installTickers() noexcept
+{
+    constexpr static quint32 daySecs{86400};
+
+    this->alarm->clear("24h_tick"_L1);
+    this->alarm->add("24h_tick"_L1, QDate::currentDate().startOfDay().addDays(1), daySecs);
+    this->set60sTicker();
+}
 
 QVariant CoreEngine::readValueOfKey(QSettings &settings, QAnyStringView key,
                                     const QVariant &defaultValue) noexcept
@@ -452,5 +485,22 @@ void CoreEngine::setValueOfKey(QSettings &settings, QAnyStringView key, const QV
 
 void CoreEngine::onAboutToQuit() noexcept
 { emit this->engineOffline(); }
+
+void CoreEngine::onTrigger(const QString &id) noexcept
+{
+    logDebug(munadi) << "trigger id: " << id;
+
+    if (!CoreEngine::doTrigger.contains(id))
+    {
+        logWarning(munadi) << "\"" << id << "\" is not a valid alarm ID";
+        return;
+    }
+
+    // This is actually `emit signal()`
+    std::invoke(CoreEngine::doTrigger.value(id), this);
+
+    if (id == u"alarms_reset"_s)
+        this->installTickers();
+}
 
 } // namespace Munadi

@@ -37,25 +37,14 @@ Page {
 
             anchors.centerIn: parent
             fillMode: Image.PreserveAspectFit
-            //width: 20
             height: parent.height / 2
-            rotation: engine.ff() === "m" ? 0 : engine.getQibla()
+            rotation: PrayerEngine.qibla
             source: "qrc:/qt/qml/Munadi/img/arrow.png"
 
             Behavior on rotation {
                 NumberAnimation {
                     duration: 5000
                     easing.type: Easing.OutElastic
-                }
-            }
-
-            Connections {
-                target: engine
-
-                onMinuteElapsed: {
-                    var n = engine.getQibla();
-                    n = n > -90 && n < 90 ? -n : n;
-                    arrow.rotation = n;
                 }
             }
         }
@@ -87,6 +76,6 @@ Page {
         color: theme.fontColour
         font.pixelSize: qiblaLabel.font.pixelSize
         //text: sensor.hasZ && engine.ff() === "m" ? qsTr("Please wait ...") : qsTr("%1° with respect to North").arg(engine.getQibla().toFixed(0));
-        text: qsTr("%1° with respect to North").arg(engine.getQibla().toFixed(0))
+        text: qsTr("%1° with respect to North").arg(PrayerEngine.qibla.toFixed(2))
     }
 }
