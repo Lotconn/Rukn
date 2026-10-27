@@ -155,10 +155,6 @@ set(MUNADI_QML_FILES
   src/qml/TimeLeftRow.qml
 )
 
-set(MUNADI_JS_FILES
-  src/data/Adhan.js
-)
-
 set(MUNADI_SOURCES
   src/cpp/alarm.h
   src/cpp/engine.h
@@ -220,7 +216,7 @@ set(MUNADI_RESOURCES
   src/img/stop.png
 )
 
-foreach(filePath IN LISTS MUNADI_JS_FILES MUNADI_QML_FILES MUNADI_RESOURCES)
+foreach(filePath IN LISTS MUNADI_QML_FILES MUNADI_RESOURCES)
   string(REGEX REPLACE "^src/" "" qrc_filePath "${filePath}")
   set_source_files_properties("${filePath}"
     PROPERTIES
