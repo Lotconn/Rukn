@@ -74,19 +74,17 @@ class PrayerEngine : public MunadiBase, public MunadiEngine<PrayerEngine>
     auto setCalcMethod(const QString &method) noexcept -> void;
     auto setMadhab(const QString &madhab) noexcept -> void;
     auto timeBetweenPrayers(Prayer current, Prayer next,
-                            const std::optional<QDate> &current_date = std::nullopt,
-                            const std::optional<QDate> &next_date    = std::nullopt) noexcept
-        -> qint64;
+                            std::optional<QDate> current_date = std::nullopt,
+                            std::optional<QDate> next_date    = std::nullopt) noexcept -> qint64;
     auto timeBetweenPrayers(const QString &currentPrayer, const QString &nextPrayer,
-                            const std::optional<QDate> &current_date = std::nullopt,
-                            const std::optional<QDate> &next_date    = std::nullopt) noexcept
-        -> qint64;
-    auto timeForPrayer(Prayer prayerEnum, const std::optional<QDate> &date = std::nullopt) noexcept
+                            std::optional<QDate> current_date = std::nullopt,
+                            std::optional<QDate> next_date    = std::nullopt) noexcept -> qint64;
+    auto timeForPrayer(Prayer prayerEnum, std::optional<QDate> date = std::nullopt) noexcept
         -> QDateTime;
-    auto timeForPrayer(const QString              &prayerName,
-                       const std::optional<QDate> &date = std::nullopt) noexcept -> QDateTime;
-    auto timeForSunnahTime(const QString              &sunnahName,
-                           const std::optional<QDate> &date = std::nullopt) noexcept -> QDateTime;
+    auto timeForPrayer(const QString &prayerName, std::optional<QDate> date = std::nullopt) noexcept
+        -> QDateTime;
+    auto timeForSunnahTime(const QString       &sunnahName,
+                           std::optional<QDate> date = std::nullopt) noexcept -> QDateTime;
     auto timeToNextPrayer(const std::optional<QDateTime> &since_ms = std::nullopt) noexcept
         -> qint64;
 
@@ -95,10 +93,10 @@ class PrayerEngine : public MunadiBase, public MunadiEngine<PrayerEngine>
     timeForCurrentPrayer(const std::optional<QDateTime> &when = std::nullopt) noexcept;
     Q_INVOKABLE QDateTime
     timeForNextPrayer(const std::optional<QDateTime> &when = std::nullopt) noexcept;
-    Q_INVOKABLE QDateTime
-    timeForSunnahTime(Sunnah sunnahEnum, const std::optional<QDate> &date = std::nullopt) noexcept;
-    Q_INVOKABLE static QString toString(Prayer prayerEnum) noexcept;
-    Q_INVOKABLE static QString toString(Sunnah sunnahEnum) noexcept;
+    Q_INVOKABLE QDateTime      timeForSunnahTime(Munadi::PrayerEngine::Sunnah sunnahEnum,
+                                                 std::optional<QDate> date = std::nullopt) noexcept;
+    Q_INVOKABLE static QString toString(Munadi::PrayerEngine::Prayer prayerEnum) noexcept;
+    Q_INVOKABLE static QString toString(Munadi::PrayerEngine::Sunnah sunnahEnum) noexcept;
 
   protected:
     explicit PrayerEngine(QObject *parent = nullptr);

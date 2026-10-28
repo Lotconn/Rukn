@@ -172,8 +172,8 @@ void PrayerEngine::setMadhab(const QString &madhab) noexcept
 // Recommended to pass local date
 // NOLINTBEGIN(bugprone-easily-swappable-parameters)
 qint64 PrayerEngine::timeBetweenPrayers(Prayer current, Prayer next,
-                                        const std::optional<QDate> &current_date,
-                                        const std::optional<QDate> &next_date) noexcept
+                                        std::optional<QDate> current_date,
+                                        std::optional<QDate> next_date) noexcept
 {
     const QDateTime currentAt{this->timeForPrayer(current, current_date)};
     const QDateTime nextAt{this->timeForPrayer(next, [&] -> std::optional<QDate> {
@@ -194,8 +194,8 @@ qint64 PrayerEngine::timeBetweenPrayers(Prayer current, Prayer next,
 }
 
 qint64 PrayerEngine::timeBetweenPrayers(const QString &currentPrayer, const QString &nextPrayer,
-                                        const std::optional<QDate> &current_date,
-                                        const std::optional<QDate> &next_date) noexcept
+                                        std::optional<QDate> current_date,
+                                        std::optional<QDate> next_date) noexcept
 { // NOLINTEND(bugprone-easily-swappable-parameters)
     return this->timeBetweenPrayers(PrayerEngine::fromString(currentPrayer),
                                     PrayerEngine::fromString(nextPrayer), current_date, next_date);
@@ -222,7 +222,7 @@ QDateTime PrayerEngine::timeForCurrentPrayer(const std::optional<QDateTime> &whe
 }
 
 // Recommended to pass local date
-QDateTime PrayerEngine::timeForPrayer(Prayer prayerEnum, const std::optional<QDate> &date) noexcept
+QDateTime PrayerEngine::timeForPrayer(Prayer prayerEnum, std::optional<QDate> date) noexcept
 {
     // Return midnight time 00:00:00 of same day for Prayer::None
     if (prayerEnum == Prayer::None)
@@ -250,8 +250,7 @@ QDateTime PrayerEngine::timeForPrayer(Prayer prayerEnum, const std::optional<QDa
 }
 
 // Recommended to pass local date
-QDateTime PrayerEngine::timeForPrayer(const QString              &prayerName,
-                                      const std::optional<QDate> &date) noexcept
+QDateTime PrayerEngine::timeForPrayer(const QString &prayerName, std::optional<QDate> date) noexcept
 { return this->timeForPrayer(PrayerEngine::fromString(prayerName), date); }
 
 QDateTime PrayerEngine::timeForNextPrayer(const std::optional<QDateTime> &when) noexcept
@@ -275,8 +274,7 @@ QDateTime PrayerEngine::timeForNextPrayer(const std::optional<QDateTime> &when) 
 }
 
 // Recommended to pass local date
-QDateTime PrayerEngine::timeForSunnahTime(Sunnah                      sunnahEnum,
-                                          const std::optional<QDate> &date) noexcept
+QDateTime PrayerEngine::timeForSunnahTime(Sunnah sunnahEnum, std::optional<QDate> date) noexcept
 {
     Adhan::OptInstant date_time;
     {
@@ -300,8 +298,8 @@ QDateTime PrayerEngine::timeForSunnahTime(Sunnah                      sunnahEnum
 }
 
 // Recommended to pass local date
-QDateTime PrayerEngine::timeForSunnahTime(const QString              &sunnahName,
-                                          const std::optional<QDate> &date) noexcept
+QDateTime PrayerEngine::timeForSunnahTime(const QString       &sunnahName,
+                                          std::optional<QDate> date) noexcept
 { return this->timeForSunnahTime(PrayerEngine::fromString_sunnahTime(sunnahName), date); }
 
 // Recommended to pass local date-time
@@ -532,7 +530,7 @@ void PrayerEngine::loadPrayerConfig(bool &configMigrated) noexcept
     if (!oldPrayerConfig.isEmpty())
         logInfo(munadi) << "Migrating from old config";
 
-    for (const QString &prayerName : this->prayerConfigKeys)
+    for (const QString &prayerName : std::as_const(this->prayerConfigKeys))
     {
         const int i = PrayerEngine::s_metaPrayerEnum.keyToValue(qPrintable(prayerName));
 
@@ -552,7 +550,7 @@ void PrayerEngine::loadPrayerConfig(bool &configMigrated) noexcept
 
         QVariantHash entry{this->m_prayerConfig.value(prayerName).toHash()};
 
-        for (const QString &key : this->prayerConfigFields.keys())
+        for (const auto &[key, value] : this->prayerConfigFields.asKeyValueRange())
         {
             QVariant cfgVal;
 
@@ -590,7 +588,7 @@ void PrayerEngine::saveConfigs() noexcept
 
     const QReadLocker lock{&this->varLock};
 
-    for (const QString &prayerName : this->prayerConfigKeys)
+    for (const QString &prayerName : std::as_const(this->prayerConfigKeys))
     {
         // prayerName == "Sunrise" and prayerEnum == "None" checks are not necessary
         if (prayerName.isEmpty())

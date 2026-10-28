@@ -52,7 +52,7 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
     Q_INVOKABLE void set60sTicker() noexcept;
 
   public slots: // NOLINT(*redundant-access-specifiers)
-    void onReceivedMessage(quint32 instanceId, QByteArray message);
+    void onReceivedMessage(quint32 instanceId, const QByteArray &message);
     void onUnixSigTerm();
 
   protected:

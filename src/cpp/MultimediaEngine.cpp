@@ -185,7 +185,7 @@ void MultimediaEngine::previewStop() noexcept
         logDebug(munadi) << "Stop ignored; media is not playing";
 }
 
-void MultimediaEngine::removeAthan(const qsizetype &rmIdx) noexcept
+void MultimediaEngine::removeAthan(qsizetype rmIdx) noexcept
 {
     {
         const QWriteLocker lock{&this->varLock};
@@ -385,7 +385,7 @@ void MultimediaEngine::loadAthanConfig(bool &configMigrated) noexcept
     if (!oldAthanConfig.isEmpty())
         logInfo(munadi) << "Migrating from old config";
 
-    for (const QString &prayerName : this->athanConfigKeys)
+    for (const QString &prayerName : std::as_const(this->athanConfigKeys))
     {
         const int i = PrayerEngine::metaPrayerEnum().keyToValue(qPrintable(prayerName));
 
@@ -405,7 +405,7 @@ void MultimediaEngine::loadAthanConfig(bool &configMigrated) noexcept
 
         QVariantHash entry{this->m_athanConfig.value(prayerName).toHash()};
 
-        for (const QString &key : this->athanConfigFields.keys())
+        for (const auto &[key, value] : this->athanConfigFields.asKeyValueRange())
         {
             QVariant cfgVal;
 
@@ -475,7 +475,7 @@ void MultimediaEngine::saveConfigs() noexcept
 
     logDebug(munadi) << "Saving athan configurations";
 
-    for (const QString &prayerName : this->athanConfigKeys)
+    for (const QString &prayerName : std::as_const(this->athanConfigKeys))
     {
         // prayerName == "Sunrise" and prayerEnum == "None" checks are not necessary
         if (prayerName.isEmpty())

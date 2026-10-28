@@ -37,7 +37,7 @@ class MultimediaEngine : public MunadiBase, public MunadiEngine<MultimediaEngine
     Q_INVOKABLE void modifyAthanConfig(const QString &key, const QVariantHash &entry) noexcept;
     Q_INVOKABLE void previewPlay(int athanListIdx) noexcept;
     Q_INVOKABLE void previewStop() noexcept;
-    Q_INVOKABLE void removeAthan(const qsizetype &rmIdx) noexcept;
+    Q_INVOKABLE void removeAthan(qsizetype rmIdx) noexcept;
 
   protected:
     explicit MultimediaEngine(QObject *parent = nullptr);

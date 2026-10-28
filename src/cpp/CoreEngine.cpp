@@ -83,7 +83,7 @@ Alarm &CoreEngine::alarmManager() const noexcept
 { return *this->alarm; }
 
 QString CoreEngine::getAppVersion() noexcept
-{ return APP_VERSION; }
+{ return QStringLiteral(APP_VERSION); }
 
 QVariant CoreEngine::readOldSettings(QAnyStringView oldKey, const QVariant &defaultValue) noexcept
 {
@@ -181,6 +181,7 @@ QVariantList CoreEngine::readSettingsArray(QAnyStringView group) noexcept
 
         logDebug(munadi) << "Child keys in array " << i << ": " << this->settings->childKeys();
 
+        // NOLINTNEXTLINE(clazy-range-loop*)
         for (const QString &key : this->settings->childKeys())
         {
             const QVariant value{CoreEngine::readValueOfKey(*this->settings, key)};
@@ -311,7 +312,7 @@ void CoreEngine::writeSettingsArray(QAnyStringView group, const QVariantList &en
 //  Public Slots
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void CoreEngine::onReceivedMessage(quint32 instanceId, QByteArray message) // NOLINT(*value*param)
+void CoreEngine::onReceivedMessage(quint32 instanceId, const QByteArray &message)
 {
     logDebug(munadi) << "Received message from instance: " << instanceId;
     logInfo(munadi) << "Received Message: " << message;
