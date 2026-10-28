@@ -130,6 +130,7 @@ class UiEngine : public MunadiBase, public MunadiEngine<UiEngine>
     auto               calcMethodsDisplayNames() noexcept -> QVariantList &;
     auto               calendarDateDisplay() noexcept -> QString;
     auto               calendarDisplayNames() noexcept -> QVariantList &;
+    auto               connectToAlarmsReset() const noexcept -> void;
     auto               connectToAthanPlayingChanged() const noexcept -> void;
     auto               connectToCalcChanged() const noexcept -> void;
     auto               connectToDateChanged() const noexcept -> void;
@@ -173,6 +174,7 @@ class UiEngine : public MunadiBase, public MunadiEngine<UiEngine>
     auto translationChanged() -> void;
 
   private slots:
+    void onAlarmsReset() noexcept;
     void onAthanPlayingChanged(bool playing) noexcept;
     void onCalcChanged() noexcept;
     void onDateChanged() noexcept;

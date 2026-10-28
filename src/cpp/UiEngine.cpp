@@ -75,6 +75,16 @@ QVariantList &UiEngine::calendarDisplayNames() noexcept
     return this->m_calendarDisplayNames;
 }
 
+void UiEngine::connectToAlarmsReset() const noexcept
+{
+    if (const auto conn =
+            QObject::connect(core, &CoreEngine::alarmsReset, this, &UiEngine::onAlarmsReset);
+        conn == nullptr)
+        logWarning(munadi) << "alarmsReset signal not connected";
+    else
+        logDebug(munadi) << "alarmsReset signal connected";
+}
+
 void UiEngine::connectToAthanPlayingChanged() const noexcept
 {
     if (const auto conn = QObject::connect(mEngine, &MultimediaEngine::athanPlayingChanged, this,
@@ -528,15 +538,23 @@ QString UiEngine::timeLeftDisplay() const noexcept
             .toHash()
             .value("trText"_L1)
             .toString()};
-    const QString nextPrayer{this->m_prayerDisplayNames.at(qToUnderlying(pEngine->nextPrayer()))
-                                 .toHash()
-                                 .value("trText"_L1)
-                                 .toString()};
-    const QTime   timeLeft{QTime::fromMSecsSinceStartOfDay(pEngine->timeToNextPrayer())};
-    const QString format{(timeLeft.hour()) > 0 ? tr("h'h' m'm'") : tr("m'm'")};
 
     if (mEngine->isAthanPlaying())
         return currentPrayer + u" "_s + tr("athan") + u"..."_s;
+
+    const QTime timeLeft{QTime::fromMSecsSinceStartOfDay(pEngine->timeToNextPrayer())};
+
+    if (!timeLeft.isValid())
+        return {};
+
+    const int index{qToUnderlying(pEngine->nextPrayer())};
+
+    if (index > qToUnderlying(Prayer::Isha))
+        return {};
+
+    const QString format{(timeLeft.hour()) > 0 ? tr("h'h' m'm'") : tr("m'm'")};
+    const QString nextPrayer{
+        this->m_prayerDisplayNames.at(index).toHash().value("trText"_L1).toString()};
 
     if (timeLeft.msecsTo(QTime{0, 1, 0}) > 0)
         return tr("Seconds to") + u" "_s + nextPrayer;
@@ -562,6 +580,12 @@ double UiEngine::timeLeftProgress() noexcept
 //  Private Slots
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void UiEngine::onAlarmsReset() noexcept
+{
+    this->initCalendarDates();
+    emit this->calendarChanged();
+}
+
 void UiEngine::onAthanPlayingChanged(bool /* playing */) noexcept
 {
     emit this->calendarChanged();
@@ -582,19 +606,21 @@ void UiEngine::onCalcChanged() noexcept
     emit this->timeChanged();
 }
 
-void UiEngine::onDateChanged() noexcept
-{
-    emit this->calendarChanged();
-    emit this->timeChanged();
-}
-
 void UiEngine::onCoreOnline() noexcept
 {
     this->connectToLocaleChanged();
     this->initTexts();
+    this->connectToAlarmsReset();
     this->connectToDateChanged();
     this->connectToMinuteChanged();
     this->connectToCoreOffline();
+}
+
+void UiEngine::onDateChanged() noexcept
+{
+    this->initCalendarDates();
+    emit this->calendarChanged();
+    emit this->timeChanged();
 }
 
 void UiEngine::onLocaleChanged() noexcept

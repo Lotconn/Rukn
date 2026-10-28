@@ -187,6 +187,9 @@ qint64 PrayerEngine::timeBetweenPrayers(Prayer current, Prayer next,
         return current_date;
     }())};
 
+    if (!currentAt.isValid() || !nextAt.isValid())
+        return -1;
+
     return currentAt.msecsTo(nextAt); // both are converted to UTC by Qt
 }
 
@@ -348,6 +351,9 @@ qint64 PrayerEngine::timeToNextPrayer(const std::optional<QDateTime> &since_ms) 
     // logDebug(munadi)
     //     << "Time to next prayer: "
     //     << QTime::fromMSecsSinceStartOfDay(static_cast<int>(since.msecsTo(nextTime))).toString();
+
+    if (!nextTime.isValid())
+        return -1;
 
     return since.msecsTo(nextTime); // nextTime is converted to UTC by Qt
 }
@@ -664,11 +670,17 @@ void PrayerEngine::updateCalc()
     }
 
     core->alarmManager().clear("athan"_L1);
-    core->alarmManager().add("athan"_L1, this->timeForPrayer(Prayer::Fajr));
-    core->alarmManager().add("athan"_L1, this->timeForPrayer(Prayer::Dhuhr));
-    core->alarmManager().add("athan"_L1, this->timeForPrayer(Prayer::Asr));
-    core->alarmManager().add("athan"_L1, this->timeForPrayer(Prayer::Maghrib));
-    core->alarmManager().add("athan"_L1, this->timeForPrayer(Prayer::Isha));
+
+    if (const QDateTime dt{this->timeForPrayer(Prayer::Fajr)}; dt.isValid())
+        core->alarmManager().add("athan"_L1, dt);
+    if (const QDateTime dt{this->timeForPrayer(Prayer::Dhuhr)}; dt.isValid())
+        core->alarmManager().add("athan"_L1, dt);
+    if (const QDateTime dt{this->timeForPrayer(Prayer::Asr)}; dt.isValid())
+        core->alarmManager().add("athan"_L1, dt);
+    if (const QDateTime dt{this->timeForPrayer(Prayer::Maghrib)}; dt.isValid())
+        core->alarmManager().add("athan"_L1, dt);
+    if (const QDateTime dt{this->timeForPrayer(Prayer::Isha)}; dt.isValid())
+        core->alarmManager().add("athan"_L1, dt);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
