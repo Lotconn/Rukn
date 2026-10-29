@@ -93,10 +93,12 @@ class PrayerEngine : public MunadiBase, public MunadiEngine<PrayerEngine>
     timeForCurrentPrayer(const std::optional<QDateTime> &when = std::nullopt) noexcept;
     Q_INVOKABLE QDateTime
     timeForNextPrayer(const std::optional<QDateTime> &when = std::nullopt) noexcept;
-    Q_INVOKABLE QDateTime      timeForSunnahTime(Munadi::PrayerEngine::Sunnah sunnahEnum,
+    // NOLINTBEGIN(clazy-fully-qualified*-types)
+    Q_INVOKABLE QDateTime      timeForSunnahTime(Sunnah               sunnahEnum,
                                                  std::optional<QDate> date = std::nullopt) noexcept;
-    Q_INVOKABLE static QString toString(Munadi::PrayerEngine::Prayer prayerEnum) noexcept;
-    Q_INVOKABLE static QString toString(Munadi::PrayerEngine::Sunnah sunnahEnum) noexcept;
+    Q_INVOKABLE static QString toString(Prayer prayerEnum) noexcept;
+    Q_INVOKABLE static QString toString(Sunnah sunnahEnum) noexcept;
+    // NOLINTEND(clazy-fully-qualified*-types)
 
   protected:
     explicit PrayerEngine(QObject *parent = nullptr);

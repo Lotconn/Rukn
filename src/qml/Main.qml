@@ -64,11 +64,6 @@ ApplicationWindow {
         mm.checkForUpdates = settingsBool("checkForUpdates", mm.checkForUpdates);
         mm.hideOnClose = settingsBool("hideOnClose", mm.hideOnClose);
 
-        newsVersion = settings.value("newsVersion", "");
-
-        settings.category = "Adhan";
-        mm.overrideOffsetBy = settings.value("overrideOffsetBy", mm.overrideOffsetBy);
-
         settings.category = "Window";
         mainWindow.width = settings.value("width", mainWindow.width);
         mainWindow.height = settings.value("height", mainWindow.height);
@@ -84,10 +79,9 @@ ApplicationWindow {
             updater.check();
 
         // Only display what's new once
-        if (newsVersion !== CoreEngine.getAppVersion()) {
+        if (CoreEngine.isVersionNew()) {
             whatsNewPopup.text = engine.getWhatsNew();
             whatsNewPopup.open();
-            newsVersion = CoreEngine.getAppVersion();
         }
 
         if (theme === "System")
@@ -100,11 +94,9 @@ ApplicationWindow {
         settings.category = "App";
         settings.setValue("autoStartUp", autoStartUp);
         settings.setValue("hideOnClose", mm.hideOnClose);
-        settings.setValue("newsVersion", newsVersion);
 
         settings.category = "Adhan";
         settings.setValue("checkForUpdates", mm.checkForUpdates);
-        settings.setValue("overrideOffsetBy", mm.overrideOffsetBy);
 
         settings.category = "Window";
         settings.setValue("width", mainWindow.width);
@@ -291,7 +283,7 @@ ApplicationWindow {
     SystemTrayIcon {
         icon.name: "org.munadi.Munadi-symbolic"
         icon.source: "qrc:/qt/qml/Munadi/img/munadi-symbolic.svg"
-        tooltip: qsTr("Munadi") + (UiEngine.timeLeftDisplay ? "\n" + UiEngine.timeLeftDisplay : "")
+        tooltip: qsTr("Munadi") + ((UiEngine.timeLeftDisplay === "") ? "" : "\n" + UiEngine.timeLeftDisplay)
         visible: true
 
         menu: Menu {

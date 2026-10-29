@@ -13,7 +13,7 @@ Item {
         color: Material.secondaryTextColor
         elide: Text.ElideRight
         font.italic: true
-        font.pixelSize: 12
+        font.pointSize: 10
         font.underline: textId.font.underline
         text: qsTr("Set your location ...")
         visible: !LocationEngine.isLocationSet
@@ -25,7 +25,7 @@ Item {
         anchors.centerIn: parent
         color: Material.primaryTextColor
         elide: Text.ElideRight
-        font.pixelSize: 12
+        font.pointSize: 10
         horizontalAlignment: Text.AlignHCenter
         text: parent.address
         verticalAlignment: Text.AlignVCenter

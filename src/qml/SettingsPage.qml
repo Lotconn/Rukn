@@ -443,7 +443,7 @@ Page {
                         value: UiEngine.hijriOffset
                         wheelEnabled: true
 
-                        onValueChanged: UiEngine.hijriOffset = value
+                        onMoved: UiEngine.hijriOffset = value
                     }
 
                     Text {

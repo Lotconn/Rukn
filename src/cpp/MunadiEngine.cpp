@@ -47,8 +47,8 @@ void MunadiEngine<Engine_t>::onceOnline(QObject *context, std::function<void()> 
         return;
     }
 
-    if (const auto conn = QObject::connect(MunadiEngine::instance(), &MunadiBase::engineOnline,
-                                           context, slot, Qt::DirectConnection);
+    if (const auto conn =
+            QObject::connect(MunadiEngine::instance(), &MunadiBase::engineOnline, context, slot);
         conn == nullptr)
         logWarning(Engine_t::logCategory()) << "engineOnline signal not connected";
     else
@@ -64,8 +64,8 @@ void MunadiEngine<Engine_t>::onceOnline(QObject *context, std::function<void()> 
 
 void MunadiBase::connectToCoreOffline() const noexcept
 {
-    if (const auto conn = QObject::connect(core, &CoreEngine::engineOffline, this,
-                                           &MunadiBase::onCoreOffline, Qt::DirectConnection);
+    if (const auto conn =
+            QObject::connect(core, &CoreEngine::engineOffline, this, &MunadiBase::onCoreOffline);
         conn == nullptr)
         logWarning(this->logCategory_p()) << "coreOffline signal not connected";
     else

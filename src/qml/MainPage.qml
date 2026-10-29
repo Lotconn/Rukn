@@ -105,14 +105,12 @@ ColumnLayout {
                 prayerId: PrayerEngine.Prayer.Isha
             }
 
-            Line {}
-
             PrayerRow {
                 id: midnight
 
-                Layout.bottomMargin: -20
                 Layout.fillWidth: true
                 Layout.preferredHeight: 30
+                Layout.topMargin: -20
                 athanTime: UiEngine.prayerDisplayTimes.Midnight
                 prayerId: PrayerEngine.Prayer.Isha + PrayerEngine.Sunnah.Midnight
             }
@@ -120,14 +118,16 @@ ColumnLayout {
             PrayerRow {
                 id: lastThirdNight
 
-                Layout.bottomMargin: -20
                 Layout.fillWidth: true
                 Layout.preferredHeight: 30
+                Layout.topMargin: -20
                 athanTime: UiEngine.prayerDisplayTimes.LastThirdNight
                 prayerId: PrayerEngine.Prayer.Isha + PrayerEngine.Sunnah.LastThirdNight
             }
 
-            Item {}
+            // Item {}
+
+            Line {}
         }
     }
 

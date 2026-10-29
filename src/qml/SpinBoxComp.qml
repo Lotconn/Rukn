@@ -10,8 +10,8 @@ SpinBox {
 
     editable: true
     from: 0
-    implicitHeight: 31
-    implicitWidth: 97
+    implicitHeight: 40
+    implicitWidth: 120
     inputMethodHints: Qt.ImhDigitsOnly
     textFromValue: (value, locale) => Number(value).toLocaleString(locale, 'f', 0) + "%"
     to: 100

@@ -49,7 +49,8 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
     auto writeSettingsArray(QAnyStringView group, const QVariantList &entryMaps,
                             bool flushOnWrite = false) noexcept -> void;
 
-    Q_INVOKABLE void set60sTicker() noexcept;
+    Q_INVOKABLE [[nodiscard]] bool isVersionNew() const noexcept;
+    Q_INVOKABLE void               set60sTicker() noexcept;
 
   public slots: // NOLINT(*redundant-access-specifiers)
     void onReceivedMessage(quint32 instanceId, const QByteArray &message);
@@ -65,6 +66,7 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
     //  Variables
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
+    inline static const QString                 s_appVersion{QStringLiteral(APP_VERSION)};
     inline static const QHash<QString, QLocale> s_lang{
         {u"System"_s,  QLocale::system()  },
         {u"English"_s, QLocale{u"en_US"_s}},
@@ -75,6 +77,8 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
     static const QHash<QString, std::function<void(CoreEngine *)>> doTrigger;
 
     inline static std::array<int, 2> sigtermFd{0, 0};
+
+    bool m_isVersionNew{false};
 
     Alarm           *alarm{};
     QLockFile       *configLock{};
@@ -99,8 +103,11 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
     auto applyLocale(const QLocale &locale = QLocale::system()) noexcept -> void;
     auto connectToAboutToQuit() const noexcept -> void;
     auto connectToTrigger() const noexcept -> void;
+    auto defaultConfigs() noexcept -> void override;
     auto installTickers() noexcept -> void;
+    auto loadConfigs() noexcept -> void override;
     // auto releaseConfigLock() -> void;
+    auto saveConfigs() noexcept -> void override;
 
   signals:
     auto alarmsReset() -> void;
@@ -112,6 +119,7 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
 
   private slots: // NOLINT(*-redundant-access-specifiers)
     void onAboutToQuit() noexcept;
+    void onCoreOnline() noexcept override {};
     void onTrigger(const QString &id) noexcept;
 };
 

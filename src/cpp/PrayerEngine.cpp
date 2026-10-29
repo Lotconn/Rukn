@@ -588,6 +588,9 @@ void PrayerEngine::saveConfigs() noexcept
 
     const QReadLocker lock{&this->varLock};
 
+    // Ensure the very last config to be saved has the third parameter set to "true". Otherwise
+    // (later) settings are not saved
+
     for (const QString &prayerName : std::as_const(this->prayerConfigKeys))
     {
         // prayerName == "Sunrise" and prayerEnum == "None" checks are not necessary
@@ -600,7 +603,7 @@ void PrayerEngine::saveConfigs() noexcept
     }
 
     core->writeSettings("PrayerConfig/CalcMethod"_L1, this->m_calcMethodKey);
-    core->writeSettings("PrayerConfig/Madhab"_L1, this->m_madhabKey);
+    core->writeSettings("PrayerConfig/Madhab"_L1, this->m_madhabKey, true);
 }
 
 void PrayerEngine::setPrayerConfig(const QVariantHash &prayerConfig) noexcept

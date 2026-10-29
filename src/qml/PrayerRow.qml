@@ -9,22 +9,22 @@ Item {
 
     property string athanTime
     //property alias iqamaTime: iqamaLabel.text
-    readonly property double pixelDiv: 3
+    readonly property double pixelDiv: 4
     property int prayerId
     property alias prayerLabel: prayerLabel.text
 
     Layout.fillHeight: true
-    Layout.preferredWidth: parent.width
+    Layout.fillWidth: true
 
     RowLayout {
         anchors.fill: parent
         anchors.leftMargin: 30
-        anchors.rightMargin: 40
+        anchors.rightMargin: 30
         spacing: theme.margin
 
         Item {
-            Layout.preferredHeight: parent.height
-            Layout.preferredWidth: parent.width / 2
+            Layout.fillHeight: true
+            Layout.fillWidth: true
 
             Text {
                 id: prayerLabel
@@ -32,7 +32,7 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 color: Material.secondaryTextColor
                 elide: Text.ElideRight
-                font.pixelSize: Math.min(parent.height, parent.width) / prayerRow.pixelDiv
+                font.pointSize: Math.max(1, Math.min(parent.height, parent.width) / prayerRow.pixelDiv)
                 font.weight: (prayerRow.prayerId === PrayerEngine.currentPrayer) ? Font.DemiBold : Font.Light
                 horizontalAlignment: Text.AlignLeft
                 text: UiEngine.prayerDisplayNames[prayerRow.prayerId].trText
@@ -43,8 +43,8 @@ Item {
         }
 
         Item {
-            Layout.preferredHeight: parent.height
-            Layout.preferredWidth: parent.width / 2
+            Layout.fillHeight: true
+            Layout.fillWidth: true
 
             Row {
                 anchors.right: parent.right
@@ -56,7 +56,7 @@ Item {
                     id: prayerTime
 
                     color: prayerLabel.color
-                    font.pixelSize: prayerLabel.font.pixelSize
+                    font.pointSize: prayerLabel.font.pointSize
                     font.weight: prayerLabel.font.weight
                     horizontalAlignment: Text.AlignRight
                     text: prayerRow.athanTime.substring(0, 5)
@@ -66,7 +66,7 @@ Item {
                 Text {
                     anchors.baseline: prayerTime.baseline
                     color: prayerTime.color
-                    font.pixelSize: prayerTime.font.pixelSize / 2
+                    font.pointSize: prayerTime.font.pointSize / 2
                     font.weight: prayerTime.font.weight
                     horizontalAlignment: prayerTime.horizontalAlignment
                     text: prayerRow.athanTime.substring(5)

@@ -39,7 +39,7 @@ Pane {
                 anchors.fill: parent
                 color: Material.secondaryTextColor
                 elide: Text.ElideRight
-                font.pixelSize: height / 2
+                font.pointSize: Math.max(1, height / 2.7)
                 font.weight: Font.DemiBold
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter

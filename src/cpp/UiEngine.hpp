@@ -156,7 +156,7 @@ class UiEngine : public MunadiBase, public MunadiEngine<UiEngine>
     auto               setLangDisplayIdx(const QVariant &index) noexcept -> void;
     auto               setMadhabDisplayIdx(const QVariant &index) noexcept -> void;
     auto               themeDisplayNames() noexcept -> QVariantList &;
-    [[nodiscard]] auto timeLeftDisplay() const noexcept -> QString;
+    [[nodiscard]] auto timeLeftDisplay() noexcept -> QString;
 
   signals:
     auto bgImageChanged() -> void;

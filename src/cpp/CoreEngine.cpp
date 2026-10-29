@@ -72,6 +72,7 @@ CoreEngine::CoreEngine(QObject *parent) : MunadiBase{munadi(), parent}, alarm{cr
     this->connectToTrigger();
 
     this->makeOnline();
+    this->loadConfigs();
     this->applyLocale();
     this->installTickers();
 }
@@ -83,7 +84,10 @@ Alarm &CoreEngine::alarmManager() const noexcept
 { return *this->alarm; }
 
 QString CoreEngine::getAppVersion() noexcept
-{ return QStringLiteral(APP_VERSION); }
+{ return CoreEngine::s_appVersion; }
+
+bool CoreEngine::isVersionNew() const noexcept
+{ return this->m_isVersionNew; }
 
 QVariant CoreEngine::readOldSettings(QAnyStringView oldKey, const QVariant &defaultValue) noexcept
 {
@@ -440,7 +444,7 @@ void CoreEngine::applyLocale(const QLocale &locale) noexcept
 void CoreEngine::connectToAboutToQuit() const noexcept
 {
     if (const auto conn = QObject::connect(qApp, &QCoreApplication::aboutToQuit, this,
-                                           &CoreEngine::onAboutToQuit, Qt::DirectConnection);
+                                           &CoreEngine::onAboutToQuit);
         conn == nullptr)
         logWarning(munadi) << "aboutToQuit signal not connected";
     else
@@ -456,6 +460,9 @@ void CoreEngine::connectToTrigger() const noexcept
     else
         logDebug(munadi) << "Trigger signal connected";
 }
+
+void CoreEngine::defaultConfigs() noexcept
+{ this->m_isVersionNew = false; }
 
 QLocale CoreEngine::getCurrentLocale() noexcept
 { return QLocale{}; }
@@ -487,6 +494,32 @@ int CoreEngine::installUnixSignalHandlers()
 
     return 0;
 #endif
+}
+
+void CoreEngine::loadConfigs() noexcept
+{
+
+    logDebug(munadi) << "Loading configs from persistent config file";
+
+    bool          configMigrated{true};
+    const QString migrateKey{u"CoreEngineConfigMigrated"_s};
+
+    // Adding a QReadLocker/QWriteLocker here is strongly discouraged. Acquiring a locker here may
+    // deadlock. Put it inside setter functions if necessary.
+
+    loadConfigKey(
+        "App/newsVersion"_L1, "App/LastVersion"_L1, migrateKey,
+        [this](const QVariant &version) -> void {
+            const QWriteLocker lock{&this->varLock};
+
+            // the following string comparison does what it implies
+            if (version.toString() < CoreEngine::s_appVersion)
+                this->m_isVersionNew = true;
+        },
+        configMigrated);
+
+    if (configMigrated)
+        this->writeSettings("CoreEngineConfigMigrated"_L1, true);
 }
 
 QVariant CoreEngine::readValueOfKey(QSettings &settings, QAnyStringView key,
@@ -527,6 +560,13 @@ QVariant CoreEngine::readValueOfKey(QSettings &settings, QAnyStringView key,
 //     this->configLock->unlock();
 // }
 
+void CoreEngine::saveConfigs() noexcept
+{
+    logDebug(munadi) << "Saving configurations";
+
+    this->writeSettings("App/LastVersion"_L1, CoreEngine::s_appVersion, true);
+}
+
 void CoreEngine::setValueOfKey(QSettings &settings, QAnyStringView key, const QVariant &value,
                                bool flushOnWrite) noexcept
 {
@@ -548,6 +588,7 @@ void CoreEngine::setValueOfKey(QSettings &settings, QAnyStringView key, const QV
                            << "\" is malformed, returning default value";
         break;
     default:
+        // logDebug(munadi) << key << "=" << value << " successfully saved";
         break;
     }
 }
@@ -558,6 +599,7 @@ void CoreEngine::setValueOfKey(QSettings &settings, QAnyStringView key, const QV
 
 void CoreEngine::onAboutToQuit() noexcept
 {
+    this->saveConfigs();
     emit this->engineOffline();
 
 #ifdef Q_OS_UNIX

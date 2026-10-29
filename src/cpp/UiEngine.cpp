@@ -88,7 +88,7 @@ void UiEngine::connectToAlarmsReset() const noexcept
 void UiEngine::connectToAthanPlayingChanged() const noexcept
 {
     if (const auto conn = QObject::connect(mEngine, &MultimediaEngine::athanPlayingChanged, this,
-                                           &UiEngine::onAthanPlayingChanged, Qt::DirectConnection);
+                                           &UiEngine::onAthanPlayingChanged);
         conn == nullptr)
         logWarning(munadi) << "athanPlayingChanged signal not connected";
     else
@@ -97,8 +97,8 @@ void UiEngine::connectToAthanPlayingChanged() const noexcept
 
 void UiEngine::connectToCalcChanged() const noexcept
 {
-    if (const auto conn = QObject::connect(pEngine, &PrayerEngine::calcChanged, this,
-                                           &UiEngine::onCalcChanged, Qt::DirectConnection);
+    if (const auto conn =
+            QObject::connect(pEngine, &PrayerEngine::calcChanged, this, &UiEngine::onCalcChanged);
         conn == nullptr)
         logWarning(munadi) << "calcChanged signal not connected";
     else
@@ -439,6 +439,9 @@ void UiEngine::saveConfigs() noexcept
 {
     const QReadLocker lock{&this->varLock};
 
+    // Ensure the very last config to be saved has the third parameter set to "true". Otherwise
+    // (later) settings are not saved
+
     logDebug(munadi) << "Saving UI configurations";
 
     core->writeSettings("App/BackgroundImage"_L1, this->m_bgImage.load());
@@ -449,7 +452,7 @@ void UiEngine::saveConfigs() noexcept
     core->writeSettings("App/Language"_L1, this->getCurrentLang());
     core->writeSettings("App/Opacity"_L1, this->m_opacity.load());
     core->writeSettings("App/ShowOnAthan"_L1, this->m_showOnAthan.load());
-    core->writeSettings("App/Theme"_L1, this->getCurrentTheme());
+    core->writeSettings("App/Theme"_L1, this->getCurrentTheme(), true);
 }
 
 void UiEngine::setCalcMethodDisplayIdx(const QVariant &index) noexcept
@@ -531,13 +534,15 @@ QVariantList &UiEngine::themeDisplayNames() noexcept
     return this->m_themeDisplayNames;
 }
 
-QString UiEngine::timeLeftDisplay() const noexcept
+QString UiEngine::timeLeftDisplay() noexcept
 {
-    const QString currentPrayer{
-        this->m_prayerDisplayNames.at(qToUnderlying(pEngine->currentPrayer()))
+    const QString currentPrayer{[this] {
+        const QReadLocker lock{&this->varLock};
+        return this->m_prayerDisplayNames.at(qToUnderlying(pEngine->currentPrayer()))
             .toHash()
             .value("trText"_L1)
-            .toString()};
+            .toString();
+    }()};
 
     if (mEngine->isAthanPlaying())
         return currentPrayer + u" "_s + tr("athan") + u"..."_s;
@@ -553,8 +558,10 @@ QString UiEngine::timeLeftDisplay() const noexcept
         return {};
 
     const QString format{(timeLeft.hour()) > 0 ? tr("h'h' m'm'") : tr("m'm'")};
-    const QString nextPrayer{
-        this->m_prayerDisplayNames.at(index).toHash().value("trText"_L1).toString()};
+    const QString nextPrayer{[this, &index] {
+        const QReadLocker lock{&this->varLock};
+        return this->m_prayerDisplayNames.at(index).toHash().value("trText"_L1).toString();
+    }()};
 
     if (timeLeft.msecsTo(QTime{0, 1, 0}) > 0)
         return tr("Seconds to") + u" "_s + nextPrayer;
@@ -594,12 +601,14 @@ void UiEngine::onAthanPlayingChanged(bool /* playing */) noexcept
 
 void UiEngine::onCalcChanged() noexcept
 {
-    const QWriteLocker lock{&this->varLock};
+    {
+        const QWriteLocker lock{&this->varLock};
 
-    this->m_calcMethodsDisplayIndex.storeRelaxed(
-        UiEngine::indexOfValue(this->m_calcMethodsDisplayNames, pEngine->getCalcMethod()));
-    this->m_madhabDisplayIndex.storeRelaxed(
-        UiEngine::indexOfValue(this->m_madhabDisplayNames, pEngine->getMadhab()));
+        this->m_calcMethodsDisplayIndex.storeRelaxed(
+            UiEngine::indexOfValue(this->m_calcMethodsDisplayNames, pEngine->getCalcMethod()));
+        this->m_madhabDisplayIndex.storeRelaxed(
+            UiEngine::indexOfValue(this->m_madhabDisplayNames, pEngine->getMadhab()));
+    }
 
     emit this->prayerCalcChanged();
     emit this->displayTimesChanged();

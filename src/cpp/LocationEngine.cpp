@@ -264,9 +264,12 @@ void LocationEngine::saveConfigs() noexcept
 
     const QReadLocker lock{&this->varLock};
 
+    // Ensure the very last config to be saved has the third parameter set to "true". Otherwise
+    // (later) settings are not saved
+
     core->writeSettings("Location/Address"_L1, this->m_location.address().text());
     core->writeSettings("Location/Latitude"_L1, this->m_location.coordinate().latitude());
-    core->writeSettings("Location/Longitude"_L1, this->m_location.coordinate().longitude());
+    core->writeSettings("Location/Longitude"_L1, this->m_location.coordinate().longitude(), true);
 }
 
 void LocationEngine::setLocation(const QVariant &index) noexcept

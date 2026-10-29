@@ -278,8 +278,8 @@ MultimediaEngine::MultimediaEngine(QObject *parent)
 
 void MultimediaEngine::connectToAthanAlarm() const noexcept
 {
-    if (const auto conn = QObject::connect(core, &CoreEngine::athanAlarm, this,
-                                           &MultimediaEngine::onAthanAlarm, Qt::DirectConnection);
+    if (const auto conn =
+            QObject::connect(core, &CoreEngine::athanAlarm, this, &MultimediaEngine::onAthanAlarm);
         conn == nullptr)
         logWarning(munadi) << "athanAlarm signal not connected";
     else
@@ -473,6 +473,9 @@ void MultimediaEngine::saveConfigs() noexcept
 {
     const QReadLocker lock{&this->varLock};
 
+    // Ensure the very last config to be saved has the third parameter set to "true". Otherwise
+    // (later) settings are not saved
+
     logDebug(munadi) << "Saving athan configurations";
 
     for (const QString &prayerName : std::as_const(this->athanConfigKeys))
@@ -489,7 +492,7 @@ void MultimediaEngine::saveConfigs() noexcept
     logDebug(munadi) << "Saving athan list";
 
     core->writeSettingsArray("Athans"_L1, this->m_athanList);
-    core->writeSettings("AthanConfig/AllMuted"_L1, this->m_athanMuted.load());
+    core->writeSettings("AthanConfig/AllMuted"_L1, this->m_athanMuted.load(), true);
 }
 
 void MultimediaEngine::setAthanConfig(const QVariantHash &athanConfig) noexcept

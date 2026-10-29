@@ -20,6 +20,9 @@
 
 int main(int argc, char *argv[])
 {
+    // using Qt::StringLiterals::operator""_s;
+    using Qt::StringLiterals::operator""_L1;
+
     SingleApplication app(argc, argv, true);
 
     if (app.isSecondary())
@@ -35,17 +38,18 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    QApplication::setStyle(QStyleFactory::create("gnome"));
-    QApplication::setWindowIcon(QIcon(":/qt/qml/Munadi/img/munadi.png"));
-    QApplication::setOrganizationDomain("munadi.org");
-    QApplication::setOrganizationName("munadi");
-    QApplication::setApplicationName("Munadi");
+    QApplication::setApplicationName("Munadi"_L1);
+    QApplication::setDesktopFileName("org.munadi.Munadi"_L1);
+    QApplication::setOrganizationDomain("munadi.org"_L1);
+    QApplication::setOrganizationName("munadi"_L1);
+    QApplication::setStyle(QStyleFactory::create("gnome"_L1));
+    QApplication::setWindowIcon(QIcon{":/qt/qml/Munadi/img/munadi.png"_L1});
 
-    QFontDatabase::addApplicationFont(":/qt/qml/Munadi/data/NotoNaskhArabic-VariableFont.ttf");
-    QFontDatabase::addApplicationFont(":/qt/qml/Munadi/data/NotoSans-VariableFont.ttf");
-    QFontDatabase::addApplicationFont(":/qt/qml/Munadi/data/NotoSansBengali-VariableFont.ttf");
+    QFontDatabase::addApplicationFont(":/qt/qml/Munadi/data/NotoNaskhArabic-VariableFont.ttf"_L1);
+    QFontDatabase::addApplicationFont(":/qt/qml/Munadi/data/NotoSans-VariableFont.ttf"_L1);
+    QFontDatabase::addApplicationFont(":/qt/qml/Munadi/data/NotoSansBengali-VariableFont.ttf"_L1);
 
-    QFont font{"Noto Sans, Noto Naskh Arabic, Noto Sans Bengali"};
+    const QFont font{"Noto Sans, Noto Naskh Arabic, Noto Sans Bengali"_L1};
     QApplication::setFont(font);
 
     qDebug() << "System Locale: " << QLocale::system().name();
@@ -53,7 +57,7 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine qae;
 
     // These call is necessary for making `core` available before connection
-    qae.singletonInstance<Munadi::CoreEngine *>("Munadi", "CoreEngine");
+    qae.singletonInstance<Munadi::CoreEngine *>("Munadi"_L1, "CoreEngine"_L1);
 
     if (const auto conn = QObject::connect(&app, &SingleApplication::receivedMessage, core,
                                            &Munadi::CoreEngine::onReceivedMessage);
@@ -78,9 +82,9 @@ int main(int argc, char *argv[])
         }
     }
 
-    qae.rootContext()->setContextProperty("engine", &engine);
-    qae.rootContext()->setContextProperty("updater", engine.updater);
-    qae.loadFromModule("Munadi", "Main");
+    qae.rootContext()->setContextProperty("engine"_L1, &engine);
+    qae.rootContext()->setContextProperty("updater"_L1, engine.updater);
+    qae.loadFromModule("Munadi"_L1, "Main"_L1);
 
 #ifdef Q_OS_MACOS
     if (auto *window = qobject_cast<QQuickWindow *>(qae.rootObjects().first()))

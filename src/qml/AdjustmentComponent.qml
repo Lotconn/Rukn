@@ -28,7 +28,7 @@ ColumnLayout {
 
             onItemAdded: (index, item) => {
                 if (index === PrayerEngine.Prayer.Sunrise || index > PrayerEngine.Prayer.Isha)
-                    item.width = 0; // Hide sunrise tab
+                    item.width = 0; // Hide undesired tabs
             }
 
             TabButton {
@@ -51,7 +51,7 @@ ColumnLayout {
             id: volumeSlider
 
             Layout.fillWidth: true
-            enabled: prayerTab.currentIndex !== PrayerEngine.Prayer.Sunrise
+            enabled: prayerTab.currentIndex !== PrayerEngine.Prayer.Sunrise || prayerTab.currentIndex <= PrayerEngine.Prayer.Isha
             snapMode: Slider.SnapAlways
             stepSize: 0.05
             value: MultimediaEngine.athanConfig[prayerTab.prayer].volume
@@ -87,7 +87,7 @@ ColumnLayout {
             id: minutesSlider
 
             Layout.fillWidth: true
-            enabled: prayerTab.currentIndex !== PrayerEngine.Sunrise
+            enabled: prayerTab.currentIndex !== PrayerEngine.Prayer.Sunrise || prayerTab.currentIndex <= PrayerEngine.Prayer.Isha
             from: -30
             snapMode: Slider.SnapAlways
             stepSize: 1
@@ -127,7 +127,7 @@ ColumnLayout {
 
             Layout.fillWidth: true
             currentIndex: MultimediaEngine.athanConfig[prayerTab.prayer].athan_idx
-            enabled: prayerTab.currentIndex !== PrayerEngine.Prayer.Sunrise
+            enabled: prayerTab.currentIndex !== PrayerEngine.Prayer.Sunrise || prayerTab.currentIndex <= PrayerEngine.Prayer.Isha
             model: MultimediaEngine.athanList
             textRole: "name"
 

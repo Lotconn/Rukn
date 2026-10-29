@@ -13,8 +13,7 @@ Page {
         anchors.margins: 20
         anchors.top: parent.top
         color: theme.fontColour
-        font.pixelSize: Font.pixelSize * parent.scale
-        font.pointSize: compass.height / 20
+        font.pointSize: Math.max(1, compass.height / 20)
         text: qsTr("Qibla Direction")
     }
 
@@ -26,11 +25,11 @@ Page {
         anchors.top: qiblaLabel.bottom
         border.color: theme.fontColour
         border.width: 4
-        height: width
-        radius: width + 45.0
-        width: Math.min(parent.width, parent.height) / 1.5
+        implicitHeight: implicitWidth
+        implicitWidth: Math.min(parent.width, parent.height) / 1.5
+        radius: implicitWidth + 45.0
 
-        Component.onCompleted: console.log(parent.width + ", " + parent.height)
+        // Component.onCompleted: console.log(parent.width + ", " + parent.height)
 
         Image {
             id: arrow
@@ -74,7 +73,7 @@ Page {
         anchors.margins: 20
         anchors.top: compass.bottom
         color: theme.fontColour
-        font.pixelSize: qiblaLabel.font.pixelSize
+        font.pointSize: qiblaLabel.font.pointSize
         //text: sensor.hasZ && UiEngine.getFormFactor() === "mobile" ? qsTr("Please wait ...") : qsTr("%1° with respect to North").arg(engine.getQibla().toFixed(0));
         text: qsTr("%1° with respect to North").arg(PrayerEngine.qibla.toFixed(2))
     }
