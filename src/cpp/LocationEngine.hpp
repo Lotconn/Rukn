@@ -48,7 +48,7 @@ class LocationEngine : public MunadiBase, public MunadiEngine<LocationEngine>
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     QGeoLocation m_location;
-    QAtomicInt   m_locationResultsIndex;
+    int          m_locationResultsIndex;
 
     QGeoAddress             address;
     QGeoCoordinate          coordinates;

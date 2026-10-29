@@ -2,7 +2,6 @@
 
 #include <QJsonArray>
 #include <QLockFile>
-#include <QMutex>
 #include <QQmlEngine>
 #include <QSet>
 #include <QSettings>
@@ -85,7 +84,6 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
     QSettings       *oldSettings{};
     QSettings       *settings{};
     QSocketNotifier *snTerm;
-    QMutex           threadLock;
     QTranslator      translator;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////

@@ -7,4 +7,5 @@ Rectangle {
     Layout.preferredWidth: parent.width - parent.width / 8
     color: Material.secondaryTextColor
     height: 1
+    opacity: 0.47
 }

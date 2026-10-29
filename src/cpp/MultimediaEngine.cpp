@@ -29,14 +29,10 @@ void MultimediaEngine::addAthan(const QUrl &fileUrl) noexcept
         return;
     }
 
-    {
-        const QWriteLocker lock{&this->varLock};
-
-        this->m_athanList.append(QVariantMap{
-            {u"name"_s, FileMan::getFileName(fileUrl)      },
-            {u"path"_s, result.location().toDisplayString()}
-        });
-    }
+    this->m_athanList.append(QVariantMap{
+        {u"name"_s, FileMan::getFileName(fileUrl)      },
+        {u"path"_s, result.location().toDisplayString()}
+    });
 
     emit this->athanListChanged();
 }
@@ -45,25 +41,22 @@ void MultimediaEngine::addAthan(const QUrl &fileUrl) noexcept
 // signal synchronously. Mind the slots bound to these signals when adding read/write locks
 void MultimediaEngine::athanPlay() noexcept
 {
-    {
-        const QWriteLocker lock{&this->varLock};
-        const QString      prayerName{PrayerEngine::toString(pEngine->currentPrayer())};
-        const int          athanIdx{
-            this->m_athanConfig.value(prayerName).toHash().value("athan_idx"_L1).toInt()};
-        const QUrl src{this->m_athanList.at(athanIdx).toMap().value("path"_L1).toUrl()};
+    const QString prayerName{PrayerEngine::toString(pEngine->currentPrayer())};
+    const int     athanIdx{
+        this->m_athanConfig.value(prayerName).toHash().value("athan_idx"_L1).toInt()};
+    const QUrl src{this->m_athanList.at(athanIdx).toMap().value("path"_L1).toUrl()};
 
-        this->athanPlayer->setAudioOutput(this->athanOutput);
-        this->athanOutput->setMuted(this->m_athanMuted.load());
-        this->athanOutput->setVolume(
-            this->m_athanConfig.value(prayerName).toHash().value("volume"_L1).toFloat());
+    this->athanPlayer->setAudioOutput(this->athanOutput);
+    this->athanOutput->setMuted(this->m_athanMuted);
+    this->athanOutput->setVolume(
+        this->m_athanConfig.value(prayerName).toHash().value("volume"_L1).toFloat());
 
-        if (const float volume{this->athanOutput->volume()};
-            volume <= 0 || this->athanOutput->isMuted())
-            return;
+    if (const float volume{this->athanOutput->volume()};
+        volume <= 0 || this->athanOutput->isMuted())
+        return;
 
-        logDebug(munadi) << "Athan file: " << src.toDisplayString();
-        this->athanPlayer->setSource(src);
-    }
+    logDebug(munadi) << "Athan file: " << src.toDisplayString();
+    this->athanPlayer->setSource(src);
 
     if (!this->isAthanPlaying())
         this->athanPlayer->play();
@@ -76,9 +69,6 @@ void MultimediaEngine::athanStop() noexcept
     if (this->isAthanPlaying())
     {
         this->athanPlayer->stop();
-
-        const QWriteLocker lock{&this->varLock};
-
         this->athanPlayer->setAudioOutput(nullptr);
     }
     else
@@ -87,8 +77,6 @@ void MultimediaEngine::athanStop() noexcept
 
 QVariant MultimediaEngine::getAthanConfig(Prayer prayerEnum, const QString &field) noexcept
 {
-    const QReadLocker lock{&this->varLock};
-
     if (!this->athanConfigFields.contains(field))
     {
         logCritical(munadi) << field << "is not a valid field in AthanConfig";
@@ -122,48 +110,40 @@ void MultimediaEngine::modifyAthanConfig(const QString &key, const QVariantHash 
         return;
     }
 
+    QVariantHash tempMap{this->m_athanConfig.value(key).toHash()};
+
+    if (!isValidEntry(entry, this->athanConfigEntrySize, this->athanConfigFields))
     {
-        const QWriteLocker lock{&this->varLock};
-        QVariantHash       tempMap{this->m_athanConfig.value(key).toHash()};
+        logCritical(munadi) << "[" << entry << "] is not a valid entry in athanConfig";
 
-        if (!isValidEntry(entry, this->athanConfigEntrySize, this->athanConfigFields))
-        {
-            logCritical(munadi) << "[" << entry << "] is not a valid entry in athanConfig";
-
-            return;
-        }
-
-        if (tempMap == entry)
-        {
-            logDebug(munadi) << "Skipping setting identical entry";
-
-            return;
-        }
-
-        tempMap.insert(entry);
-        this->m_athanConfig.insert(key, tempMap);
+        return;
     }
 
+    if (tempMap == entry)
+    {
+        logDebug(munadi) << "Skipping setting identical entry";
+
+        return;
+    }
+
+    tempMap.insert(entry);
+    this->m_athanConfig.insert(key, tempMap);
     emit this->athanConfigChanged();
 }
 
 void MultimediaEngine::previewPlay(int athanListIdx) noexcept
 {
+    if (athanListIdx < 0 || athanListIdx >= this->m_athanList.size())
     {
-        const QWriteLocker lock{&this->varLock};
+        logCritical(munadi) << "Index " << athanListIdx << " out of valid range";
 
-        if (athanListIdx < 0 || athanListIdx >= this->m_athanList.size())
-        {
-            logCritical(munadi) << "Index " << athanListIdx << " out of valid range";
-
-            return;
-        }
-
-        this->previewPlayer->setAudioOutput(this->previewOutput);
-        this->previewPlayer->setSource(
-            this->m_athanList.at(athanListIdx).toMap().value("path"_L1).toUrl());
-        // this->previewOutput->setVolume(1.0) // not necessary, defaults to 1.0
+        return;
     }
+
+    this->previewPlayer->setAudioOutput(this->previewOutput);
+    this->previewPlayer->setSource(
+        this->m_athanList.at(athanListIdx).toMap().value("path"_L1).toUrl());
+    // this->previewOutput->setVolume(1.0) // not necessary, defaults to 1.0
 
     if (!this->isPreviewPlaying())
         this->previewPlayer->play();
@@ -176,9 +156,6 @@ void MultimediaEngine::previewStop() noexcept
     if (this->previewPlayer->isPlaying())
     {
         this->previewPlayer->stop();
-
-        const QWriteLocker lock{&this->varLock};
-
         this->previewPlayer->setAudioOutput(nullptr);
     }
     else
@@ -187,52 +164,47 @@ void MultimediaEngine::previewStop() noexcept
 
 void MultimediaEngine::removeAthan(qsizetype rmIdx) noexcept
 {
+    if (rmIdx < this->defaultAthans || rmIdx >= this->m_athanList.size())
     {
-        const QWriteLocker lock{&this->varLock};
+        logCritical(munadi) << "Invalid index value \"" << rmIdx << "\"";
 
-        if (rmIdx < this->defaultAthans || rmIdx >= this->m_athanList.size())
-        {
-            logCritical(munadi) << "Invalid index value \"" << rmIdx << "\"";
-
-            return;
-        }
-
-        const QUrl      fileUrl{this->m_athanList.at(rmIdx).toMap().value("path"_L1).toUrl()};
-        const rm_file_t result(this->fileman->rmFile(QUrl(fileUrl)));
-
-        logDebug(munadi) << "Result: " << result.status_l() << " " << result.status_h();
-
-        if (result.status_l() != 0 && result.status_l() != ENOENT && result.status_l() != EINVAL)
-        {
-            logCritical(munadi) << "Fileman::rmFile() failed with error: " << result.status_l();
-
-            return;
-        }
-
-        for (const auto &[field, entry] : this->m_athanConfig.asKeyValueRange())
-        {
-            QVariantHash map{entry.toHash()};
-            const int    currentIdx{map.value("athan_idx"_L1).toInt()};
-
-            if (currentIdx == rmIdx)
-            {
-                if (field == u"Fajr"_s)
-                    map.insert("athan_idx"_L1, MultimediaEngine::defaultFajrAthan);
-                else if (field == u"Maghrib"_s)
-                    map.insert("athan_idx"_L1, MultimediaEngine::defaultMaghribAthan);
-                else
-                    map.insert("athan_idx"_L1, MultimediaEngine::defaultAthan);
-            }
-            else if (currentIdx > rmIdx)
-                map.insert("athan_idx"_L1, currentIdx - 1);
-
-            this->m_athanConfig.insert(field, map);
-        }
-
-        this->m_athanList.removeAt(rmIdx);
-        this->m_athanList.squeeze();
+        return;
     }
 
+    const QUrl      fileUrl{this->m_athanList.at(rmIdx).toMap().value("path"_L1).toUrl()};
+    const rm_file_t result(this->fileman->rmFile(QUrl(fileUrl)));
+
+    logDebug(munadi) << "Result: " << result.status_l() << " " << result.status_h();
+
+    if (result.status_l() != 0 && result.status_l() != ENOENT && result.status_l() != EINVAL)
+    {
+        logCritical(munadi) << "Fileman::rmFile() failed with error: " << result.status_l();
+
+        return;
+    }
+
+    for (const auto &[field, entry] : this->m_athanConfig.asKeyValueRange())
+    {
+        QVariantHash map{entry.toHash()};
+        const int    currentIdx{map.value("athan_idx"_L1).toInt()};
+
+        if (currentIdx == rmIdx)
+        {
+            if (field == u"Fajr"_s)
+                map.insert("athan_idx"_L1, MultimediaEngine::defaultFajrAthan);
+            else if (field == u"Maghrib"_s)
+                map.insert("athan_idx"_L1, MultimediaEngine::defaultMaghribAthan);
+            else
+                map.insert("athan_idx"_L1, MultimediaEngine::defaultAthan);
+        }
+        else if (currentIdx > rmIdx)
+            map.insert("athan_idx"_L1, currentIdx - 1);
+
+        this->m_athanConfig.insert(field, map);
+    }
+
+    this->m_athanList.removeAt(rmIdx);
+    this->m_athanList.squeeze();
     emit this->athanListChanged();
     emit this->athanConfigChanged();
 }
@@ -342,42 +314,28 @@ void MultimediaEngine::defaultAthanList() noexcept
 
 void MultimediaEngine::defaultConfigs() noexcept
 {
-    const QWriteLocker lock{&this->varLock};
+    this->m_athanMuted = false;
 
-    this->m_athanMuted.store(false);
     this->defaultAthanConfig();
     this->defaultAthanList();
 }
 
 QVariantList &MultimediaEngine::getAthanList() noexcept
-{
-    const QReadLocker lock{&this->varLock};
-
-    return this->m_athanList;
-}
+{ return this->m_athanList; }
 
 // Do not add any readlocker here
 bool MultimediaEngine::isAthanPlaying() noexcept
-{
-    const QReadLocker lock{&this->varLock};
-
-    return this->athanPlayer->isPlaying();
-}
+{ return this->athanPlayer->isPlaying(); }
 
 // Do not add any readlocker here
 bool MultimediaEngine::isPreviewPlaying() noexcept
-{
-    const QReadLocker lock{&this->varLock};
-
-    return this->previewPlayer->isPlaying();
-}
+{ return this->previewPlayer->isPlaying(); }
 
 void MultimediaEngine::loadAthanConfig(bool &configMigrated) noexcept
 {
-    QVariantHash       cfgMap{this->m_athanConfig};
-    QVariantList       oldAthanConfig;
-    const QWriteLocker lock{&this->varLock};
-    const bool         migrated{core->readSettings("MultimediaEngineConfigMigrated"_L1).toBool()};
+    QVariantHash cfgMap{this->m_athanConfig};
+    QVariantList oldAthanConfig;
+    const bool   migrated{core->readSettings("MultimediaEngineConfigMigrated"_L1).toBool()};
 
     if (!migrated)
         oldAthanConfig = core->readOldSettingsJsArray("Adhan/prayerConfig"_L1);
@@ -471,8 +429,6 @@ void MultimediaEngine::loadConfigs() noexcept
 
 void MultimediaEngine::saveConfigs() noexcept
 {
-    const QReadLocker lock{&this->varLock};
-
     // Ensure the very last config to be saved has the third parameter set to "true". Otherwise
     // (later) settings are not saved
 
@@ -492,7 +448,7 @@ void MultimediaEngine::saveConfigs() noexcept
     logDebug(munadi) << "Saving athan list";
 
     core->writeSettingsArray("Athans"_L1, this->m_athanList);
-    core->writeSettings("AthanConfig/AllMuted"_L1, this->m_athanMuted.load(), true);
+    core->writeSettings("AthanConfig/AllMuted"_L1, this->m_athanMuted, true);
 }
 
 void MultimediaEngine::setAthanConfig(const QVariantHash &athanConfig) noexcept
@@ -504,26 +460,22 @@ void MultimediaEngine::setAthanConfig(const QVariantHash &athanConfig) noexcept
         return;
     }
 
+    if (athanConfig == this->m_athanConfig)
     {
-        const QWriteLocker lock{&this->varLock};
+        logDebug(munadi) << "Skipping setting identical list";
 
-        if (athanConfig == this->m_athanConfig)
-        {
-            logDebug(munadi) << "Skipping setting identical list";
-
-            return;
-        }
-
-        if (!isValidEntry(athanConfig, this->athanConfigEntrySize, this->athanConfigFields,
-                          this->athanConfigMapSize))
-        {
-            logCritical(munadi) << "Config [" << athanConfig << "] is not a valid configuration";
-
-            return;
-        }
-
-        this->m_athanConfig = athanConfig;
+        return;
     }
+
+    if (!isValidEntry(athanConfig, this->athanConfigEntrySize, this->athanConfigFields,
+                      this->athanConfigMapSize))
+    {
+        logCritical(munadi) << "Config [" << athanConfig << "] is not a valid configuration";
+
+        return;
+    }
+
+    this->m_athanConfig = athanConfig;
 
     emit this->athanConfigChanged();
 }
@@ -537,36 +489,32 @@ void MultimediaEngine::setAthanList(const QVariantList &athanList) noexcept
         return;
     }
 
+    if (athanList == this->m_athanList)
     {
-        const QWriteLocker lock{&this->varLock};
+        logDebug(munadi) << "Skipping setting identical list";
 
-        if (athanList == this->m_athanList)
-        {
-            logDebug(munadi) << "Skipping setting identical list";
-
-            return;
-        }
-
-        if (athanList.first(this->defaultAthans) != this->m_athanList.first(this->defaultAthans))
-        {
-            logCritical(munadi) << "Dropping malformed list [" << athanList << "]";
-            logDebug(munadi) << "List attempts to modify protected default list";
-            logDebug(munadi) << "\n"
-                             << athanList.first(this->defaultAthans) << "\nvs\n"
-                             << this->m_athanList.first(this->defaultAthans);
-
-            return;
-        }
-
-        if (!isValidEntry(athanList, this->athanListMapSize, this->athanListKeys))
-        {
-            logCritical(munadi) << "Dropping malformed list [" << athanList << "]";
-
-            return;
-        }
-
-        this->m_athanList = athanList;
+        return;
     }
+
+    if (athanList.first(this->defaultAthans) != this->m_athanList.first(this->defaultAthans))
+    {
+        logCritical(munadi) << "Dropping malformed list [" << athanList << "]";
+        logDebug(munadi) << "List attempts to modify protected default list";
+        logDebug(munadi) << "\n"
+                         << athanList.first(this->defaultAthans) << "\nvs\n"
+                         << this->m_athanList.first(this->defaultAthans);
+
+        return;
+    }
+
+    if (!isValidEntry(athanList, this->athanListMapSize, this->athanListKeys))
+    {
+        logCritical(munadi) << "Dropping malformed list [" << athanList << "]";
+
+        return;
+    }
+
+    this->m_athanList = athanList;
 
     emit this->athanListChanged();
 }

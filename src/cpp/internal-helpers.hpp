@@ -19,7 +19,7 @@
 
 template <typename T>
 auto checkIndex(const QVariant &index, const QList<T> &refList,
-                const std::optional<int> &idxVar = std::nullopt) noexcept -> bool
+                std::optional<int> idxVar = std::nullopt) noexcept -> bool
 {
     const QLoggingCategory common{"Common"};
 
@@ -45,15 +45,13 @@ auto checkIndex(const QVariant &index, const QList<T> &refList,
     return true;
 }
 
-auto fetchAndSetListIdx(const int &index, const QVariantList &refList, QAtomicInt &idxVar,
+auto fetchAndSetListIdx(int index, const QVariantList &refList, int idxVar,
                         const std::function<void(const QString &)> &setFunc) noexcept -> void;
-auto isValidEntry(const QVariantHash &entryMaps, const qsizetype &refEntrySize,
-                  const QHash<QString, int> &refFields, const qsizetype &refMapSize = 0) noexcept
-    -> bool;
-auto isValidEntry(const QVariantList &entryList, const qsizetype &refMapSize,
-                  const QHash<QString, int> &refFields, const qsizetype &refListSize = 0) noexcept
-    -> bool;
-auto isValidMap(const QVariantHash &entry, const qsizetype &refMapSize,
+auto isValidEntry(const QVariantHash &entryMaps, qsizetype refEntrySize,
+                  const QHash<QString, int> &refFields, qsizetype refMapSize = 0) noexcept -> bool;
+auto isValidEntry(const QVariantList &entryList, qsizetype refMapSize,
+                  const QHash<QString, int> &refFields, qsizetype refListSize = 0) noexcept -> bool;
+auto isValidMap(const QVariantHash &entry, qsizetype refMapSize,
                 const QHash<QString, int> &refFields) noexcept -> bool;
 auto loadConfigKey(QAnyStringView oldKey, QAnyStringView newKey, const QString &migrateKey,
                    QObject *obj, const QString &property,

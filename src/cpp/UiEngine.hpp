@@ -97,24 +97,24 @@ class UiEngine : public MunadiBase, public MunadiEngine<UiEngine>
 
     inline static const QString calendarFormat{u"dd-MMM-yyyy"_s};
 
-    std::atomic<bool>       m_bgImage;
-    std::atomic<double>     m_blur;
-    QAtomicInt              m_calcMethodsDisplayIndex;
+    bool                    m_bgImage;
+    double                  m_blur;
+    int                     m_calcMethodsDisplayIndex;
     QVariantList            m_calcMethodsDisplayNames;
     QHash<QString, QString> m_calendarDateDisplay;
-    QAtomicInt              m_calendarDisplayIndex;
+    int                     m_calendarDisplayIndex;
     QVariantList            m_calendarDisplayNames;
-    QAtomicInt              m_dateOffset;
-    QAtomicInt              m_hijriOffset;
-    std::atomic<bool>       m_isoClock;
-    QAtomicInt              m_langDisplayIndex;
+    int                     m_dateOffset;
+    int                     m_hijriOffset;
+    bool                    m_isoClock;
+    int                     m_langDisplayIndex;
     QVariantList            m_langDisplayNames;
-    QAtomicInt              m_madhabDisplayIndex;
+    int                     m_madhabDisplayIndex;
     QVariantList            m_madhabDisplayNames;
-    std::atomic<double>     m_opacity;
+    double                  m_opacity;
     QVariantList            m_prayerDisplayNames;
-    std::atomic<bool>       m_showOnAthan;
-    QAtomicInt              m_themeDisplayIndex;
+    bool                    m_showOnAthan;
+    int                     m_themeDisplayIndex;
     QVariantList            m_themeDisplayNames;
 
     QString calendarKey;

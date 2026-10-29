@@ -4,6 +4,12 @@ import QtQuick.Controls.Material
 import QtQuick.Layouts
 
 Pane {
+    id: dateBox
+
+    property bool muted: false
+    readonly property var textColor: (muted) ? Material.secondaryTextColor : Material.primaryTextColor
+    readonly property real textOpacity: (muted) ? 0.37 : 0.57
+
     LayoutMirroring.childrenInherit: true
     LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft
     Material.elevation: mm.pane_elevation
@@ -20,7 +26,7 @@ Pane {
                 anchors.verticalCenter: parent.verticalCenter
                 autoRepeat: true
                 flat: true
-                opacity: 0.5
+                opacity: 0.57
                 text: qsTr("<")
 
                 onPressed: --UiEngine.dateOffset
@@ -35,11 +41,12 @@ Pane {
                 id: dateText
 
                 anchors.fill: parent
-                color: Material.secondaryTextColor
+                color: dateBox.textColor
                 elide: Text.ElideMiddle
                 font.pointSize: Math.max(1, height / 2.7)
-                font.weight: Font.DemiBold
+                font.weight: Font.Medium
                 horizontalAlignment: Text.AlignHCenter
+                opacity: dateBox.opacity
                 text: UiEngine.calendarDateDisplay
                 verticalAlignment: Text.AlignVCenter
 
@@ -66,7 +73,7 @@ Pane {
                 anchors.verticalCenter: parent.verticalCenter
                 autoRepeat: true
                 flat: true
-                opacity: 0.5
+                opacity: 0.57
                 text: qsTr(">")
 
                 onPressed: ++UiEngine.dateOffset

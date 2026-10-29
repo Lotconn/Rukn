@@ -69,7 +69,8 @@ class PrayerEngine : public MunadiBase, public MunadiEngine<PrayerEngine>
     auto getCalcMethod() noexcept -> const QString &;
     auto getMadhab() noexcept -> const QString &;
     auto getPrayerConfig(Prayer prayerEnum, const QString &field) noexcept -> QVariant;
-    auto getQiblaDegrees(const std::optional<QGeoCoordinate> &coordinates = std::nullopt) -> double;
+    [[nodiscard]] auto getQiblaDegrees(
+        const std::optional<QGeoCoordinate> &coordinates = std::nullopt) const -> double;
     auto nextPrayer() noexcept -> Prayer;
     auto setCalcMethod(const QString &method) noexcept -> void;
     auto setMadhab(const QString &madhab) noexcept -> void;
@@ -170,7 +171,7 @@ class PrayerEngine : public MunadiBase, public MunadiEngine<PrayerEngine>
     QString                             m_madhabKey;
     QVariantHash                        m_prayerConfig;
     std::unique_ptr<Adhan::PrayerTimes> m_prayerTimes;
-    std::atomic<double>                 m_qiblaDegrees;
+    double                              m_qiblaDegrees;
     std::unique_ptr<Adhan::SunnahTimes> m_sunnahTimes;
 
     std::unique_ptr<Adhan::CalculationParameters> calcParams;

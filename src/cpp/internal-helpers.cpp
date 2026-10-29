@@ -5,10 +5,10 @@ Q_STATIC_LOGGING_CATEGORY(common, "Common")
 // using Qt::StringLiterals::operator""_s;
 using Qt::StringLiterals::operator""_L1;
 
-void fetchAndSetListIdx(const int &index, const QVariantList &refList, QAtomicInt &idxVar,
+void fetchAndSetListIdx(int index, const QVariantList &refList, int idxVar,
                         const std::function<void(const QString &)> &setFunc) noexcept
 {
-    if (!checkIndex(index, refList, idxVar.loadRelaxed()))
+    if (!checkIndex(index, refList, idxVar))
         return;
 
     QVariant entry{refList.at(index)};
@@ -35,10 +35,13 @@ void fetchAndSetListIdx(const int &index, const QVariantList &refList, QAtomicIn
 
     setFunc(entry.toString());
 
-    logDebug(common) << "Replaced " << idxVar.fetchAndStoreRelaxed(index) << " with " << index;
+    const int old{idxVar};
+    idxVar = index;
+
+    logDebug(common) << "Replaced " << old << " with " << index;
 }
 
-bool isValidMap(const QVariantHash &entry, const qsizetype &refMapSize,
+bool isValidMap(const QVariantHash &entry, qsizetype refMapSize,
                 const QHash<QString, int> &refFields) noexcept
 {
     if (entry.size() < 0 || entry.size() > refMapSize)
@@ -54,8 +57,8 @@ bool isValidMap(const QVariantHash &entry, const qsizetype &refMapSize,
         });
 }
 
-bool isValidEntry(const QVariantHash &entryMaps, const qsizetype &refEntrySize,
-                  const QHash<QString, int> &refFields, const qsizetype &refMapSize) noexcept
+bool isValidEntry(const QVariantHash &entryMaps, qsizetype refEntrySize,
+                  const QHash<QString, int> &refFields, qsizetype refMapSize) noexcept
 {
     if (refMapSize > 0 && entryMaps.size() != refMapSize)
         return false;
@@ -66,8 +69,8 @@ bool isValidEntry(const QVariantHash &entryMaps, const qsizetype &refEntrySize,
                                });
 }
 
-bool isValidEntry(const QVariantList &entryList, const qsizetype &refMapSize,
-                  const QHash<QString, int> &refFields, const qsizetype &refListSize) noexcept
+bool isValidEntry(const QVariantList &entryList, qsizetype refMapSize,
+                  const QHash<QString, int> &refFields, qsizetype refListSize) noexcept
 {
     if (refListSize > 0 && entryList.size() != refListSize)
         return false;

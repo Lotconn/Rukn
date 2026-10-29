@@ -98,8 +98,6 @@ QVariant CoreEngine::readOldSettings(QAnyStringView oldKey, const QVariant &defa
         return {};
     }
 
-    const QWriteLocker lock{&this->varLock};
-
     if (this->oldSettings == nullptr)
     {
         logDebug(munadi) << "Old settings doesn't exist, skipping migration";
@@ -151,8 +149,6 @@ QVariant CoreEngine::readSettings(QAnyStringView key, const QVariant &defaultVal
         return {};
     }
 
-    const QWriteLocker lock{&this->varLock};
-
     if (this->settings == nullptr)
         return defaultValue;
 
@@ -168,9 +164,8 @@ QVariantList CoreEngine::readSettingsArray(QAnyStringView group) noexcept
         return {};
     }
 
-    QVariantList       list;
-    const QWriteLocker lock{&this->varLock};
-    const qsizetype    size{this->settings->beginReadArray(group)};
+    QVariantList    list;
+    const qsizetype size{this->settings->beginReadArray(group)};
 
     if (this->settings == nullptr)
         return {};
@@ -212,8 +207,6 @@ QVariantList CoreEngine::readSettingsArray(QAnyStringView group) noexcept
 //         return false;
 //     }
 
-//     const QWriteLocker lock{&this->varLock};
-
 //     this->oldSettings->remove(key);
 
 //     return true;
@@ -235,19 +228,13 @@ void CoreEngine::set60sTicker() noexcept
 
 void CoreEngine::setLang(const QString &lang) noexcept
 {
+    QString currLang{QLocale::languageToString(QLocale{}.language())};
+
     logDebug(munadi) << "lang: " << lang;
     logDebug(munadi) << "locale: " << CoreEngine::s_lang.value(lang);
+    logDebug(munadi) << "current lang: " << currLang;
 
-    bool configSet{false};
-    {
-        const QWriteLocker lock{&this->varLock};
-        QString            currLang{QLocale::languageToString(QLocale{}.language())};
-
-        logDebug(munadi) << "current lang: " << currLang;
-        configSet = setConfig(CoreEngine::s_lang, lang, currLang);
-    }
-
-    if (configSet)
+    if (setConfig(CoreEngine::s_lang, lang, currLang))
         this->applyLocale(CoreEngine::s_lang.value(lang));
 }
 
@@ -270,8 +257,6 @@ void CoreEngine::writeSettings(QAnyStringView key, const QVariant &value,
         return;
     }
 
-    const QWriteLocker lock{&this->varLock};
-
     if (this->settings == nullptr)
         return;
 
@@ -287,8 +272,6 @@ void CoreEngine::writeSettingsArray(QAnyStringView group, const QVariantList &en
 
         return;
     }
-
-    const QWriteLocker lock{&this->varLock};
 
     if (this->settings == nullptr)
         return;
@@ -504,14 +487,9 @@ void CoreEngine::loadConfigs() noexcept
     bool          configMigrated{true};
     const QString migrateKey{u"CoreEngineConfigMigrated"_s};
 
-    // Adding a QReadLocker/QWriteLocker here is strongly discouraged. Acquiring a locker here may
-    // deadlock. Put it inside setter functions if necessary.
-
     loadConfigKey(
         "App/newsVersion"_L1, "App/LastVersion"_L1, migrateKey,
         [this](const QVariant &version) -> void {
-            const QWriteLocker lock{&this->varLock};
-
             // the following string comparison does what it implies
             if (version.toString() < CoreEngine::s_appVersion)
                 this->m_isVersionNew = true;

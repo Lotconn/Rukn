@@ -22,8 +22,7 @@ PrayerEngine *PrayerEngine::create(QQmlEngine *qmlEngine, QJSEngine * /* jsEngin
 
 PrayerEngine::Prayer PrayerEngine::currentPrayer() noexcept
 {
-    const QReadLocker lock{&this->varLock};
-    const Prayer      prayer{
+    const Prayer prayer{
         PrayerEngine::s_revPrayerEnumMap.value(this->m_prayerTimes->currentPrayer())};
 
     return (this->m_prayerTimes->date == QDate::currentDate() && prayer == Prayer::None)
@@ -33,7 +32,6 @@ PrayerEngine::Prayer PrayerEngine::currentPrayer() noexcept
 
 PrayerEngine::Prayer PrayerEngine::nextPrayer() noexcept
 {
-    const QReadLocker lock{&this->varLock};
     const Prayer prayer{PrayerEngine::s_revPrayerEnumMap.value(this->m_prayerTimes->nextPrayer())};
 
     return (this->m_prayerTimes->date == QDate::currentDate() && prayer == Prayer::None)
@@ -56,25 +54,13 @@ PrayerEngine::Sunnah PrayerEngine::fromString_sunnahTime(const QString &sunnahNa
 }
 
 const QString &PrayerEngine::getCalcMethod() noexcept
-{
-    const QReadLocker lock{&this->varLock};
-
-    return this->m_calcMethodKey;
-}
+{ return this->m_calcMethodKey; }
 
 const QString &PrayerEngine::getMadhab() noexcept
-{
-    const QReadLocker lock{&this->varLock};
-
-    return this->m_madhabKey;
-}
+{ return this->m_madhabKey; }
 
 QVariant PrayerEngine::getPrayerConfig(Prayer prayerEnum, const QString &field) noexcept
-{
-    const QReadLocker lock{&this->varLock};
-
-    return this->getPrayerConfig_p(prayerEnum, field);
-}
+{ return this->getPrayerConfig_p(prayerEnum, field); }
 
 QVariant PrayerEngine::getPrayerConfig_p(Prayer prayerEnum, const QString &field) const noexcept
 {
@@ -87,11 +73,11 @@ QVariant PrayerEngine::getPrayerConfig_p(Prayer prayerEnum, const QString &field
     return this->m_prayerConfig.value(PrayerEngine::toString(prayerEnum)).toHash().value(field);
 }
 
-double PrayerEngine::getQiblaDegrees(const std::optional<QGeoCoordinate> &coordinates)
+double PrayerEngine::getQiblaDegrees(const std::optional<QGeoCoordinate> &coordinates) const
 {
     return (coordinates.has_value())
                ? Adhan::qibla(Adhan::Coordinates{coordinates->latitude(), coordinates->longitude()})
-               : this->m_qiblaDegrees.load();
+               : this->m_qiblaDegrees;
 }
 
 const QLoggingCategory &PrayerEngine::logCategory() noexcept
@@ -120,28 +106,25 @@ void PrayerEngine::modifyPrayerConfig(const QString &key, const QVariantHash &en
         return;
     }
 
+    QVariantHash tempMap{this->m_prayerConfig.value(key).toHash()};
+
+    if (!isValidEntry(entry, this->prayerConfigEntrySize, this->prayerConfigFields))
     {
-        const QWriteLocker lock{&this->varLock};
-        QVariantHash       tempMap{this->m_prayerConfig.value(key).toHash()};
+        logCritical(munadi) << "[" << entry << "] is not a valid entry in prayerConfig";
 
-        if (!isValidEntry(entry, this->prayerConfigEntrySize, this->prayerConfigFields))
-        {
-            logCritical(munadi) << "[" << entry << "] is not a valid entry in prayerConfig";
-
-            return;
-        }
-
-        if (tempMap == entry)
-        {
-            logDebug(munadi) << "Skipping setting identical entry";
-
-            return;
-        }
-
-        logDebug(munadi) << "Assigning value " << entry << " to key " << key;
-        tempMap.insert(entry);
-        this->m_prayerConfig.insert(key, tempMap);
+        return;
     }
+
+    if (tempMap == entry)
+    {
+        logDebug(munadi) << "Skipping setting identical entry";
+
+        return;
+    }
+
+    logDebug(munadi) << "Assigning value " << entry << " to key " << key;
+    tempMap.insert(entry);
+    this->m_prayerConfig.insert(key, tempMap);
 
     emit this->prayerConfigChanged();
     emit this->invalidate();
@@ -151,10 +134,7 @@ void PrayerEngine::setCalcMethod(const QString &method) noexcept
 {
     logDebug(munadi) << "method: " << method;
 
-    if ([&method, this] -> bool {
-            const QWriteLocker lock{&this->varLock};
-            return setConfig(PrayerEngine::s_calcMethods, method, this->m_calcMethodKey);
-        }())
+    if (setConfig(PrayerEngine::s_calcMethods, method, this->m_calcMethodKey))
         emit this->invalidate();
 }
 
@@ -162,10 +142,7 @@ void PrayerEngine::setMadhab(const QString &madhab) noexcept
 {
     logDebug(munadi) << "madhab: " << madhab;
 
-    if ([&madhab, this] -> bool {
-            const QWriteLocker lock{&this->varLock};
-            return setConfig(PrayerEngine::s_madhab, madhab, this->m_madhabKey);
-        }())
+    if (setConfig(PrayerEngine::s_madhab, madhab, this->m_madhabKey))
         emit this->invalidate();
 }
 
@@ -206,14 +183,12 @@ QDateTime PrayerEngine::timeForCurrentPrayer(const std::optional<QDateTime> &whe
     const QDateTime          dateTime{(when.has_value()) ? when.value().toLocalTime()
                                                          : QDateTime::currentDateTime()};
     const QDate              date{dateTime.date()};
-    const Adhan::PrayerTimes pTimes{[this, &when, &date] {
-        const QReadLocker lock{&this->varLock};
-
-        return (when.has_value())
-                   ? Adhan::PrayerTimes{*this->coordinates, date.toStdSysDays(), *this->calcParams}
-                   : *this->m_prayerTimes;
-    }()};
-    const Prayer             prayer{PrayerEngine::s_revPrayerEnumMap.value(
+    const Adhan::PrayerTimes pTimes{
+        (when.has_value())
+            ? Adhan::PrayerTimes{*this->coordinates, date.toStdSysDays(), *this->calcParams}
+            : *this->m_prayerTimes
+    };
+    const Prayer prayer{PrayerEngine::s_revPrayerEnumMap.value(
         pTimes.currentPrayer(dateTime.toStdSysMilliseconds()))};
 
     return (pTimes.date == date && prayer == Prayer::None)
@@ -230,20 +205,17 @@ QDateTime PrayerEngine::timeForPrayer(Prayer prayerEnum, std::optional<QDate> da
                                   : QDate::currentDate().startOfDay().toLocalTime();
 
     Adhan::OptInstant date_time;
+
+    if (date.has_value())
     {
-        const QReadLocker lock{&this->varLock};
+        const Adhan::PrayerTimes pTimes{*this->coordinates, date->toStdSysDays(),
+                                        *this->calcParams};
 
-        if (date.has_value())
-        {
-            const Adhan::PrayerTimes pTimes{*this->coordinates, date->toStdSysDays(),
-                                            *this->calcParams};
-
-            date_time = pTimes.timeForPrayer(PrayerEngine::s_prayerEnumMap.value(prayerEnum));
-        }
-        else
-            date_time =
-                this->m_prayerTimes->timeForPrayer(PrayerEngine::s_prayerEnumMap.value(prayerEnum));
+        date_time = pTimes.timeForPrayer(PrayerEngine::s_prayerEnumMap.value(prayerEnum));
     }
+    else
+        date_time =
+            this->m_prayerTimes->timeForPrayer(PrayerEngine::s_prayerEnumMap.value(prayerEnum));
 
     return (date_time.has_value()) ? QDateTime::fromStdTimePoint(date_time.value()).toLocalTime()
                                    : QDateTime{};
@@ -258,14 +230,12 @@ QDateTime PrayerEngine::timeForNextPrayer(const std::optional<QDateTime> &when) 
     const QDateTime          dateTime{(when.has_value()) ? when.value().toLocalTime()
                                                          : QDateTime::currentDateTime()};
     const QDate              date{dateTime.date()};
-    const Adhan::PrayerTimes pTimes{[this, &date, &when] {
-        const QReadLocker lock{&this->varLock};
-
-        return (when.has_value())
-                   ? Adhan::PrayerTimes{*this->coordinates, date.toStdSysDays(), *this->calcParams}
-                   : *this->m_prayerTimes;
-    }()};
-    const Prayer             prayer{
+    const Adhan::PrayerTimes pTimes{
+        (when.has_value())
+            ? Adhan::PrayerTimes{*this->coordinates, date.toStdSysDays(), *this->calcParams}
+            : *this->m_prayerTimes
+    };
+    const Prayer prayer{
         PrayerEngine::s_revPrayerEnumMap.value(pTimes.nextPrayer(dateTime.toStdSysMilliseconds()))};
 
     return (pTimes.date == date && prayer == Prayer::None)
@@ -277,21 +247,18 @@ QDateTime PrayerEngine::timeForNextPrayer(const std::optional<QDateTime> &when) 
 QDateTime PrayerEngine::timeForSunnahTime(Sunnah sunnahEnum, std::optional<QDate> date) noexcept
 {
     Adhan::OptInstant date_time;
+
+    if (date.has_value())
     {
-        const QReadLocker lock{&this->varLock};
+        const Adhan::PrayerTimes pTimes{*this->coordinates, date->toStdSysDays(),
+                                        *this->calcParams};
+        const Adhan::SunnahTimes sTimes{pTimes};
 
-        if (date.has_value())
-        {
-            const Adhan::PrayerTimes pTimes{*this->coordinates, date->toStdSysDays(),
-                                            *this->calcParams};
-            const Adhan::SunnahTimes sTimes{pTimes};
-
-            date_time = sTimes.timeForSunnahTime(PrayerEngine::s_sunnahEnumMap.value(sunnahEnum));
-        }
-        else
-            date_time = this->m_sunnahTimes->timeForSunnahTime(
-                PrayerEngine::s_sunnahEnumMap.value(sunnahEnum));
+        date_time = sTimes.timeForSunnahTime(PrayerEngine::s_sunnahEnumMap.value(sunnahEnum));
     }
+    else
+        date_time =
+            this->m_sunnahTimes->timeForSunnahTime(PrayerEngine::s_sunnahEnumMap.value(sunnahEnum));
 
     return (date_time.has_value()) ? QDateTime::fromStdTimePoint(date_time.value()).toLocalTime()
                                    : QDateTime{};
@@ -312,23 +279,18 @@ qint64 PrayerEngine::timeToNextPrayer(const std::optional<QDateTime> &since_ms) 
     // logDebug(munadi) << "Since: " << since.toString();
     // logDebug(munadi) << "Next day date: " << nextDay.toString();
 
-    std::unique_ptr<Adhan::PrayerTimes> currentPT;
-    QDateTime                           nextTime;
-    std::unique_ptr<Adhan::PrayerTimes> nextPT;
-    {
-        const QReadLocker lock{&this->varLock};
+    const std::unique_ptr<Adhan::PrayerTimes> currentPT{
+        (since_ms.has_value())
+            ? std::make_unique<Adhan::PrayerTimes>(
+                  *this->coordinates, std::chrono::year_month_day{since.date().toStdSysDays()},
+                  *this->calcParams)
+            : std::make_unique<Adhan::PrayerTimes>(*this->m_prayerTimes)};
 
-        currentPT =
-            (since_ms.has_value())
-                ? std::make_unique<Adhan::PrayerTimes>(
-                      *this->coordinates, std::chrono::year_month_day{since.date().toStdSysDays()},
-                      *this->calcParams)
-                : std::make_unique<Adhan::PrayerTimes>(*this->m_prayerTimes);
-        nextPT = std::make_unique<Adhan::PrayerTimes>(
-            *this->coordinates, std::chrono::year_month_day{nextDay.toStdSysDays()},
-            *this->calcParams);
-    }
+    const std::unique_ptr<Adhan::PrayerTimes> nextPT{std::make_unique<Adhan::PrayerTimes>(
+        *this->coordinates, std::chrono::year_month_day{nextDay.toStdSysDays()},
+        *this->calcParams)};
 
+    QDateTime     nextTime;
     Adhan::Prayer next{currentPT->nextPrayer(since.toStdSysMilliseconds())};
 
     // logDebug(munadi) << "Current prayer: "
@@ -464,15 +426,10 @@ void PrayerEngine::connectToMinuteChanged() const noexcept
 
 void PrayerEngine::defaultConfigs()
 {
-    {
-        const QWriteLocker lock{&this->varLock};
+    this->m_calcMethodKey = u"MuslimWorldLeague"_s;
+    this->m_madhabKey     = u"Shafi"_s;
 
-        this->m_calcMethodKey = u"MuslimWorldLeague"_s;
-        this->m_madhabKey     = u"Shafi"_s;
-
-        this->defaultPrayerConfig();
-    }
-
+    this->defaultPrayerConfig();
     this->updateCalc();
 }
 
@@ -503,9 +460,6 @@ void PrayerEngine::loadConfigs() noexcept
     bool          configMigrated{true};
     const QString migrateKey{"PrayerEngineConfigMigrated"_L1};
 
-    // Adding a QReadLocker/QWriteLocker here is strongly discouraged. Acquiring a locker here may
-    // deadlock. Put it inside setter functions if necessary.
-
     this->loadPrayerConfig(configMigrated);
     loadConfigKey({}, "PrayerConfig/CalcMethod"_L1, migrateKey,
                   [this](const QVariant &name) -> void { this->setCalcMethod(name.toString()); });
@@ -518,11 +472,9 @@ void PrayerEngine::loadConfigs() noexcept
 
 void PrayerEngine::loadPrayerConfig(bool &configMigrated) noexcept
 {
-    QVariantHash       cfgMap{this->m_prayerConfig};
-    QVariantList       oldPrayerConfig;
-    const QWriteLocker lock{
-        &this->varLock}; // safe as long as no QReadLocker holder is in this block
-    const bool migrated{core->readSettings("PrayerEngineConfigMigrated"_L1).toBool()};
+    QVariantHash cfgMap{this->m_prayerConfig};
+    QVariantList oldPrayerConfig;
+    const bool   migrated{core->readSettings("PrayerEngineConfigMigrated"_L1).toBool()};
 
     if (!migrated)
         oldPrayerConfig = core->readOldSettingsJsArray("Adhan/prayerConfig"_L1);
@@ -575,7 +527,6 @@ void PrayerEngine::loadPrayerConfig(bool &configMigrated) noexcept
         cfgMap.insert(prayerName, entry);
     }
 
-    // setPrayerConfig() also has a QWriteLocker
     this->setPrayerConfig(cfgMap);
 
     if (migrated)
@@ -585,8 +536,6 @@ void PrayerEngine::loadPrayerConfig(bool &configMigrated) noexcept
 void PrayerEngine::saveConfigs() noexcept
 {
     logDebug(munadi) << "Saving prayer configurations";
-
-    const QReadLocker lock{&this->varLock};
 
     // Ensure the very last config to be saved has the third parameter set to "true". Otherwise
     // (later) settings are not saved
@@ -615,60 +564,52 @@ void PrayerEngine::setPrayerConfig(const QVariantHash &prayerConfig) noexcept
         return;
     }
 
+    if (prayerConfig == this->m_prayerConfig)
     {
-        const QWriteLocker lock{&this->varLock};
+        logDebug(munadi) << "Skipping setting identical list";
 
-        if (prayerConfig == this->m_prayerConfig)
-        {
-            logDebug(munadi) << "Skipping setting identical list";
-
-            return;
-        }
-
-        if (!isValidEntry(prayerConfig, this->prayerConfigEntrySize, this->prayerConfigFields,
-                          this->prayerConfigMapSize))
-        {
-            logCritical(munadi) << "Config [" << prayerConfig << "] is not a valid configuration";
-
-            return;
-        }
-
-        this->m_prayerConfig = prayerConfig;
+        return;
     }
+
+    if (!isValidEntry(prayerConfig, this->prayerConfigEntrySize, this->prayerConfigFields,
+                      this->prayerConfigMapSize))
+    {
+        logCritical(munadi) << "Config [" << prayerConfig << "] is not a valid configuration";
+
+        return;
+    }
+
+    this->m_prayerConfig = prayerConfig;
 
     emit this->prayerConfigChanged();
 }
 
 void PrayerEngine::updateCalc()
 {
-    {
-        const QWriteLocker lock{&this->varLock};
+    this->calcParams = std::make_unique<Adhan::CalculationParameters>(
+        PrayerEngine::s_calcMethods.value(this->m_calcMethodKey)());
 
-        this->calcParams = std::make_unique<Adhan::CalculationParameters>(
-            PrayerEngine::s_calcMethods.value(this->m_calcMethodKey)());
+    // The following needs to call the private getPrayerConfig for avoiding locking contention
+    this->calcParams->adjustments.fajr =
+        this->getPrayerConfig_p(Prayer::Fajr, "adjustment"_L1).toInt();
+    this->calcParams->adjustments.dhuhr =
+        this->getPrayerConfig_p(Prayer::Dhuhr, "adjustment"_L1).toInt();
+    this->calcParams->adjustments.asr =
+        this->getPrayerConfig_p(Prayer::Asr, "adjustment"_L1).toInt();
+    this->calcParams->adjustments.maghrib =
+        this->getPrayerConfig_p(Prayer::Maghrib, "adjustment"_L1).toInt();
+    this->calcParams->adjustments.isha =
+        this->getPrayerConfig_p(Prayer::Isha, "adjustment"_L1).toInt();
 
-        // The following needs to call the private getPrayerConfig for avoiding locking contention
-        this->calcParams->adjustments.fajr =
-            this->getPrayerConfig_p(Prayer::Fajr, "adjustment"_L1).toInt();
-        this->calcParams->adjustments.dhuhr =
-            this->getPrayerConfig_p(Prayer::Dhuhr, "adjustment"_L1).toInt();
-        this->calcParams->adjustments.asr =
-            this->getPrayerConfig_p(Prayer::Asr, "adjustment"_L1).toInt();
-        this->calcParams->adjustments.maghrib =
-            this->getPrayerConfig_p(Prayer::Maghrib, "adjustment"_L1).toInt();
-        this->calcParams->adjustments.isha =
-            this->getPrayerConfig_p(Prayer::Isha, "adjustment"_L1).toInt();
+    this->calcParams->madhab = PrayerEngine::s_madhab.value(this->m_madhabKey);
+    this->coordinates =
+        std::make_unique<Adhan::Coordinates>(lEngine->getLocation().coordinate().latitude(),
+                                             lEngine->getLocation().coordinate().longitude());
 
-        this->calcParams->madhab = PrayerEngine::s_madhab.value(this->m_madhabKey);
-        this->coordinates =
-            std::make_unique<Adhan::Coordinates>(lEngine->getLocation().coordinate().latitude(),
-                                                 lEngine->getLocation().coordinate().longitude());
-
-        this->m_qiblaDegrees = Adhan::qibla(*this->coordinates);
-        this->m_prayerTimes  = std::make_unique<Adhan::PrayerTimes>(
-            *this->coordinates, QDate::currentDate().toStdSysDays(), *this->calcParams);
-        this->m_sunnahTimes = std::make_unique<Adhan::SunnahTimes>(*this->m_prayerTimes);
-    }
+    this->m_qiblaDegrees = Adhan::qibla(*this->coordinates);
+    this->m_prayerTimes  = std::make_unique<Adhan::PrayerTimes>(
+        *this->coordinates, QDate::currentDate().toStdSysDays(), *this->calcParams);
+    this->m_sunnahTimes = std::make_unique<Adhan::SunnahTimes>(*this->m_prayerTimes);
 
     core->alarmManager().clear("athan"_L1);
 

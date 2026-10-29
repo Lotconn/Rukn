@@ -6,7 +6,12 @@ import QtQuick.Layouts
 import Munadi
 
 Pane {
+    id: timeleftBox
+
+    property bool muted: false
     property alias text: timeLeftLabel.text
+    readonly property var textColor: (muted) ? Material.secondaryTextColor : Material.primaryTextColor
+    readonly property real textOpacity: (muted) ? 0.37 : 0.57
 
     Material.elevation: mm.pane_elevation
 
@@ -22,7 +27,7 @@ Pane {
                 flat: true
                 icon.source: "qrc:/qt/qml/Munadi/img/settings.png"
                 icon.width: parent.width
-                opacity: 0.5
+                opacity: 0.57
 
                 onClicked: settingsPopup.open()
             }
@@ -37,11 +42,12 @@ Pane {
                 id: timeLeftLabel
 
                 anchors.fill: parent
-                color: Material.secondaryTextColor
+                color: timeleftBox.textColor
                 elide: Text.ElideRight
                 font.pointSize: Math.max(1, height / 2.7)
-                font.weight: Font.DemiBold
+                font.weight: Font.Medium
                 horizontalAlignment: Text.AlignHCenter
+                opacity: timeleftBox.opacity
                 verticalAlignment: Text.AlignVCenter
                 visible: progressBar.visible || MultimediaEngine.athanPlaying
             }
@@ -53,6 +59,7 @@ Pane {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: timeLeftLabel.bottom
                 anchors.topMargin: 2
+                opacity: timeleftBox.opacity
                 value: UiEngine.timeLeftProgress
                 visible: timeLeftLabel.text !== ""
                 width: parent.width / 1.5
@@ -67,7 +74,7 @@ Pane {
                 anchors.centerIn: parent
                 flat: true
                 icon.source: "qrc:/qt/qml/Munadi/img/stop.png"
-                opacity: 0.5
+                opacity: 0.57
                 visible: MultimediaEngine.athanPlaying
 
                 onClicked: MultimediaEngine.athanStop()
@@ -83,7 +90,7 @@ Pane {
                 flat: true
                 icon.source: "qrc:/qt/qml/Munadi/img/compass.png"
                 icon.width: parent.width
-                opacity: 0.5
+                opacity: 0.57
 
                 onClicked: compassPopup.open()
             }

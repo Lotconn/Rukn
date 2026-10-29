@@ -18,14 +18,10 @@ const QLoggingCategory &LocationEngine::logCategory() noexcept
 
 void LocationEngine::abortQuery() noexcept
 {
+    if (this->geoCodeReply.isNull())
     {
-        const QReadLocker lock{&this->varLock};
-
-        if (this->geoCodeReply.isNull())
-        {
-            logInfo(munadi) << "No previous query running, nothing to abort.";
-            return;
-        }
+        logInfo(munadi) << "No previous query running, nothing to abort.";
+        return;
     }
 
     this->connectToAborted();
@@ -40,19 +36,14 @@ void LocationEngine::search(const QString &query) noexcept
 
     logDebug(munadi) << "Dispatching geocoder workers...";
 
-    QGeoCodeReply *reply{this->manager->geocode(query)};
-    {
-        const QWriteLocker lock{&this->varLock};
+    this->geoCodeReply = this->manager->geocode(query);
 
-        this->geoCodeReply = reply;
-        this->connectToFinished();
-    }
+    this->connectToFinished();
 
     // Handle early failures, otherwise `geocode()` already is working async in background
-    if (reply->isFinished())
+    if (this->geoCodeReply->isFinished())
     {
         logWarning(munadi) << "Reply received too early, unknown failure expected";
-        // Reminder: onFinished() has a QWriteLocker
         onFinished();
     }
     else
@@ -122,30 +113,18 @@ void LocationEngine::connectToLocaleChanged() const noexcept
 
 void LocationEngine::defaultConfigs() noexcept
 {
-    const QWriteLocker lock{&this->varLock};
-
-    this->m_location = {};
-    this->m_locationResultsIndex.storeRelaxed(0);
+    this->m_location             = {};
+    this->m_locationResultsIndex = 0;
 }
 
 bool LocationEngine::isLoading() noexcept
-{
-    const QReadLocker lock{&this->varLock};
-
-    return !this->geoCodeReply.isNull();
-}
+{ return !this->geoCodeReply.isNull(); }
 
 bool LocationEngine::isLocationSet() noexcept
-{
-    const QReadLocker lock{&this->varLock};
-
-    return this->m_location.coordinate().isValid();
-}
+{ return this->m_location.coordinate().isValid(); }
 
 const QGeoLocation &LocationEngine::getLocation() noexcept
 {
-    const QReadLocker lock{&this->varLock};
-
     if (!this->isLocationSet())
         logCritical(munadi) << "Location isn't set, object is invalid";
 
@@ -154,8 +133,6 @@ const QGeoLocation &LocationEngine::getLocation() noexcept
 
 QStringList LocationEngine::getLocationResults() noexcept
 {
-    const QReadLocker lock{&this->varLock};
-
     if (this->geoLocations.isEmpty())
         logWarning(munadi) << "Geocoding search result is empty";
 
@@ -167,8 +144,6 @@ QStringList LocationEngine::getLocationResults() noexcept
 
 QVariantHash LocationEngine::getParsableLocation() noexcept
 {
-    const QReadLocker lock{&this->varLock};
-
     return QVariantHash{
         {u"address"_s,     this->m_location.address().text()        },
         {u"streetNum"_s,   this->m_location.address().streetNumber()},
@@ -191,31 +166,18 @@ void LocationEngine::loadConfigs() noexcept
     bool          configMigrated{true};
     const QString migrateKey{u"LocationEngineConfigMigrated"_s};
 
-    // Adding a QReadLocker/QWriteLocker here is strongly discouraged. Acquiring a locker here may
-    // deadlock. Put it inside setter functions if necessary.
-
     loadConfigKey({}, "Location/Address"_L1, {}, [this](const QVariant &address) -> void {
-        const QWriteLocker lock{&this->varLock};
-
         this->address.setText(address.toString());
     });
 
     loadConfigKey(
         "Adhan/cityName"_L1, {}, migrateKey,
-        [this](const QVariant &city) -> void {
-            const QWriteLocker lock{&this->varLock};
-
-            this->address.setCity(city.toString());
-        },
+        [this](const QVariant &city) -> void { this->address.setCity(city.toString()); },
         configMigrated);
 
     loadConfigKey(
         "Adhan/countryName"_L1, {}, migrateKey,
-        [this](const QVariant &country) -> void {
-            const QWriteLocker lock{&this->varLock};
-
-            this->address.setCountry(country.toString());
-        },
+        [this](const QVariant &country) -> void { this->address.setCountry(country.toString()); },
         configMigrated);
 
     loadConfigKey(
@@ -228,8 +190,6 @@ void LocationEngine::loadConfigs() noexcept
                 logWarning(munadi) << "Not setting invalid latitude value: " << lat;
                 return;
             }
-
-            const QWriteLocker lock{&this->varLock};
 
             this->coordinates.setLatitude(lat);
         },
@@ -246,8 +206,6 @@ void LocationEngine::loadConfigs() noexcept
                 return;
             }
 
-            const QWriteLocker lock{&this->varLock};
-
             this->coordinates.setLongitude(lng);
         },
         configMigrated);
@@ -262,8 +220,6 @@ void LocationEngine::saveConfigs() noexcept
 {
     logDebug(munadi) << "Saving location configurations";
 
-    const QReadLocker lock{&this->varLock};
-
     // Ensure the very last config to be saved has the third parameter set to "true". Otherwise
     // (later) settings are not saved
 
@@ -276,29 +232,25 @@ void LocationEngine::setLocation(const QVariant &index) noexcept
 {
     logDebug(munadi) << "Received index: " << index;
 
+    if (!checkIndex(index, this->geoLocations, this->m_locationResultsIndex))
+        return;
+
+    this->m_locationResultsIndex = index.toInt();
+
+    if (this->m_location.coordinate() ==
+        this->geoLocations.at(this->m_locationResultsIndex).coordinate())
     {
-        const QWriteLocker lock{&this->varLock};
-
-        if (!checkIndex(index, this->geoLocations, this->m_locationResultsIndex))
-            return;
-
-        this->m_locationResultsIndex.storeRelaxed(index.toInt());
-
-        if (this->m_location.coordinate() ==
-            this->geoLocations.at(this->m_locationResultsIndex).coordinate())
-        {
-            logDebug(munadi) << "Skipping setting identical location";
-            return;
-        }
-
-        logDebug(munadi) << "Replacing previous location: " << this->m_location.address().text()
-                         << "\ncoordinates: " << this->m_location.coordinate().toString();
-
-        this->m_location = this->geoLocations.at(this->m_locationResultsIndex);
-
-        logDebug(munadi) << "New location: " << this->m_location.address().text()
-                         << "\ncoordinates: " << this->m_location.coordinate().toString();
+        logDebug(munadi) << "Skipping setting identical location";
+        return;
     }
+
+    logDebug(munadi) << "Replacing previous location: " << this->m_location.address().text()
+                     << "\ncoordinates: " << this->m_location.coordinate().toString();
+
+    this->m_location = this->geoLocations.at(this->m_locationResultsIndex);
+
+    logDebug(munadi) << "New location: " << this->m_location.address().text()
+                     << "\ncoordinates: " << this->m_location.coordinate().toString();
 
     emit this->locationChanged();
 }
@@ -330,17 +282,12 @@ void LocationEngine::onAborted() noexcept
 {
     logInfo(munadi) << "Previous query aborted";
 
-    {
-        const QWriteLocker lock{&this->varLock};
+    if (!this->geoCodeReply.isNull())
+        this->geoCodeReply->deleteLater();
 
-        if (!this->geoCodeReply.isNull())
-            this->geoCodeReply->deleteLater();
-
-        this->geoCodeReply.clear();
-        this->geoLocations.clear();
-        this->geoLocations.squeeze();
-    }
-
+    this->geoCodeReply.clear();
+    this->geoLocations.clear();
+    this->geoLocations.squeeze();
     emit this->loadingChanged();
 }
 
@@ -358,37 +305,30 @@ void LocationEngine::onFinished() noexcept
         return;
     }
 
+    logDebug(munadi) << "Processing geocode query...";
+
+    this->geoLocations.clear();
+    this->geoLocations.squeeze();
+
+    switch (this->geoCodeReply->error())
     {
-        const QWriteLocker lock{&this->varLock};
-
-        logDebug(munadi) << "Processing geocode query...";
-
-        this->geoLocations.clear();
-        this->geoLocations.squeeze();
-
-        switch (this->geoCodeReply->error())
-        {
-        case QGeoCodeReply::NoError:
-            logDebug(munadi) << "No error found in current reply";
-            this->geoLocations = this->geoCodeReply->locations();
-            break;
-        default:
-            logCritical(munadi) << "Could not geocode provided query";
-            logDebug(munadi) << this->geoCodeReply->errorString();
-            break;
-        }
-
-        this->geoCodeReply->deleteLater();
-        this->geoCodeReply.clear();
+    case QGeoCodeReply::NoError:
+        logDebug(munadi) << "No error found in current reply";
+        this->geoLocations = this->geoCodeReply->locations();
+        break;
+    default:
+        logCritical(munadi) << "Could not geocode provided query";
+        logDebug(munadi) << this->geoCodeReply->errorString();
+        break;
     }
 
+    this->geoCodeReply->deleteLater();
+    this->geoCodeReply.clear();
     emit this->loadingChanged();
 }
 
 void LocationEngine::onLocaleChanged() noexcept
 {
-    const QWriteLocker lock{&this->varLock};
-
     logDebug(munadi) << "Detected language change, refreshing locale...";
 
     this->manager->setLocale(QLocale{});

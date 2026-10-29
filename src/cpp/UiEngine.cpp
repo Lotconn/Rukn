@@ -56,24 +56,13 @@ UiEngine::UiEngine(QObject *parent) : MunadiBase{munadi(), parent}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 QVariantList &UiEngine::calcMethodsDisplayNames() noexcept
-{
-    const QReadLocker lock{&this->varLock};
-
-    return this->m_calcMethodsDisplayNames;
-}
+{ return this->m_calcMethodsDisplayNames; }
 
 QString UiEngine::calendarDateDisplay() noexcept
-{
-    const QReadLocker lock{&this->varLock};
-
-    return this->m_calendarDateDisplay.value(this->calendarKey);
-}
+{ return this->m_calendarDateDisplay.value(this->calendarKey); }
 
 QVariantList &UiEngine::calendarDisplayNames() noexcept
-{
-    const QReadLocker lock{&this->varLock};
-    return this->m_calendarDisplayNames;
-}
+{ return this->m_calendarDisplayNames; }
 
 void UiEngine::connectToAlarmsReset() const noexcept
 {
@@ -144,25 +133,22 @@ void UiEngine::defaultConfigs() noexcept
     constexpr static quint8 defaultLangIdx{0};
     constexpr static quint8 defaultThemeIdx{0};
 
-    this->m_bgImage.store(true);
-    this->m_blur.store(defaultBlur);
-    this->m_calendarDisplayIndex.storeRelaxed(defaultCalendarIdx);
-    this->m_dateOffset.storeRelaxed(0);
-    this->m_hijriOffset.storeRelaxed(defaultHijriOffset);
-    this->m_isoClock.store(false);
-    this->m_opacity.store(defaultOpacity);
-    this->m_langDisplayIndex.storeRelaxed(defaultLangIdx);
-    this->m_showOnAthan.store(false);
-    this->m_themeDisplayIndex.storeRelaxed(defaultThemeIdx);
-
-    const QWriteLocker lock{&this->varLock};
-
-    this->calendarKey = u"Both"_s;
+    this->m_bgImage              = true;
+    this->m_blur                 = defaultBlur;
+    this->m_calendarDisplayIndex = defaultCalendarIdx;
+    this->m_dateOffset           = 0;
+    this->m_hijriOffset          = defaultHijriOffset;
+    this->m_isoClock             = false;
+    this->m_opacity              = defaultOpacity;
+    this->m_langDisplayIndex     = defaultLangIdx;
+    this->m_showOnAthan          = false;
+    this->m_themeDisplayIndex    = defaultThemeIdx;
+    this->calendarKey            = u"Both"_s;
 }
 
 QString UiEngine::getCurrentLang() const noexcept
 {
-    return this->m_langDisplayNames.at(this->m_langDisplayIndex.loadRelaxed())
+    return this->m_langDisplayNames.at(this->m_langDisplayIndex)
         .toHash()
         .value("name"_L1)
         .toString();
@@ -170,7 +156,7 @@ QString UiEngine::getCurrentLang() const noexcept
 
 QString UiEngine::getCurrentTheme() const noexcept
 {
-    return this->m_themeDisplayNames.at(this->m_themeDisplayIndex.loadRelaxed())
+    return this->m_themeDisplayNames.at(this->m_themeDisplayIndex)
         .toHash()
         .value("name"_L1)
         .toString();
@@ -178,17 +164,14 @@ QString UiEngine::getCurrentTheme() const noexcept
 
 void UiEngine::initConfigs() noexcept
 {
-    const QWriteLocker lock{&this->varLock};
+    this->m_calcMethodsDisplayIndex =
+        UiEngine::indexOfValue(this->m_calcMethodsDisplayNames, pEngine->getCalcMethod());
+    this->m_madhabDisplayIndex =
+        UiEngine::indexOfValue(this->m_madhabDisplayNames, pEngine->getMadhab());
 
-    this->m_calcMethodsDisplayIndex.storeRelaxed(
-        UiEngine::indexOfValue(this->m_calcMethodsDisplayNames, pEngine->getCalcMethod()));
-    this->m_madhabDisplayIndex.storeRelaxed(
-        UiEngine::indexOfValue(this->m_madhabDisplayNames, pEngine->getMadhab()));
-
-    logDebug(munadi) << "calcMethodsIdx inited as: ["
-                     << this->m_calcMethodsDisplayIndex.loadRelaxed() << ", "
+    logDebug(munadi) << "calcMethodsIdx inited as: [" << this->m_calcMethodsDisplayIndex << ", "
                      << pEngine->getCalcMethod() << "]";
-    logDebug(munadi) << "madhabIdx inited as: [" << this->m_madhabDisplayIndex.loadRelaxed() << ", "
+    logDebug(munadi) << "madhabIdx inited as: [" << this->m_madhabDisplayIndex << ", "
                      << pEngine->getMadhab() << "]";
 }
 
@@ -204,14 +187,12 @@ int UiEngine::indexOfValue(const QVariantList &list, const QString &value) noexc
 
 void UiEngine::initCalendarDates() noexcept
 {
-    const QDate   date{QDate::currentDate().addDays(this->m_dateOffset.loadRelaxed())};
+    const QDate   date{QDate::currentDate().addDays(this->m_dateOffset)};
     const QLocale l;
     const QString gregorian{
         QCalendar{}.dateTimeToString(UiEngine::calendarFormat, {}, date, {}, l)};
     const QString hijri{QCalendar{QCalendar::System::IslamicCivil}.dateTimeToString(
         UiEngine::calendarFormat, {}, date.addDays(this->m_hijriOffset), {}, l)};
-
-    const QWriteLocker lock{&this->varLock};
 
     this->m_calendarDateDisplay = {
         {u"Both"_s,      gregorian + u" | "_s + hijri},
@@ -223,8 +204,6 @@ void UiEngine::initCalendarDates() noexcept
 void UiEngine::initTexts() noexcept
 {
     this->initCalendarDates();
-
-    const QWriteLocker lock{&this->varLock};
 
     // IMPORTANT:
     // Do not sort any of these lists, unless you know what you're doing
@@ -285,11 +264,7 @@ void UiEngine::initTexts() noexcept
 }
 
 QVariantList &UiEngine::langDisplayNames() noexcept
-{
-    const QReadLocker lock{&this->varLock};
-
-    return this->m_langDisplayNames;
-}
+{ return this->m_langDisplayNames; }
 
 void UiEngine::loadConfigs() noexcept
 {
@@ -391,8 +366,8 @@ void UiEngine::loadConfigs() noexcept
                 fetchAndSetListIdx(value, UiEngine::oldThemeDisplayNames, this->m_themeDisplayIndex,
                                    [](const QString & /*unused*/) -> void {});
             else
-                this->m_themeDisplayIndex.storeRelaxed(
-                    UiEngine::indexOfValue(this->m_themeDisplayNames, val.toString()));
+                this->m_themeDisplayIndex =
+                    UiEngine::indexOfValue(this->m_themeDisplayNames, val.toString());
 
             emit this->themeChanged();
         },
@@ -403,24 +378,16 @@ void UiEngine::loadConfigs() noexcept
 }
 
 QVariantList &UiEngine::madhabDisplayNames() noexcept
-{
-    const QReadLocker lock{&this->varLock};
-
-    return this->m_madhabDisplayNames;
-}
+{ return this->m_madhabDisplayNames; }
 
 QVariantList &UiEngine::prayerDisplayNames() noexcept
-{
-    const QReadLocker lock{&this->varLock};
-
-    return this->m_prayerDisplayNames;
-}
+{ return this->m_prayerDisplayNames; }
 
 QVariantHash UiEngine::prayerDisplayTimes() const noexcept
 {
     const QLocale l;
-    const QDate   date{QDate::currentDate().addDays(this->m_dateOffset.loadRelaxed())};
-    const QString format{(this->m_isoClock.load()) ? u"hh:mm"_s : u"hh:mm ap"_s};
+    const QDate   date{QDate::currentDate().addDays(this->m_dateOffset)};
+    const QString format{(this->m_isoClock) ? u"hh:mm"_s : u"hh:mm ap"_s};
 
     return {
         {u"Fajr"_s,           l.toString(pEngine->timeForPrayer(Prayer::Fajr,         date), format)},
@@ -437,21 +404,19 @@ QVariantHash UiEngine::prayerDisplayTimes() const noexcept
 
 void UiEngine::saveConfigs() noexcept
 {
-    const QReadLocker lock{&this->varLock};
-
     // Ensure the very last config to be saved has the third parameter set to "true". Otherwise
     // (later) settings are not saved
 
     logDebug(munadi) << "Saving UI configurations";
 
-    core->writeSettings("App/BackgroundImage"_L1, this->m_bgImage.load());
-    core->writeSettings("App/Blur"_L1, this->m_blur.load());
+    core->writeSettings("App/BackgroundImage"_L1, this->m_bgImage);
+    core->writeSettings("App/Blur"_L1, this->m_blur);
     core->writeSettings("App/Calendar"_L1, this->calendarKey);
-    core->writeSettings("App/HijriOffset", this->m_hijriOffset.loadRelaxed());
-    core->writeSettings("App/ISOClock"_L1, this->m_isoClock.load());
+    core->writeSettings("App/HijriOffset", this->m_hijriOffset);
+    core->writeSettings("App/ISOClock"_L1, this->m_isoClock);
     core->writeSettings("App/Language"_L1, this->getCurrentLang());
-    core->writeSettings("App/Opacity"_L1, this->m_opacity.load());
-    core->writeSettings("App/ShowOnAthan"_L1, this->m_showOnAthan.load());
+    core->writeSettings("App/Opacity"_L1, this->m_opacity);
+    core->writeSettings("App/ShowOnAthan"_L1, this->m_showOnAthan);
     core->writeSettings("App/Theme"_L1, this->getCurrentTheme(), true);
 }
 
@@ -473,14 +438,7 @@ void UiEngine::setCalendarDisplayIdx(const QVariant &index) noexcept
 
 void UiEngine::setCalendarKey(const QString &name) noexcept
 {
-    bool configSet{false};
-    {
-        const QWriteLocker lock{&this->varLock};
-
-        configSet = setConfig(this->m_calendarDateDisplay, name, this->calendarKey);
-    }
-
-    if (configSet)
+    if (setConfig(this->m_calendarDateDisplay, name, this->calendarKey))
         emit this->calendarChanged();
 }
 
@@ -488,7 +446,8 @@ void UiEngine::setDateOffset(int offset) noexcept
 {
     logDebug(munadi) << "Received offset: " << offset;
 
-    this->m_dateOffset.storeRelaxed(offset);
+    this->m_dateOffset = offset;
+
     this->initCalendarDates();
     emit this->displayTimesChanged();
     emit this->calendarChanged();
@@ -498,10 +457,11 @@ void UiEngine::setHijriOffset(double offset) noexcept
 {
     logDebug(munadi) << "Received offset: " << offset;
 
-    int offset_int{static_cast<int>(offset)};
+    const int old{this->m_hijriOffset};
 
-    logDebug(munadi) << "Replaced " << this->m_hijriOffset.fetchAndStoreRelaxed(offset_int)
-                     << " with " << offset_int;
+    this->m_hijriOffset = static_cast<int>(offset);
+
+    logDebug(munadi) << "Replaced " << old << " with " << this->m_hijriOffset;
     this->initCalendarDates();
     emit this->hijriOffsetChanged();
     emit this->calendarChanged();
@@ -528,21 +488,15 @@ void UiEngine::setMadhabDisplayIdx(const QVariant &index) noexcept
 // { return textsRefresherReal(); }
 
 QVariantList &UiEngine::themeDisplayNames() noexcept
-{
-    const QReadLocker lock{&this->varLock};
-
-    return this->m_themeDisplayNames;
-}
+{ return this->m_themeDisplayNames; }
 
 QString UiEngine::timeLeftDisplay() noexcept
 {
-    const QString currentPrayer{[this] {
-        const QReadLocker lock{&this->varLock};
-        return this->m_prayerDisplayNames.at(qToUnderlying(pEngine->currentPrayer()))
+    const QString currentPrayer{
+        this->m_prayerDisplayNames.at(qToUnderlying(pEngine->currentPrayer()))
             .toHash()
             .value("trText"_L1)
-            .toString();
-    }()};
+            .toString()};
 
     if (mEngine->isAthanPlaying())
         return currentPrayer + u" "_s + tr("athan") + u"..."_s;
@@ -558,10 +512,8 @@ QString UiEngine::timeLeftDisplay() noexcept
         return {};
 
     const QString format{(timeLeft.hour()) > 0 ? tr("h'h' m'm'") : tr("m'm'")};
-    const QString nextPrayer{[this, &index] {
-        const QReadLocker lock{&this->varLock};
-        return this->m_prayerDisplayNames.at(index).toHash().value("trText"_L1).toString();
-    }()};
+    const QString nextPrayer{
+        this->m_prayerDisplayNames.at(index).toHash().value("trText"_L1).toString()};
 
     if (timeLeft.msecsTo(QTime{0, 1, 0}) > 0)
         return tr("Seconds to") + u" "_s + nextPrayer;
@@ -601,14 +553,10 @@ void UiEngine::onAthanPlayingChanged(bool /* playing */) noexcept
 
 void UiEngine::onCalcChanged() noexcept
 {
-    {
-        const QWriteLocker lock{&this->varLock};
-
-        this->m_calcMethodsDisplayIndex.storeRelaxed(
-            UiEngine::indexOfValue(this->m_calcMethodsDisplayNames, pEngine->getCalcMethod()));
-        this->m_madhabDisplayIndex.storeRelaxed(
-            UiEngine::indexOfValue(this->m_madhabDisplayNames, pEngine->getMadhab()));
-    }
+    this->m_calcMethodsDisplayIndex =
+        UiEngine::indexOfValue(this->m_calcMethodsDisplayNames, pEngine->getCalcMethod());
+    this->m_madhabDisplayIndex =
+        UiEngine::indexOfValue(this->m_madhabDisplayNames, pEngine->getMadhab());
 
     emit this->prayerCalcChanged();
     emit this->displayTimesChanged();

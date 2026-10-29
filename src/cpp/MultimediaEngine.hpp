@@ -49,9 +49,9 @@ class MultimediaEngine : public MunadiBase, public MunadiEngine<MultimediaEngine
     //  Variables
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    QVariantList      m_athanList;
-    QVariantHash      m_athanConfig;
-    std::atomic<bool> m_athanMuted;
+    QVariantList m_athanList;
+    QVariantHash m_athanConfig;
+    bool         m_athanMuted;
 
     static constexpr int defaultAthan{0};
     static constexpr int defaultFajrAthan{2};

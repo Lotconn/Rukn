@@ -58,6 +58,7 @@ ColumnLayout {
                 Layout.preferredHeight: 30
                 Layout.topMargin: -20
                 athanTime: UiEngine.prayerDisplayTimes.Sunrise
+                muted: true
                 prayerId: PrayerEngine.Prayer.Sunrise
             }
 
@@ -112,6 +113,7 @@ ColumnLayout {
                 Layout.preferredHeight: 30
                 Layout.topMargin: -20
                 athanTime: UiEngine.prayerDisplayTimes.Midnight
+                muted: true
                 prayerId: PrayerEngine.Prayer.Isha + PrayerEngine.Sunnah.Midnight
             }
 
@@ -122,6 +124,7 @@ ColumnLayout {
                 Layout.preferredHeight: 30
                 Layout.topMargin: -20
                 athanTime: UiEngine.prayerDisplayTimes.LastThirdNight
+                muted: true
                 prayerId: PrayerEngine.Prayer.Isha + PrayerEngine.Sunnah.LastThirdNight
             }
 
