@@ -29,6 +29,7 @@ class UiEngine : public MunadiBase, public MunadiEngine<UiEngine>
         QVariantList calendarDisplayNames READ calendarDisplayNames NOTIFY translationChanged)
     Q_PROPERTY(int dateOffset MEMBER m_dateOffset WRITE setDateOffset RESET resetDateOffset NOTIFY
                    calendarChanged)
+    Q_PROPERTY(bool hideOnClose MEMBER m_hideOnClose NOTIFY hideOnCloseChanged)
     Q_PROPERTY(
         double hijriOffset MEMBER m_hijriOffset WRITE setHijriOffset NOTIFY hijriOffsetChanged)
     Q_PROPERTY(int langDisplayIndex MEMBER m_langDisplayIndex WRITE setLangDisplayIdx NOTIFY
@@ -105,6 +106,7 @@ class UiEngine : public MunadiBase, public MunadiEngine<UiEngine>
     int                     m_calendarDisplayIndex;
     QVariantList            m_calendarDisplayNames;
     int                     m_dateOffset;
+    bool                    m_hideOnClose;
     int                     m_hijriOffset;
     bool                    m_isoClock;
     int                     m_langDisplayIndex;
@@ -164,6 +166,7 @@ class UiEngine : public MunadiBase, public MunadiEngine<UiEngine>
     auto calendarChanged() -> void;
     auto calendarIdxChanged() -> void;
     auto displayTimesChanged() -> void;
+    auto hideOnCloseChanged() -> void;
     auto hijriOffsetChanged() -> void;
     auto langIdxChanged() -> void;
     auto opacityChanged() -> void;

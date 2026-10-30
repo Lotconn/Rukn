@@ -137,6 +137,7 @@ void UiEngine::defaultConfigs() noexcept
     this->m_blur                 = defaultBlur;
     this->m_calendarDisplayIndex = defaultCalendarIdx;
     this->m_dateOffset           = 0;
+    this->m_hideOnClose          = false;
     this->m_hijriOffset          = defaultHijriOffset;
     this->m_isoClock             = false;
     this->m_opacity              = defaultOpacity;
@@ -325,6 +326,9 @@ void UiEngine::loadConfigs() noexcept
         },
         configMigrated);
 
+    loadConfigKey("App/hideOnClose"_L1, "App/HideOnClose"_L1, migrateKey, this, "hideOnClose"_L1,
+                  configMigrated);
+
     loadConfigKey("Adhan/hijriDateOffset"_L1, "App/HijriOffset"_L1, migrateKey, this,
                   "hijriOffset"_L1, configMigrated);
 
@@ -412,6 +416,7 @@ void UiEngine::saveConfigs() noexcept
     core->writeSettings("App/BackgroundImage"_L1, this->m_bgImage);
     core->writeSettings("App/Blur"_L1, this->m_blur);
     core->writeSettings("App/Calendar"_L1, this->calendarKey);
+    core->writeSettings("App/HideOnClose"_L1, this->m_hideOnClose);
     core->writeSettings("App/HijriOffset", this->m_hijriOffset);
     core->writeSettings("App/ISOClock"_L1, this->m_isoClock);
     core->writeSettings("App/Language"_L1, this->getCurrentLang());

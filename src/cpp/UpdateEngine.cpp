@@ -1,5 +1,5 @@
+#include <UpdateEngine.hpp>
 #include <engine.h>
-#include <updater.h>
 #include <version.hpp>
 
 #include <QSettings>

@@ -226,9 +226,9 @@ Page {
                 }
 
                 Switch {
-                    checked: mm.hideOnClose
+                    checked: UiEngine.hideOnClose
 
-                    onClicked: mm.hideOnClose = checked
+                    onClicked: UiEngine.hideOnClose = checked
                 }
             }
 

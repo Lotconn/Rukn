@@ -1,5 +1,4 @@
 #include <engine.h>
-#include <updater.h>
 
 #include <QCalendar>
 #include <QQuickView>

@@ -7,7 +7,7 @@
 
 #define MUNADI_API_URL "https://munadi.org/"
 
-#include <updater.h>
+#include <UpdateEngine.hpp>
 
 #ifdef Q_OS_ANDROID
 #include <QtPositioning/QGeoAddress>

@@ -4,6 +4,7 @@
 #include <QScopeGuard>
 #include <QSettings>
 #include <QStandardPaths>
+#include <QSystemTrayIcon>
 
 #ifdef Q_OS_UNIX
 #include <csignal>
@@ -456,6 +457,14 @@ void CoreEngine::installTickers() noexcept
 
     this->alarm->clear("24h_tick"_L1);
     this->alarm->add("24h_tick"_L1, QDate::currentDate().startOfDay().addDays(1), daySecs);
+
+    if (!QSystemTrayIcon::isSystemTrayAvailable())
+    {
+        logWarning(munadi) << "System tray is not available";
+        logDebug(munadi) << "Not registering 60s_ticker";
+        return;
+    }
+
     this->set60sTicker();
 }
 

@@ -163,9 +163,9 @@ set(MUNADI_SOURCES
   src/cpp/MultimediaEngine.hpp
   src/cpp/MunadiEngine.hpp
   src/cpp/UiEngine.hpp
+  src/cpp/UpdateEngine.hpp
   src/cpp/internal-helpers.hpp
   src/cpp/macos_window.h
-  src/cpp/updater.h
   src/cpp/engine.cpp
   src/cpp/internal-helpers.cpp
   src/cpp/CoreEngine.cpp
@@ -174,7 +174,7 @@ set(MUNADI_SOURCES
   src/cpp/MultimediaEngine.cpp
   src/cpp/MunadiEngine.cpp
   src/cpp/UiEngine.cpp
-  src/cpp/updater.cpp
+  src/cpp/UpdateEngine.cpp
 )
 
 if(APPLE)

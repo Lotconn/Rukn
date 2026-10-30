@@ -5,7 +5,6 @@ QtObject {
     id: munadiModel
 
     property bool checkForUpdates: true
-    property bool hideOnClose: false
     property double overrideOffsetBy
     property double page_margins_p: 0.02
     property int pane_elevation: 6

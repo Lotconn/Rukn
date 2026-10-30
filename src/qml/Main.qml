@@ -62,7 +62,6 @@ ApplicationWindow {
         // handle booleans with helper function
         autoStartUp = settingsBool("autoStartUp", false);
         mm.checkForUpdates = settingsBool("checkForUpdates", mm.checkForUpdates);
-        mm.hideOnClose = settingsBool("hideOnClose", mm.hideOnClose);
 
         settings.category = "Window";
         mainWindow.width = settings.value("width", mainWindow.width);
@@ -93,7 +92,6 @@ ApplicationWindow {
     Component.onDestruction: {
         settings.category = "App";
         settings.setValue("autoStartUp", autoStartUp);
-        settings.setValue("hideOnClose", mm.hideOnClose);
 
         settings.category = "Adhan";
         settings.setValue("checkForUpdates", mm.checkForUpdates);
@@ -106,7 +104,8 @@ ApplicationWindow {
 
         settings.sync();
     }
-    onVisibilityChanged: CoreEngine.set60sTicker()
+    onVisibilityChanged: if (mainWindow.visibility !== ApplicationWindow.Hidden && mainWindow.visibility !== ApplicationWindow.Minimized)
+        CoreEngine.set60sTicker()
 
     Theme {
         id: theme
@@ -395,13 +394,12 @@ ApplicationWindow {
 
     Connections {
         function onClosing(close) {
-            if (mm.hideOnClose) {
+            if (UiEngine.hideOnClose) {
                 console.debug('"Hide on close" enabled, will hide window instead of closing it.');
                 close.accepted = false;
                 mainWindow.hide();
-            } else {
+            } else
                 Qt.quit();
-            }
         }
 
         target: mainWindow
