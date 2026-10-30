@@ -293,7 +293,7 @@ void UiEngine::loadConfigs() noexcept
     loadConfigKey(
         "Adhan/calcMethodIndex"_L1, {}, migrateKey,
         [](const QVariant &val) -> void {
-            QAtomicInt null;
+            int null{};
 
             fetchAndSetListIdx(val.toInt(), UiEngine::oldCalcMethodsDisplayNames, null,
                                [](const QString &name) -> void { pEngine->setCalcMethod(name); });
@@ -341,7 +341,7 @@ void UiEngine::loadConfigs() noexcept
     loadConfigKey(
         "Adhan/madhab"_L1, {}, migrateKey,
         [](const QVariant &val) -> void {
-            QAtomicInt null;
+            int null{};
 
             fetchAndSetListIdx(val.toInt(), UiEngine::oldMadhabDisplayNames, null,
                                [](const QString &name) -> void { pEngine->setMadhab(name); });
@@ -469,8 +469,6 @@ void UiEngine::setHijriOffset(double offset) noexcept
 
 void UiEngine::setLangDisplayIdx(const QVariant &index) noexcept
 {
-    // Taking a readlock isn't necessary
-
     logDebug(munadi) << "Received index: " << index;
     fetchAndSetListIdx(index.toInt(), this->m_langDisplayNames, this->m_langDisplayIndex,
                        [](const QString &name) -> void { core->setLang(name); });

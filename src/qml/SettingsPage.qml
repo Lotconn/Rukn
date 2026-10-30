@@ -83,9 +83,7 @@ Page {
                     model: UiEngine.langDisplayNames
                     textRole: "trText"
 
-                    onActivated: {
-                        UiEngine.langDisplayIndex = currentIndex;
-                    }
+                    onActivated: UiEngine.langDisplayIndex = currentIndex
                 }
             }
 

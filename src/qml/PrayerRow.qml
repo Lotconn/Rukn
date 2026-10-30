@@ -1,5 +1,7 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls.Material
+import QtQuick.Effects
 import QtQuick.Layouts
 
 import Munadi
@@ -8,13 +10,14 @@ Item {
     id: prayerRow
 
     property string athanTime
+    property Component iconComponent
     property bool muted: false
     //property alias iqamaTime: iqamaLabel.text
     readonly property double pixelDiv: 4
     property int prayerId
     property alias prayerLabel: prayerLabel.text
     readonly property var textColor: (muted) ? Material.secondaryTextColor : Material.primaryTextColor
-    readonly property real textOpacity: (muted) ? 0.61 : 0.77
+    readonly property real textOpacity: (muted) ? 0.67 : 0.83
 
     Layout.fillHeight: true
     Layout.fillWidth: true
@@ -43,6 +46,35 @@ Item {
                 verticalAlignment: Text.AlignVCenter
                 visible: LocationEngine.isLocationSet
                 width: parent.width
+            }
+        }
+
+        Item {
+            id: iconBox
+
+            readonly property real size: prayerLabel.implicitHeight
+
+            Layout.alignment: Qt.AlignVCenter
+            Layout.leftMargin: 10
+            Layout.preferredHeight: size
+            Layout.preferredWidth: size
+            Layout.rightMargin: -10
+            layer.enabled: true
+            visible: prayerRow.iconComponent !== null
+
+            layer.effect: MultiEffect {
+                brightness: 1.0
+                colorization: 1.0
+                colorizationColor: prayerRow.textColor
+            }
+
+            Loader {
+                id: prayerIcon
+
+                anchors.centerIn: parent
+                scale: ((width > 0) ? iconBox.size / Math.min(width, height) : 1) / 1.5
+                sourceComponent: prayerRow.iconComponent
+                transformOrigin: Item.Center
             }
         }
 

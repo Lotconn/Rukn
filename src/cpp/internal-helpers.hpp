@@ -45,7 +45,7 @@ auto checkIndex(const QVariant &index, const QList<T> &refList,
     return true;
 }
 
-auto fetchAndSetListIdx(int index, const QVariantList &refList, int idxVar,
+auto fetchAndSetListIdx(int index, const QVariantList &refList, int &idxVar,
                         const std::function<void(const QString &)> &setFunc) noexcept -> void;
 auto isValidEntry(const QVariantHash &entryMaps, qsizetype refEntrySize,
                   const QHash<QString, int> &refFields, qsizetype refMapSize = 0) noexcept -> bool;

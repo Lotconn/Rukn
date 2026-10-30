@@ -5,7 +5,7 @@ Q_STATIC_LOGGING_CATEGORY(common, "Common")
 // using Qt::StringLiterals::operator""_s;
 using Qt::StringLiterals::operator""_L1;
 
-void fetchAndSetListIdx(int index, const QVariantList &refList, int idxVar,
+void fetchAndSetListIdx(int index, const QVariantList &refList, int &idxVar,
                         const std::function<void(const QString &)> &setFunc) noexcept
 {
     if (!checkIndex(index, refList, idxVar))

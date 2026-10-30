@@ -22,7 +22,7 @@ ApplicationWindow {
     Material.accent: theme.materialAccentLight
     Material.primary: theme.materialAccentDark
     color: Material.dialogColor
-    height: 768
+    height: 770
     locale: CoreEngine.appLocale
     minimumHeight: 350
     minimumWidth: minimumHeight * theme.uiPortraitRatio
@@ -290,35 +290,43 @@ ApplicationWindow {
             visible: false
 
             MenuItem {
-                text: '🌙    ' + UiEngine.prayerDisplayTimes.Fajr
+                icon.source: "qrc:/qt/qml/Munadi/img/prayerTimes/fajr.svg"
+                text: " " + UiEngine.prayerDisplayTimes.Fajr
             }
 
             MenuItem {
-                text: '🌄    ' + UiEngine.prayerDisplayTimes.Sunrise
+                icon.source: "qrc:/qt/qml/Munadi/img/prayerTimes/sunrise.svg"
+                text: " " + UiEngine.prayerDisplayTimes.Sunrise
             }
 
             MenuItem {
-                text: '🌞    ' + UiEngine.prayerDisplayTimes.Dhuhr
+                icon.source: "qrc:/qt/qml/Munadi/img/prayerTimes/dhuhr.svg"
+                text: " " + UiEngine.prayerDisplayTimes.Dhuhr
             }
 
             MenuItem {
-                text: '⛅    ' + UiEngine.prayerDisplayTimes.Asr
+                icon.source: "qrc:/qt/qml/Munadi/img/prayerTimes/asr.svg"
+                text: " " + UiEngine.prayerDisplayTimes.Asr
             }
 
             MenuItem {
-                text: '🌇    ' + UiEngine.prayerDisplayTimes.Maghrib
+                icon.source: "qrc:/qt/qml/Munadi/img/prayerTimes/maghrib.svg"
+                text: " " + UiEngine.prayerDisplayTimes.Maghrib
             }
 
             MenuItem {
-                text: '🌆    ' + UiEngine.prayerDisplayTimes.Isha
+                icon.source: "qrc:/qt/qml/Munadi/img/prayerTimes/isha.svg"
+                text: " " + UiEngine.prayerDisplayTimes.Isha
             }
 
             MenuItem {
-                text: '🌃    ' + UiEngine.prayerDisplayTimes.Midnight
+                icon.source: "qrc:/qt/qml/Munadi/img/prayerTimes/midnight.svg"
+                text: " " + UiEngine.prayerDisplayTimes.Midnight
             }
 
             MenuItem {
-                text: '🌌    ' + UiEngine.prayerDisplayTimes.LastThirdNight
+                icon.source: "qrc:/qt/qml/Munadi/img/prayerTimes/lastThirdNight.svg"
+                text: " " + UiEngine.prayerDisplayTimes.LastThirdNight
             }
 
             MenuSeparator {}

@@ -64,6 +64,7 @@ find_package(Qt6
   Qml
   Quick
   QuickControls2
+  QuickTools
   Widgets
 )
 
@@ -195,6 +196,14 @@ set(MUNADI_RESOURCES
   src/data/NotoSansBengali-VariableFont.ttf
   src/data/timezones.tsv
   src/data/whatsnew.html
+  src/img/prayerTimes/fajr.svg
+  src/img/prayerTimes/sunrise.svg
+  src/img/prayerTimes/dhuhr.svg
+  src/img/prayerTimes/asr.svg
+  src/img/prayerTimes/maghrib.svg
+  src/img/prayerTimes/isha.svg
+  src/img/prayerTimes/midnight.svg
+  src/img/prayerTimes/lastThirdNight.svg
   src/img/about.png
   src/img/arrow.png
   src/img/bg/0.jpg
@@ -240,6 +249,18 @@ qt_add_translations(${PROJECT_NAME}
   TS_FILE_BASE ${PROEJCT_NAME_LOWER}
   TS_FILE_DIR src/i18n/
   RESOURCE_PREFIX qt/qml/Munadi/i18n
+)
+
+qt_target_qml_from_svg(${PROJECT_NAME}
+  CURVE_RENDERER ASYNCHRONOUS_SHAPES OPTIMIZE_PATHS
+  FILES
+  src/img/prayerTimes/fajr.svg
+  src/img/prayerTimes/dhuhr.svg
+  src/img/prayerTimes/asr.svg
+  src/img/prayerTimes/maghrib.svg
+  src/img/prayerTimes/isha.svg
+  OUTPUTS
+  qml/FajrIcon.qml qml/DhuhrIcon.qml qml/AsrIcon.qml qml/MaghribIcon.qml qml/IshaIcon.qml
 )
 
 set_source_files_properties(src/qtquickcontrols2.conf

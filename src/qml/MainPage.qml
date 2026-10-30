@@ -6,10 +6,9 @@ import QtQuick.Controls.Material
 import Munadi
 
 ColumnLayout {
-    id: parentBox
-
     property int defaultAlignment: isWide ? Layout.Left : Layout.Center
     property bool isWide: width > height
+    property real preferredWidth: isWide ? height * theme.uiPortraitRatio : width
 
     LayoutMirroring.childrenInherit: true
     LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft
@@ -21,7 +20,7 @@ ColumnLayout {
         Layout.alignment: parent.defaultAlignment
         Layout.fillHeight: true
         Layout.preferredHeight: 40
-        Layout.preferredWidth: parentBox.isWide ? parent.height * theme.uiPortraitRatio : parent.width
+        Layout.preferredWidth: parent.preferredWidth
         background.opacity: UiEngine.opacity
     }
 
@@ -34,7 +33,7 @@ ColumnLayout {
         Layout.bottomMargin: Layout.topMargin
         Layout.fillHeight: true
         Layout.preferredHeight: 400
-        Layout.preferredWidth: parentBox.isWide ? parent.height * theme.uiPortraitRatio : parent.width
+        Layout.preferredWidth: parent.preferredWidth
         Layout.topMargin: 20
         Material.elevation: mm.pane_elevation
         background.opacity: UiEngine.opacity
@@ -49,13 +48,17 @@ ColumnLayout {
                 Layout.preferredHeight: 60
                 athanTime: UiEngine.prayerDisplayTimes.Fajr
                 prayerId: PrayerEngine.Prayer.Fajr
+
+                iconComponent: FajrIcon {}
             }
 
             PrayerRow {
                 id: sunrise
 
                 Layout.fillWidth: true
+                Layout.leftMargin: 20
                 Layout.preferredHeight: 30
+                Layout.rightMargin: 20
                 Layout.topMargin: -20
                 athanTime: UiEngine.prayerDisplayTimes.Sunrise
                 muted: true
@@ -71,6 +74,8 @@ ColumnLayout {
                 Layout.preferredHeight: 60
                 athanTime: UiEngine.prayerDisplayTimes.Dhuhr
                 prayerId: PrayerEngine.Prayer.Dhuhr
+
+                iconComponent: DhuhrIcon {}
             }
 
             Line {}
@@ -82,6 +87,8 @@ ColumnLayout {
                 Layout.preferredHeight: 60
                 athanTime: UiEngine.prayerDisplayTimes.Asr
                 prayerId: PrayerEngine.Prayer.Asr
+
+                iconComponent: AsrIcon {}
             }
 
             Line {}
@@ -93,6 +100,8 @@ ColumnLayout {
                 Layout.preferredHeight: 60
                 athanTime: UiEngine.prayerDisplayTimes.Maghrib
                 prayerId: PrayerEngine.Prayer.Maghrib
+
+                iconComponent: MaghribIcon {}
             }
 
             Line {}
@@ -104,13 +113,17 @@ ColumnLayout {
                 Layout.preferredHeight: 60
                 athanTime: UiEngine.prayerDisplayTimes.Isha
                 prayerId: PrayerEngine.Prayer.Isha
+
+                iconComponent: IshaIcon {}
             }
 
             PrayerRow {
                 id: midnight
 
                 Layout.fillWidth: true
+                Layout.leftMargin: 20
                 Layout.preferredHeight: 30
+                Layout.rightMargin: 20
                 Layout.topMargin: -20
                 athanTime: UiEngine.prayerDisplayTimes.Midnight
                 muted: true
@@ -121,14 +134,14 @@ ColumnLayout {
                 id: lastThirdNight
 
                 Layout.fillWidth: true
+                Layout.leftMargin: 20
                 Layout.preferredHeight: 30
+                Layout.rightMargin: 20
                 Layout.topMargin: -20
                 athanTime: UiEngine.prayerDisplayTimes.LastThirdNight
                 muted: true
                 prayerId: PrayerEngine.Prayer.Isha + PrayerEngine.Sunnah.LastThirdNight
             }
-
-            // Item {}
 
             Line {}
         }
@@ -137,10 +150,10 @@ ColumnLayout {
     TimeLeftRow {
         id: timeLeft
 
-        Layout.alignment: parentBox.defaultAlignment
+        Layout.alignment: parent.defaultAlignment
         Layout.fillHeight: true
         Layout.preferredHeight: 40
-        Layout.preferredWidth: parentBox.isWide ? parent.height * theme.uiPortraitRatio : parent.width
+        Layout.preferredWidth: parent.preferredWidth
         background.opacity: UiEngine.opacity
         text: UiEngine.timeLeftDisplay
         visible: LocationEngine.isLocationSet
