@@ -20,21 +20,22 @@ Item {
     readonly property real textOpacity: (muted) ? 0.67 : 0.83
 
     Layout.fillHeight: true
-    Layout.fillWidth: true
+    Layout.preferredWidth: parent.width
 
     RowLayout {
         anchors.fill: parent
         anchors.leftMargin: 30
-        anchors.rightMargin: 30
+        anchors.rightMargin: anchors.leftMargin * 2
         spacing: theme.margin
 
         Item {
-            Layout.fillHeight: true
-            Layout.fillWidth: true
+            Layout.preferredHeight: parent.height
+            Layout.preferredWidth: parent.width / 2
 
             Text {
                 id: prayerLabel
 
+                anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 color: prayerRow.textColor
                 elide: Text.ElideRight
@@ -55,10 +56,8 @@ Item {
             readonly property real size: prayerLabel.implicitHeight
 
             Layout.alignment: Qt.AlignVCenter
-            Layout.leftMargin: 10
-            Layout.preferredHeight: size
-            Layout.preferredWidth: size
-            Layout.rightMargin: -10
+            Layout.preferredHeight: parent.height
+            Layout.preferredWidth: parent.width / 8
             layer.enabled: true
             visible: prayerRow.iconComponent !== null
 
@@ -79,11 +78,11 @@ Item {
         }
 
         Item {
-            Layout.fillHeight: true
-            Layout.fillWidth: true
+            Layout.preferredHeight: parent.height
+            Layout.preferredWidth: parent.width / 2
 
             Row {
-                anchors.right: parent.right
+                anchors.centerIn: parent
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 1
                 visible: LocationEngine.isLocationSet

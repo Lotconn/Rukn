@@ -1,20 +1,53 @@
-#ifndef UPDATER_H
-#define UPDATER_H
+#pragma once
 
-#include <QObject>
+#include <QNetworkReply>
+#include <QQmlEngine>
 
-class Updater : public QObject
+#include <MunadiEngine.hpp>
+
+#define uEngine Munadi::UpdateEngine::instance()
+
+namespace Munadi
+{
+
+class UpdateEngine : public MunadiBase, public MunadiEngine<UpdateEngine>
 {
     Q_OBJECT
+    Q_CLASSINFO("RegisterEnumClassesUnscoped", "false")
+    QML_ELEMENT
+    QML_SINGLETON
+
+    Q_PROPERTY(bool checkUpdates MEMBER m_checkUpdates NOTIFY checkUpdatesChanged)
+
   public:
-    explicit Updater(QObject *parent = 0);
-    Q_INVOKABLE void check();
+    static auto create(QQmlEngine *qmlEngine, QJSEngine *jsEngine) -> UpdateEngine *;
+    static auto logCategory() noexcept -> const QLoggingCategory &;
+
+    auto updateCheck() const noexcept -> void;
+
+  protected:
+    explicit UpdateEngine(QObject *parent = nullptr);
+
+  private:
+    Q_DISABLE_COPY_MOVE(UpdateEngine)
+
+    bool m_checkUpdates{};
+
+    inline static const QUrl apiUrl{"https://munadi.org/"_L1};
+
+    QNetworkAccessManager *netMan;
+
+    auto connectToNetMan() const noexcept -> void;
+    auto defaultConfigs() noexcept -> void override;
+    auto loadConfigs() noexcept -> void override;
+    auto saveConfigs() noexcept -> void override;
 
   signals:
+    void checkUpdatesChanged();
     void updateAvailable(const QString &info);
 
-  public slots:
-    void replyFinished(class QNetworkReply *reply);
+  private slots:
+    void onFinished(QNetworkReply *reply);
 };
 
-#endif // UPDATER_H
+} // namespace Munadi

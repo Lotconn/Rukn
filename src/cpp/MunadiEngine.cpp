@@ -4,6 +4,7 @@
 #include <MultimediaEngine.hpp>
 #include <MunadiEngine.hpp>
 #include <UiEngine.hpp>
+#include <UpdateEngine.hpp>
 
 namespace Munadi
 {
@@ -120,4 +121,5 @@ template class Munadi::MunadiEngine<Munadi::LocationEngine>;
 template class Munadi::MunadiEngine<Munadi::MultimediaEngine>;
 template class Munadi::MunadiEngine<Munadi::PrayerEngine>;
 template class Munadi::MunadiEngine<Munadi::UiEngine>;
+template class Munadi::MunadiEngine<Munadi::UpdateEngine>;
 // NOLINTEND(*-virtual-class-destructor)

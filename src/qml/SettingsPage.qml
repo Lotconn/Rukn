@@ -315,9 +315,9 @@ Page {
                 }
 
                 Switch {
-                    checked: mm.checkForUpdates
+                    checked: UpdateEngine.checkUpdates
 
-                    onClicked: mm.checkForUpdates = checked
+                    onClicked: UpdateEngine.checkUpdates = checked
                 }
             }
 

@@ -6,15 +6,11 @@
 #include <CoreEngine.hpp>
 
 // NOLINTBEGIN(cppcoreguidelines-macro-usage)
-#define logDebug(logCategory)                                                                      \
-    qCDebug(logCategory).noquote().nospace() << "debug: " << __func__ << ": "
-#define logInfo(logCategory) qCInfo(logCategory).noquote().nospace() << "info: " << __func__ << ": "
-#define logWarning(logCategory)                                                                    \
-    qCWarning(logCategory).noquote().nospace() << "warning: " << __func__ << ": "
-#define logCritical(logCategory)                                                                   \
-    qCCritical(logCategory).noquote().nospace() << "error: " << __func__ << ": "
-#define logFatal(logCategory)                                                                      \
-    qCFatal(logCategory).noquote().nospace() << "fatal: " << __func__ << ": "
+#define logDebug(logCategory)    qCDebug(logCategory).noquote().nospace() << __func__ << ": "
+#define logInfo(logCategory)     qCInfo(logCategory).noquote().nospace() << __func__ << ": "
+#define logWarning(logCategory)  qCWarning(logCategory).noquote().nospace() << __func__ << ": "
+#define logCritical(logCategory) qCCritical(logCategory).noquote().nospace() << __func__ << ": "
+#define logFatal(logCategory)    qCFatal(logCategory).noquote().nospace() << __func__ << ": "
 // NOLINTEND(cppcoreguidelines-macro-usage)
 
 template <typename T>

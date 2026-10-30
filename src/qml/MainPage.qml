@@ -58,7 +58,7 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.leftMargin: 20
                 Layout.preferredHeight: 30
-                Layout.rightMargin: 20
+                Layout.rightMargin: -20
                 Layout.topMargin: -20
                 athanTime: UiEngine.prayerDisplayTimes.Sunrise
                 muted: true
@@ -123,7 +123,7 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.leftMargin: 20
                 Layout.preferredHeight: 30
-                Layout.rightMargin: 20
+                Layout.rightMargin: -20
                 Layout.topMargin: -20
                 athanTime: UiEngine.prayerDisplayTimes.Midnight
                 muted: true
@@ -136,7 +136,7 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.leftMargin: 20
                 Layout.preferredHeight: 30
-                Layout.rightMargin: 20
+                Layout.rightMargin: -20
                 Layout.topMargin: -20
                 athanTime: UiEngine.prayerDisplayTimes.LastThirdNight
                 muted: true

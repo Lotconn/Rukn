@@ -1,11 +1,9 @@
 #include <engine.h>
 
-#include <QCalendar>
+#include <QDir>
 #include <QQuickView>
 #include <QSettings>
 #include <QTextStream>
-#include <QTime>
-#include <QTranslator>
 
 #if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
 
@@ -17,9 +15,6 @@
 #include <windows.h>
 
 #endif
-
-Engine::Engine()
-{ init(); }
 
 using namespace Qt::StringLiterals;
 
@@ -166,11 +161,4 @@ QString Engine::getWhatsNew()
     QString out = ts.readAll();
 
     return out;
-}
-
-bool Engine::init()
-{
-    updater = new Updater();
-
-    return true;
 }

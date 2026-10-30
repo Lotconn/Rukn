@@ -61,7 +61,6 @@ ApplicationWindow {
         // [BUG]: values are parsed as strings, not booleans
         // handle booleans with helper function
         autoStartUp = settingsBool("autoStartUp", false);
-        mm.checkForUpdates = settingsBool("checkForUpdates", mm.checkForUpdates);
 
         settings.category = "Window";
         mainWindow.width = settings.value("width", mainWindow.width);
@@ -73,9 +72,6 @@ ApplicationWindow {
             hide();
         else
             engine.fullscreen() ? showFullScreen() : show();
-
-        if (mm.checkForUpdates)
-            updater.check();
 
         // Only display what's new once
         if (CoreEngine.isVersionNew()) {
@@ -94,7 +90,6 @@ ApplicationWindow {
         settings.setValue("autoStartUp", autoStartUp);
 
         settings.category = "Adhan";
-        settings.setValue("checkForUpdates", mm.checkForUpdates);
 
         settings.category = "Window";
         settings.setValue("width", mainWindow.width);
@@ -464,6 +459,6 @@ ApplicationWindow {
             whatsNewPopup.open();
         }
 
-        target: updater
+        target: UpdateEngine
     }
 }

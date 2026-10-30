@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QFontDatabase>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickWindow>
@@ -83,7 +84,6 @@ int main(int argc, char *argv[])
     }
 
     qae.rootContext()->setContextProperty("engine"_L1, &engine);
-    qae.rootContext()->setContextProperty("updater"_L1, engine.updater);
     qae.loadFromModule("Munadi"_L1, "Main"_L1);
 
 #ifdef Q_OS_MACOS
