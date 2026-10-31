@@ -445,9 +445,6 @@ void CoreEngine::connectToTrigger() const noexcept
         logDebug(munadi) << "Trigger signal connected";
 }
 
-void CoreEngine::defaultConfigs() noexcept
-{ this->m_isVersionNew = false; }
-
 QLocale CoreEngine::getCurrentLocale() noexcept
 { return QLocale{}; }
 
@@ -500,8 +497,8 @@ void CoreEngine::loadConfigs() noexcept
         "App/newsVersion"_L1, "App/LastVersion"_L1, migrateKey,
         [this](const QVariant &version) -> void {
             // the following string comparison does what it implies
-            if (version.toString() < CoreEngine::s_appVersion)
-                this->m_isVersionNew = true;
+            if (version.toString() >= CoreEngine::s_appVersion)
+                this->m_isVersionNew = false;
         },
         configMigrated);
 

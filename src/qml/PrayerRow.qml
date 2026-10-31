@@ -59,7 +59,7 @@ Item {
             Layout.preferredHeight: parent.height
             Layout.preferredWidth: parent.width / 8
             layer.enabled: true
-            visible: prayerRow.iconComponent !== null
+            visible: prayerRow.iconComponent !== null && LocationEngine.isLocationSet
 
             layer.effect: MultiEffect {
                 brightness: 1.0

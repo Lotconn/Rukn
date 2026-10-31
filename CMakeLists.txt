@@ -34,6 +34,7 @@ endif()
 # Ccache
 find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM)
+  message(STATUS "Using Ccache")
   set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
 endif()
 
@@ -64,15 +65,16 @@ find_package(Qt6
   Qml
   Quick
   QuickControls2
-  QuickTools
   Widgets
+  OPTIONAL_COMPONENTS
+  QuickTools
 )
 
 if(LINUX)
   find_package(Qt6 REQUIRED COMPONENTS DBus WaylandClient)
 endif()
 
-qt_standard_project_setup(REQUIRES 6.12 I18N_TRANSLATED_LANGUAGES ar bn)
+qt_standard_project_setup(REQUIRES 6.11 I18N_TRANSLATED_LANGUAGES ar bn)
 
 set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
 
@@ -95,7 +97,7 @@ FetchContent_MakeAvailable(SingleApplication)
 # Lotconn/adhan-cpp
 FetchContent_Declare(Adhan-cpp
   GIT_REPOSITORY https://github.com/lotconn/adhan-cpp
-  GIT_TAG 5b1d3d29f7a312f5df6409197a4189ff0691aaf2
+  GIT_TAG 545cac6f70a0a60f9d5f521dcbf2dda9eece3d79
 )
 FetchContent_MakeAvailable(Adhan-cpp)
 
@@ -154,6 +156,16 @@ set(MUNADI_QML_FILES
   src/qml/TimeLeftRow.qml
 )
 
+if(NOT TARGET Qt::QuickTools)
+  list(APPEND MUNADI_QML_FILES
+    src/qml/obsolete/FajrIcon.qml
+    src/qml/obsolete/DhuhrIcon.qml
+    src/qml/obsolete/AsrIcon.qml
+    src/qml/obsolete/MaghribIcon.qml
+    src/qml/obsolete/IshaIcon.qml
+  )
+endif()
+
 set(MUNADI_SOURCES
   src/cpp/alarm.h
   src/cpp/engine.h
@@ -178,8 +190,7 @@ set(MUNADI_SOURCES
 )
 
 if(APPLE)
-  list(APPEND
-    MUNADI_SOURCES
+  list(APPEND MUNADI_SOURCES
     src/cpp/alarm_macos.cpp
     src/cpp/macos_window.mm
   )
@@ -236,7 +247,6 @@ qt_add_qml_module(${PROJECT_NAME}
   URI Munadi
   VERSION ${PROJECT_VERSION}
   QML_FILES
-  "${MUNADI_JS_FILES}"
   "${MUNADI_QML_FILES}"
   SOURCES
   "${MUNADI_SOURCES}"
@@ -251,17 +261,19 @@ qt_add_translations(${PROJECT_NAME}
   RESOURCE_PREFIX qt/qml/Munadi/i18n
 )
 
-qt_target_qml_from_svg(${PROJECT_NAME}
-  CURVE_RENDERER ASYNCHRONOUS_SHAPES OPTIMIZE_PATHS
-  FILES
-  src/img/prayerTimes/fajr.svg
-  src/img/prayerTimes/dhuhr.svg
-  src/img/prayerTimes/asr.svg
-  src/img/prayerTimes/maghrib.svg
-  src/img/prayerTimes/isha.svg
-  OUTPUTS
-  qml/FajrIcon.qml qml/DhuhrIcon.qml qml/AsrIcon.qml qml/MaghribIcon.qml qml/IshaIcon.qml
-)
+if(TARGET Qt::QuickTools)
+  qt_target_qml_from_svg(${PROJECT_NAME}
+    CURVE_RENDERER ASYNCHRONOUS_SHAPES OPTIMIZE_PATHS
+    FILES
+    src/img/prayerTimes/fajr.svg
+    src/img/prayerTimes/dhuhr.svg
+    src/img/prayerTimes/asr.svg
+    src/img/prayerTimes/maghrib.svg
+    src/img/prayerTimes/isha.svg
+    OUTPUTS
+    qml/FajrIcon.qml qml/DhuhrIcon.qml qml/AsrIcon.qml qml/MaghribIcon.qml qml/IshaIcon.qml
+  )
+endif()
 
 set_source_files_properties(src/qtquickcontrols2.conf
   PROPERTIES
@@ -312,7 +324,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
   $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
 )
 target_link_libraries(${PROJECT_NAME} PRIVATE
-  adhan::adhan
+  Lotconn::adhan
   FileManplugin
   Qt::Core
   Qt::Gui

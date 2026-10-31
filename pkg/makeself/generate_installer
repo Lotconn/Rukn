@@ -17,6 +17,7 @@ function fixMtime() {
 function addGitFiles() {
 	declare -n in_files=$1
 	declare -n out_files=$2
+
 	for file in "${in_files[@]}"; do
 		while read -r gitFilePath; do
 			if [[ -n "$gitFilePath" ]]; then
@@ -32,6 +33,7 @@ function addGitFiles() {
 function getParentDirs() {
 	declare -n in_folders=$1
 	declare -n p_dir=$2
+
 	for folder in "${in_folders[@]}"; do
 		p_dir+=("${folder%%/*}")
 	done

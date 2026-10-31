@@ -77,7 +77,7 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
 
     inline static std::array<int, 2> sigtermFd{0, 0};
 
-    bool m_isVersionNew{false};
+    bool m_isVersionNew{true};
 
     Alarm           *alarm{};
     QLockFile       *configLock{};
@@ -101,7 +101,6 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
     auto applyLocale(const QLocale &locale = QLocale::system()) noexcept -> void;
     auto connectToAboutToQuit() const noexcept -> void;
     auto connectToTrigger() const noexcept -> void;
-    auto defaultConfigs() noexcept -> void override;
     auto installTickers() noexcept -> void;
     auto loadConfigs() noexcept -> void override;
     // auto releaseConfigLock() -> void;

@@ -60,7 +60,7 @@ set(FFMPEG_CONF
 
     # don't use single quotes only
     # extra hardening flags were added
-    --extra-cflags="' -O3 -pipe -Wp,-D_FORTIFY_SOURCE=3 -fasynchronous-unwind-tables -fstack-protector-strong -fcf-protection -fstack-clash-protection -mno-omit-leaf-frame-pointer '"
+    --extra-cflags="' -O3 -pipe -Wp,-D_FORTIFY_SOURCE=3 -fasynchronous-unwind-tables -fstack-protector-strong -fstack-clash-protection -mno-omit-leaf-frame-pointer '"
     --extra-ldflags="' -fuse-ld=lld -Wl,-z,relro,-z,now -Wl,--as-needed '"
 
     # Developer options:

@@ -1,6 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, SubmitField
-from wtforms import validators
+from wtforms import StringField, SubmitField, TextAreaField, validators
 
 
 class ContactForm(FlaskForm):

@@ -1,19 +1,11 @@
-from flask import (
-    Flask,
-    flash,
-    request,
-    redirect,
-    jsonify,
-    render_template,
-    make_response,
-    send_from_directory,
-)
-from werkzeug.exceptions import abort
-
 # from forms import ContactForm
 # from flask_mail import Mail, Message
-import json, time, datetime
-
+from flask import (
+    Flask,
+    render_template,
+    request,
+    send_from_directory,
+)
 
 app = Flask(__name__)
 # mail = Mail()
@@ -48,9 +40,9 @@ def well_known(filename):
 @app.route("/jadid", methods=["GET"])
 def jadid():
     if request.method == "GET":
-        v = request.args["v"]
+        request.args["v"]
         os = request.args["os"]
-        lang = request.args["lang"]
+        request.args["lang"]
 
         if os == "linux":
             return ""
