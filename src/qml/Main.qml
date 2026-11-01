@@ -1,4 +1,3 @@
-import QtCore
 import QtQuick.Controls.Material
 import QtQuick.Effects
 import QtQuick.Window
@@ -8,8 +7,6 @@ import Munadi
 
 ApplicationWindow {
     id: mainWindow
-
-    property string newsVersion: ""
 
     LayoutMirroring.childrenInherit: true
     LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft
@@ -23,8 +20,6 @@ ApplicationWindow {
     width: 432
 
     background: Item {
-        id: todw
-
         visible: UiEngine.bgImage
 
         Image {
@@ -51,11 +46,10 @@ ApplicationWindow {
         const theme = UiEngine.themeDisplayNames[UiEngine.themeDisplayIndex].name;
         mm.applyTheme(theme);
 
-        settings.category = "Window";
-        mainWindow.width = settings.value("width", mainWindow.width);
-        mainWindow.height = settings.value("height", mainWindow.height);
-        mainWindow.x = settings.value("x", mainWindow.x);
-        mainWindow.y = settings.value("y", mainWindow.y);
+        mainWindow.height = CoreEngine.readState("Window/height", mainWindow.height);
+        mainWindow.width = CoreEngine.readState("Window/width", mainWindow.width);
+        mainWindow.x = CoreEngine.readState("Window/x", mainWindow.x);
+        mainWindow.y = CoreEngine.readState("Window/y", mainWindow.y);
 
         if (engine.start_hidden())
             hide();
@@ -75,13 +69,10 @@ ApplicationWindow {
             console.debug("Layout is" + qsTr("QT_LAYOUT_DIRECTION", "QGuiApplication"));
     }
     Component.onDestruction: {
-        settings.category = "Window";
-        settings.setValue("width", mainWindow.width);
-        settings.setValue("height", mainWindow.height);
-        settings.setValue("x", mainWindow.x);
-        settings.setValue("y", mainWindow.y);
-
-        settings.sync();
+        CoreEngine.writeState("Window/height", mainWindow.height);
+        CoreEngine.writeState("Window/width", mainWindow.width);
+        CoreEngine.writeState("Window/x", mainWindow.x);
+        CoreEngine.writeState("Window/y", mainWindow.y, true);
     }
     onVisibilityChanged: if (mainWindow.visibility !== ApplicationWindow.Hidden && mainWindow.visibility !== ApplicationWindow.Minimized)
         CoreEngine.set60sTicker()
@@ -92,10 +83,6 @@ ApplicationWindow {
 
     MunadiModel {
         id: mm
-    }
-
-    Settings {
-        id: settings
     }
 
     MainPage {
@@ -140,8 +127,6 @@ ApplicationWindow {
         }
 
         Flickable {
-            id: flickable
-
             anchors.fill: parent
 
             ScrollBar.vertical: ScrollBar {}
@@ -338,9 +323,9 @@ ApplicationWindow {
         onActivated: reason => {
             switch (reason) {
             case SystemTrayIcon.Trigger:
-                if (mainWindow.visible) {
+                if (mainWindow.visible)
                     mainWindow.hide();
-                } else {
+                else {
                     mainWindow.show();
                     mainWindow.raise();
                     mainWindow.requestActivate();
@@ -358,10 +343,6 @@ ApplicationWindow {
             }
         }
 
-        target: CoreEngine
-    }
-
-    Connections {
         function onExposeInstance() {
             mainWindow.show();
             mainWindow.raise();
@@ -382,6 +363,18 @@ ApplicationWindow {
         }
 
         target: mainWindow
+    }
+
+    Connections {
+        function onUpdateAvailable(info) {
+            whatsNewPopup.text = info;
+            whatsNewPopup.open();
+            mainWindow.show();
+            mainWindow.raise();
+            mainWindow.requestActivate();
+        }
+
+        target: UpdateEngine
     }
 
     Shortcut {
@@ -435,17 +428,5 @@ ApplicationWindow {
         onActivated: {
             mainWindow.visibility = mainWindow.visibility === ApplicationWindow.FullScreen ? ApplicationWindow.Windowed : ApplicationWindow.FullScreen;
         }
-    }
-
-    Connections {
-        function onUpdateAvailable(info) {
-            whatsNewPopup.text = info;
-            whatsNewPopup.open();
-            mainWindow.show();
-            mainWindow.raise();
-            mainWindow.requestActivate();
-        }
-
-        target: UpdateEngine
     }
 }

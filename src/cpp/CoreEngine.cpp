@@ -51,14 +51,14 @@ CoreEngine::CoreEngine(QObject *parent) : MunadiBase{munadi(), parent}, alarm{cr
                                "name. Settings won't be saved.";
     else
     {
-        this->settings = new QSettings{QSettings::IniFormat, QSettings::UserScope,
-                                       QCoreApplication::organizationName(), appName, this};
+        const QString stateDir{QStandardPaths::writableLocation(QStandardPaths::StateLocation)};
+
+        this->settings  = new QSettings{QSettings::IniFormat, QSettings::UserScope,
+                                        QCoreApplication::organizationName(), appName, this};
+        this->stateFile = new QSettings{stateDir + u"rc"_s, QSettings::IniFormat};
 
         logDebug(munadi) << "Settings file: " << this->settings->fileName();
-
-        const QDir &configDir{QFileInfo(settings->fileName()).absolutePath()};
-
-        this->configLock = new QLockFile{configDir.absoluteFilePath(u".settings.lock"_s)};
+        logDebug(munadi) << "State file: " << this->stateFile->fileName();
     }
 
     if (const QFileInfo oldConfigFile{
@@ -207,6 +207,21 @@ QVariantList CoreEngine::readSettingsArray(QAnyStringView group) noexcept
     return list;
 }
 
+QVariant CoreEngine::readState(const QString &key, const QVariant &defaultValue) noexcept
+{
+    if (key.isEmpty())
+    {
+        logCritical(munadi) << "Provided key is empty";
+
+        return {};
+    }
+
+    if (this->stateFile == nullptr)
+        return defaultValue;
+
+    return CoreEngine::readValueOfKey(*this->stateFile, key, defaultValue);
+}
+
 // bool CoreEngine::removeOldSettingsKey(QAnyStringView key)
 // {
 //     if (key.isEmpty())
@@ -321,6 +336,21 @@ void CoreEngine::writeSettingsArray(QAnyStringView group, const QVariantList &en
 
     if (flushOnWrite)
         this->settings->sync();
+}
+
+void CoreEngine::writeState(const QString &key, const QVariant &value, bool flushOnWrite) noexcept
+{
+    if (key.isEmpty())
+    {
+        logCritical(munadi) << "Provided key is empty";
+
+        return;
+    }
+
+    if (this->stateFile == nullptr)
+        return;
+
+    CoreEngine::setValueOfKey(*this->stateFile, key, value, flushOnWrite);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

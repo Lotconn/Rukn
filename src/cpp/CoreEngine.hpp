@@ -52,13 +52,16 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
                             bool flushOnWrite = false) noexcept -> void;
 
     Q_INVOKABLE [[nodiscard]] bool isVersionNew() const noexcept;
-    Q_INVOKABLE void               set60sTicker() noexcept;
-
-  public slots: // NOLINT(*redundant-access-specifiers)
-    void onReceivedMessage(quint32 instanceId, const QByteArray &message);
+    Q_INVOKABLE QVariant readState(const QString &key, const QVariant &defaultValue = {}) noexcept;
+    Q_INVOKABLE void     set60sTicker() noexcept;
+    Q_INVOKABLE void     writeState(const QString &key, const QVariant &value,
+                                    bool flushOnWrite = false) noexcept;
 
   protected:
     bool eventFilter(QObject *object, QEvent *event) noexcept override;
+
+  public slots:
+    void onReceivedMessage(quint32 instanceId, const QByteArray &message);
 
   private:
     Q_DISABLE_COPY_MOVE(CoreEngine)
@@ -83,10 +86,10 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
     bool m_autoStartSet{};
 
     Alarm           *alarm{};
-    QLockFile       *configLock{};
     bool             interimStore{};
     QSettings       *oldSettings{};
     QSettings       *settings{};
+    QSettings       *stateFile{};
     QSocketNotifier *snTerm{};
     QTranslator      translator;
 
