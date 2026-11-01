@@ -9,13 +9,7 @@ import Munadi
 ApplicationWindow {
     id: mainWindow
 
-    property bool autoStartUp: false
     property string newsVersion: ""
-
-    function settingsBool(key, defaultValue) {
-        var val = settings.value(key, defaultValue);
-        return typeof val === "boolean" ? val : String(val).toLowerCase() === "true";
-    }
 
     LayoutMirroring.childrenInherit: true
     LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft
@@ -57,18 +51,13 @@ ApplicationWindow {
         const theme = UiEngine.themeDisplayNames[UiEngine.themeDisplayIndex].name;
         mm.applyTheme(theme);
 
-        settings.category = "App";
-        // [BUG]: values are parsed as strings, not booleans
-        // handle booleans with helper function
-        autoStartUp = settingsBool("autoStartUp", false);
-
         settings.category = "Window";
         mainWindow.width = settings.value("width", mainWindow.width);
         mainWindow.height = settings.value("height", mainWindow.height);
         mainWindow.x = settings.value("x", mainWindow.x);
         mainWindow.y = settings.value("y", mainWindow.y);
 
-        if (engine.autostart_hidden())
+        if (engine.start_hidden())
             hide();
         else
             engine.fullscreen() ? showFullScreen() : show();
@@ -86,11 +75,6 @@ ApplicationWindow {
             console.debug("Layout is" + qsTr("QT_LAYOUT_DIRECTION", "QGuiApplication"));
     }
     Component.onDestruction: {
-        settings.category = "App";
-        settings.setValue("autoStartUp", autoStartUp);
-
-        settings.category = "Adhan";
-
         settings.category = "Window";
         settings.setValue("width", mainWindow.width);
         settings.setValue("height", mainWindow.height);
@@ -457,6 +441,9 @@ ApplicationWindow {
         function onUpdateAvailable(info) {
             whatsNewPopup.text = info;
             whatsNewPopup.open();
+            mainWindow.show();
+            mainWindow.raise();
+            mainWindow.requestActivate();
         }
 
         target: UpdateEngine

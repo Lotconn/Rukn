@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
     if (argc > 1)
     {
         if (strcmp(argv[1], "--hidden") == 0)
-            engine.autostart_hidden(true);
+            engine.start_hidden(true);
         else if (strcmp(argv[1], "--fullscreen") == 0)
             engine.fullscreen(true);
         else if (strcmp(argv[1], "--help") == 0)

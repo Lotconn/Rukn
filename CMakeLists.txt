@@ -22,7 +22,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_PROJECT_SPDX_LICENSE "AGPL-3.0-or-later")
 
-string(TOLOWER ${PROJECT_NAME} PROEJCT_NAME_LOWER)
+string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
 check_ipo_supported(RESULT IPOresult OUTPUT IPOoutput)
 if(IPOresult)
@@ -46,7 +46,20 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64")
   set(CF_PROTECTION_FLAG_MSVC /guard:cf)
 endif()
 
-configure_file(src/cpp/version.hpp.in version.hpp NO_SOURCE_PERMISSIONS @ONLY)
+if(LINUX)
+  set(MUNADI_LINUX_DIST "Default" CACHE STRING "Distribution Type")
+  set(CACHE MUNADI_LINUX_DIST PROPERTY STRINGS Default Flatpak)
+
+  # optionally set from commandline or autodetects if omitted
+  if(MUNADI_LINUX_DIST STREQUAL Flatpak OR NOT "$ENV{FLATPAK_ID}" STREQUAL "")
+    message(STATUS "Building for Flatpak: $ENV{FLATPAK_ID}")
+    set(MUNADI_FLATPAK_DIST ON CACHE BOOL "Flatpak Build")
+  elseif(MUNADI_LINUX_DIST STREQUAL Default)
+    unset(MUNADI_LINUX_DIST)
+  endif()
+endif()
+
+configure_file(src/cpp/config.hpp.in config.hpp NO_SOURCE_PERMISSIONS @ONLY)
 
 #
 # Required libraries
@@ -77,6 +90,7 @@ endif()
 qt_standard_project_setup(REQUIRES 6.11 I18N_TRANSLATED_LANGUAGES ar bn)
 
 set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
+set(QT_NO_MISSING_CATALOG_LANGUAGE_WARNING ON)
 
 # Threads
 find_package(Threads REQUIRED)
@@ -255,9 +269,11 @@ qt_add_qml_module(${PROJECT_NAME}
 )
 
 qt_add_translations(${PROJECT_NAME}
+  MERGE_QT_TRANSLATIONS
   SOURCE_TARGETS ${PROJECT_NAME}
-  TS_FILE_BASE ${PROEJCT_NAME_LOWER}
-  TS_FILE_DIR src/i18n/
+  TS_FILE_BASE ${PROJECT_NAME_LOWER}
+  QM_OUTPUT_DIRECTORY translations/
+  TS_OUTPUT_DIRECTORY src/i18n/
   RESOURCE_PREFIX qt/qml/Munadi/i18n
 )
 

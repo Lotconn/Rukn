@@ -10,7 +10,7 @@
 
 #include <MunadiEngine.hpp>
 #include <alarm.h>
-#include <version.hpp>
+#include <config.hpp>
 
 #define core Munadi::CoreEngine::instance()
 
@@ -25,6 +25,7 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
     QML_SINGLETON
 
     Q_PROPERTY(QLocale appLocale READ getCurrentLocale NOTIFY localeChanged)
+    Q_PROPERTY(bool autoStart READ isAutoStartSet WRITE setAutoStart NOTIFY autoStartChanged)
 
   public:
     explicit CoreEngine(QObject *parent = nullptr);
@@ -35,6 +36,7 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
     Q_INVOKABLE static QString getAppVersion() noexcept;
 
     [[nodiscard]] auto alarmManager() const noexcept -> Alarm &;
+    [[nodiscard]] auto isAutoStartSet() const noexcept -> bool;
     auto readOldSettings(QAnyStringView oldKey, const QVariant &defaultValue = {}) noexcept
         -> QVariant;
     auto readOldSettingsJsArray(QAnyStringView oldKey, const QJsonArray &defaultArray = {}) noexcept
@@ -42,6 +44,7 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
     auto readSettings(QAnyStringView key, const QVariant &defaultValue = {}) noexcept -> QVariant;
     auto readSettingsArray(QAnyStringView group) noexcept -> QVariantList;
     // auto removeOldSettingsKey(QAnyStringView key) noexcept -> bool;
+    auto setAutoStart(bool enabled) noexcept -> void;
     auto setLang(const QString &lang) noexcept -> void;
     auto writeSettings(QAnyStringView key, const QVariant &value,
                        bool flushOnWrite = false) noexcept -> void;
@@ -53,13 +56,12 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
 
   public slots: // NOLINT(*redundant-access-specifiers)
     void onReceivedMessage(quint32 instanceId, const QByteArray &message);
-    void onUnixSigTerm();
 
   protected:
     bool eventFilter(QObject *object, QEvent *event) noexcept override;
 
   private:
-    Q_DISABLE_COPY_MOVE(CoreEngine);
+    Q_DISABLE_COPY_MOVE(CoreEngine)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //  Variables
@@ -78,12 +80,14 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
     inline static std::array<int, 2> sigtermFd{0, 0};
 
     bool m_isVersionNew{true};
+    bool m_autoStartSet{};
 
     Alarm           *alarm{};
     QLockFile       *configLock{};
+    bool             interimStore{};
     QSettings       *oldSettings{};
     QSettings       *settings{};
-    QSocketNotifier *snTerm;
+    QSocketNotifier *snTerm{};
     QTranslator      translator;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -105,19 +109,25 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
     auto loadConfigs() noexcept -> void override;
     // auto releaseConfigLock() -> void;
     auto saveConfigs() noexcept -> void override;
+    auto setAutoStart_flatpak(bool enabled) noexcept -> void;
+    auto setAutoStart_linux(bool enabled) noexcept -> void;
+    auto setAutoStart_win(bool enabled) noexcept -> void;
 
   signals:
     auto alarmsReset() -> void;
     auto athanAlarm() -> void;
+    auto autoStartChanged(bool enabled) -> void;
     auto dateChanged() -> void;
     auto exposeInstance() -> void;
     auto minuteChanged() -> void;
     auto localeChanged() -> void;
 
-  private slots: // NOLINT(*-redundant-access-specifiers)
+  private slots:
     void onAboutToQuit() noexcept;
+    void onAutoStartResponse(uint ret, const QVariantMap &) noexcept;
     void onCoreOnline() noexcept override {};
     void onTrigger(const QString &id) noexcept;
+    void onUnixSigTerm();
 };
 
 } // namespace Munadi

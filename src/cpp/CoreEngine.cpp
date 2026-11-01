@@ -1,17 +1,22 @@
 #include <QApplication>
 #include <QDir>
-#include <QEvent>
-#include <QScopeGuard>
-#include <QSettings>
+#include <QSaveFile>
 #include <QStandardPaths>
 #include <QSystemTrayIcon>
+
+#include "internal-helpers.hpp"
+
+#ifdef MUNADI_FLATPAK_DIST
+#include <QDBusConnection>
+#include <QDBusMessage>
+#include <QDBusObjectPath>
+#include <QRandomGenerator>
+#endif
 
 #ifdef Q_OS_UNIX
 #include <csignal>
 #include <sys/socket.h>
 #endif
-
-#include "internal-helpers.hpp"
 
 Q_STATIC_LOGGING_CATEGORY(munadi, "CoreEngine")
 
@@ -86,6 +91,9 @@ Alarm &CoreEngine::alarmManager() const noexcept
 
 QString CoreEngine::getAppVersion() noexcept
 { return CoreEngine::s_appVersion; }
+
+bool CoreEngine::isAutoStartSet() const noexcept
+{ return this->m_autoStartSet; }
 
 bool CoreEngine::isVersionNew() const noexcept
 { return this->m_isVersionNew; }
@@ -227,6 +235,25 @@ void CoreEngine::set60sTicker() noexcept
                      minSecs);
 }
 
+void CoreEngine::setAutoStart(bool enabled) noexcept // NOLINT(*member*to-static)
+{
+    if (this->m_autoStartSet == enabled)
+        return;
+
+    const bool oldValue{this->m_autoStartSet};
+
+#ifdef Q_OS_WIN
+    this->setAutoStart_win(enabled);
+#elifdef MUNADI_FLATPAK_DIST
+    this->setAutoStart_flatpak(enabled);
+#elif defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
+    CoreEngine::setAutoStart_linux(enabled);
+#endif
+
+    if (this->m_autoStartSet != oldValue)
+        emit this->autoStartChanged(this->m_autoStartSet);
+}
+
 void CoreEngine::setLang(const QString &lang) noexcept
 {
     QString currLang{QLocale::languageToString(QLocale{}.language())};
@@ -305,19 +332,6 @@ void CoreEngine::onReceivedMessage(quint32 instanceId, const QByteArray &message
     logDebug(munadi) << "Received message from instance: " << instanceId;
     logInfo(munadi) << "Received Message: " << message;
     emit this->exposeInstance();
-}
-
-void CoreEngine::onUnixSigTerm()
-{
-#ifdef Q_OS_UNIX
-    snTerm->setEnabled(false);
-
-    char          tmp{0};
-    const ssize_t ret{::read(sigtermFd[1], &tmp, sizeof(tmp))};
-    Q_UNUSED(ret)
-
-    qApp->quit();
-#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -487,11 +501,17 @@ int CoreEngine::installUnixSignalHandlers()
 
 void CoreEngine::loadConfigs() noexcept
 {
-
     logDebug(munadi) << "Loading configs from persistent config file";
 
     bool          configMigrated{true};
     const QString migrateKey{u"CoreEngineConfigMigrated"_s};
+
+    // Assign to the member directly to avoid resetting autostart to system on startup
+    // WIP: Do not save state, use state from system directly
+    loadConfigKey(
+        "App/autoStartUp"_L1, "App/AutoStart"_L1, migrateKey,
+        [this](const QVariant &enabled) -> void { this->m_autoStartSet = enabled.toBool(); },
+        configMigrated);
 
     loadConfigKey(
         "App/newsVersion"_L1, "App/LastVersion"_L1, migrateKey,
@@ -548,6 +568,7 @@ void CoreEngine::saveConfigs() noexcept
 {
     logDebug(munadi) << "Saving configurations";
 
+    this->writeSettings("App/AutoStart"_L1, this->m_autoStartSet);
     this->writeSettings("App/LastVersion"_L1, CoreEngine::s_appVersion, true);
 }
 
@@ -577,6 +598,142 @@ void CoreEngine::setValueOfKey(QSettings &settings, QAnyStringView key, const QV
     }
 }
 
+// NOLINTNEXTLINE(*member-function*static)
+void CoreEngine::setAutoStart_flatpak(bool enabled) noexcept
+{
+    Q_UNUSED(enabled)
+#ifdef MUNADI_FLATPAK_DIST
+    QDBusConnection bus{QDBusConnection::sessionBus()};
+
+    QDBusMessage msg{QDBusMessage::createMethodCall(
+        "org.freedesktop.portal.Desktop"_L1, "/org/freedesktop/portal/desktop"_L1,
+        "org.freedesktop.portal.Background"_L1, "RequestBackground"_L1)};
+
+    // NOLINTNEXTLINE(*magic-numbers)
+    const int     token{QRandomGenerator::global()->bounded(1000, 9999)};
+    const QString sender{bus.baseService().mid(1).replace(u'.', u'_')};
+    const QString handleToken{u"munadi_%1"_s.arg(token)};
+    const QString requestPath{
+        u"/org/freedesktop/portal/desktop/request/%1/%2"_s.arg(sender, handleToken)};
+
+    interimStore = enabled;
+    bus.connect("org.freedesktop.portal.Desktop"_L1, requestPath,
+                "org.freedesktop.portal.Request"_L1, "Response"_L1, this,
+                // NOLINTNEXTLINE(clazy-connect-not-normalized)
+                SLOT(onAutoStartResponse(uint, QVariantMap)));
+
+    const QVariantMap options{
+        {u"autostart"_s,    enabled                                       },
+        {u"background"_s,   enabled                                       },
+        {u"commandline"_s,  QStringList{u"munadi"_s, u"--hidden"_s}       },
+        {u"reason"_s,       u"Automatically launch application at login"_s},
+        {u"handle_token"_s, u"munadi_%1"_s.arg(token)                     },
+    };
+
+    msg << ""_L1 << options; // Empty parent window ID
+    QDBusMessage response{bus.call(msg)};
+
+    // Handle response and connect to signal for final status
+    if (response.type() != QDBusMessage::ReplyMessage)
+        logWarning(munadi) << "Portal request failed: " << response.errorMessage();
+#endif
+}
+
+// NOLINTNEXTLINE(*member-function*static)
+void CoreEngine::setAutoStart_linux(bool enabled) noexcept
+{
+    Q_UNUSED(enabled)
+#ifndef MUNADI_FLATPAK_DIST
+    const QString desktopName{qApp->desktopFileName() + u".desktop"_s};
+    const QString autostartPath{
+        QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + u"/autostart/"_s +
+        desktopName};
+
+    if (!enabled)
+    {
+        if (!QFileInfo::exists(autostartPath) || !QFile::remove(autostartPath))
+            logWarning(munadi) << "Couldn't remove autostart file " << autostartPath;
+        else
+        {
+            logInfo(munadi) << "Autostart disabled successfully";
+
+            this->m_autoStartSet = enabled;
+        }
+
+        return;
+    }
+
+    const QString desktopPath{
+        QStandardPaths::locate(QStandardPaths::ApplicationsLocation, desktopName)};
+
+    if (desktopPath.isEmpty())
+    {
+        logWarning(munadi) << "Desktop file doesn't exist at location " << desktopPath;
+        return;
+    }
+
+    QFile desktopFile{desktopPath};
+
+    if (!desktopFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        logCritical(munadi) << "Couldn't open " << desktopPath << " for reading";
+        return;
+    }
+
+    const QString contents{
+        QString{desktopFile.readAll()}.replace("bin/munadi"_L1, "bin/munadi --hidden"_L1)};
+
+    desktopFile.close();
+
+    QSaveFile file{autostartPath};
+
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        logCritical(munadi) << "Couldn't open " << autostartPath << " for writing";
+        return;
+    }
+
+    file.write(contents.toUtf8());
+
+    if (!file.commit())
+        logCritical(munadi) << "Failed to write at " << autostartPath;
+    else
+    {
+        logDebug(munadi) << "File " << autostartPath << " successfully written";
+
+        this->m_autoStartSet = enabled;
+    }
+#endif
+}
+
+// NOLINTNEXTLINE(*member-function*static)
+void CoreEngine::setAutoStart_win(bool enabled) noexcept
+{
+    Q_UNUSED(enabled)
+#ifdef Q_OS_WIN
+    const QString appName{QApplication::applicationName()};
+    const QString appPath{QDir::toNativeSeparators(QApplication::applicationFilePath())};
+    QSettings     settings{R"(HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run)"_L1,
+                           QSettings::NativeFormat};
+
+    (enabled) ? settings.setValue(appName, appPath + " --hidden"_L1) : settings.remove(appName);
+
+    switch (settings.status())
+    {
+    case QSettings::AccessError:
+        logWarning(munadi) << "Failed to read config";
+        return;
+    case QSettings::FormatError:
+        logWarning(munadi) << "Value \"" << appPath << "\" for key \"" << appName
+                           << "\" is malformed";
+        return;
+    default:
+        this->m_autoStartSet = enabled;
+        break;
+    }
+#endif
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  Private Slots
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -590,6 +747,18 @@ void CoreEngine::onAboutToQuit() noexcept
     ::close(sigtermFd[0]);
     ::close(sigtermFd[1]);
 #endif
+}
+
+void CoreEngine::onAutoStartResponse(uint ret, const QVariantMap & /* unused */) noexcept
+{
+    if (ret > 0)
+        logWarning(munadi) << "Request to autostart was cancelled";
+    else
+    {
+        logDebug(munadi) << "Autostart set successfully";
+
+        m_autoStartSet = interimStore;
+    }
 }
 
 void CoreEngine::onTrigger(const QString &id) noexcept
@@ -609,4 +778,16 @@ void CoreEngine::onTrigger(const QString &id) noexcept
         this->installTickers();
 }
 
+void CoreEngine::onUnixSigTerm()
+{
+#ifdef Q_OS_UNIX
+    snTerm->setEnabled(false);
+
+    char          tmp{0};
+    const ssize_t ret{::read(sigtermFd[1], &tmp, sizeof(tmp))};
+    Q_UNUSED(ret)
+
+    qApp->quit();
+#endif
+}
 } // namespace Munadi

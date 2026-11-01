@@ -289,14 +289,9 @@ Page {
                 }
 
                 Switch {
-                    checked: mainWindow.autoStartUp
+                    checked: CoreEngine.autoStart
 
-                    onClicked: {
-                        if (mainWindow.autoStartUp === checked)
-                            return;
-                        mainWindow.autoStartUp = checked;
-                        engine.autostart(checked);
-                    }
+                    onClicked: CoreEngine.autoStart = checked
                 }
             }
 

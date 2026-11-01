@@ -3,7 +3,7 @@
 
 #include "internal-helpers.hpp"
 #include <UpdateEngine.hpp>
-#include <version.hpp>
+#include <config.hpp>
 
 Q_STATIC_LOGGING_CATEGORY(munadi, "UpdateEngine")
 

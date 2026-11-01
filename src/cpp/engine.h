@@ -20,10 +20,8 @@ class Engine : public QObject
     Q_INVOKABLE QString getWhatsNew();
     QString             show_help(bool);
 
-    Q_INVOKABLE void autostart(bool set);
-
-    void             autostart_hidden(bool);
-    Q_INVOKABLE bool autostart_hidden();
+    void             start_hidden(bool);
+    Q_INVOKABLE bool start_hidden();
 
     void             fullscreen(bool);
     Q_INVOKABLE bool fullscreen();
