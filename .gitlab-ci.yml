@@ -24,8 +24,8 @@ build-web-server:
     - docker:27-dind
   interruptible: true
   variables:
-    BUILDER_CACHE: "$CI_REGISTRY_IMAGE/builder:buildcache"
-    BUILDER_IMAGE: "$CI_REGISTRY_IMAGE/web-server:$CI_COMMIT_TAG-$CI_COMMIT_SHORT_SHA"
+    WEB_TAG: "$CI_COMMIT_TAG-$CI_COMMIT_SHORT_SHA"
+    WEB_IMAGE: "$CI_REGISTRY_IMAGE/web-server"
     DOCKER_HOST: tcp://docker:2375
     DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay2
@@ -39,12 +39,11 @@ build-web-server:
     - df -i
     - env | grep CI_REGISTRY
     - |
-      docker build \
-        --tag "$BUILDER_IMAGE" \
-        --file pkg/docker/web-server/Dockerfile \
+      docker build --tag "$WEB_IMAGE:$WEB_TAG" --file pkg/docker/web-server/Dockerfile \
         pkg/docker/web-server
-    - docker tag "$BUILDER_IMAGE" "$CI_REGISTRY_IMAGE/web-server:latest"
-    - docker push -a "$BUILDER_IMAGE"
+    - docker tag "$WEB_IMAGE:$WEB_TAG" "$WEB_IMAGE:latest"
+    - docker push "$WEB_IMAGE:$WEB_TAG"
+    - docker push "$WEB_IMAGE:latest"
 
 build-static:
   stage: build
