@@ -104,7 +104,7 @@ RowLayout {
             Text {
                 anchors.baseline: prayerTime.baseline
                 color: prayerTime.color
-                font.pointSize: prayerTime.fontInfo.pointSize / 2
+                font.pointSize: prayerTime.fontInfo.pointSize / 1.5
                 font.weight: prayerTime.font.weight
                 opacity: prayerTime.opacity
                 text: prayerRow.athanTime.substring(5)

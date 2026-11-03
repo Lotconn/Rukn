@@ -172,11 +172,11 @@ set(MUNADI_QML_FILES
 
 if(NOT TARGET Qt::QuickTools)
   list(APPEND MUNADI_QML_FILES
-    src/qml/obsolete/FajrIcon.qml
-    src/qml/obsolete/DhuhrIcon.qml
-    src/qml/obsolete/AsrIcon.qml
-    src/qml/obsolete/MaghribIcon.qml
-    src/qml/obsolete/IshaIcon.qml
+    src/qml/icons/FajrIcon.qml
+    src/qml/icons/DhuhrIcon.qml
+    src/qml/icons/AsrIcon.qml
+    src/qml/icons/MaghribIcon.qml
+    src/qml/icons/IshaIcon.qml
   )
 endif()
 

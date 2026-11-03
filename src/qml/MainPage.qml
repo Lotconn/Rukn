@@ -57,7 +57,7 @@ ColumnLayout {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 Layout.leftMargin: 15 * theme.unit
-                Layout.preferredHeight: 20
+                Layout.preferredHeight: 30
                 Layout.rightMargin: Layout.leftMargin
                 Layout.topMargin: -20 * theme.unit
                 athanTime: UiEngine.prayerDisplayTimes.Sunrise
@@ -127,7 +127,7 @@ ColumnLayout {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 Layout.leftMargin: 15 * theme.unit
-                Layout.preferredHeight: 20
+                Layout.preferredHeight: 30
                 Layout.rightMargin: Layout.leftMargin
                 Layout.topMargin: -20 * theme.unit
                 athanTime: UiEngine.prayerDisplayTimes.Midnight
@@ -142,7 +142,7 @@ ColumnLayout {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 Layout.leftMargin: 15 * theme.unit
-                Layout.preferredHeight: 20
+                Layout.preferredHeight: 30
                 Layout.rightMargin: Layout.leftMargin
                 Layout.topMargin: -15 * theme.unit
                 athanTime: UiEngine.prayerDisplayTimes.LastThirdNight

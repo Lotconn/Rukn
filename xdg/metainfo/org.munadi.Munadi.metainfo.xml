@@ -25,19 +25,20 @@
     <p>Features:</p>
     <ul>
       <li>Prayer times for nearly any city around the globe</li>
-      <li>Lightweight design with no advertisements or tracking</li>
-      <li>Countdown to the next prayer, visible in tooltips</li>
+      <li>Qibla direction for current location</li>
+      <li>Countdown to the next prayer, also visible in tooltips</li>
       <li>View prayer times for past or future dates</li>
+      <li>Support for various global calculation methods</li>
+      <li>Flexible time format options</li>
+      <li>Fine-tune prayer times and Hijri date offsets</li>
+      <li>Option to assign a unique and custom athan for each prayer</li>
+      <li>Individual control to enable, mute, or adjust athan volumes</li>
+      <li>Lightweight design with no advertisements or tracking</li>
       <li>Automatic switching between Dark and Light themes</li>
       <li>Customizable UI visual effects</li>
       <li>Dynamic wallpapers that reflect the time of prayer</li>
+      <li>Language choices from Arabic and Bangla, with complete RTL layout support</li>
       <li>Convenient system-tray support</li>
-      <li>Flexible time format options</li>
-      <li>Individual control to enable, mute, or adjust athan volumes</li>
-      <li>Option to assign a unique athan for each prayer</li>
-      <li>Fine-tune prayer times and Hijri date offsets</li>
-      <li>Support for various global calculation methods</li>
-      <li>Full Arabic and Bangla locale support with RTL layouts</li>
     </ul>
     <p xml:lang="ar">منادي هو تطبيق أذان بسيط ولكنه فعال، مصمم ليكون رفيقك في حياتك اليومية. يوفر
       التطبيق واجهة أنيقة وجذابة خالية من الإعلانات والتتبع، ويقدم تنبيهات دقيقة لمواعيد الصلاة في
@@ -70,18 +71,19 @@
     <p xml:lang="bn">বৈশিষ্ট্যসমূহ:</p>
     <ul>
       <li xml:lang="bn">বিশ্বের প্রায় যেকোনো শহরের সালাতের সময়সূচি</li>
+      <li xml:lang="bn">বর্তমান অবস্থানের ক্বিবলা দিক</li>
+      <li xml:lang="bn">পরবর্তী সালাতের কাউন্টডাউন, টুলটিপেও প্রদর্শিত</li>
       <li xml:lang="bn">অতীত বা ভবিষ্যতের যেকোনো তারিখের সালাতের সময়সূচি দেখার সুবিধা</li>
-      <li xml:lang="bn">আযান আলাদাভাবে চালু, নিঃশব্দ বা ভলিউম নিয়ন্ত্রণের সুবিধা</li>
-      <li xml:lang="bn">আরটিএল (RTL) লেআউটসহ পূর্ণাঙ্গ আরবি ও বাংলা লোকেল সমর্থন</li>
-      <li xml:lang="bn">কাস্টমাইজযোগ্য ইউআই ভিজ্যুয়াল ইফেক্ট</li>
-      <li xml:lang="bn">টুলটিপে পরবর্তী সালাতের কাউন্টডাউন প্রদর্শন</li>
-      <li xml:lang="bn">ডার্ক ও লাইট থিমের মধ্যে স্বয়ংক্রিয় পরিবর্তন</li>
-      <li xml:lang="bn">নমনীয় সময় ফরম্যাট অপশন</li>
-      <li xml:lang="bn">প্রতিটি সালাতের জন্য আলাদা আযান নির্ধারণ করার অপশন</li>
-      <li xml:lang="bn">বিজ্ঞাপন ও ট্র্যাকিংমুক্ত সাবলীল ডিজাইন</li>
       <li xml:lang="bn">বিভিন্ন বৈশ্বিক গণনা পদ্ধতির সমর্থন</li>
-      <li xml:lang="bn">সালাতের সময় অনুযায়ী পরিবর্তনশীল ওয়ালপেপার</li>
+      <li xml:lang="bn">নমনীয় সময় ফরম্যাট অপশন</li>
       <li xml:lang="bn">সালাতের সময় ও হিজরি তারিখের অফসেট সূক্ষ্মভাবে সমন্বয় করার সুবিধা</li>
+      <li xml:lang="bn">প্রতিটি সালাতের জন্য আলাদা ও নিজস্ব আযান নির্ধারণ করার অপশন</li>
+      <li xml:lang="bn">আযান আলাদাভাবে চালু, নিঃশব্দ বা ভলিউম নিয়ন্ত্রণের সুবিধা</li>
+      <li xml:lang="bn">বিজ্ঞাপন ও ট্র্যাকিংমুক্ত সাবলীল ডিজাইন</li>
+      <li xml:lang="bn">ডার্ক ও লাইট থিমের মধ্যে স্বয়ংক্রিয় পরিবর্তন</li>
+      <li xml:lang="bn">কাস্টমাইজযোগ্য ইউআই ভিজ্যুয়াল ইফেক্ট</li>
+      <li xml:lang="bn">সালাতের সময় অনুযায়ী পরিবর্তনশীল ওয়ালপেপার</li>
+      <li xml:lang="bn">পূর্ণাঙ্গ আরটিএল (RTL) লেআউট সাপোর্টসহ আরবি ও বাংলা ভাষা অপশন</li>
       <li xml:lang="bn">সুবিধাজনক সিস্টেম-ট্রে</li>
     </ul>
   </description>
@@ -159,71 +161,71 @@
       <caption>Main page showing Fajr prayer time</caption>
       <caption xml:lang="ar">الصفحة الرئيسية تظهر وقت صلاة الفجر</caption>
       <caption xml:lang="bn">মূল পৃষ্ঠায় ফজরের সালাতের সময় প্রদর্শিত হচ্ছে</caption>
-      <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2606/01_main_page_fajr.png</image>
+      <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2611/fajr.png</image>
     </screenshot>
     <screenshot>
       <caption>Main page at Sunrise</caption>
       <caption xml:lang="ar">الصفحة الرئيسية عند الغروب</caption>
       <caption xml:lang="bn">মূল পৃষ্ঠায় সূর্যোদয়ের সময় প্রদর্শিত হচ্ছে</caption>
-      <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2606/02_main_page_sunrise.png</image>
+      <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2611/sunrise.png</image>
     </screenshot>
     <screenshot>
       <caption>Main page showing Dhuhr prayer time</caption>
       <caption xml:lang="ar">الصفحة الرئيسية تظهر وقت صلاة الظهر</caption>
       <caption xml:lang="bn">মূল পৃষ্ঠায় যুহরের সালাতের সময় প্রদর্শিত হচ্ছে</caption>
-      <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2606/03_main_page_dhuhr.png</image>
+      <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2611/dhuhr.png</image>
     </screenshot>
     <screenshot>
       <caption>Main page showing Asr prayer time</caption>
       <caption xml:lang="ar">الصفحة الرئيسية تظهر وقت صلاة العصر</caption>
       <caption xml:lang="bn">মূল পৃষ্ঠায় আছরের সালাতের সময় প্রদর্শিত হচ্ছে</caption>
-      <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2606/04_main_page_asr.png</image>
+      <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2611/asr.png</image>
     </screenshot>
     <screenshot>
       <caption>Main page showing Maghrib prayer time</caption>
       <caption xml:lang="ar">الصفحة الرئيسية تبين وقت صلاة المغرب</caption>
       <caption xml:lang="bn">মূল পৃষ্ঠায় মাগরিবের সালাতের সময় প্রদর্শিত হচ্ছে</caption>
-      <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2606/05_main_page_maghrib.png</image>
+      <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2611/maghrib.png</image>
     </screenshot>
     <screenshot>
       <caption>Main page showing Isha prayer time</caption>
       <caption xml:lang="ar">الصفحة الرئيسية تبين وقت صلاة العشاء</caption>
       <caption xml:lang="bn">মূল পৃষ্ঠায় ইশার সালাতের সময় প্রদর্শিত হচ্ছে</caption>
-      <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2606/06_main_page_isha.png</image>
+      <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2611/isha.png</image>
     </screenshot>
     <screenshot>
       <caption>Main page with Material Light theme</caption>
       <caption xml:lang="ar">الصفحة الرئيسية مع سمة فاتحة</caption>
       <caption xml:lang="bn">মূল পৃষ্ঠা ম্যাটেরিয়াল লাইট থিম সহ</caption>
       <image>
-        https://gitlab.com/munadi/munadi/raw/master/screenshots/2606/08_main_page_material_light.png</image>
+        https://gitlab.com/munadi/munadi/raw/master/screenshots/2611/material-light.png</image>
     </screenshot>
     <screenshot>
       <caption>Main page with Material Dark theme</caption>
       <caption xml:lang="ar">الصفحة الرئيسية مع سمة مظلمة</caption>
       <caption xml:lang="bn">মূল পৃষ্ঠা ম্যাটেরিয়াল ডার্ক থিম সহ</caption>
       <image>
-        https://gitlab.com/munadi/munadi/raw/master/screenshots/2606/07_main_page_material_dark.png</image>
+        https://gitlab.com/munadi/munadi/raw/master/screenshots/2611/material-dark.png</image>
     </screenshot>
     <screenshot>
       <caption>Settings page (Light)</caption>
       <caption xml:lang="ar">صفحة الإعدادات (فاتحة)</caption>
-      <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2606/09_settings_page_1.png</image>
+      <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2611/settings-1.png</image>
     </screenshot>
     <screenshot>
       <caption>Settings page (Dark)</caption>
       <caption xml:lang="ar">صفحة الإعدادات (مظلمة)</caption>
-      <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2606/10_settings_page_2.png</image>
+      <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2611/settings-2.png</image>
     </screenshot>
     <screenshot>
       <caption>Tray menu</caption>
       <caption xml:lang="ar">قائمة شريط النظام</caption>
-      <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2606/11_tray_menu.png</image>
+      <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2611/tray-menu.png</image>
     </screenshot>
     <screenshot>
       <caption>Tray tooltip showing time left</caption>
       <caption xml:lang="ar">تلميح شريط النظام يعرض الوقت المتبقي</caption>
-      <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2606/12_tray_tooltip.png</image>
+      <image>https://gitlab.com/munadi/munadi/raw/master/screenshots/2611/tray-tooltip.png</image>
     </screenshot>
   </screenshots>
   <releases>
