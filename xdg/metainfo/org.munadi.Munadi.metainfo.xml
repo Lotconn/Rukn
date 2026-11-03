@@ -229,6 +229,41 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="26.11" date="2026-11-10">
+      <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2611</url>
+      <description>
+        <p>This version introduces plethora of visible and backend overhauling in the app, improving
+          the overall experience throughout the whole spectrum. Check them out below!</p>
+        <p>New</p>
+        <ul>
+          <li>Added prayer-time icons! System-tray icons are also updated.</li>
+          <li>Sunnah times like midnight and Last third of the night times were added</li>
+          <li>The qibla page is back! Currently it only shows static qibla direction for the
+            currently set location without device compass support</li>
+          <li>Added new calculation method "University of Tehran"</li>
+          <li>Language can now be selected from UI, or let system-default be followed as usual</li>
+          <li>Relevant controls can now be adjusted using spinboxes</li>
+          <li>MunadiEngine, the new C++ backend that migrates from the former JS-based app-logic
+            operations in Munadi. The abstract MunadiEngine is realized in handful of engines which
+            carry out responsibilities obvious for their purposes.</li>
+        </ul>
+        <p>Improvements</p>
+        <ul>
+          <li>The UI has a fresh look with bolder texts that stands out with more refined and
+            proportional UI components</li>
+          <li>The location searching operation has been improved to be more robust in cases of
+            network failures and repeated requests</li>
+          <li>Translations were updated along with automatic RTL layout switching according to
+            language</li>
+          <li>Location is now shown in full address rather than truncated in short</li>
+        </ul>
+        <p>Notable Fixes</p>
+        <ul>
+          <li>RTL switch now correctly happens when system-wide Arabic language is detected or when
+            selected from language option</li>
+        </ul>
+      </description>
+    </release>
     <release version="26.08" date="2026-08-18">
       <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2608</url>
       <description>
@@ -236,11 +271,10 @@
           and Bangla translations, now covering dynamic texts like calendar dates. We have enabled
           Right-to-Left layout support for Arabic, complete with minor UI adjustments for a seamless
           experience. Notable bug fixes resolve issues where certain numerals failed to translate in
-          foreign
-          locales, alongside correcting missing whitespaces and incomplete literals in the Arabic
+          foreign locales, alongside correcting missing whitespaces and incomplete literals in the
+          Arabic
           translations. Additionally, the underlying org.kde.Platform has been updated to version
-          6.11, and
-          core libraries have been bumped to their latest releases for improved stability.</p>
+          6.11, and core libraries have been bumped to their latest releases for improved stability.</p>
         <p>New</p>
         <ul>
           <li>Bangla localization</li>

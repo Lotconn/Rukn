@@ -1,6 +1,8 @@
 #include <QtPlugin>
 #include <QtQml/QQmlExtensionPlugin>
 
+Q_IMPORT_QML_PLUGIN(Lotconn_FileManPlugin)
+
 Q_IMPORT_PLUGIN(QtQuick2Plugin)
 Q_IMPORT_PLUGIN(QtQuickControls2Plugin)
 Q_IMPORT_PLUGIN(QtQuickLayoutsPlugin)
@@ -40,6 +42,3 @@ Q_IMPORT_PLUGIN(QSubscriberDeclarativeModule)
 Q_IMPORT_PLUGIN(QServiceDeclarativeModule)
 Q_IMPORT_PLUGIN(QSystemInfoDeclarativeModule)
 Q_IMPORT_PLUGIN(QGnomePlatformThemePlugin)
-// Q_IMPORT_PLUGIN(QWaylandCompositorPlugin)
-// Q_IMPORT_PLUGIN(QWaylandTextureSharingExtensionPlugin)
-// Q_IMPORT_PLUGIN(QWaylandTextureSharingPlugin)
