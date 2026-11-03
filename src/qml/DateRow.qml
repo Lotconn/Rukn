@@ -22,10 +22,10 @@ Pane {
             Layout.minimumWidth: parent.height
 
             RoundButton {
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.verticalCenter: parent.verticalCenter
+                anchors.centerIn: parent
                 autoRepeat: true
                 flat: true
+                font.pointSize: dateText.fontInfo.pointSize
                 opacity: 0.57
                 text: qsTr("<")
 
@@ -40,12 +40,16 @@ Pane {
             Text {
                 id: dateText
 
+                anchors.bottomMargin: parent.height / 5
                 anchors.fill: parent
+                anchors.topMargin: anchors.bottomMargin
                 color: dateBox.textColor
                 elide: Text.ElideMiddle
-                font.pointSize: Math.max(1, height / 2.7)
+                font.pointSize: 72
                 font.weight: Font.Medium
+                fontSizeMode: Text.VerticalFit
                 horizontalAlignment: Text.AlignHCenter
+                minimumPointSize: 1
                 opacity: dateBox.opacity
                 text: UiEngine.calendarDateDisplay
                 verticalAlignment: Text.AlignVCenter
@@ -69,10 +73,10 @@ Pane {
             Layout.minimumWidth: parent.height
 
             RoundButton {
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.verticalCenter: parent.verticalCenter
+                anchors.centerIn: parent
                 autoRepeat: true
                 flat: true
+                font.pointSize: dateText.fontInfo.pointSize
                 opacity: 0.57
                 text: qsTr(">")
 

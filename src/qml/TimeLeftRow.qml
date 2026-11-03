@@ -41,12 +41,16 @@ Pane {
             Text {
                 id: timeLeftLabel
 
+                anchors.bottomMargin: parent.height / 5
                 anchors.fill: parent
+                anchors.topMargin: anchors.bottomMargin
                 color: timeleftBox.textColor
                 elide: Text.ElideRight
-                font.pointSize: Math.max(1, height / 2.7)
+                font.pointSize: 72
                 font.weight: Font.Medium
+                fontSizeMode: Text.VerticalFit
                 horizontalAlignment: Text.AlignHCenter
+                minimumPointSize: 1
                 opacity: timeleftBox.opacity
                 verticalAlignment: Text.AlignVCenter
                 visible: progressBar.visible || MultimediaEngine.athanPlaying
@@ -58,7 +62,7 @@ Pane {
                 Material.accent: timeLeftLabel.color
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: timeLeftLabel.bottom
-                anchors.topMargin: 2
+                anchors.topMargin: theme.unit
                 opacity: timeleftBox.opacity
                 value: UiEngine.timeLeftProgress
                 visible: timeLeftLabel.text !== ""

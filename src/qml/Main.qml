@@ -1,3 +1,4 @@
+import QtQuick
 import QtQuick.Controls.Material
 import QtQuick.Effects
 import QtQuick.Window
