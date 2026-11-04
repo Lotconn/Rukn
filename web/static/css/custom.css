@@ -1,5 +1,6 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300);
+
 #title_logo {
-    @import url(http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300);
     font-family: 'Open Sans Condensed', sans-serif;
     /*text-shadow: -1px 0 #696969, 0 1px #696969, 1px 0 #696969, 0 -1px #696969;*/
 }
@@ -15,8 +16,22 @@
     color: #ffffff;
 }
 
-.text-muted {
-    /*color: #337AB7;*/
-    /*font-weight: bold;*/
-    /*text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;*/
+/* .text-muted {
+    color: #337AB7;
+    font-weight: bold;
+    text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+} */
+
+/* Screenshot grid: avoid float snagging on uneven image heights */
+@media (min-width: 992px) {
+    .screenshots {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    /* Clearfix pseudo-elements would become empty flex items */
+    .screenshots::before,
+    .screenshots::after {
+        content: none;
+    }
 }
