@@ -18,7 +18,7 @@ _script=uninstall
 _arch=x86_64
 _errout=$(mktemp "${TMPROOT:-/tmp}/munadi-stderr.XXXXXX")
 _logfile=$(mktemp "${TMPROOT:-/tmp}/munadi-$_script-XXXXXX.log")
-_v_args=''
+_v_args=' -v '
 _ver=26.11
 _trapexec=('rm -f "$_errout"')
 
@@ -43,8 +43,8 @@ log() {
 debug_print() {
 	if ((_debug)); then
 		echo -e "\e[0;34mmunadi:$_script:debug::\t$*\e[0;m" >&2
-		log "debug:: $*"
 	fi
+	log "debug:: $*"
 }
 
 error_print() {
@@ -266,7 +266,7 @@ fi
 
 #   cd "${0%/*}"
 
-((_verbose)) && _v_args=' -v '
+# ((_verbose)) && _v_args=' -v '
 info_print "Uninstalling Munadi $_old_ver from $_prefix ..."
 debug_print 'Uninstall phase in progress...'
 
@@ -283,9 +283,9 @@ if [[ -d "$_prefix" || -L "$_prefix" ]]; then
 
 	if ((!_nocleanup)); then
 		log_cmd rm -f $_v_args \
-			"$HOME/.config/autostart/org.munadi.Munadi-sfx.desktop" \
-			"$HOME/.config/munadi/Munadi.conf" || :
-		log_cmd rm -rf $_v_args ./share/Munadi/ || :
+			$HOME/.config/autostart/org.munadi.Munadi-sfx.desktop \
+			$HOME/.config/munadi/[mM]unadi.{conf,ini} || :
+		log_cmd rm -rf $_v_args ./share/[mM]unadi/ ./state/[mM]unadi $HOME/.local/state/[mM]unadi || :
 	fi
 
 	if ((_priv)); then _data_prefix=/usr; else _data_prefix=.; fi
@@ -304,11 +304,13 @@ if [[ -d "$_prefix" || -L "$_prefix" ]]; then
 		./libexec/munadi/ \
 		./share/licenses/munadi/ \
 		./share/metainfo/ \
+		./share/icons/hicolor/scalable/apps/ \
+		./share/icons/hicolor/symbolic/apps/ \
 		/usr/share/metainfo/ \
 		/usr/share/icons/hicolor/scalable/apps/ \
 		/usr/share/icons/hicolor/symbolic/apps/ || :
 
-	if ((!_nocleanup)); then log_cmd rmdir -p $_v_args ../.config/munadi/ || :; fi
+	if ((!_nocleanup)); then log_cmd rmdir -p $_v_args ../.config/[mM]unadi/ || :; fi
 
 	debug_print "======== END from $(hash -t rmdir) ======"
 
@@ -323,7 +325,7 @@ unset -v XDG_DATA_DIRS
 declare -x XDG_UTILS_DEBUG_LEVEL
 _trapexec+=('unset -v XDG_UTILS_DEBUG_LEVEL')
 
-((XDG_UTILS_DEBUG_LEVEL = _debug ? 3 : (_verbose ? 1 : 0))) || :
+((XDG_UTILS_DEBUG_LEVEL = _debug ? 3 : 2)) || :
 
 debug_print "====== BEGIN from $(hash -t xdg-desktop-menu) ======"
 

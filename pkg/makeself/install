@@ -17,7 +17,7 @@ _script=install
 _arch=x86_64
 _errout=$(mktemp "${TMPROOT:-/tmp}/munadi-stderr.XXXXXX")
 _logfile="$(mktemp -u ${TMPROOT:-/tmp}/munadi-$_script-XXXXXX).log"
-_v_args=''
+_v_args=' -v '
 _ver=26.11
 _trapexec=('rm -f "$_errout"')
 
@@ -42,8 +42,8 @@ log() {
 debug_print() {
 	if ((_debug)); then
 		echo -e "\e[0;34mmunadi:$_script:debug::\t$*\e[0;m" >&2
-		log "debug:: $*"
 	fi
+	log "debug:: $*"
 }
 
 error_print() {
@@ -331,7 +331,7 @@ echo "_ver=$_ver" >./munadi.version
 debug_print "$(<./munadi.version)"
 _trapexec+=('rm -f ./munadi.version')
 
-((_verbose)) && _v_args=' -v '
+# ((_verbose)) && _v_args=' -v '
 info_print "Installing Munadi $_ver under $_prefix ..."
 debug_print 'Install phase in progress...'
 
@@ -380,10 +380,10 @@ unset -v XDG_DATA_DIRS
 declare -x XDG_UTILS_DEBUG_LEVEL
 _trapexec+=('unset -v XDG_UTILS_DEBUG_LEVEL')
 
-((XDG_UTILS_DEBUG_LEVEL = _debug ? 3 : (_verbose ? 1 : 0))) || :
+((XDG_UTILS_DEBUG_LEVEL = _debug ? 3 : 2)) || :
 sed -i -r "/^Exec/c\Exec=$_prefix/bin/munadi" ./org.munadi.Munadi.desktop
 echo -e "\n[Desktop Action Remove]\nName=Uninstall Munadi\nExec=$_prefix/libexec/munadi/uninstall" >>./org.munadi.Munadi.desktop
-mv $_v_args ./org.munadi.Munadi{,-sfx}.desktop
+log_cmd mv $_v_args ./org.munadi.Munadi{,-sfx}.desktop
 debug_print "====== BEGIN from $(hash -t xdg-desktop-menu) ======"
 log_cmd xdg-desktop-menu install --novendor ./org.munadi.Munadi-sfx.desktop
 debug_print "======== END from $(hash -t xdg-desktop-menu) ======"

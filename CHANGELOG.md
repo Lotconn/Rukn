@@ -9,6 +9,11 @@ All notable changes to this project will be documented in this file.
 ### Fixes
 
 - RTL switch now correctly happens on Arabic language
+- Flatpak Munadi now correctly shows and autostarts alongside SFX Munadi in app drawer/menu if both
+  are installed
+- Logging in SFX installer is now in-sync with actual job operations
+- Uninstalling the SFX Munadi correctly prunes config and store leftovers by default. Can be opted
+  out by passing `--nocleanup` or `-N`
 
 ### Improvements
 
@@ -22,6 +27,7 @@ All notable changes to this project will be documented in this file.
 - X11 dependency is finally removed in static build
 - Translations were updated along with automatic RTL layout switching according to language
 - Location is now shown in full address rather than truncated in short
+- Makeself pre-checks are now more accurate than before
 
 ### New
 
@@ -72,7 +78,6 @@ All notable changes to this project will be documented in this file.
 - **FIX**: (CI) CI pipeline fails to use the static-builder image for building the app
 - **FIX**: (makeself) A bug in SFX archive's shell scripts causes archive generation to fail or
   become incomplete
-- **FIX**: (makeself) Logging in SFX archive is out-of-sync in job operations
 - **FIX**: (static-builder) Fixed Qt module dependency hierarchy, causing some features and tools to
   be missed. Couple of new modules and packages were added for dependency reasons
 

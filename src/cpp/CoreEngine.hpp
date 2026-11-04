@@ -110,6 +110,7 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
     auto connectToTrigger() const noexcept -> void;
     auto installTickers() noexcept -> void;
     auto loadConfigs() noexcept -> void override;
+    auto migrateStore() noexcept -> void;
     // auto releaseConfigLock() -> void;
     auto saveConfigs() noexcept -> void override;
     auto setAutoStart_flatpak(bool enabled) noexcept -> void;

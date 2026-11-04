@@ -1,6 +1,9 @@
+#include <QAudioOutput>
+#include <QCoreApplication>
+#include <QStandardPaths>
+
 #include "internal-helpers.hpp"
 #include <MultimediaEngine.hpp>
-#include <QAudioOutput>
 
 Q_STATIC_LOGGING_CATEGORY(munadi, "MultimediaEngine")
 
@@ -405,7 +408,30 @@ void MultimediaEngine::loadAthanList(bool &configMigrated) noexcept
         return;
     }
 
-    const QVariantList oldAthanList(core->readOldSettingsJsArray("Adhan/audioList"_L1));
+    const QString appName{QCoreApplication::applicationName()};
+    const QString oldStorePath{
+        QUrl::fromLocalFile(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) +
+                            u"/"_s + appName)
+            .toDisplayString()};
+    const QString newStorePath{
+        QUrl::fromLocalFile(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation))
+            .toDisplayString()};
+    QVariantList oldAthanList(core->readOldSettingsJsArray("Adhan/audioList"_L1));
+
+    for (auto &entry : oldAthanList)
+    {
+        QVariantMap map{entry.toMap()};
+
+        if (!map.contains("path"_L1))
+            continue;
+
+        QString path{map.value("path"_L1).toString()};
+
+        path.replace(oldStorePath, newStorePath);
+        map.insert("path"_L1, path);
+
+        entry = map;
+    }
 
     this->setAthanList(oldAthanList);
     logInfo(munadi) << "Migrated from old config";

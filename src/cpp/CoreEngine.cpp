@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QDir>
+#include <QDirListing>
 #include <QSaveFile>
 #include <QStandardPaths>
 #include <QSystemTrayIcon>
@@ -41,41 +42,40 @@ CoreEngine::CoreEngine(QObject *parent) : MunadiBase{munadi(), parent}, alarm{cr
     if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sigtermFd.data()) != 0)
         logFatal(munadi) << "Couldn't create TERM socketpair";
 
-    snTerm = new QSocketNotifier(sigtermFd[1], QSocketNotifier::Read, this);
+    snTerm = new QSocketNotifier{sigtermFd[1], QSocketNotifier::Read, this};
 
     QObject::connect(snTerm, &QSocketNotifier::activated, this, &CoreEngine::onUnixSigTerm);
 #endif
 
-    if (const QString appName = QCoreApplication::applicationName(); appName.isEmpty())
+    const QString appName{QCoreApplication::applicationName()};
+    const QString orgName{QCoreApplication::organizationName()};
+
+    if (appName.isEmpty())
         logCritical(munadi) << "Not setting up persistnent config due to missing application "
                                "name. Settings won't be saved.";
     else
     {
         const QString stateDir{QStandardPaths::writableLocation(QStandardPaths::StateLocation)};
 
-        this->settings  = new QSettings{QSettings::IniFormat, QSettings::UserScope,
-                                        QCoreApplication::organizationName(), appName, this};
-        this->stateFile = new QSettings{stateDir + u"rc"_s, QSettings::IniFormat};
+        this->settings =
+            new QSettings{QSettings::IniFormat, QSettings::UserScope, orgName, appName, this};
+        this->stateFile = new QSettings{stateDir + u"rc"_s, QSettings::IniFormat, this};
 
         logDebug(munadi) << "Settings file: " << this->settings->fileName();
         logDebug(munadi) << "State file: " << this->stateFile->fileName();
     }
 
-    if (const QFileInfo oldConfigFile{
-            QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + u".conf"_s};
-        oldConfigFile.exists())
-    {
-        const QString oldConfigPath{oldConfigFile.absoluteFilePath()};
+    if (this->oldSettings = new QSettings{orgName, appName, this};
+        QFileInfo::exists(this->oldSettings->fileName()))
         logInfo(munadi) << "Old config detected, relevant configurations will be migrated";
-        logDebug(munadi) << "Old config path: " << oldConfigPath;
 
-        this->oldSettings = new QSettings(oldConfigPath, QSettings::NativeFormat, this);
-    }
+    logDebug(munadi) << "Old config path: " << this->oldSettings->fileName();
 
     // These are in order of dependency, not in lexical order
     qApp->installEventFilter(this);
     this->connectToAboutToQuit();
     this->connectToTrigger();
+    this->migrateStore();
 
     this->makeOnline();
     this->loadConfigs();
@@ -556,6 +556,63 @@ void CoreEngine::loadConfigs() noexcept
         this->writeSettings("CoreEngineConfigMigrated"_L1, true);
 }
 
+void CoreEngine::migrateStore() noexcept
+{
+    if (this->readSettings("StoreMigrated"_L1, false).toBool())
+        return;
+
+    const QString appName{QCoreApplication::applicationName()};
+    const QString oldStorePath{QDir::toNativeSeparators(
+        QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + u"/"_s + appName)};
+
+    if (QFileInfo::exists(oldStorePath) && !QFileInfo{oldStorePath}.isDir())
+    {
+        logDebug(munadi)
+            << oldStorePath
+            << "already exists which is not a directory, refusing to initiate migration";
+        return;
+    }
+
+    const QDir newStoreDir{QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)};
+
+    logInfo(munadi) << "Old store detected, attempting migration...";
+    logDebug(munadi) << "Old store path: " << oldStorePath;
+    logDebug(munadi) << "New store path: " << newStoreDir.absolutePath();
+
+    if (newStoreDir.absolutePath() == oldStorePath)
+    {
+        logInfo(munadi) << "Old and new store are the same, skipping migration";
+        return;
+    }
+
+    using F = QDirListing::IteratorFlag;
+    QDir oldStoreDir{oldStorePath};
+    bool ok{};
+
+    newStoreDir.mkpath(u"."_s);
+
+    for (const QDirListing::DirEntry &dirEntry :
+         QDirListing{oldStorePath, F::Default | F::IncludeHidden})
+    {
+        const QString src{dirEntry.fileName()};
+        const QString destPath{newStoreDir.filePath(src)};
+
+        if (src == appName)
+            continue;
+
+        if (bool ret{oldStoreDir.rename(src, destPath)}; ret)
+        {
+            logDebug(munadi) << "Moving " << src << " to " << destPath;
+            ok = ret;
+        }
+        else
+            logWarning(munadi) << "Error while moving " << src << " to " << destPath;
+    }
+
+    if (ok)
+        this->writeSettings("StoreMigrated"_L1, true, true);
+}
+
 QVariant CoreEngine::readValueOfKey(QSettings &settings, QAnyStringView key,
                                     const QVariant &defaultValue) noexcept
 {
@@ -674,7 +731,7 @@ void CoreEngine::setAutoStart_linux(bool enabled) noexcept
 {
     Q_UNUSED(enabled)
 #ifndef MUNADI_FLATPAK_DIST
-    const QString desktopName{qApp->desktopFileName() + u".desktop"_s};
+    const QString desktopName{qApp->desktopFileName() + u"-sfx.desktop"_s};
     const QString autostartPath{
         QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + u"/autostart/"_s +
         desktopName};
@@ -684,12 +741,9 @@ void CoreEngine::setAutoStart_linux(bool enabled) noexcept
         if (!QFileInfo::exists(autostartPath) || !QFile::remove(autostartPath))
             logWarning(munadi) << "Couldn't remove autostart file " << autostartPath;
         else
-        {
             logInfo(munadi) << "Autostart disabled successfully";
 
-            this->m_autoStartSet = enabled;
-        }
-
+        this->m_autoStartSet = enabled;
         return;
     }
 
@@ -698,9 +752,11 @@ void CoreEngine::setAutoStart_linux(bool enabled) noexcept
 
     if (desktopPath.isEmpty())
     {
-        logWarning(munadi) << "Desktop file doesn't exist at location " << desktopPath;
+        logWarning(munadi) << "No desktop file found installed in system";
         return;
     }
+
+    logDebug(munadi) << "Using desktop file at " << desktopPath;
 
     QFile desktopFile{desktopPath};
 
@@ -741,8 +797,8 @@ void CoreEngine::setAutoStart_win(bool enabled) noexcept
 {
     Q_UNUSED(enabled)
 #ifdef Q_OS_WIN
-    const QString appName{QApplication::applicationName()};
-    const QString appPath{QDir::toNativeSeparators(QApplication::applicationFilePath())};
+    const QString appName{QCoreApplication::applicationName()};
+    const QString appPath{QDir::toNativeSeparators(QCoreApplication::applicationFilePath())};
     QSettings     settings{R"(HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run)"_L1,
                            QSettings::NativeFormat};
 
