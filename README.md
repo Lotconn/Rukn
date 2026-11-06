@@ -70,7 +70,7 @@ No dependencies required - just download & install:
 
 ```bash
 # Replace VER with the file's version, e.g. Munadi-26.11.run
-$ sh Munadi-<VER>.run -q
+sh Munadi-<VER>.run -q
 ```
 
 Alternatively:
@@ -152,7 +152,7 @@ possible with your current app version and relevant distro details.
 
 This project is licensed under the AGPL-3.0-or-later license. FFmpeg is built on the default LGPL
 license. Licenses apply to individual tools used in this project. See the [LICENSE](LICENSE) file
-for details.
+for details, and [Acknowledgements](#acknowledgements) for licenses for used libraries.
 
 - **Homepage**: [munadi.org](https://munadi.org)
 - **Bug Tracker**: [Issues](https://gitlab.com/munadi/munadi/-/issues) |

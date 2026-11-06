@@ -9,9 +9,11 @@
 namespace Munadi
 {
 
+// Static
 template <typename Engine_t> bool MunadiEngine<Engine_t>::instanceExists() noexcept
 { return MunadiEngine::s_singletonInstance != nullptr; }
 
+// Static
 template <typename Engine_t> Engine_t *MunadiEngine<Engine_t>::instance() noexcept
 {
     if (!MunadiEngine::instanceExists())
@@ -22,9 +24,11 @@ template <typename Engine_t> Engine_t *MunadiEngine<Engine_t>::instance() noexce
     return MunadiEngine::s_singletonInstance;
 }
 
+// Static
 template <typename Engine_t> bool MunadiEngine<Engine_t>::isOnline() noexcept
-{ return MunadiEngine::s_online.load(); }
+{ return MunadiEngine::s_online; }
 
+// Static
 template <typename Engine_t>
 void MunadiEngine<Engine_t>::onceOnline(QObject *context, std::function<void()> slot,
                                         int retriesLeft) noexcept
@@ -55,6 +59,7 @@ void MunadiEngine<Engine_t>::onceOnline(QObject *context, std::function<void()> 
     else
         logDebug(Engine_t::logCategory()) << "engineOnline signal connected";
 
+    // Reconcile missed `engineOnline()` signal
     if (MunadiEngine::isOnline())
         slot();
 }
@@ -68,14 +73,14 @@ void MunadiBase::connectToCoreOffline() const noexcept
     if (const auto conn =
             QObject::connect(core, &CoreEngine::engineOffline, this, &MunadiBase::onCoreOffline);
         conn == nullptr)
-        logWarning(this->logCategory_p()) << "coreOffline signal not connected";
+        logWarning(this->m_logCategory) << "coreOffline signal not connected";
     else
-        logDebug(this->logCategory_p()) << "coreOffline signal connected";
+        logDebug(this->m_logCategory) << "coreOffline signal connected";
 }
 
 void MunadiBase::onCoreOffline()
 {
-    logDebug(this->logCategory_p()) << "Going offline, executing offline hooks";
+    logDebug(this->m_logCategory) << "Going offline, executing offline hooks";
     this->saveConfigs();
 }
 
@@ -99,7 +104,7 @@ template <typename Engine_t> void MunadiEngine<Engine_t>::bootEngine()
 template <typename Engine_t> void MunadiEngine<Engine_t>::makeOnline()
 {
     MunadiEngine::s_singletonInstance = static_cast<Engine_t *>(this);
-    MunadiEngine::s_online.store(true);
+    MunadiEngine::s_online            = true;
 
     // The singleton's lifetime is owned by this TU (main()/first construction), not by the
     // QQmlEngine. Make that explicit so the engine never attempts to garbage-collect or delete it.
@@ -114,6 +119,8 @@ template <typename Engine_t> void MunadiEngine<Engine_t>::makeOnline()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 } // namespace Munadi
+
+// List of all deriver engine classes
 
 // NOLINTBEGIN(*-virtual-class-destructor)
 template class Munadi::MunadiEngine<Munadi::CoreEngine>;

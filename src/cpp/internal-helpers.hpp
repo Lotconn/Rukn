@@ -7,8 +7,8 @@
 
 // NOLINTBEGIN(cppcoreguidelines-macro-usage)
 #define logDebug(logCategory)    qCDebug(logCategory).noquote().nospace() << __func__ << ": "
-#define logInfo(logCategory)     qCInfo(logCategory).noquote().nospace() << ": "
-#define logWarning(logCategory)  qCWarning(logCategory).noquote().nospace() << ": "
+#define logInfo(logCategory)     qCInfo(logCategory).noquote().nospace()
+#define logWarning(logCategory)  qCWarning(logCategory).noquote().nospace()
 #define logCritical(logCategory) qCCritical(logCategory).noquote().nospace() << __func__ << ": "
 #define logFatal(logCategory)    qCFatal(logCategory).noquote().nospace() << __func__ << ": "
 // NOLINTEND(cppcoreguidelines-macro-usage)
