@@ -28,11 +28,6 @@ class MunadiBase : public QObject
 {
     Q_OBJECT
 
-    /**
-     * @brief `MunadiEngine<T>` class needs to access protected members of `MunadiBase`
-     *
-     * @tparam Engine_t
-     */
     template <typename Engine_t> friend class MunadiEngine;
 
   protected:
@@ -112,14 +107,14 @@ class MunadiBase : public QObject
 };
 
 /**
- * @brief An F-bound/CRTP mixin class template for generalizing typed-members of each engine.
- * Deliberately NOT a QObject and NOT dervied from `MunadiBase`, only contains statics without any
- * stateful members. `MunadiEngine<T>` calls through `base()` when it needs access to members from
- * `MunadiBase` (see its brief further below). Engines should be deriving this class following
- * MunadiBase to avoid tooling warnings (see the brief in `MunadiBase`). Due to the design, there is
- * effectively no state-mixing/diamond hazard issues when an engine derives from both MunadiBase
- * (first) and MunadiEngine<T> (second). Clangd check `fuchsia-multiple-inheritence` was so disabled
- * exactly for this reason.
+ * @brief An F-bound/CRTP mixin class template for generalizing (static) typed-members of each
+ * engine. Deliberately NOT a QObject and NOT dervied from `MunadiBase`, only contains statics
+ * without any stateful members. `MunadiEngine<T>` calls through `base()` when it needs access to
+ * members from `MunadiBase` (see its brief further below). Engines should be deriving this class
+ * following MunadiBase to avoid tooling warnings (see the brief in `MunadiBase`). Due to the
+ * design, there is effectively no state-mixing/diamond hazard issues when an engine derives from
+ * both MunadiBase (first) and MunadiEngine<T> (second). Clangd check `fuchsia-multiple-inheritence`
+ * was so disabled exactly for this reason.
  *
  * Do's
  * - Use with MunadiBase, alone won't work

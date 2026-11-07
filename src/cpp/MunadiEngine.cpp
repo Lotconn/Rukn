@@ -98,13 +98,14 @@ template <typename Engine_t> void MunadiEngine<Engine_t>::bootEngine()
 
     logDebug(Engine_t::logCategory()) << "Booting engine...";
 
+    MunadiEngine::s_singletonInstance = static_cast<Engine_t *>(this);
+
     this->base()->defaultConfigs();
 }
 
 template <typename Engine_t> void MunadiEngine<Engine_t>::makeOnline()
 {
-    MunadiEngine::s_singletonInstance = static_cast<Engine_t *>(this);
-    MunadiEngine::s_online            = true;
+    MunadiEngine::s_online = true;
 
     // The singleton's lifetime is owned by this TU (main()/first construction), not by the
     // QQmlEngine. Make that explicit so the engine never attempts to garbage-collect or delete it.

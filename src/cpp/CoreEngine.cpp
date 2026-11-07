@@ -24,14 +24,14 @@ Q_STATIC_LOGGING_CATEGORY(munadi, "CoreEngine")
 namespace Munadi
 {
 
-const QHash<QString, std::function<void(CoreEngine *)>> CoreEngine::doTrigger{
+const QHash<QString, std::function<void(CoreEngine *)>> CoreEngine::triggerRelays{
     {u"24h_tick"_s,     &CoreEngine::dateChanged  },
     {u"60s_tick"_s,     &CoreEngine::minuteChanged},
     {u"alarms_reset"_s, &CoreEngine::alarmsReset  },
     {u"athan"_s,        &CoreEngine::athanAlarm   }
 };
 
-CoreEngine::CoreEngine(QObject *parent) : MunadiBase{munadi(), parent}, alarm{createAlarm(this)}
+CoreEngine::CoreEngine(QObject *parent) : MunadiBase{munadi(), parent}, m_alarm{createAlarm(this)}
 {
     this->bootEngine();
 
@@ -76,9 +76,9 @@ CoreEngine::CoreEngine(QObject *parent) : MunadiBase{munadi(), parent}, alarm{cr
     this->connectToAboutToQuit();
     this->connectToTrigger();
     this->migrateStore();
+    this->loadConfigs();
 
     this->makeOnline();
-    this->loadConfigs();
     this->applyLocale();
     this->installTickers();
 }
@@ -87,7 +87,7 @@ const QLoggingCategory &CoreEngine::logCategory() noexcept
 { return munadi(); }
 
 Alarm &CoreEngine::alarmManager() const noexcept
-{ return *this->alarm; }
+{ return *this->m_alarm; }
 
 QString CoreEngine::getAppVersion() noexcept
 { return CoreEngine::s_appVersion; }
@@ -222,32 +222,18 @@ QVariant CoreEngine::readState(const QString &key, const QVariant &defaultValue)
     return CoreEngine::readValueOfKey(*this->stateFile, key, defaultValue);
 }
 
-// bool CoreEngine::removeOldSettingsKey(QAnyStringView key)
-// {
-//     if (key.isEmpty())
-//     {
-//         logCritical(munadi) << "Provided key is empty";
-
-//         return false;
-//     }
-
-//     this->oldSettings->remove(key);
-
-//     return true;
-// }
-
 void CoreEngine::set60sTicker() noexcept
 {
     constexpr static quint8 minSecs{60};
 
     logDebug(munadi) << "Registering 60s_ticker";
 
-    this->alarm->clear("60s_tick"_L1);
+    this->m_alarm->clear("60s_tick"_L1);
     // This is not regular arithmetic, do not simplify the math here
-    this->alarm->add("60s_tick"_L1,
-                     QDateTime::fromSecsSinceEpoch(
-                         ((QDateTime::currentSecsSinceEpoch() / minSecs) + 1) * minSecs),
-                     minSecs);
+    this->m_alarm->add("60s_tick"_L1,
+                       QDateTime::fromSecsSinceEpoch(
+                           ((QDateTime::currentSecsSinceEpoch() / minSecs) + 1) * minSecs),
+                       minSecs);
 }
 
 void CoreEngine::setAutoStart(bool enabled) noexcept // NOLINT(*member*to-static)
@@ -279,15 +265,6 @@ void CoreEngine::setLang(const QString &lang) noexcept
 
     if (setConfig(CoreEngine::s_lang, lang, currLang))
         this->applyLocale(CoreEngine::s_lang.value(lang));
-}
-
-void CoreEngine::termSignalHandler(int /* unused */)
-{
-#ifdef Q_OS_UNIX
-    const char    a{1};
-    const ssize_t ret{::write(sigtermFd[0], &a, sizeof(a))};
-    Q_UNUSED(ret)
-#endif
 }
 
 void CoreEngine::writeSettings(QAnyStringView key, const QVariant &value,
@@ -394,43 +371,6 @@ bool CoreEngine::eventFilter(QObject *object, QEvent *event) noexcept
 //  Private Members
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// int CoreEngine::acquireConfigLock()
-// {
-
-//     constexpr qint32 lockLifetime = 40000; // 40 sec
-//     constexpr qint32 waitDuration = 5000;  // 5 sec
-
-//     QMutexLocker lock(&threadLock);
-
-//     this->configLock->setStaleLockTime(lockLifetime);
-
-//     if (!this->configLock->tryLock(waitDuration))
-//     {
-//         int e = EIO;
-
-//         switch (this->configLock->error())
-//         {
-//         case QLockFile::LockFailedError:
-//             logCritical(munadi) << "Config busy, could not acquire lock";
-//             e = EBUSY;
-//             break;
-//         case QLockFile::PermissionError:
-//             logCritical(munadi) << "Permission error in config, could not acquire lock";
-//             e = EACCES;
-//             break;
-//         default:
-//             logCritical(munadi) << "IO error in config, could not acquire lock";
-//             break;
-//         }
-
-//         this->threadLock.unlock();
-
-//         return e;
-//     }
-
-//     return 0;
-// }
-
 void CoreEngine::applyLocale(const QLocale &locale) noexcept
 {
     logDebug(munadi) << "Removing current translator: " << this->translator.language();
@@ -438,8 +378,7 @@ void CoreEngine::applyLocale(const QLocale &locale) noexcept
 
     QLocale l{locale};
 
-    if (l.language() == QLocale::English || l.language() == QLocale::Arabic ||
-        l.language() == QLocale::Bangla)
+    if (CoreEngine::s_revLang.contains(l.language()))
     {
         l = QLocale{l.language(), l.territory()};
 
@@ -454,15 +393,16 @@ void CoreEngine::applyLocale(const QLocale &locale) noexcept
     else
     {
         logInfo(munadi) << "Language not supported, using en_US as fallback";
-        QLocale::setDefault(QLocale{QLocale::English, QLocale::UnitedStates});
+        QLocale::setDefault(QLocale{"en_US"_L1});
     }
 
+    // Querying the current default has its advantages
     QApplication::setLayoutDirection(QLocale{}.language() == QLocale::Arabic ? Qt::RightToLeft
                                                                              : Qt::LeftToRight);
 
     if (QQmlEngine *engine = qmlEngine(this))
     {
-        logDebug(munadi) << "Reloading Qml";
+        logDebug(munadi) << "Reloading Qml translations";
         engine->retranslate();
     }
 
@@ -482,7 +422,7 @@ void CoreEngine::connectToAboutToQuit() const noexcept
 void CoreEngine::connectToTrigger() const noexcept
 {
     if (const auto conn =
-            QObject::connect(this->alarm, &Alarm::trigger, this, &CoreEngine::onTrigger);
+            QObject::connect(this->m_alarm, &Alarm::trigger, this, &CoreEngine::onTrigger);
         conn == nullptr)
         logWarning(munadi) << "Trigger signal not connected";
     else
@@ -496,8 +436,8 @@ void CoreEngine::installTickers() noexcept
 {
     constexpr static quint32 daySecs{86400};
 
-    this->alarm->clear("24h_tick"_L1);
-    this->alarm->add("24h_tick"_L1, QDate::currentDate().startOfDay().addDays(1), daySecs);
+    this->m_alarm->clear("24h_tick"_L1);
+    this->m_alarm->add("24h_tick"_L1, QDate::currentDate().startOfDay().addDays(1), daySecs);
 
     if (!QSystemTrayIcon::isSystemTrayAvailable())
     {
@@ -820,6 +760,15 @@ void CoreEngine::setAutoStart_win(bool enabled) noexcept
 #endif
 }
 
+void CoreEngine::termSignalHandler(int /* unused */)
+{
+#ifdef Q_OS_UNIX
+    const char    a{1};
+    const ssize_t ret{::write(sigtermFd[0], &a, sizeof(a))};
+    Q_UNUSED(ret)
+#endif
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  Private Slots
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -851,14 +800,14 @@ void CoreEngine::onTrigger(const QString &id) noexcept
 {
     logDebug(munadi) << "trigger id: " << id;
 
-    if (!CoreEngine::doTrigger.contains(id))
+    if (!CoreEngine::triggerRelays.contains(id))
     {
         logWarning(munadi) << "\"" << id << "\" is not a valid alarm ID";
         return;
     }
 
     // This is actually `emit signal()`
-    std::invoke(CoreEngine::doTrigger.value(id), this);
+    std::invoke(CoreEngine::triggerRelays.value(id), this);
 
     if (id == u"alarms_reset"_s)
         this->installTickers();
