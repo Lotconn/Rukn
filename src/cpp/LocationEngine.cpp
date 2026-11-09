@@ -10,13 +10,15 @@ LocationEngine *LocationEngine::create(QQmlEngine * /* qmlEngine */, QJSEngine *
 {
     logDebug(munadi) << "Creating instance from QML call";
 
+    // CoreEngine is already set to init from main.cpp
+
     return new LocationEngine{};
 }
 
 const QLoggingCategory &LocationEngine::logCategory() noexcept
 { return munadi(); }
 
-void LocationEngine::abortQuery() noexcept
+void LocationEngine::abortQuery() const noexcept
 {
     if (this->geoCodeReply.isNull())
     {
@@ -25,22 +27,26 @@ void LocationEngine::abortQuery() noexcept
     }
 
     this->connectToAborted();
-    this->geoCodeReply->abort();
+    this->geoCodeReply->abort(); // emits QGeoCodeReply::aborted() signal now
 }
 
 void LocationEngine::search(const QString &query) noexcept
 {
     logDebug(munadi) << "Attempting geocoding with query: " << query;
 
+    // Previous query must be aborted to avoid multiple queries simultaneously, all of which will be
+    // drowned anyway otherwise except the first one to arrive
     this->abortQuery();
 
     logDebug(munadi) << "Dispatching geocoder workers...";
 
+    // QGeoCodingManager::geocode() call is async in background
     this->geoCodeReply = this->manager->geocode(query);
 
     this->connectToFinished();
 
-    // Handle early failures, otherwise `geocode()` already is working async in background
+    // Handle early failures, reconcile "by-hand". Otherwise `geocode()` already is working in
+    // background
     if (this->geoCodeReply->isFinished())
     {
         logWarning(munadi) << "Reply received too early, unknown failure expected";
@@ -93,6 +99,8 @@ void LocationEngine::connectToAborted() const noexcept
 
 void LocationEngine::connectToFinished() const noexcept
 {
+    // QGeoCodeReply::finished() is much easier to work with than QGeoCodingManager::finished() for
+    // our purposes
     if (const auto conn = QObject::connect(this->geoCodeReply, &QGeoCodeReply::finished, this,
                                            &LocationEngine::onFinished);
         conn == nullptr)
@@ -117,33 +125,39 @@ void LocationEngine::defaultConfigs() noexcept
     this->m_locationResultsIndex = 0;
 }
 
-bool LocationEngine::isLoading() noexcept
+bool LocationEngine::isLoading() const noexcept
 { return !this->geoCodeReply.isNull(); }
 
-bool LocationEngine::isLocationSet() noexcept
+bool LocationEngine::isLocationSet() const noexcept
 { return this->m_location.coordinate().isValid(); }
 
-const QGeoLocation &LocationEngine::getLocation() noexcept
+const QGeoLocation &LocationEngine::getLocation() const noexcept
 {
+    // Either make this function a R/W accessor with warning logs, or a read accessor with
+    // returning location object on invalidity
+
     if (!this->isLocationSet())
         logCritical(munadi) << "Location isn't set, object is invalid";
 
     return this->m_location;
 }
 
-QStringList LocationEngine::getLocationResults() noexcept
+QStringList LocationEngine::getLocationResults() const noexcept
 {
     if (this->geoLocations.isEmpty())
         logWarning(munadi) << "Geocoding search result is empty";
 
+    // Make a string-list from the full-address text which is more faithful representation of the
+    // original QGeoLocation object
     return this->geoLocations | std::views::transform([](const QGeoLocation &loc) -> QString {
                return loc.address().text();
            }) |
            std::ranges::to<QStringList>();
 }
 
-QVariantHash LocationEngine::getParsableLocation() noexcept
+QVariantHash LocationEngine::getParsableLocation() const noexcept
 {
+    // Contains all the components of QGeoLocation object
     return QVariantHash{
         {u"address"_s,     this->m_location.address().text()        },
         {u"streetNum"_s,   this->m_location.address().streetNumber()},
@@ -163,26 +177,27 @@ void LocationEngine::loadConfigs() noexcept
 {
     logDebug(munadi) << "Loading configs from persistent config file";
 
-    bool          configMigrated{true};
-    const QString migrateKey{u"LocationEngineConfigMigrated"_s};
+    bool           configMigrated{true};
+    const QString  migrateKey{u"LocationEngineConfigMigrated"_s};
+    QGeoAddress    address;
+    QGeoCoordinate coordinates;
 
-    loadConfigKey({}, "Location/Address"_L1, {}, [this](const QVariant &address) -> void {
-        this->address.setText(address.toString());
-    });
+    loadConfigKey({}, "Location/Address"_L1, {},
+                  [&address](const QVariant &text) -> void { address.setText(text.toString()); });
 
     loadConfigKey(
         "Adhan/cityName"_L1, {}, migrateKey,
-        [this](const QVariant &city) -> void { this->address.setCity(city.toString()); },
+        [&address](const QVariant &city) -> void { address.setCity(city.toString()); },
         configMigrated);
 
     loadConfigKey(
         "Adhan/countryName"_L1, {}, migrateKey,
-        [this](const QVariant &country) -> void { this->address.setCountry(country.toString()); },
+        [&address](const QVariant &country) -> void { address.setCountry(country.toString()); },
         configMigrated);
 
     loadConfigKey(
         "Adhan/latitude"_L1, "Location/Latitude"_L1, migrateKey,
-        [this](const QVariant &latitude) -> void {
+        [&coordinates](const QVariant &latitude) -> void {
             const double lat{latitude.toDouble()};
 
             if (lat < -90.0 || lat > 90.0) // NOLINT(*-magic-numbers)
@@ -191,13 +206,13 @@ void LocationEngine::loadConfigs() noexcept
                 return;
             }
 
-            this->coordinates.setLatitude(lat);
+            coordinates.setLatitude(lat);
         },
         configMigrated);
 
     loadConfigKey(
         "Adhan/longitude"_L1, "Location/Longitude"_L1, migrateKey,
-        [this](const QVariant &longitude) -> void {
+        [&coordinates](const QVariant &longitude) -> void {
             const double lng{longitude.toDouble()};
 
             if (lng < -180.0 || lng > 180.0) // NOLINT(*-magic-numbers)
@@ -206,11 +221,11 @@ void LocationEngine::loadConfigs() noexcept
                 return;
             }
 
-            this->coordinates.setLongitude(lng);
+            coordinates.setLongitude(lng);
         },
         configMigrated);
 
-    this->updateLocation();
+    this->updateLocation(address, coordinates);
 
     if (configMigrated)
         core->writeSettings("LocationEngineConfigMigrated"_L1, true);
@@ -255,22 +270,23 @@ void LocationEngine::setLocation(const QVariant &index) noexcept
     emit this->locationChanged();
 }
 
-void LocationEngine::updateLocation() noexcept
+void LocationEngine::updateLocation(const QGeoAddress    &address,
+                                    const QGeoCoordinate &coordinates) noexcept
 {
-    logDebug(munadi) << "Updating address to: " << this->address.text();
-    logDebug(munadi) << "Updating location to: " << this->coordinates.toString();
+    logDebug(munadi) << "Updating address to: " << address.text();
+    logDebug(munadi) << "Updating location to: " << coordinates.toString();
 
-    if (this->m_location.address() != this->address)
-        this->m_location.setAddress(this->address);
+    if (this->m_location.address() != address)
+        this->m_location.setAddress(address);
     else
         logDebug(munadi) << "Skipping setting identical address";
 
-    if (this->m_location.coordinate() != this->coordinates)
-        this->m_location.setCoordinate(this->coordinates);
+    if (this->m_location.coordinate() != coordinates)
+        this->m_location.setCoordinate(coordinates);
     else
         logDebug(munadi) << "Skipping setting identical coordinates";
 
-    this->address.setText({});
+    // this->address.setText({});
     emit this->locationChanged();
 }
 
@@ -294,11 +310,14 @@ void LocationEngine::onAborted() noexcept
 void LocationEngine::onCoreOnline() noexcept
 {
     this->connectToLocaleChanged();
+
+    // The rest are already in here
     MunadiBase::onCoreOnline();
 }
 
 void LocationEngine::onFinished() noexcept
 {
+    // This mostly happens when abort() emits another finished() signal
     if (this->geoCodeReply.isNull())
     {
         logDebug(munadi) << "Late signal from an aborted or replaced query. Ignoring...";
@@ -327,7 +346,7 @@ void LocationEngine::onFinished() noexcept
     emit this->loadingChanged();
 }
 
-void LocationEngine::onLocaleChanged() noexcept
+void LocationEngine::onLocaleChanged() const noexcept
 {
     logDebug(munadi) << "Detected language change, refreshing locale...";
 

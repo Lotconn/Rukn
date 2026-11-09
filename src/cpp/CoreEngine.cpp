@@ -98,7 +98,8 @@ bool CoreEngine::isAutoStartSet() const noexcept
 bool CoreEngine::isVersionNew() const noexcept
 { return this->m_isVersionNew; }
 
-QVariant CoreEngine::readOldSettings(QAnyStringView oldKey, const QVariant &defaultValue) noexcept
+QVariant CoreEngine::readOldSettings(QAnyStringView  oldKey,
+                                     const QVariant &defaultValue) const noexcept
 {
     if (oldKey.isEmpty())
     {
@@ -118,7 +119,7 @@ QVariant CoreEngine::readOldSettings(QAnyStringView oldKey, const QVariant &defa
 }
 
 QVariantList CoreEngine::readOldSettingsJsArray(QAnyStringView    oldKey,
-                                                const QJsonArray &defaultArray) noexcept
+                                                const QJsonArray &defaultArray) const noexcept
 {
     QJsonParseError     err;
     const QVariant      oldValue{this->readOldSettings(oldKey)};
@@ -149,7 +150,7 @@ QVariantList CoreEngine::readOldSettingsJsArray(QAnyStringView    oldKey,
     return jsonDoc.array().toVariantList();
 }
 
-QVariant CoreEngine::readSettings(QAnyStringView key, const QVariant &defaultValue) noexcept
+QVariant CoreEngine::readSettings(QAnyStringView key, const QVariant &defaultValue) const noexcept
 {
     if (key.isEmpty())
     {
@@ -164,7 +165,7 @@ QVariant CoreEngine::readSettings(QAnyStringView key, const QVariant &defaultVal
     return CoreEngine::readValueOfKey(*this->settings, key, defaultValue);
 }
 
-QVariantList CoreEngine::readSettingsArray(QAnyStringView group) noexcept
+QVariantList CoreEngine::readSettingsArray(QAnyStringView group) const noexcept
 {
     if (group.isEmpty())
     {
@@ -207,7 +208,7 @@ QVariantList CoreEngine::readSettingsArray(QAnyStringView group) noexcept
     return list;
 }
 
-QVariant CoreEngine::readState(const QString &key, const QVariant &defaultValue) noexcept
+QVariant CoreEngine::readState(const QString &key, const QVariant &defaultValue) const noexcept
 {
     if (key.isEmpty())
     {
@@ -222,7 +223,7 @@ QVariant CoreEngine::readState(const QString &key, const QVariant &defaultValue)
     return CoreEngine::readValueOfKey(*this->stateFile, key, defaultValue);
 }
 
-void CoreEngine::set60sTicker() noexcept
+void CoreEngine::set60sTicker() const noexcept
 {
     constexpr static quint8 minSecs{60};
 
@@ -268,7 +269,7 @@ void CoreEngine::setLang(const QString &lang) noexcept
 }
 
 void CoreEngine::writeSettings(QAnyStringView key, const QVariant &value,
-                               bool flushOnWrite) noexcept
+                               bool flushOnWrite) const noexcept
 {
     if (key.isEmpty())
     {
@@ -284,7 +285,7 @@ void CoreEngine::writeSettings(QAnyStringView key, const QVariant &value,
 }
 
 void CoreEngine::writeSettingsArray(QAnyStringView group, const QVariantList &entryMaps,
-                                    bool flushOnWrite) noexcept
+                                    bool flushOnWrite) const noexcept
 {
     if (group.isEmpty())
     {
@@ -315,7 +316,8 @@ void CoreEngine::writeSettingsArray(QAnyStringView group, const QVariantList &en
         this->settings->sync();
 }
 
-void CoreEngine::writeState(const QString &key, const QVariant &value, bool flushOnWrite) noexcept
+void CoreEngine::writeState(const QString &key, const QVariant &value,
+                            bool flushOnWrite) const noexcept
 {
     if (key.isEmpty())
     {
@@ -432,7 +434,7 @@ void CoreEngine::connectToTrigger() const noexcept
 QLocale CoreEngine::getCurrentLocale() noexcept
 { return QLocale{}; }
 
-void CoreEngine::installTickers() noexcept
+void CoreEngine::installTickers() const noexcept
 {
     constexpr static quint32 daySecs{86400};
 
@@ -496,7 +498,7 @@ void CoreEngine::loadConfigs() noexcept
         this->writeSettings("CoreEngineConfigMigrated"_L1, true);
 }
 
-void CoreEngine::migrateStore() noexcept
+void CoreEngine::migrateStore() const noexcept
 {
     if (this->readSettings("StoreMigrated"_L1, false).toBool())
         return;
@@ -792,7 +794,7 @@ void CoreEngine::onAutoStartResponse(uint ret, const QVariantMap & /* unused */)
     {
         logDebug(munadi) << "Autostart set successfully";
 
-        m_autoStartSet = interimStore;
+        this->m_autoStartSet = this->interimStore;
     }
 }
 
@@ -813,13 +815,13 @@ void CoreEngine::onTrigger(const QString &id) noexcept
         this->installTickers();
 }
 
-void CoreEngine::onUnixSigTerm()
+void CoreEngine::onUnixSigTerm() const
 {
 #ifdef Q_OS_UNIX
-    snTerm->setEnabled(false);
+    this->snTerm->setEnabled(false);
 
     char          tmp{0};
-    const ssize_t ret{::read(sigtermFd[1], &tmp, sizeof(tmp))};
+    const ssize_t ret{::read(CoreEngine::sigtermFd[1], &tmp, sizeof(tmp))};
     Q_UNUSED(ret)
 
     qApp->quit();

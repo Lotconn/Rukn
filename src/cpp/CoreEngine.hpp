@@ -33,19 +33,12 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
     // The QML module is a singleton
     QML_SINGLETON
 
-    /**
-     * @brief Returns the current default locale.
-     *
-     * @return QLocale: The default locale during call time
-     */
+    // Returns the current default locale during call time. See `getCurrentLocale()` and
+    // `localeChanged()` briefings
     Q_PROPERTY(QLocale appLocale READ getCurrentLocale NOTIFY localeChanged)
 
-    /**
-     * @brief Returns whether auto start has been set in the system
-     *
-     * @return true: auto start set
-     * @return false: auto start unset
-     */
+    // Returns whether auto start has been set in the system. See `isAutoStartSet()`,
+    // `setAutoStartSet()` and `autoStartChanged()` briefings
     Q_PROPERTY(bool autoStart READ isAutoStartSet WRITE setAutoStart NOTIFY autoStartChanged)
 
   public:
@@ -87,7 +80,8 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
      * @return QVariant: The read (or fallback) value of `oldKey`. QSettings values are read and
      * written as QVariants, it's upto the caller to convert to the appropriate type accordingly.
      */
-    QVariant readOldSettings(QAnyStringView oldKey, const QVariant &defaultValue = {}) noexcept;
+    [[nodiscard]] QVariant readOldSettings(QAnyStringView  oldKey,
+                                           const QVariant &defaultValue = {}) const noexcept;
 
     /**
      * @brief Reads the value of `oldKey` from the old config file as a QJsonArray where `oldKey`
@@ -102,8 +96,8 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
      * @return QVariantList: The JSON array converted to a QList<QVariantMap> (i.e. a QVariantList
      * holding QVariantMap items)
      */
-    QVariantList readOldSettingsJsArray(QAnyStringView    oldKey,
-                                        const QJsonArray &defaultArray = {}) noexcept;
+    [[nodiscard]] QVariantList readOldSettingsJsArray(
+        QAnyStringView oldKey, const QJsonArray &defaultArray = {}) const noexcept;
 
     /**
      * @brief Reads and returns the value of `key` from the config file, or `defaultValue` if `key`
@@ -115,7 +109,8 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
      * @return QVariant: The read (or fallback) value of `key`. QSettings values are read and
      * written as QVariants, it's upto the caller to convert to the appropriate type accordingly.
      */
-    QVariant readSettings(QAnyStringView key, const QVariant &defaultValue = {}) noexcept;
+    [[nodiscard]] QVariant readSettings(QAnyStringView  key,
+                                        const QVariant &defaultValue = {}) const noexcept;
 
     /**
      * @brief Reads the array value of the group `group` from the config file as a QSettings array,
@@ -130,7 +125,7 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
      * @return QVariantList: The array translated as a position-dependent list of QVariantMap KV
      * pairs, i.e. a QList<QVariantMap>.
      */
-    QVariantList readSettingsArray(QAnyStringView group) noexcept;
+    [[nodiscard]] QVariantList readSettingsArray(QAnyStringView group) const noexcept;
 
     /**
      * @brief Save the auto-start state in memory (`m_autoStartSet`) and "request" the auto-start in
@@ -158,7 +153,7 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
      * flush. Defaults to false (let QSettings handle commits).
      */
     void writeSettings(QAnyStringView key, const QVariant &value,
-                       bool flushOnWrite = false) noexcept;
+                       bool flushOnWrite = false) const noexcept;
 
     /**
      * @brief Writes the array `entryMaps` at the `group` to the config file as a QSettings array.
@@ -175,7 +170,7 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
      * flush. Defaults to false (let QSettings handle commits).
      */
     void writeSettingsArray(QAnyStringView group, const QVariantList &entryMaps,
-                            bool flushOnWrite = false) noexcept;
+                            bool flushOnWrite = false) const noexcept;
 
     /**
      * @brief Get the app version. Needless to be a property. Returns `s_appVersion` which is
@@ -205,13 +200,14 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
      * Defaults to empty.
      * @return QVariant: The read value from `key` or `defaultValue`.
      */
-    Q_INVOKABLE QVariant readState(const QString &key, const QVariant &defaultValue = {}) noexcept;
+    Q_INVOKABLE [[nodiscard]] QVariant readState(const QString  &key,
+                                                 const QVariant &defaultValue = {}) const noexcept;
 
     /**
      * @brief A wrapper to clear and fresh-register minute-boundary tracker in `m_alarm`. Called
      * from QML to more accurately show counters and time at certain UI states.
      */
-    Q_INVOKABLE void set60sTicker() noexcept;
+    Q_INVOKABLE void set60sTicker() const noexcept;
 
     /**
      * @brief State-file sibling of writeSettings(). See the brief in `writeSettings()`. Generally
@@ -223,7 +219,7 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
      * flush. Defaults to false (let QSettings handle commits).
      */
     Q_INVOKABLE void writeState(const QString &key, const QVariant &value,
-                                bool flushOnWrite = false) noexcept;
+                                bool flushOnWrite = false) const noexcept;
 
   protected:
     /**
@@ -430,7 +426,7 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
      * called in constructor, nearest to when engine has become online to avoid misfires, early
      * or missed calls to slots. Skips setting the "60s_tick" if system tray is not available.
      */
-    void installTickers() noexcept;
+    void installTickers() const noexcept;
 
     /**
      * @brief Customized override of `MunadiBase::loadConfigs()`. Additionally takes care of
@@ -447,7 +443,7 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
      * to be accomplished before FileMan and MultimediaEngine is called for construction, so should
      * go in constructor _before_ onlining CoreEngine.
      */
-    void migrateStore() noexcept;
+    void migrateStore() const noexcept;
 
     /**
      * @brief Customized override of `MunadiBase::saveConfigs()`
@@ -497,42 +493,44 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
 
   signals:
     /**
-     * @brief Relay of `trigger()` carrying "alarms_reset" ID.
+     * @brief Relay of `trigger()` carrying "alarms_reset" ID. Implicitly bound to `trigger()`
+     * signal.
      */
     void alarmsReset();
 
     /**
-     * @brief Relay of `trigger()` carrying "athan" ID.
+     * @brief Relay of `trigger()` carrying "athan" ID. Implicitly bound to `trigger()` signal.
      */
     void athanAlarm();
 
     /**
-     * @brief Notifies about auto-start changed, carrying the state information along.
+     * @brief Notifies about auto-start changed, carrying the state information along. Implicitly
+     * bound to `m_autoStartSet`.
      *
      * @param enabled: The current auto-start state triggering the signal
      */
     void autoStartChanged(bool enabled);
 
     /**
-     * @brief Relay of `trigger()` carrying "24h_tick" ID.
+     * @brief Relay of `trigger()` carrying "24h_tick" ID. Implicitly bound to `trigger()` signal.
      */
     void dateChanged();
 
     /**
      * @brief Relay of `receivedMessage()` signal from SingleApplication instance. Although the
      * `receivedMessage()` signal is more general than this purpose, it is coarsly implementated
-     * only as a second instance notifier.
+     * only as a second instance notifier. Implicitly bound to `receivedMessage()` signal.
      */
     void exposeInstance();
 
     /**
-     * @brief Relay of `trigger()` carrying "60s_tick" ID.
+     * @brief Relay of `trigger()` carrying "60s_tick" ID. Implicitly bound to `trigger()` signal.
      */
     void minuteChanged();
 
     /**
      * @brief Notifies about language (and locale) changes, either from underlying system or from
-     * the app (e.g. from language options)
+     * the app (e.g. from language options). Implicitly bound to `translate` member.
      */
     void localeChanged();
 
@@ -569,7 +567,7 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
      * @brief "Accepts" the signal by reading from the read-part of the file-descriptor and calling
      * `quit()` on the current QApplication instance. Defined only in Unix OSs.
      */
-    void onUnixSigTerm();
+    void onUnixSigTerm() const;
 };
 
 } // namespace Munadi
