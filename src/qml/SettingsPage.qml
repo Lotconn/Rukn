@@ -385,11 +385,11 @@ Page {
                     id: mathhab
 
                     Layout.fillWidth: true
-                    currentIndex: UiEngine.madhabDisplayIndex
-                    model: UiEngine.madhabDisplayNames
+                    currentIndex: UiEngine.madhhabDisplayIndex
+                    model: UiEngine.madhhabDisplayNames
                     textRole: "trText"
 
-                    onActivated: UiEngine.madhabDisplayIndex = currentIndex
+                    onActivated: UiEngine.madhhabDisplayIndex = currentIndex
                 }
 
                 Text {

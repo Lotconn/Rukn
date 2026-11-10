@@ -35,9 +35,9 @@ class UiEngine : public MunadiBase, public MunadiEngine<UiEngine>
     Q_PROPERTY(int langDisplayIndex MEMBER m_langDisplayIndex WRITE setLangDisplayIdx NOTIFY
                    langIdxChanged)
     Q_PROPERTY(QVariantList langDisplayNames READ langDisplayNames NOTIFY translationChanged)
-    Q_PROPERTY(int madhabDisplayIndex MEMBER m_madhabDisplayIndex WRITE setMadhabDisplayIdx NOTIFY
-                   prayerCalcChanged)
-    Q_PROPERTY(QVariantList madhabDisplayNames READ madhabDisplayNames NOTIFY translationChanged)
+    Q_PROPERTY(int madhhabDisplayIndex MEMBER m_madhhabDisplayIndex WRITE setMadhhabDisplayIdx
+                   NOTIFY prayerCalcChanged)
+    Q_PROPERTY(QVariantList madhhabDisplayNames READ madhhabDisplayNames NOTIFY translationChanged)
     Q_PROPERTY(double opacity MEMBER m_opacity NOTIFY opacityChanged)
     Q_PROPERTY(QVariantList prayerDisplayNames READ prayerDisplayNames NOTIFY translationChanged)
     Q_PROPERTY(QVariantHash prayerDisplayTimes READ prayerDisplayTimes NOTIFY displayTimesChanged)
@@ -83,7 +83,7 @@ class UiEngine : public MunadiBase, public MunadiEngine<UiEngine>
     };
 
     // Do not sort this list
-    inline static const QVariantList oldMadhabDisplayNames{
+    inline static const QVariantList oldMadhhabDisplayNames{
         u""_s,
         u"Shafi"_s,
         u"Hanafi"_s,
@@ -111,8 +111,8 @@ class UiEngine : public MunadiBase, public MunadiEngine<UiEngine>
     bool                    m_isoClock;
     int                     m_langDisplayIndex;
     QVariantList            m_langDisplayNames;
-    int                     m_madhabDisplayIndex;
-    QVariantList            m_madhabDisplayNames;
+    int                     m_madhhabDisplayIndex;
+    QVariantList            m_madhhabDisplayNames;
     double                  m_opacity;
     QVariantList            m_prayerDisplayNames;
     bool                    m_showOnAthan;
@@ -146,7 +146,7 @@ class UiEngine : public MunadiBase, public MunadiEngine<UiEngine>
     auto               initTexts() noexcept -> void;
     auto               langDisplayNames() noexcept -> QVariantList &;
     auto               loadConfigs() noexcept -> void override;
-    auto               madhabDisplayNames() noexcept -> QVariantList &;
+    auto               madhhabDisplayNames() noexcept -> QVariantList &;
     auto               prayerDisplayNames() noexcept -> QVariantList &;
     [[nodiscard]] auto prayerDisplayTimes() const noexcept -> QVariantHash;
     auto               saveConfigs() noexcept -> void override;
@@ -156,7 +156,7 @@ class UiEngine : public MunadiBase, public MunadiEngine<UiEngine>
     auto               setDateOffset(int offset) noexcept -> void;
     auto               setHijriOffset(double offset) noexcept -> void;
     auto               setLangDisplayIdx(const QVariant &index) noexcept -> void;
-    auto               setMadhabDisplayIdx(const QVariant &index) noexcept -> void;
+    auto               setMadhhabDisplayIdx(const QVariant &index) noexcept -> void;
     auto               themeDisplayNames() noexcept -> QVariantList &;
     [[nodiscard]] auto timeLeftDisplay() noexcept -> QString;
 

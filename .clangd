@@ -10,8 +10,8 @@ Diagnostics:
     Remove:
       - altera-unroll-loops
       - "*braces-around-statements"
+      - bugprone-easily-swappable-parameters
       - cert-err58-cpp
-      - "*owning-memory"
       - fuchsia-default-arguments-calls
       - fuchsia-default-arguments-declarations
       - fuchsia-multiple-inheritance
@@ -24,3 +24,4 @@ Diagnostics:
       - misc-use-anonymous-namespace
       - misc-non-private-member-variables-in-classes
       - modernize-use-trailing-return-type
+      - "*owning-memory"

@@ -20,22 +20,16 @@ PrayerEngine *PrayerEngine::create(QQmlEngine *qmlEngine, QJSEngine * /* jsEngin
     return new PrayerEngine{};
 }
 
-PrayerEngine::Prayer PrayerEngine::currentPrayer() noexcept
+PrayerEngine::Prayer PrayerEngine::currentPrayer() const noexcept
 {
     const Prayer prayer{
         PrayerEngine::s_revPrayerEnumMap.value(this->m_prayerTimes->currentPrayer())};
 
+    // `Adhan::PrayerUtils::currentPrayer()` can provide `Adhan::None` for some edge-cases or error
+    // reasons. To retain the information, `None` is overridden to `Isha` only if its before Fajr at
+    // current local date, passed verbatim otherwise.
     return (this->m_prayerTimes->date == QDate::currentDate() && prayer == Prayer::None)
                ? Prayer::Isha
-               : prayer;
-}
-
-PrayerEngine::Prayer PrayerEngine::nextPrayer() noexcept
-{
-    const Prayer prayer{PrayerEngine::s_revPrayerEnumMap.value(this->m_prayerTimes->nextPrayer())};
-
-    return (this->m_prayerTimes->date == QDate::currentDate() && prayer == Prayer::None)
-               ? Prayer::Fajr
                : prayer;
 }
 
@@ -43,6 +37,7 @@ PrayerEngine::Prayer PrayerEngine::fromString(const QString &prayerName) noexcep
 {
     const int val{PrayerEngine::s_metaPrayerEnum.keyToValue(qPrintable(prayerName))};
 
+    // QMetaEnum object returns -1 for invalid `keyToValue()` parameter
     return (val == -1) ? Prayer::None : static_cast<Prayer>(val);
 }
 
@@ -50,19 +45,19 @@ PrayerEngine::Sunnah PrayerEngine::fromString_sunnahTime(const QString &sunnahNa
 {
     const int val{PrayerEngine::s_metaSunnahEnum.keyToValue(qPrintable(sunnahName))};
 
+    // QMetaEnum object returns -1 for invalid `keyToValue()` parameter
     return (val == -1) ? Sunnah::None : static_cast<Sunnah>(val);
 }
 
-const QString &PrayerEngine::getCalcMethod() noexcept
+// Intentionally a read-only getter, not a reference accessor
+QString PrayerEngine::getCalcMethod() const noexcept
 { return this->m_calcMethodKey; }
 
-const QString &PrayerEngine::getMadhab() noexcept
-{ return this->m_madhabKey; }
+// Intentionally a read-only getter, not a reference accessor
+QString PrayerEngine::getMadhhab() const noexcept
+{ return this->m_madhhabKey; }
 
-QVariant PrayerEngine::getPrayerConfig(Prayer prayerEnum, const QString &field) noexcept
-{ return this->getPrayerConfig_p(prayerEnum, field); }
-
-QVariant PrayerEngine::getPrayerConfig_p(Prayer prayerEnum, const QString &field) const noexcept
+QVariant PrayerEngine::getPrayerConfig(Prayer prayerEnum, const QString &field) const noexcept
 {
     if (!this->prayerConfigFields.contains(field))
     {
@@ -83,7 +78,9 @@ double PrayerEngine::getQiblaDegrees(const std::optional<QGeoCoordinate> &coordi
 const QLoggingCategory &PrayerEngine::logCategory() noexcept
 { return munadi(); }
 
-const QMetaEnum &PrayerEngine::metaPrayerEnum() noexcept
+// Intentionally a read-only getter, not a reference accessor, although a QMetaEnum object is
+// inherently read-only
+QMetaEnum PrayerEngine::metaPrayerEnum() noexcept
 { return PrayerEngine::s_metaPrayerEnum; }
 
 void PrayerEngine::modifyPrayerConfig(const QString &key, const QVariantHash &entry) noexcept
@@ -91,68 +88,79 @@ void PrayerEngine::modifyPrayerConfig(const QString &key, const QVariantHash &en
     const int     enumVal{PrayerEngine::s_metaPrayerEnum.keyToValue(qPrintable(key))};
     const QString enumName{QString(PrayerEngine::s_metaPrayerEnum.scope()) + u"::"_s + key};
 
+    // QMetaEnum object returns -1 for invalid `keyToValue()` parameter
     if (enumVal == -1)
     {
         logCritical(munadi) << key << " resolves to unknown enum value";
-
         return;
     }
 
+    // These also don't exist in the table anyway, but still, to clean weeds early
     if (static_cast<Prayer>(enumVal) == Prayer::Sunrise ||
         static_cast<Prayer>(enumVal) == Prayer::None)
     {
         logWarning(munadi) << "Modifying \"" << enumName << "\" is not allowed";
-
         return;
     }
 
+    // This is the configuration table nested inside the parent hash-table
     QVariantHash tempMap{this->m_prayerConfig.value(key).toHash()};
 
+    // Using the QVariantHash overload of `isValidEntry()`
     if (!isValidEntry(entry, this->prayerConfigEntrySize, this->prayerConfigFields))
     {
         logCritical(munadi) << "[" << entry << "] is not a valid entry in prayerConfig";
-
         return;
     }
 
     if (tempMap == entry)
     {
         logDebug(munadi) << "Skipping setting identical entry";
-
         return;
     }
 
     logDebug(munadi) << "Assigning value " << entry << " to key " << key;
-    tempMap.insert(entry);
-    this->m_prayerConfig.insert(key, tempMap);
+    tempMap.insert(entry);                     // modifying the configuration hash here
+    this->m_prayerConfig.insert(key, tempMap); // modifying the parent hash here
 
-    emit this->prayerConfigChanged();
-    emit this->invalidate();
+    emit this->prayerConfigChanged();          // `invalidate()` will be relayed automatically
+}
+
+PrayerEngine::Prayer PrayerEngine::nextPrayer() const noexcept
+{
+    const Prayer prayer{PrayerEngine::s_revPrayerEnumMap.value(this->m_prayerTimes->nextPrayer())};
+
+    // `Adhan::PrayerUtils::nextPrayer()` can provide `Adhan::None` for some edge-cases or error
+    // reasons. To retain the information, `None` is overridden to `Fajr` only if its after Isha at
+    // current local date, passed verbatim otherwise.
+    return (this->m_prayerTimes->date == QDate::currentDate() && prayer == Prayer::None)
+               ? Prayer::Fajr
+               : prayer;
 }
 
 void PrayerEngine::setCalcMethod(const QString &method) noexcept
 {
-    logDebug(munadi) << "method: " << method;
+    logDebug(munadi) << "Using calculation method: " << method;
 
-    if (setConfig(PrayerEngine::s_calcMethods, method, this->m_calcMethodKey))
+    if (setConfig(PrayerEngine::s_calcMethods, method, this->m_calcMethodKey, munadi()))
         emit this->invalidate();
 }
 
-void PrayerEngine::setMadhab(const QString &madhab) noexcept
+void PrayerEngine::setMadhhab(const QString &madhhab) noexcept
 {
-    logDebug(munadi) << "madhab: " << madhab;
+    logDebug(munadi) << "madhhab: " << madhhab;
 
-    if (setConfig(PrayerEngine::s_madhab, madhab, this->m_madhabKey))
+    if (setConfig(PrayerEngine::s_madhhab, madhhab, this->m_madhhabKey, munadi()))
         emit this->invalidate();
 }
 
-// Recommended to pass local date
-// NOLINTBEGIN(bugprone-easily-swappable-parameters)
 qint64 PrayerEngine::timeBetweenPrayers(Prayer current, Prayer next,
                                         std::optional<QDate> current_date,
-                                        std::optional<QDate> next_date) noexcept
+                                        std::optional<QDate> next_date) const noexcept
 {
     const QDateTime currentAt{this->timeForPrayer(current, current_date)};
+
+    // The following is an IIFE (Immediately Invoked Function Expression), keeping the var `const`
     const QDateTime nextAt{this->timeForPrayer(next, [&] -> std::optional<QDate> {
         if (next_date.has_value())
             return next_date;
@@ -172,17 +180,18 @@ qint64 PrayerEngine::timeBetweenPrayers(Prayer current, Prayer next,
 
 qint64 PrayerEngine::timeBetweenPrayers(const QString &currentPrayer, const QString &nextPrayer,
                                         std::optional<QDate> current_date,
-                                        std::optional<QDate> next_date) noexcept
-{ // NOLINTEND(bugprone-easily-swappable-parameters)
+                                        std::optional<QDate> next_date) const noexcept
+{
     return this->timeBetweenPrayers(PrayerEngine::fromString(currentPrayer),
                                     PrayerEngine::fromString(nextPrayer), current_date, next_date);
 }
 
-QDateTime PrayerEngine::timeForCurrentPrayer(const std::optional<QDateTime> &when) noexcept
+QDateTime PrayerEngine::timeForCurrentPrayer(const std::optional<QDateTime> &when) const noexcept
 {
     const QDateTime          dateTime{(when.has_value()) ? when.value().toLocalTime()
                                                          : QDateTime::currentDateTime()};
     const QDate              date{dateTime.date()};
+    // Keeps the var const-specified this way
     const Adhan::PrayerTimes pTimes{
         (when.has_value())
             ? Adhan::PrayerTimes{*this->coordinates, date.toStdSysDays(), *this->calcParams}
@@ -191,13 +200,13 @@ QDateTime PrayerEngine::timeForCurrentPrayer(const std::optional<QDateTime> &whe
     const Prayer prayer{PrayerEngine::s_revPrayerEnumMap.value(
         pTimes.currentPrayer(dateTime.toStdSysMilliseconds()))};
 
+    // same quirk as `currentPrayer()` only a bit more pronounced
     return (pTimes.date == date && prayer == Prayer::None)
                ? this->timeForPrayer(Prayer::Isha, date.addDays(-1))
                : this->timeForPrayer(prayer, date);
 }
 
-// Recommended to pass local date
-QDateTime PrayerEngine::timeForPrayer(Prayer prayerEnum, std::optional<QDate> date) noexcept
+QDateTime PrayerEngine::timeForPrayer(Prayer prayerEnum, std::optional<QDate> date) const noexcept
 {
     // Return midnight time 00:00:00 of same day for Prayer::None
     if (prayerEnum == Prayer::None)
@@ -221,11 +230,11 @@ QDateTime PrayerEngine::timeForPrayer(Prayer prayerEnum, std::optional<QDate> da
                                    : QDateTime{};
 }
 
-// Recommended to pass local date
-QDateTime PrayerEngine::timeForPrayer(const QString &prayerName, std::optional<QDate> date) noexcept
+QDateTime PrayerEngine::timeForPrayer(const QString       &prayerName,
+                                      std::optional<QDate> date) const noexcept
 { return this->timeForPrayer(PrayerEngine::fromString(prayerName), date); }
 
-QDateTime PrayerEngine::timeForNextPrayer(const std::optional<QDateTime> &when) noexcept
+QDateTime PrayerEngine::timeForNextPrayer(const std::optional<QDateTime> &when) const noexcept
 {
     const QDateTime          dateTime{(when.has_value()) ? when.value().toLocalTime()
                                                          : QDateTime::currentDateTime()};
@@ -238,13 +247,14 @@ QDateTime PrayerEngine::timeForNextPrayer(const std::optional<QDateTime> &when) 
     const Prayer prayer{
         PrayerEngine::s_revPrayerEnumMap.value(pTimes.nextPrayer(dateTime.toStdSysMilliseconds()))};
 
+    // same quirks as `nextPrayer()` only a bit more pronounced
     return (pTimes.date == date && prayer == Prayer::None)
                ? this->timeForPrayer(Prayer::Fajr, date.addDays(1))
                : this->timeForPrayer(prayer, date);
 }
 
-// Recommended to pass local date
-QDateTime PrayerEngine::timeForSunnahTime(Sunnah sunnahEnum, std::optional<QDate> date) noexcept
+QDateTime PrayerEngine::timeForSunnahTime(Sunnah               sunnahEnum,
+                                          std::optional<QDate> date) const noexcept
 {
     Adhan::OptInstant date_time;
 
@@ -264,33 +274,33 @@ QDateTime PrayerEngine::timeForSunnahTime(Sunnah sunnahEnum, std::optional<QDate
                                    : QDateTime{};
 }
 
-// Recommended to pass local date
 QDateTime PrayerEngine::timeForSunnahTime(const QString       &sunnahName,
-                                          std::optional<QDate> date) noexcept
+                                          std::optional<QDate> date) const noexcept
 { return this->timeForSunnahTime(PrayerEngine::fromString_sunnahTime(sunnahName), date); }
 
-// Recommended to pass local date-time
-qint64 PrayerEngine::timeToNextPrayer(const std::optional<QDateTime> &since_ms) noexcept
+qint64 PrayerEngine::timeToNextPrayer(const std::optional<QDateTime> &since_ms) const noexcept
 {
+    // Safe to use local clocks from first since we're mostly using the date parts
     const QDateTime since{(since_ms.has_value()) ? since_ms->toLocalTime()
                                                  : QDateTime::currentDateTime()};
     const QDate     nextDay{since.addDays(1).date()};
+
+    // These disabled logs are very useful
 
     // logDebug(munadi) << "Since: " << since.toString();
     // logDebug(munadi) << "Next day date: " << nextDay.toString();
 
     const std::unique_ptr<Adhan::PrayerTimes> currentPT{
         (since_ms.has_value())
-            ? std::make_unique<Adhan::PrayerTimes>(
-                  *this->coordinates, std::chrono::year_month_day{since.date().toStdSysDays()},
-                  *this->calcParams)
+            ? std::make_unique<Adhan::PrayerTimes>(*this->coordinates, since.date().toStdSysDays(),
+                                                   *this->calcParams)
             : std::make_unique<Adhan::PrayerTimes>(*this->m_prayerTimes)};
 
     const std::unique_ptr<Adhan::PrayerTimes> nextPT{std::make_unique<Adhan::PrayerTimes>(
-        *this->coordinates, std::chrono::year_month_day{nextDay.toStdSysDays()},
-        *this->calcParams)};
+        *this->coordinates, nextDay.toStdSysDays(), *this->calcParams)};
 
     QDateTime     nextTime;
+    // Qt converts the time to UTC before converting to epoch time
     Adhan::Prayer next{currentPT->nextPrayer(since.toStdSysMilliseconds())};
 
     // logDebug(munadi) << "Current prayer: "
@@ -298,6 +308,7 @@ qint64 PrayerEngine::timeToNextPrayer(const std::optional<QDateTime> &since_ms) 
     //                         currentPT->currentPrayer(since.toStdSysMilliseconds()));
     // logDebug(munadi) << "Next prayer: " << Adhan::PrayerUtils::to_string(next);
 
+    // Quirks from `nextPrayer()` apply
     if (currentPT->date == since.date() && next == Adhan::Prayer::None)
     {
         next     = nextPT->nextPrayer(since.toStdSysMilliseconds());
@@ -315,7 +326,7 @@ qint64 PrayerEngine::timeToNextPrayer(const std::optional<QDateTime> &since_ms) 
     if (!nextTime.isValid())
         return -1;
 
-    return since.msecsTo(nextTime); // nextTime is converted to UTC by Qt
+    return since.msecsTo(nextTime); // both are converted to UTC by Qt
 }
 
 QString PrayerEngine::toString(Prayer prayerEnum) noexcept
@@ -354,7 +365,8 @@ PrayerEngine::PrayerEngine(QObject *parent) : MunadiBase{munadi(), parent}
 {
     this->bootEngine();
 
-    this->connectToInvalidate();
+    // This could've gone inside an overridden `bootEngine()`
+    this->setupInternalConnections();
     CoreEngine::onceOnline(this, [this] -> void { this->onCoreOnline(); });
     LocationEngine::onceOnline(this, [this] -> void { this->onLocationEngineOnline(); });
     this->makeOnline();
@@ -364,70 +376,10 @@ PrayerEngine::PrayerEngine(QObject *parent) : MunadiBase{munadi(), parent}
 //  Private Members
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void PrayerEngine::connectToAlarmsReset() noexcept
-{
-    if (const auto conn = QObject::connect(core, &CoreEngine::alarmsReset, this,
-                                           [this] -> void { emit this->invalidate(); });
-        conn == nullptr)
-        logWarning(munadi) << "alarmsReset signal not connected";
-    else
-        logDebug(munadi) << "alarmsReset signal connected";
-}
-
-void PrayerEngine::connectToAthanAlarm() noexcept
-{
-    if (const auto conn = QObject::connect(core, &CoreEngine::athanAlarm, this,
-                                           [this] -> void { emit this->calcChanged(); });
-        conn == nullptr)
-        logWarning(munadi) << "athanAlarm signal not connected";
-    else
-        logDebug(munadi) << "athanAlarm signal connected";
-}
-
-void PrayerEngine::connectToDateChanged() noexcept
-{
-    if (const auto conn = QObject::connect(core, &CoreEngine::dateChanged, this,
-                                           [this] -> void { emit this->invalidate(); });
-        conn == nullptr)
-        logWarning(munadi) << "dateChanged signal not connected";
-    else
-        logDebug(munadi) << "dateChanged signal connected";
-}
-
-void PrayerEngine::connectToInvalidate() const noexcept
-{
-    if (const auto conn =
-            QObject::connect(this, &PrayerEngine::invalidate, this, &PrayerEngine::onInvalidate);
-        conn == nullptr)
-        logWarning(munadi) << "invalidate signal not connected";
-    else
-        logDebug(munadi) << "invalidate signal connected";
-}
-
-void PrayerEngine::connectToLocationChanged() noexcept
-{
-    if (const auto conn = QObject::connect(lEngine, &LocationEngine::locationChanged, this,
-                                           [this] -> void { emit this->invalidate(); });
-        conn == nullptr)
-        logWarning(munadi) << "locationChanged signal not connected";
-    else
-        logDebug(munadi) << "locationChanged signal connected";
-}
-
-void PrayerEngine::connectToMinuteChanged() const noexcept
-{
-    if (const auto conn = QObject::connect(core, &CoreEngine::minuteChanged, this,
-                                           &PrayerEngine::onMinuteChanged);
-        conn == nullptr)
-        logWarning(munadi) << "minuteChanged signal not connected";
-    else
-        logDebug(munadi) << "minuteChanged signal connected";
-}
-
-void PrayerEngine::defaultConfigs()
+void PrayerEngine::defaultConfigs() noexcept
 {
     this->m_calcMethodKey = u"MuslimWorldLeague"_s;
-    this->m_madhabKey     = u"Shafi"_s;
+    this->m_madhhabKey    = u"Shafi"_s; // although Adhan-C++ already defaults to Shafi
 
     this->defaultPrayerConfig();
     this->updateCalc();
@@ -443,8 +395,11 @@ void PrayerEngine::defaultPrayerConfig() noexcept
         {u"Isha"_s,    QVariantHash{{u"adjustment"_s, 0.0}}},
     };
 
+    // Extract the config atom from the parent hash, any entry works, as long as all are identical
     const QVariantHash maps{this->m_prayerConfig.value("Fajr"_L1).toHash()};
 
+    // Do not use braces {} for QSet here; this approach is prefered for performance efficiency,
+    // avoiding unnecessary memory allocations
     this->prayerConfigKeys = QSet(this->m_prayerConfig.keyBegin(), this->m_prayerConfig.keyEnd());
     this->prayerConfigMapSize   = this->m_prayerConfig.size();
     this->prayerConfigEntrySize = maps.size();
@@ -455,16 +410,16 @@ void PrayerEngine::defaultPrayerConfig() noexcept
 
 void PrayerEngine::loadConfigs() noexcept
 {
-    logDebug(munadi) << "Loading prayer settings from config file";
+    logDebug(munadi) << "Loading prayer settings from config file"; // from [PrayerConfig] group
 
-    bool          configMigrated{true};
+    bool          configMigrated{true}; // do not pass this for keys having no related old keys
     const QString migrateKey{"PrayerEngineConfigMigrated"_L1};
 
     this->loadPrayerConfig(configMigrated);
     loadConfigKey({}, "PrayerConfig/CalcMethod"_L1, migrateKey,
                   [this](const QVariant &name) -> void { this->setCalcMethod(name.toString()); });
-    loadConfigKey({}, "PrayerConfig/Madhab"_L1, migrateKey,
-                  [this](const QVariant &name) -> void { this->setMadhab(name.toString()); });
+    loadConfigKey({}, "PrayerConfig/Madhhab"_L1, migrateKey,
+                  [this](const QVariant &name) -> void { this->setMadhhab(name.toString()); });
 
     if (configMigrated)
         core->writeSettings("PrayerEngineConfigMigrated"_L1, true);
@@ -529,30 +484,36 @@ void PrayerEngine::loadPrayerConfig(bool &configMigrated) noexcept
 
     this->setPrayerConfig(cfgMap);
 
+    // `m_prayerConfig`'s defaults are used when `oldPrayerConfig` resolves to invalid and unusable,
+    // which is infalliable as long as `defaultPrayerConfig()` performs its due dilligence. That
+    // said, the only responsibility now is to break the logical-AND chain to stop migration when
+    // `migrated` already reads `true`
     if (migrated)
         configMigrated = false;
 }
 
 void PrayerEngine::saveConfigs() noexcept
 {
-    logDebug(munadi) << "Saving prayer configurations";
+    logDebug(munadi) << "Saving prayer configurations"; // under [PrayerConfig] group
 
     // Ensure the very last config to be saved has the third parameter set to "true". Otherwise
     // (later) settings are not saved
 
+    // Take this for-loop here as `savePrayerConfig()`
     for (const QString &prayerName : std::as_const(this->prayerConfigKeys))
     {
         // prayerName == "Sunrise" and prayerEnum == "None" checks are not necessary
         if (prayerName.isEmpty())
             continue;
 
+        // Becomes "Prayer/Fajr/adjustment=0" under "[PrayerConfig]", for example
         for (const auto &[key, value] :
              this->m_prayerConfig.value(prayerName).toHash().asKeyValueRange())
             core->writeSettings("PrayerConfig/Prayer/"_L1 + prayerName + '/'_L1 + key, value);
     }
 
     core->writeSettings("PrayerConfig/CalcMethod"_L1, this->m_calcMethodKey);
-    core->writeSettings("PrayerConfig/Madhab"_L1, this->m_madhabKey, true);
+    core->writeSettings("PrayerConfig/Madhhab"_L1, this->m_madhhabKey, true);
 }
 
 void PrayerEngine::setPrayerConfig(const QVariantHash &prayerConfig) noexcept
@@ -584,24 +545,93 @@ void PrayerEngine::setPrayerConfig(const QVariantHash &prayerConfig) noexcept
     emit this->prayerConfigChanged();
 }
 
+void PrayerEngine::setupAlarmsResetRelay() const noexcept
+{
+    if (const auto conn =
+            QObject::connect(core, &CoreEngine::alarmsReset, this, &PrayerEngine::invalidate);
+        conn == nullptr)
+        logWarning(munadi) << "alarmsReset signal not relayed to invalidate";
+    else
+        logDebug(munadi) << "alarmsReset signal relayed to invalidate";
+}
+
+void PrayerEngine::setupAthanAlarmRelay() const noexcept
+{
+    if (const auto conn =
+            QObject::connect(core, &CoreEngine::athanAlarm, this, &PrayerEngine::calcChanged);
+        conn == nullptr)
+        logWarning(munadi) << "athanAlarm signal not relayed to calcChanged";
+    else
+        logDebug(munadi) << "athanAlarm signal relayed to calcChanged";
+}
+
+void PrayerEngine::setupDateChangedRelay() const noexcept
+{
+    if (const auto conn =
+            QObject::connect(core, &CoreEngine::dateChanged, this, &PrayerEngine::invalidate);
+        conn == nullptr)
+        logWarning(munadi) << "dateChanged signal not relayed to invalidate";
+    else
+        logDebug(munadi) << "dateChanged signal relayed to invalidate";
+}
+
+void PrayerEngine::setupInternalConnections() const noexcept
+{
+    if (const auto conn = QObject::connect(this, &PrayerEngine::prayerConfigChanged, this,
+                                           &PrayerEngine::invalidate);
+        conn == nullptr)
+        logWarning(munadi) << "prayerConfigChanged signal not relayed to invalidate";
+    else
+        logDebug(munadi) << "prayerConfigChanged signal relayed to invalidate";
+
+    if (const auto conn =
+            QObject::connect(this, &PrayerEngine::invalidate, this, &PrayerEngine::onInvalidate);
+        conn == nullptr)
+        logWarning(munadi) << "invalidate signal not connected";
+    else
+        logDebug(munadi) << "invalidate signal connected";
+}
+
+void PrayerEngine::setupLocationChangedRelay() const noexcept
+{
+    if (const auto conn = QObject::connect(lEngine, &LocationEngine::locationChanged, this,
+                                           &PrayerEngine::invalidate);
+        conn == nullptr)
+        logWarning(munadi) << "locationChanged signal not relayed to invalidate";
+    else
+        logDebug(munadi) << "locationChanged signal relayed to invalidate";
+}
+
+void PrayerEngine::setupMinuteChangedRelay() const noexcept
+{
+    if (const auto conn =
+            QObject::connect(core, &CoreEngine::minuteChanged, this, &PrayerEngine::calcChanged);
+        conn == nullptr)
+        logWarning(munadi) << "minuteChanged signal not relayed to calcChanged";
+    else
+        logDebug(munadi) << "minuteChanged signal relayed to calcChanged";
+}
+
 void PrayerEngine::updateCalc()
 {
+    // The old objects will be auto-discarded on new `make_unique()`
+
     this->calcParams = std::make_unique<Adhan::CalculationParameters>(
         PrayerEngine::s_calcMethods.value(this->m_calcMethodKey)());
 
     // The following needs to call the private getPrayerConfig for avoiding locking contention
     this->calcParams->adjustments.fajr =
-        this->getPrayerConfig_p(Prayer::Fajr, "adjustment"_L1).toInt();
+        this->getPrayerConfig(Prayer::Fajr, "adjustment"_L1).toInt();
     this->calcParams->adjustments.dhuhr =
-        this->getPrayerConfig_p(Prayer::Dhuhr, "adjustment"_L1).toInt();
-    this->calcParams->adjustments.asr =
-        this->getPrayerConfig_p(Prayer::Asr, "adjustment"_L1).toInt();
+        this->getPrayerConfig(Prayer::Dhuhr, "adjustment"_L1).toInt();
+    this->calcParams->adjustments.asr = this->getPrayerConfig(Prayer::Asr, "adjustment"_L1).toInt();
     this->calcParams->adjustments.maghrib =
-        this->getPrayerConfig_p(Prayer::Maghrib, "adjustment"_L1).toInt();
+        this->getPrayerConfig(Prayer::Maghrib, "adjustment"_L1).toInt();
     this->calcParams->adjustments.isha =
-        this->getPrayerConfig_p(Prayer::Isha, "adjustment"_L1).toInt();
+        this->getPrayerConfig(Prayer::Isha, "adjustment"_L1).toInt();
 
-    this->calcParams->madhab = PrayerEngine::s_madhab.value(this->m_madhabKey);
+    this->calcParams->madhab = PrayerEngine::s_madhhab.value(this->m_madhhabKey);
+    // Using `location` property is both longer and more mouthful than this
     this->coordinates =
         std::make_unique<Adhan::Coordinates>(lEngine->getLocation().coordinate().latitude(),
                                              lEngine->getLocation().coordinate().longitude());
@@ -613,6 +643,7 @@ void PrayerEngine::updateCalc()
 
     core->alarmManager().clear("athan"_L1);
 
+    // `Sunrise` is omitted, unless necessary
     if (const QDateTime dt{this->timeForPrayer(Prayer::Fajr)}; dt.isValid())
         core->alarmManager().add("athan"_L1, dt);
     if (const QDateTime dt{this->timeForPrayer(Prayer::Dhuhr)}; dt.isValid())
@@ -632,10 +663,11 @@ void PrayerEngine::updateCalc()
 void PrayerEngine::onCoreOnline() noexcept
 {
     MunadiBase::onCoreOnline();
-    this->connectToAlarmsReset();
-    this->connectToAthanAlarm();
-    this->connectToDateChanged();
-    this->connectToMinuteChanged();
+    // These four could be packed in one method, but better to keep granular for future benefits
+    this->setupAlarmsResetRelay();
+    this->setupAthanAlarmRelay();
+    this->setupDateChangedRelay();
+    this->setupMinuteChangedRelay();
 }
 
 void PrayerEngine::onInvalidate()
@@ -643,16 +675,10 @@ void PrayerEngine::onInvalidate()
     logDebug(munadi) << "Updating calculations...";
 
     this->updateCalc();
-    emit this->calcChanged();
-}
-
-void PrayerEngine::onMinuteChanged() noexcept
-{
-    logDebug(munadi) << "60s_tick event received";
-    emit this->calcChanged();
+    emit this->calcChanged(); // deliberately NOT inside `updateCalc()`
 }
 
 void PrayerEngine::onLocationEngineOnline() noexcept
-{ this->connectToLocationChanged(); }
+{ this->setupLocationChangedRelay(); }
 
 } // namespace Munadi

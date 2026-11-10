@@ -167,13 +167,13 @@ void UiEngine::initConfigs() noexcept
 {
     this->m_calcMethodsDisplayIndex =
         UiEngine::indexOfValue(this->m_calcMethodsDisplayNames, pEngine->getCalcMethod());
-    this->m_madhabDisplayIndex =
-        UiEngine::indexOfValue(this->m_madhabDisplayNames, pEngine->getMadhab());
+    this->m_madhhabDisplayIndex =
+        UiEngine::indexOfValue(this->m_madhhabDisplayNames, pEngine->getMadhhab());
 
     logDebug(munadi) << "calcMethodsIdx inited as: [" << this->m_calcMethodsDisplayIndex << ", "
                      << pEngine->getCalcMethod() << "]";
-    logDebug(munadi) << "madhabIdx inited as: [" << this->m_madhabDisplayIndex << ", "
-                     << pEngine->getMadhab() << "]";
+    logDebug(munadi) << "madhhabIdx inited as: [" << this->m_madhhabDisplayIndex << ", "
+                     << pEngine->getMadhhab() << "]";
 }
 
 int UiEngine::indexOfValue(const QVariantList &list, const QString &value) noexcept
@@ -240,7 +240,7 @@ void UiEngine::initTexts() noexcept
         QVariantHash{{u"name"_s, u"Bangla"_s},  {u"trText"_s, u"বাংলা"_s}            }
     };
 
-    this->m_madhabDisplayNames = {
+    this->m_madhhabDisplayNames = {
         QVariantHash{{u"name"_s, u"Shafi"_s},  {u"trText"_s, tr("Majority")}},
         QVariantHash{{u"name"_s, u"Hanafi"_s}, {u"trText"_s, tr("Hanafi")}  },
     };
@@ -343,12 +343,12 @@ void UiEngine::loadConfigs() noexcept
     });
 
     loadConfigKey(
-        "Adhan/madhab"_L1, {}, migrateKey,
+        "Adhan/madhhab"_L1, {}, migrateKey,
         [](const QVariant &val) -> void {
             int null{};
 
-            fetchAndSetListIdx(val.toInt(), UiEngine::oldMadhabDisplayNames, null,
-                               [](const QString &name) -> void { pEngine->setMadhab(name); });
+            fetchAndSetListIdx(val.toInt(), UiEngine::oldMadhhabDisplayNames, null,
+                               [](const QString &name) -> void { pEngine->setMadhhab(name); });
         },
         configMigrated);
 
@@ -381,8 +381,8 @@ void UiEngine::loadConfigs() noexcept
         core->writeSettings("UiEngineConfigMigrated"_L1, true);
 }
 
-QVariantList &UiEngine::madhabDisplayNames() noexcept
-{ return this->m_madhabDisplayNames; }
+QVariantList &UiEngine::madhhabDisplayNames() noexcept
+{ return this->m_madhhabDisplayNames; }
 
 QVariantList &UiEngine::prayerDisplayNames() noexcept
 { return this->m_prayerDisplayNames; }
@@ -480,11 +480,11 @@ void UiEngine::setLangDisplayIdx(const QVariant &index) noexcept
     emit this->langIdxChanged();
 }
 
-void UiEngine::setMadhabDisplayIdx(const QVariant &index) noexcept
+void UiEngine::setMadhhabDisplayIdx(const QVariant &index) noexcept
 {
     logDebug(munadi) << "Received index: " << index;
-    fetchAndSetListIdx(index.toInt(), this->m_madhabDisplayNames, this->m_madhabDisplayIndex,
-                       [](const QString &name) -> void { pEngine->setMadhab(name); });
+    fetchAndSetListIdx(index.toInt(), this->m_madhhabDisplayNames, this->m_madhhabDisplayIndex,
+                       [](const QString &name) -> void { pEngine->setMadhhab(name); });
 }
 
 // int UiEngine::textsRefresher()
@@ -558,8 +558,8 @@ void UiEngine::onCalcChanged() noexcept
 {
     this->m_calcMethodsDisplayIndex =
         UiEngine::indexOfValue(this->m_calcMethodsDisplayNames, pEngine->getCalcMethod());
-    this->m_madhabDisplayIndex =
-        UiEngine::indexOfValue(this->m_madhabDisplayNames, pEngine->getMadhab());
+    this->m_madhhabDisplayIndex =
+        UiEngine::indexOfValue(this->m_madhhabDisplayNames, pEngine->getMadhhab());
 
     emit this->prayerCalcChanged();
     emit this->displayTimesChanged();

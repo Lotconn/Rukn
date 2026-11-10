@@ -268,14 +268,13 @@ class LocationEngine : public MunadiBase, public MunadiEngine<LocationEngine>
   signals:
     /**
      * @brief Notify about geocoding task "busy" state change. In GUI, this can be used to display
-     * wait spins or progressbars. Closely bound to `geoCodeReply` member having an object or being
-     * null.
+     * wait spins or progressbars. Implicitly bound to `geoCodeReply`.
      */
     void loadingChanged();
 
     /**
-     * @brief Notify about location has changed, i.e. `m_location` had its value modified. Closely
-     * bound to `m_location`.
+     * @brief Notify about location has changed, i.e. `m_location` had its value modified.
+     * Implicitly bound to `m_location`.
      */
     void locationChanged();
 
