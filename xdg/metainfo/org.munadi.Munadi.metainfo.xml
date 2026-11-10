@@ -229,7 +229,7 @@
     </screenshot>
   </screenshots>
   <releases>
-    <release version="26.11" date="2026-11-10">
+    <release version="26.11" date="2026-11-12">
       <url type="details">https://gitlab.com/munadi/munadi/-/blob/master/CHANGELOG.md#munadi-2611</url>
       <description>
         <p>This version introduces plethora of visible and backend overhauling in the app, improving

@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [26.11](#munadi-2611) - 2026-11-07
+## [26.11](#munadi-2611) - 2026-11-12
 
 ### Fixes
 
