@@ -247,7 +247,7 @@ void LocationEngine::setLocation(const QVariant &index) noexcept
 {
     logDebug(munadi) << "Received index: " << index;
 
-    if (!checkIndex(index, this->geoLocations, this->m_locationResultsIndex))
+    if (!checkIndex(index, this->geoLocations))
         return;
 
     this->m_locationResultsIndex = index.toInt();

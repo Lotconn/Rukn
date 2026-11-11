@@ -296,8 +296,8 @@ void UiEngine::loadConfigs() noexcept
         [](const QVariant &val) -> void {
             int null{};
 
-            fetchAndSetListIdx(val.toInt(), UiEngine::oldCalcMethodsDisplayNames, null,
-                               [](const QString &name) -> void { pEngine->setCalcMethod(name); });
+            fetchAndSetKey(val.toInt(), UiEngine::oldCalcMethodsDisplayNames, null,
+                           [](const QString &name) -> void { pEngine->setCalcMethod(name); });
         },
         configMigrated);
 
@@ -311,9 +311,9 @@ void UiEngine::loadConfigs() noexcept
 
             if (ok && configMigrated)
             {
-                fetchAndSetListIdx(
-                    value, UiEngine::oldCalendarDisplayNames, this->m_calendarDisplayIndex,
-                    [this](const QString &name) -> void { this->setCalendarKey(name); });
+                fetchAndSetKey(value, UiEngine::oldCalendarDisplayNames,
+                               this->m_calendarDisplayIndex,
+                               [this](const QString &name) -> void { this->setCalendarKey(name); });
                 emit this->calendarIdxChanged();
             }
             else
@@ -347,8 +347,8 @@ void UiEngine::loadConfigs() noexcept
         [](const QVariant &val) -> void {
             int null{};
 
-            fetchAndSetListIdx(val.toInt(), UiEngine::oldMadhhabDisplayNames, null,
-                               [](const QString &name) -> void { pEngine->setMadhhab(name); });
+            fetchAndSetKey(val.toInt(), UiEngine::oldMadhhabDisplayNames, null,
+                           [](const QString &name) -> void { pEngine->setMadhhab(name); });
         },
         configMigrated);
 
@@ -367,8 +367,8 @@ void UiEngine::loadConfigs() noexcept
             // A readlock here shouldn't be necessary, m_themeDisplayNames is ideally read only
 
             if (ok && configMigrated)
-                fetchAndSetListIdx(value, UiEngine::oldThemeDisplayNames, this->m_themeDisplayIndex,
-                                   [](const QString & /*unused*/) -> void {});
+                fetchAndSetKey(value, UiEngine::oldThemeDisplayNames, this->m_themeDisplayIndex,
+                               [](const QString & /*unused*/) -> void {});
             else
                 this->m_themeDisplayIndex =
                     UiEngine::indexOfValue(this->m_themeDisplayNames, val.toString());
@@ -428,16 +428,15 @@ void UiEngine::saveConfigs() noexcept
 void UiEngine::setCalcMethodDisplayIdx(const QVariant &index) noexcept
 {
     logDebug(munadi) << "Received index: " << index;
-    fetchAndSetListIdx(index.toInt(), this->m_calcMethodsDisplayNames,
-                       this->m_calcMethodsDisplayIndex,
-                       [](const QString &name) -> void { pEngine->setCalcMethod(name); });
+    fetchAndSetKey(index.toInt(), this->m_calcMethodsDisplayNames, this->m_calcMethodsDisplayIndex,
+                   [](const QString &name) -> void { pEngine->setCalcMethod(name); });
 }
 
 void UiEngine::setCalendarDisplayIdx(const QVariant &index) noexcept
 {
     logDebug(munadi) << "Received index: " << index;
-    fetchAndSetListIdx(index.toInt(), this->m_calendarDisplayNames, this->m_calendarDisplayIndex,
-                       [this](const QString &name) -> void { this->setCalendarKey(name); });
+    fetchAndSetKey(index.toInt(), this->m_calendarDisplayNames, this->m_calendarDisplayIndex,
+                   [this](const QString &name) -> void { this->setCalendarKey(name); });
     emit this->calendarIdxChanged();
 }
 
@@ -475,16 +474,16 @@ void UiEngine::setHijriOffset(double offset) noexcept
 void UiEngine::setLangDisplayIdx(const QVariant &index) noexcept
 {
     logDebug(munadi) << "Received index: " << index;
-    fetchAndSetListIdx(index.toInt(), this->m_langDisplayNames, this->m_langDisplayIndex,
-                       [](const QString &name) -> void { core->setLang(name); });
+    fetchAndSetKey(index.toInt(), this->m_langDisplayNames, this->m_langDisplayIndex,
+                   [](const QString &name) -> void { core->setLang(name); });
     emit this->langIdxChanged();
 }
 
 void UiEngine::setMadhhabDisplayIdx(const QVariant &index) noexcept
 {
     logDebug(munadi) << "Received index: " << index;
-    fetchAndSetListIdx(index.toInt(), this->m_madhhabDisplayNames, this->m_madhhabDisplayIndex,
-                       [](const QString &name) -> void { pEngine->setMadhhab(name); });
+    fetchAndSetKey(index.toInt(), this->m_madhhabDisplayNames, this->m_madhhabDisplayIndex,
+                   [](const QString &name) -> void { pEngine->setMadhhab(name); });
 }
 
 // int UiEngine::textsRefresher()

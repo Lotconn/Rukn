@@ -73,6 +73,13 @@ class PrayerEngine : public MunadiBase, public MunadiEngine<PrayerEngine>
     static PrayerEngine *create(QQmlEngine *qmlEngine, QJSEngine * /* jsEngine */);
     ~PrayerEngine() override = default;
 
+    /**
+     * @brief Accessor needed by MunadiEngine<T> for logging purposes
+     *
+     * @return const QLoggingCategory&: The instance created by Q_STATIC_LOGGING_CATEGORY()
+     */
+    static const QLoggingCategory &logCategory() noexcept;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //  Types & Enums
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -180,13 +187,6 @@ class PrayerEngine : public MunadiBase, public MunadiEngine<PrayerEngine>
      */
     [[nodiscard]] double getQiblaDegrees(
         const std::optional<QGeoCoordinate> &coordinates = std::nullopt) const;
-
-    /**
-     * @brief Accessor needed by MunadiEngine<T> for logging purposes
-     *
-     * @return const QLoggingCategory&: The instance created by Q_STATIC_LOGGING_CATEGORY()
-     */
-    static const QLoggingCategory &logCategory() noexcept;
 
     /**
      * @brief Read-only accessor to the QMetaEnum member `s_metaPrayerEnum` for other engines to
