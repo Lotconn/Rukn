@@ -3,7 +3,7 @@ import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.Layouts
 
-import Munadi
+import App
 
 Item {
     Layout.fillHeight: true

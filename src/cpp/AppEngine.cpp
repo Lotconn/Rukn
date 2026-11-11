@@ -1,39 +1,39 @@
 #include "internal-helpers.hpp"
 
+#include <AppEngine.hpp>
 #include <LocationEngine.hpp>
 #include <MultimediaEngine.hpp>
-#include <MunadiEngine.hpp>
 #include <UiEngine.hpp>
 #include <UpdateEngine.hpp>
 
-namespace Munadi
+namespace App
 {
 
 // Static
-template <typename Engine_t> bool MunadiEngine<Engine_t>::instanceExists() noexcept
-{ return MunadiEngine::s_singletonInstance != nullptr; }
+template <typename Engine_t> bool AppEngine<Engine_t>::instanceExists() noexcept
+{ return AppEngine::s_singletonInstance != nullptr; }
 
 // Static
-template <typename Engine_t> Engine_t *MunadiEngine<Engine_t>::instance() noexcept
+template <typename Engine_t> Engine_t *AppEngine<Engine_t>::instance() noexcept
 {
-    if (!MunadiEngine::instanceExists())
+    if (!AppEngine::instanceExists())
         logFatal(Engine_t::logCategory())
             << "No instance constructed. Explicit instantiation is required before invoking "
                "the instance";
 
-    return MunadiEngine::s_singletonInstance;
+    return AppEngine::s_singletonInstance;
 }
 
 // Static
-template <typename Engine_t> bool MunadiEngine<Engine_t>::isOnline() noexcept
-{ return MunadiEngine::s_online; }
+template <typename Engine_t> bool AppEngine<Engine_t>::isOnline() noexcept
+{ return AppEngine::s_online; }
 
 // Static
 template <typename Engine_t>
-void MunadiEngine<Engine_t>::onceOnline(QObject *context, std::function<void()> slot,
-                                        int retriesLeft) noexcept
+void AppEngine<Engine_t>::onceOnline(QObject *context, std::function<void()> slot,
+                                     int retriesLeft) noexcept
 {
-    if (!MunadiEngine::instanceExists())
+    if (!AppEngine::instanceExists())
     {
         if (retriesLeft <= 0)
         {
@@ -46,21 +46,21 @@ void MunadiEngine<Engine_t>::onceOnline(QObject *context, std::function<void()> 
         logDebug(Engine_t::logCategory())
             << "Retrying connection... (attempts left: " << retriesLeft << ")";
         QTimer::singleShot(0, context, [context, slot, retriesLeft]() mutable {
-            MunadiEngine::onceOnline(context, std::move(slot), retriesLeft - 1);
+            AppEngine::onceOnline(context, std::move(slot), retriesLeft - 1);
         });
 
         return;
     }
 
     if (const auto conn =
-            QObject::connect(MunadiEngine::instance(), &MunadiBase::engineOnline, context, slot);
+            QObject::connect(AppEngine::instance(), &AppBase::engineOnline, context, slot);
         conn == nullptr)
         logWarning(Engine_t::logCategory()) << "engineOnline signal not connected";
     else
         logDebug(Engine_t::logCategory()) << "engineOnline signal connected";
 
     // Reconcile missed `engineOnline()` signal
-    if (MunadiEngine::isOnline())
+    if (AppEngine::isOnline())
         slot();
 }
 
@@ -68,48 +68,48 @@ void MunadiEngine<Engine_t>::onceOnline(QObject *context, std::function<void()> 
 //  Protected Members
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void MunadiBase::connectToCoreOffline() const noexcept
+void AppBase::connectToCoreOffline() const noexcept
 {
     if (const auto conn =
-            QObject::connect(core, &CoreEngine::engineOffline, this, &MunadiBase::onCoreOffline);
+            QObject::connect(core, &CoreEngine::engineOffline, this, &AppBase::onCoreOffline);
         conn == nullptr)
         logWarning(this->m_logCategory) << "coreOffline signal not connected";
     else
         logDebug(this->m_logCategory) << "coreOffline signal connected";
 }
 
-void MunadiBase::onCoreOffline()
+void AppBase::onCoreOffline()
 {
     logDebug(this->m_logCategory) << "Going offline, executing offline hooks";
     this->saveConfigs();
 }
 
-void MunadiBase::onCoreOnline()
+void AppBase::onCoreOnline()
 {
     this->loadConfigs();
     this->connectToCoreOffline();
 }
 
-template <typename Engine_t> void MunadiEngine<Engine_t>::bootEngine()
+template <typename Engine_t> void AppEngine<Engine_t>::bootEngine()
 {
-    if (MunadiEngine::instanceExists())
+    if (AppEngine::instanceExists())
         logFatal(Engine_t::logCategory())
             << "A second instance was constructed; only one instance may exist per process";
 
     logDebug(Engine_t::logCategory()) << "Booting engine...";
 
-    MunadiEngine::s_singletonInstance = static_cast<Engine_t *>(this);
+    AppEngine::s_singletonInstance = static_cast<Engine_t *>(this);
 
     this->base()->defaultConfigs();
 }
 
-template <typename Engine_t> void MunadiEngine<Engine_t>::makeOnline()
+template <typename Engine_t> void AppEngine<Engine_t>::makeOnline()
 {
-    MunadiEngine::s_online = true;
+    AppEngine::s_online = true;
 
     // The singleton's lifetime is owned by this TU (main()/first construction), not by the
     // QQmlEngine. Make that explicit so the engine never attempts to garbage-collect or delete it.
-    QQmlEngine::setObjectOwnership(MunadiEngine::instance(), QQmlEngine::CppOwnership);
+    QQmlEngine::setObjectOwnership(AppEngine::instance(), QQmlEngine::CppOwnership);
 
     logDebug(Engine_t::logCategory()) << "Engine online";
     emit this->base()->engineOnline();
@@ -119,15 +119,15 @@ template <typename Engine_t> void MunadiEngine<Engine_t>::makeOnline()
 //  Private Members
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-} // namespace Munadi
+} // namespace App
 
 // List of all deriver engine classes
 
 // NOLINTBEGIN(*-virtual-class-destructor)
-template class Munadi::MunadiEngine<Munadi::CoreEngine>;
-template class Munadi::MunadiEngine<Munadi::LocationEngine>;
-template class Munadi::MunadiEngine<Munadi::MultimediaEngine>;
-template class Munadi::MunadiEngine<Munadi::PrayerEngine>;
-template class Munadi::MunadiEngine<Munadi::UiEngine>;
-template class Munadi::MunadiEngine<Munadi::UpdateEngine>;
+template class App::AppEngine<App::CoreEngine>;
+template class App::AppEngine<App::LocationEngine>;
+template class App::AppEngine<App::MultimediaEngine>;
+template class App::AppEngine<App::PrayerEngine>;
+template class App::AppEngine<App::UiEngine>;
+template class App::AppEngine<App::UpdateEngine>;
 // NOLINTEND(*-virtual-class-destructor)

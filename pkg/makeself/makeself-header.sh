@@ -5,18 +5,25 @@ cat << EOF > "$archname"
 # independent of the Makeself license (GPL)
 
 
+APPNAME=Munadi
+ORGNAME=munadi
+DOMAIN=org
+PROGNAME=munadi
+SUMMARY="Your simple and beautiful adhan app"
+VER=26.11
 ARCH=x86_64
+
 ARCHIVE_DIR="\${0%/*}"
 ARCHIVE_NAME="\${0##*/}"
+DNS=\$ORGNAME.\$DOMAIN
 ORIG_UMASK=\$(umask)
+RDNS=\$DOMAIN.\$ORGNAME.\$APPNAME
 SHA="$SHAsum"
 SIGNATURE="$Signature"
 TMPROOT=\${TMPDIR:=/tmp}
 USER_PWD="\$PWD"
-VER=26.11
 
-
-debug="\$MUNADI_DEBUG"
+debug="\$APP_DEBUG"
 export_conf="$EXPORT_CONF"
 extractdir="$archdirname"
 filesizes="$filesizes"
@@ -122,7 +129,7 @@ MS_dd_Progress()
 MS_Version_show()
 {
   cat << EOH >&2
- Munadi - Simple athan app.
+ \$APPNAME \$SUMMARY
  version: \$VER (static; \$ARCH)
  List of statically linked libraries:
     libadhan              libadwaita                libavcodec
@@ -160,7 +167,7 @@ MS_Help()
   _script="\$ARCHIVE_NAME"
   cat << EOH >&2
 
- Munadi \$VER installer, copyright munadi.org.
+ \$APPNAME \$VER installer, copyright \$DNS.
 
  Makeself version $MS_VERSION
 
@@ -198,7 +205,7 @@ MS_Help()
   --verbose, -v         Show more messages. '-q' will have no effect
 
   ENVIRONMENT
-    MUNADI_DEBUG
+    APP_DEBUG
       If set to 1, print debug messages from executing scripts.
 
     SETUP_NOCHECK
@@ -283,20 +290,20 @@ MS_Check()
 MS_Preextract() {
   set -eo pipefail
 
-  _errout="\$(mktemp "\$tmpdir/munadi.makeself.pre-extract.XXXXXX")"
-  _logfile="\$(mktemp -u munadi.makeself.pre-extract-XXXXXX).log" # Log to current
+  _errout="\$(mktemp "\$tmpdir/\$PROGNAME.makeself.pre-extract.XXXXXX")"
+  _logfile="\$(mktemp -u \$PROGNAME.makeself.pre-extract-XXXXXX).log" # Log to current
                                                                   # dir
   _sane=1         # psuedo-bool
   _syslibs=''
 
   log() {
-      MS_Printf "\$(date -Ins):munadi:pre-extract:\$*\n" >> "\$_logfile" 2>&1
+      MS_Printf "\$(date -Ins):\$APPNAME:pre-extract:\$*\n" >> "\$_logfile" 2>&1
   }
 
   debug_print()
   {
     if [ "\$debug" = 1 ]; then
-      MS_Printf "\\e[0;34mmunadi:pre-extract:debug::\\t\$1\e[0;m\\n" >&2
+      MS_Printf "\\e[0;34m\$APPNAME:pre-extract:debug::\\t\$1\e[0;m\\n" >&2
     fi
     log "debug:: \$1"
   }
@@ -304,7 +311,7 @@ MS_Preextract() {
   error_print()
   {
     if [ "\$quiet" = n ]; then
-      MS_Printf "\\e[0;31mmunadi:pre-extract:error::\\t\$1\e[0;m\\n" >&2
+      MS_Printf "\\e[0;31m\$APPNAME:pre-extract:error::\\t\$1\e[0;m\\n" >&2
     fi
     log "error:: \$1"
   }
@@ -312,7 +319,7 @@ MS_Preextract() {
   warn_print()
   {
     if [ "\$quiet" = n ]; then
-      MS_Printf "\\e[0;33mmunadi:pre-extract:warn::\\t\$1\\e[0;m\\n" >&2
+      MS_Printf "\\e[0;33m\$APPNAME:pre-extract:warn::\\t\$1\\e[0;m\\n" >&2
     fi
     log "warn:: \$1"
   }
@@ -320,7 +327,7 @@ MS_Preextract() {
   info_print()
   {
     if [ "\$verbose" = y ]; then
-      MS_Printf "munadi:pre-extract:info::\\t\$1\\n"
+      MS_Printf "\$APPNAME:pre-extract:info::\\t\$1\\n"
     fi
     log "info:: \$1"
   }

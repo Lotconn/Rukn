@@ -8,19 +8,19 @@
 #include <QSocketNotifier>
 #include <QTranslator>
 
-#include <MunadiEngine.hpp>
+#include <AppEngine.hpp>
 #include <alarm.h>
 #include <config.hpp>
 
 /**
  * @brief Convenient instance accessor macro
  */
-#define core Munadi::CoreEngine::instance()
+#define core App::CoreEngine::instance()
 
-namespace Munadi
+namespace App
 {
 
-class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
+class CoreEngine : public AppBase, public AppEngine<CoreEngine>
 {
     Q_OBJECT
 
@@ -46,7 +46,7 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
     ~CoreEngine() override = default;
 
     /**
-     * @brief Accessor needed by MunadiEngine<T> for logging purposes
+     * @brief Accessor needed by AppEngine<T> for logging purposes
      *
      * @return const QLoggingCategory&: The instance created by Q_STATIC_LOGGING_CATEGORY()
      */
@@ -429,14 +429,14 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
     void installTickers() const noexcept;
 
     /**
-     * @brief Customized override of `MunadiBase::loadConfigs()`. Additionally takes care of
+     * @brief Customized override of `AppBase::loadConfigs()`. Additionally takes care of
      * old-settings migration.
      */
     void loadConfigs() noexcept override;
 
     /**
-     * @brief Moves the old private app-store (on Linux, at `~/.local/share/munadi/`) to new
-     * location (on Linux, at `~/.local/share/munadi/Munadi`). Saves migration state to
+     * @brief Moves the old private app-store (on Linux, at `~/.local/share/appname/`) to new
+     * location (on Linux, at `~/.local/share/orgname/appname`). Saves migration state to
      * "StoreMigrated" key in settings file on successful migration, skips if it already reads
      * `true`. Also skips migration if something other than a directory with the exact application
      * name exists or if old store and new store paths are same. Utilizes QDirListing class.  Needs
@@ -446,7 +446,7 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
     void migrateStore() const noexcept;
 
     /**
-     * @brief Customized override of `MunadiBase::saveConfigs()`
+     * @brief Customized override of `AppBase::saveConfigs()`
      */
     void saveConfigs() noexcept override;
 
@@ -570,4 +570,4 @@ class CoreEngine : public MunadiBase, public MunadiEngine<CoreEngine>
     void onUnixSigTerm() const;
 };
 
-} // namespace Munadi
+} // namespace App

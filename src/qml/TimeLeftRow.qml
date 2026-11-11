@@ -3,7 +3,7 @@ import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.Layouts
 
-import Munadi
+import App
 
 Pane {
     id: timeleftBox
@@ -25,7 +25,7 @@ Pane {
             RoundButton {
                 anchors.centerIn: parent
                 flat: true
-                icon.source: "qrc:/qt/qml/Munadi/img/settings.png"
+                icon.source: "qrc:/qt/qml/App/img/settings.png"
                 icon.width: parent.width
                 opacity: 0.57
 
@@ -77,7 +77,7 @@ Pane {
             RoundButton {
                 anchors.centerIn: parent
                 flat: true
-                icon.source: "qrc:/qt/qml/Munadi/img/stop.png"
+                icon.source: "qrc:/qt/qml/App/img/stop.png"
                 opacity: 0.57
                 visible: MultimediaEngine.athanPlaying
 
@@ -92,7 +92,7 @@ Pane {
             RoundButton {
                 anchors.centerIn: parent
                 flat: true
-                icon.source: "qrc:/qt/qml/Munadi/img/compass.png"
+                icon.source: "qrc:/qt/qml/App/img/compass.png"
                 icon.width: parent.width
                 opacity: 0.57
 

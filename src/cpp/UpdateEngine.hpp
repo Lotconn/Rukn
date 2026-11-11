@@ -3,14 +3,14 @@
 #include <QNetworkReply>
 #include <QQmlEngine>
 
-#include <MunadiEngine.hpp>
+#include <AppEngine.hpp>
 
-#define uEngine Munadi::UpdateEngine::instance()
+#define uEngine App::UpdateEngine::instance()
 
-namespace Munadi
+namespace App
 {
 
-class UpdateEngine : public MunadiBase, public MunadiEngine<UpdateEngine>
+class UpdateEngine : public AppBase, public AppEngine<UpdateEngine>
 {
     Q_OBJECT
     Q_CLASSINFO("RegisterEnumClassesUnscoped", "false")
@@ -50,4 +50,4 @@ class UpdateEngine : public MunadiBase, public MunadiEngine<UpdateEngine>
     void onFinished(QNetworkReply *reply);
 };
 
-} // namespace Munadi
+} // namespace App

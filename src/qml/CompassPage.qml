@@ -38,7 +38,7 @@ Page {
             fillMode: Image.PreserveAspectFit
             height: parent.height / 2
             rotation: PrayerEngine.qibla
-            source: "qrc:/qt/qml/Munadi/img/arrow.png"
+            source: "qrc:/qt/qml/App/img/arrow.png"
 
             Behavior on rotation {
                 NumberAnimation {

@@ -1,4 +1,4 @@
 #pragma once
 
 #define APP_VERSION "@PROJECT_VERSION@"
-#cmakedefine MUNADI_FLATPAK_DIST
+#cmakedefine APP_FLATPAK_DIST

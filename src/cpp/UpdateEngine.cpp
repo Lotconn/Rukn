@@ -5,20 +5,20 @@
 #include <UpdateEngine.hpp>
 #include <config.hpp>
 
-Q_STATIC_LOGGING_CATEGORY(munadi, "UpdateEngine")
+Q_STATIC_LOGGING_CATEGORY(cat, "UpdateEngine")
 
-namespace Munadi
+namespace App
 {
 
 UpdateEngine *UpdateEngine::create(QQmlEngine * /* qmlEngine */, QJSEngine * /* jsEngine */)
 {
-    logDebug(munadi) << "Creating instance from QML call";
+    logDebug(cat) << "Creating instance from QML call";
 
     return new UpdateEngine{};
 }
 
 const QLoggingCategory &UpdateEngine::logCategory() noexcept
-{ return munadi(); }
+{ return cat(); }
 
 void UpdateEngine::updateCheck() const noexcept
 {
@@ -44,7 +44,7 @@ void UpdateEngine::updateCheck() const noexcept
     jadidParams.addQueryItem("v"_L1, QStringLiteral(APP_VERSION));
     jadid.setQuery(jadidParams);
 
-    logDebug(munadi) << "Full query URL: " << jadid.toDisplayString();
+    logDebug(cat) << "Full query URL: " << jadid.toDisplayString();
 
     this->netMan->get(QNetworkRequest{jadid});
 }
@@ -54,7 +54,7 @@ void UpdateEngine::updateCheck() const noexcept
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UpdateEngine::UpdateEngine(QObject *parent)
-    : MunadiBase{munadi(), parent}, netMan{new QNetworkAccessManager{this}}
+    : AppBase{cat(), parent}, netMan{new QNetworkAccessManager{this}}
 {
     this->bootEngine();
     CoreEngine::onceOnline(this, [this] -> void { this->onCoreOnline(); });
@@ -75,9 +75,9 @@ void UpdateEngine::connectToNetMan() const noexcept
     if (const auto conn = QObject::connect(this->netMan, &QNetworkAccessManager::finished, this,
                                            &UpdateEngine::onFinished);
         conn == nullptr)
-        logWarning(munadi) << "Network Access Manager finished signal not connected";
+        logWarning(cat) << "Network Access Manager finished signal not connected";
     else
-        logDebug(munadi) << "Network Access Manager finished signal connected";
+        logDebug(cat) << "Network Access Manager finished signal connected";
 }
 
 void UpdateEngine::defaultConfigs() noexcept
@@ -85,7 +85,7 @@ void UpdateEngine::defaultConfigs() noexcept
 
 void UpdateEngine::loadConfigs() noexcept
 {
-    logDebug(munadi) << "Loading configs from persistent config file";
+    logDebug(cat) << "Loading configs from persistent config file";
 
     bool          configMigrated{true};
     const QString migrateKey{u"UpdateEngineConfigMigrated"_s};
@@ -99,7 +99,7 @@ void UpdateEngine::loadConfigs() noexcept
 
 void UpdateEngine::saveConfigs() noexcept
 {
-    logDebug(munadi) << "Saving update configurations";
+    logDebug(cat) << "Saving update configurations";
 
     // Ensure the very last config to be saved has the third parameter set to "true". Otherwise
     // (later) settings are not saved
@@ -117,16 +117,16 @@ void UpdateEngine::onFinished(QNetworkReply *reply)
 
     if (reply->error() == QNetworkReply::NoError && replyString.length() > 0)
     {
-        logDebug(munadi) << "No error found in current reply";
+        logDebug(cat) << "No error found in current reply";
 
         emit this->updateAvailable(replyString);
     }
     else
     {
-        logCritical(munadi) << "Could not resolve provided query";
-        logDebug(munadi) << reply->errorString();
+        logCritical(cat) << "Could not resolve provided query";
+        logDebug(cat) << reply->errorString();
     }
 
     reply->deleteLater();
 }
-} // namespace Munadi
+} // namespace App

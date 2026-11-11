@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls.Material
 
-import Munadi
+import App
 
 Item {
     property string address

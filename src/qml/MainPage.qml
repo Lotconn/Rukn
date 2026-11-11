@@ -3,7 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Controls.Material
 
-import Munadi
+import App
 
 ColumnLayout {
     property int defaultAlignment: isWide ? Layout.Left : Layout.Center

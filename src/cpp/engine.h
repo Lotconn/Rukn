@@ -1,5 +1,5 @@
-#ifndef MUNADIENGINE_H
-#define MUNADIENGINE_H
+#ifndef ENGINE_H
+#define ENGINE_H
 
 #include <QObject>
 
@@ -31,4 +31,4 @@ class Engine : public QObject
     bool _fullscreen = false;
 };
 
-#endif // MUNADIENGINE_H
+#endif // ENGINE_H

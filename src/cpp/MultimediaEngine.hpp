@@ -5,12 +5,12 @@
 
 #include <PrayerEngine.hpp>
 
-#define mEngine Munadi::MultimediaEngine::instance()
+#define mEngine App::MultimediaEngine::instance()
 
-namespace Munadi
+namespace App
 {
 
-class MultimediaEngine : public MunadiBase, public MunadiEngine<MultimediaEngine>
+class MultimediaEngine : public AppBase, public AppEngine<MultimediaEngine>
 {
     Q_OBJECT
     Q_CLASSINFO("RegisterEnumClassesUnscoped", "false")
@@ -102,4 +102,4 @@ class MultimediaEngine : public MunadiBase, public MunadiEngine<MultimediaEngine
     void onPreviewPlaybackChanged(QMediaPlayer::PlaybackState state);
 };
 
-} // namespace Munadi
+} // namespace App

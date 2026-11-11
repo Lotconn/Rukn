@@ -7,14 +7,14 @@
 #include <QGeoServiceProvider>
 #include <QQmlEngine>
 
-#include <MunadiEngine.hpp>
+#include <AppEngine.hpp>
 
-#define lEngine Munadi::LocationEngine::instance()
+#define lEngine App::LocationEngine::instance()
 
-namespace Munadi
+namespace App
 {
 
-class LocationEngine : public MunadiBase, public MunadiEngine<LocationEngine>
+class LocationEngine : public AppBase, public AppEngine<LocationEngine>
 {
     Q_OBJECT
 
@@ -72,7 +72,7 @@ class LocationEngine : public MunadiBase, public MunadiEngine<LocationEngine>
     ~LocationEngine() override = default;
 
     /**
-     * @brief Accessor needed by MunadiEngine<T> for logging purposes
+     * @brief Accessor needed by AppEngine<T> for logging purposes
      *
      * @return const QLoggingCategory&: The instance created by Q_STATIC_LOGGING_CATEGORY()
      */
@@ -191,8 +191,8 @@ class LocationEngine : public MunadiBase, public MunadiEngine<LocationEngine>
     void connectToLocaleChanged() const noexcept;
 
     /**
-     * @brief Customized override of `MunadiBase::defaultConfigs()`. See
-     * `MunadiBase::defaultConfigs()` brief
+     * @brief Customized override of `AppBase::defaultConfigs()`. See
+     * `AppBase::defaultConfigs()` brief
      */
     void defaultConfigs() noexcept override;
 
@@ -237,13 +237,13 @@ class LocationEngine : public MunadiBase, public MunadiEngine<LocationEngine>
     [[nodiscard]] QVariantHash getParsableLocation() const noexcept;
 
     /**
-     * @brief Customized override of `MunadiBase::loadConfigs()`. Additionally takes care of
+     * @brief Customized override of `AppBase::loadConfigs()`. Additionally takes care of
      * old-settings migration.
      */
     void loadConfigs() noexcept override;
 
     /**
-     * @brief Customized override of `MunadiBase::saveConfigs()`
+     * @brief Customized override of `AppBase::saveConfigs()`
      */
     void saveConfigs() noexcept override;
 
@@ -287,7 +287,7 @@ class LocationEngine : public MunadiBase, public MunadiEngine<LocationEngine>
     void onAborted() noexcept;
 
     /**
-     * @brief Customized override of `MunadiBase::onCoreOnline()`. See the brief there for details.
+     * @brief Customized override of `AppBase::onCoreOnline()`. See the brief there for details.
      */
     void onCoreOnline() noexcept override;
 
@@ -307,4 +307,4 @@ class LocationEngine : public MunadiBase, public MunadiEngine<LocationEngine>
     void onLocaleChanged() const noexcept;
 };
 
-} // namespace Munadi
+} // namespace App

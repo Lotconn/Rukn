@@ -29,7 +29,7 @@ modules:
       - -DFETCHCONTENT_SOURCE_DIR_ADHAN-CPP=/run/build/munadi/subprojects/lotconn/adhan-cpp
       - -DFETCHCONTENT_SOURCE_DIR_FILEMAN=/run/build/munadi/subprojects/lotconn/fileman
       - -DFETCHCONTENT_SOURCE_DIR_SINGLEAPPLICATION=/run/build/munadi/subprojects/singleapplication
-      - -DMUNADI_LINUX_DIST=Flatpak
+      - -DAPP_LINUX_DIST=Flatpak
     sources:
       - type: dir
         path: ./

@@ -9,14 +9,14 @@
 #include <adhan/PrayerTimes.hpp>
 #include <adhan/SunnahTimes.hpp>
 
-#include <MunadiEngine.hpp>
+#include <AppEngine.hpp>
 
-#define pEngine Munadi::PrayerEngine::instance()
+#define pEngine App::PrayerEngine::instance()
 
-namespace Munadi
+namespace App
 {
 
-class PrayerEngine : public MunadiBase, public MunadiEngine<PrayerEngine>
+class PrayerEngine : public AppBase, public AppEngine<PrayerEngine>
 {
     Q_OBJECT
 
@@ -74,7 +74,7 @@ class PrayerEngine : public MunadiBase, public MunadiEngine<PrayerEngine>
     ~PrayerEngine() override = default;
 
     /**
-     * @brief Accessor needed by MunadiEngine<T> for logging purposes
+     * @brief Accessor needed by AppEngine<T> for logging purposes
      *
      * @return const QLoggingCategory&: The instance created by Q_STATIC_LOGGING_CATEGORY()
      */
@@ -599,8 +599,8 @@ class PrayerEngine : public MunadiBase, public MunadiEngine<PrayerEngine>
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @brief Customized override of `MunadiBase::defaultConfigs()`. See
-     * `MunadiBase::defaultConfigs()` brief
+     * @brief Customized override of `AppBase::defaultConfigs()`. See
+     * `AppBase::defaultConfigs()` brief
      */
     void defaultConfigs() noexcept override;
 
@@ -614,7 +614,7 @@ class PrayerEngine : public MunadiBase, public MunadiEngine<PrayerEngine>
     void defaultPrayerConfig() noexcept;
 
     /**
-     * @brief Customized override of `MunadiBase::loadConfigs()`. Additionally takes care of
+     * @brief Customized override of `AppBase::loadConfigs()`. Additionally takes care of
      * old-settings migration.
      */
     void loadConfigs() noexcept override;
@@ -630,7 +630,7 @@ class PrayerEngine : public MunadiBase, public MunadiEngine<PrayerEngine>
     void loadPrayerConfig(bool &configMigrated) noexcept;
 
     /**
-     * @brief Customized override of `MunadiBase::saveConfigs()`
+     * @brief Customized override of `AppBase::saveConfigs()`
      */
     void saveConfigs() noexcept override;
 
@@ -730,7 +730,7 @@ class PrayerEngine : public MunadiBase, public MunadiEngine<PrayerEngine>
 
   private slots: // NOLINT(*-redundant-access-specifiers)
     /**
-     * @brief Customized overridden extension of `MunadiBase::onCoreOnline`. See its brief for
+     * @brief Customized overridden extension of `AppBase::onCoreOnline`. See its brief for
      * details
      */
     void onCoreOnline() noexcept override;
@@ -749,4 +749,4 @@ class PrayerEngine : public MunadiBase, public MunadiEngine<PrayerEngine>
     void onLocationEngineOnline() noexcept;
 };
 
-} // namespace Munadi
+} // namespace App

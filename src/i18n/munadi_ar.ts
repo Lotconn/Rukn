@@ -30,101 +30,7 @@
     </message>
 </context>
 <context>
-    <name>AudioManComp</name>
-    <message>
-        <location filename="../qml/AudioManComp.qml" line="55"/>
-        <source>Please choose an audio file</source>
-        <translation>اختر ملف صوتي</translation>
-    </message>
-    <message>
-        <location filename="../qml/AudioManComp.qml" line="32"/>
-        <source>Add</source>
-        <translation>اضف</translation>
-    </message>
-    <message>
-        <location filename="../qml/AudioManComp.qml" line="39"/>
-        <source>Remove</source>
-        <translation>احذف</translation>
-    </message>
-</context>
-<context>
-    <name>CompassPage</name>
-    <message>
-        <location filename="../qml/CompassPage.qml" line="17"/>
-        <source>Qibla Direction</source>
-        <translation>اتجاه القبلة</translation>
-    </message>
-    <message>
-        <location filename="../qml/CompassPage.qml" line="78"/>
-        <source>%1° with respect to North</source>
-        <translation>%1° مع اتجاه الشمال</translation>
-    </message>
-</context>
-<context>
-    <name>DateRow</name>
-    <message>
-        <location filename="../qml/DateRow.qml" line="30"/>
-        <source>&lt;</source>
-        <translation>&gt;</translation>
-    </message>
-    <message>
-        <location filename="../qml/DateRow.qml" line="81"/>
-        <source>&gt;</source>
-        <translation>&lt;</translation>
-    </message>
-</context>
-<context>
-    <name>LocationInfoRow</name>
-    <message>
-        <location filename="../qml/LocationInfoRow.qml" line="18"/>
-        <source>Set your location ...</source>
-        <translation>اختر مكانك ...</translation>
-    </message>
-</context>
-<context>
-    <name>LocationSearchComponent</name>
-    <message>
-        <location filename="../qml/LocationSearchComponent.qml" line="36"/>
-        <source>Enter city name</source>
-        <translation>أدخل اسم مدينتك</translation>
-    </message>
-    <message>
-        <location filename="../qml/LocationSearchComponent.qml" line="44"/>
-        <source>Search</source>
-        <translation>ابحث</translation>
-    </message>
-</context>
-<context>
-    <name>Main</name>
-    <message>
-        <location filename="../qml/Main.qml" line="70"/>
-        <source>QT_LAYOUT_DIRECTION</source>
-        <comment>QGuiApplication</comment>
-        <translation>RTL</translation>
-    </message>
-    <message>
-        <location filename="../qml/Main.qml" line="250"/>
-        <source>Munadi</source>
-        <translation>منادي</translation>
-    </message>
-    <message>
-        <location filename="../qml/Main.qml" line="312"/>
-        <source>Show</source>
-        <translation>أظهر</translation>
-    </message>
-    <message>
-        <location filename="../qml/Main.qml" line="312"/>
-        <source>Hide</source>
-        <translation>أخف</translation>
-    </message>
-    <message>
-        <location filename="../qml/Main.qml" line="318"/>
-        <source>Quit</source>
-        <translation>أغلق</translation>
-    </message>
-</context>
-<context>
-    <name>Munadi::UiEngine</name>
+    <name>App::UiEngine</name>
     <message>
         <location filename="../cpp/UiEngine.cpp" line="219"/>
         <source>Muslim World League</source>
@@ -272,29 +178,123 @@
         <translation>مظلم</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="517"/>
+        <location filename="../cpp/UiEngine.cpp" line="516"/>
         <source>h&apos;h&apos; m&apos;m&apos;</source>
         <translation>h&apos;ساعة &apos; m&apos;دقيقة&apos;</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="517"/>
+        <location filename="../cpp/UiEngine.cpp" line="516"/>
         <source>m&apos;m&apos;</source>
         <translation>m&apos;دقيقة&apos;</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="505"/>
+        <location filename="../cpp/UiEngine.cpp" line="504"/>
         <source>athan</source>
         <translation>أذان</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="522"/>
+        <location filename="../cpp/UiEngine.cpp" line="521"/>
         <source>Seconds to</source>
         <translation>ثواني حتي</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="524"/>
+        <location filename="../cpp/UiEngine.cpp" line="523"/>
         <source>to</source>
         <translation>حتي</translation>
+    </message>
+</context>
+<context>
+    <name>AudioManComp</name>
+    <message>
+        <location filename="../qml/AudioManComp.qml" line="55"/>
+        <source>Please choose an audio file</source>
+        <translation>اختر ملف صوتي</translation>
+    </message>
+    <message>
+        <location filename="../qml/AudioManComp.qml" line="32"/>
+        <source>Add</source>
+        <translation>اضف</translation>
+    </message>
+    <message>
+        <location filename="../qml/AudioManComp.qml" line="39"/>
+        <source>Remove</source>
+        <translation>احذف</translation>
+    </message>
+</context>
+<context>
+    <name>CompassPage</name>
+    <message>
+        <location filename="../qml/CompassPage.qml" line="17"/>
+        <source>Qibla Direction</source>
+        <translation>اتجاه القبلة</translation>
+    </message>
+    <message>
+        <location filename="../qml/CompassPage.qml" line="78"/>
+        <source>%1° with respect to North</source>
+        <translation>%1° مع اتجاه الشمال</translation>
+    </message>
+</context>
+<context>
+    <name>DateRow</name>
+    <message>
+        <location filename="../qml/DateRow.qml" line="30"/>
+        <source>&lt;</source>
+        <translation>&gt;</translation>
+    </message>
+    <message>
+        <location filename="../qml/DateRow.qml" line="81"/>
+        <source>&gt;</source>
+        <translation>&lt;</translation>
+    </message>
+</context>
+<context>
+    <name>LocationInfoRow</name>
+    <message>
+        <location filename="../qml/LocationInfoRow.qml" line="18"/>
+        <source>Set your location ...</source>
+        <translation>اختر مكانك ...</translation>
+    </message>
+</context>
+<context>
+    <name>LocationSearchComponent</name>
+    <message>
+        <location filename="../qml/LocationSearchComponent.qml" line="36"/>
+        <source>Enter city name</source>
+        <translation>أدخل اسم مدينتك</translation>
+    </message>
+    <message>
+        <location filename="../qml/LocationSearchComponent.qml" line="44"/>
+        <source>Search</source>
+        <translation>ابحث</translation>
+    </message>
+</context>
+<context>
+    <name>Main</name>
+    <message>
+        <location filename="../qml/Main.qml" line="70"/>
+        <source>QT_LAYOUT_DIRECTION</source>
+        <comment>QGuiApplication</comment>
+        <translation>RTL</translation>
+    </message>
+    <message>
+        <location filename="../qml/Main.qml" line="250"/>
+        <source>Munadi</source>
+        <translation>منادي</translation>
+    </message>
+    <message>
+        <location filename="../qml/Main.qml" line="312"/>
+        <source>Show</source>
+        <translation>أظهر</translation>
+    </message>
+    <message>
+        <location filename="../qml/Main.qml" line="312"/>
+        <source>Hide</source>
+        <translation>أخف</translation>
+    </message>
+    <message>
+        <location filename="../qml/Main.qml" line="318"/>
+        <source>Quit</source>
+        <translation>أغلق</translation>
     </message>
 </context>
 <context>
@@ -346,8 +346,8 @@
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="224"/>
-        <source>When closing Munadi, hide it instead.</source>
-        <translation>عند إغلاق منادي أخفه بدلا من ذلك.</translation>
+        <source>When closing the app, hide it instead.</source>
+        <translation>عند إغلاق أخفه بدلا من ذلك.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="241"/>
@@ -436,8 +436,8 @@
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="455"/>
-        <source>About Munadi</source>
-        <translation>عن منادي</translation>
+        <source>About App</source>
+        <translation>عن التطبيق</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="469"/>

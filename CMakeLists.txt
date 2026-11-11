@@ -47,15 +47,15 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64")
 endif()
 
 if(LINUX)
-  set(MUNADI_LINUX_DIST "Default" CACHE STRING "Distribution Type")
-  set(CACHE MUNADI_LINUX_DIST PROPERTY STRINGS Default Flatpak)
+  set(APP_LINUX_DIST "Default" CACHE STRING "Distribution Type")
+  set(CACHE APP_LINUX_DIST PROPERTY STRINGS Default Flatpak)
 
   # optionally set from commandline or autodetects if omitted
-  if(MUNADI_LINUX_DIST STREQUAL Flatpak OR NOT "$ENV{FLATPAK_ID}" STREQUAL "")
+  if(APP_LINUX_DIST STREQUAL Flatpak OR NOT "$ENV{FLATPAK_ID}" STREQUAL "")
     message(STATUS "Building for Flatpak: $ENV{FLATPAK_ID}")
-    set(MUNADI_FLATPAK_DIST ON CACHE BOOL "Flatpak Build")
-  elseif(MUNADI_LINUX_DIST STREQUAL Default)
-    unset(MUNADI_LINUX_DIST)
+    set(APP_FLATPAK_DIST ON CACHE BOOL "Flatpak Build")
+  elseif(APP_LINUX_DIST STREQUAL Default)
+    unset(APP_LINUX_DIST)
   endif()
 endif()
 
@@ -148,8 +148,9 @@ add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/src/data/whatsnew.html
   COMMAND ${PROJECT_SOURCE_DIR}/gen_whatsnew
 )
 
-set(MUNADI_QML_FILES
+set(APP_QML_FILES
   src/qml/AdjustmentComponent.qml
+  src/qml/AppModel.qml
   src/qml/AudioManComp.qml
   src/qml/CompassPage.qml
   src/qml/DateRow.qml
@@ -158,7 +159,6 @@ set(MUNADI_QML_FILES
   src/qml/LocationSearchComponent.qml
   src/qml/Main.qml
   src/qml/MainPage.qml
-  src/qml/MunadiModel.qml
   src/qml/PageButton.qml
   src/qml/PrayerRow.qml
   src/qml/SettingsPage.qml
@@ -171,7 +171,7 @@ set(MUNADI_QML_FILES
 )
 
 if(NOT TARGET Qt::QuickTools)
-  list(APPEND MUNADI_QML_FILES
+  list(APPEND APP_QML_FILES
     src/qml/icons/FajrIcon.qml
     src/qml/icons/DhuhrIcon.qml
     src/qml/icons/AsrIcon.qml
@@ -180,39 +180,39 @@ if(NOT TARGET Qt::QuickTools)
   )
 endif()
 
-set(MUNADI_SOURCES
+set(APP_SOURCES
   src/cpp/alarm.h
   src/cpp/engine.h
+  src/cpp/AppEngine.hpp
   src/cpp/CoreEngine.hpp
   src/cpp/LocationEngine.hpp
   src/cpp/PrayerEngine.hpp
   src/cpp/MultimediaEngine.hpp
-  src/cpp/MunadiEngine.hpp
   src/cpp/UiEngine.hpp
   src/cpp/UpdateEngine.hpp
   src/cpp/internal-helpers.hpp
   src/cpp/macos_window.h
   src/cpp/engine.cpp
   src/cpp/internal-helpers.cpp
+  src/cpp/AppEngine.cpp
   src/cpp/CoreEngine.cpp
   src/cpp/LocationEngine.cpp
   src/cpp/PrayerEngine.cpp
   src/cpp/MultimediaEngine.cpp
-  src/cpp/MunadiEngine.cpp
   src/cpp/UiEngine.cpp
   src/cpp/UpdateEngine.cpp
 )
 
 if(APPLE)
-  list(APPEND MUNADI_SOURCES
+  list(APPEND APP_SOURCES
     src/cpp/alarm_macos.cpp
     src/cpp/macos_window.mm
   )
 elseif(LINUX)
-  list(APPEND MUNADI_SOURCES src/cpp/alarm_linux.cpp)
+  list(APPEND APP_SOURCES src/cpp/alarm_linux.cpp)
 endif()
 
-set(MUNADI_RESOURCES
+set(APP_RESOURCES
   src/data/athan-arRashid.ogg
   src/data/athan-makkah.ogg
   src/data/fajr-athan.ogg
@@ -248,7 +248,7 @@ set(MUNADI_RESOURCES
   src/img/stop.png
 )
 
-foreach(filePath IN LISTS MUNADI_QML_FILES MUNADI_RESOURCES)
+foreach(filePath IN LISTS APP_QML_FILES APP_RESOURCES)
   string(REGEX REPLACE "^src/" "" qrc_filePath "${filePath}")
   set_source_files_properties("${filePath}"
     PROPERTIES
@@ -258,14 +258,14 @@ endforeach()
 
 qt_add_executable(${PROJECT_NAME} src/cpp/main.cpp)
 qt_add_qml_module(${PROJECT_NAME}
-  URI Munadi
+  URI App
   VERSION ${PROJECT_VERSION}
   QML_FILES
-  "${MUNADI_QML_FILES}"
+  "${APP_QML_FILES}"
   SOURCES
-  "${MUNADI_SOURCES}"
+  "${APP_SOURCES}"
   RESOURCES
-  "${MUNADI_RESOURCES}"
+  "${APP_RESOURCES}"
 )
 
 qt_add_translations(${PROJECT_NAME}
@@ -273,7 +273,7 @@ qt_add_translations(${PROJECT_NAME}
   SOURCE_TARGETS ${PROJECT_NAME}
   TS_FILE_BASE ${PROJECT_NAME_LOWER}
   TS_OUTPUT_DIRECTORY src/i18n/
-  RESOURCE_PREFIX qt/qml/Munadi/i18n
+  RESOURCE_PREFIX qt/qml/App/i18n
 )
 
 if(TARGET Qt::QuickTools)
@@ -368,7 +368,7 @@ target_link_options(${PROJECT_NAME} PRIVATE
   $<$<AND:$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>>,$<NOT:$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:
   -Wl,-z,relro,-z,now
   -Wl,--as-needed
-  -Wl,-Map=munadi.map
+  -Wl,-Map=app.map
   >
   # MSVC / clang-cl linker hardening
   $<$<OR:$<CXX_COMPILER_ID:MSVC>,$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>:

@@ -3,7 +3,7 @@
 #include <QObject>
 #include <QtQml/qqmlregistration.h>
 
-namespace Munadi
+namespace App
 {
 
 using Qt::StringLiterals::operator""_s;
@@ -13,33 +13,33 @@ using Qt::StringLiterals::operator""_L1;
  * @brief Sole QObject base of every engine. Contains all the common members among the engines.
  * Engines derive from this class directly to inherit these (QObject-based) members. Few of them are
  * intentionally kept empty because their bodies cannot be generalized or known up-front.
- * `MunadiEngine<Engine_t>` template class is "linked" to this base for the reason in the following
+ * `AppEngine<Engine_t>` template class is "linked" to this base for the reason in the following
  * paragraph and for separating static members out.
  *
  * `moc`/`qmltyperegistrar` records an engine's _first_ base class verbatim as its QML prototype.
- * Engines therefore MUST list `MunadiBase` first: `class T : public MunadiBase, public
- * MunadiEngine<T>`. Listing `MunadiEngine<T>` first yields `prototype: "MunadiEngine<T>"` in the
+ * Engines therefore MUST list `AppBase` first: `class T : public AppBase, public
+ * AppEngine<T>`. Listing `AppEngine<T>` first yields `prototype: "AppEngine<T>"` in the
  * qmltypes, which is not a registered QML type. `qmlls` then loses the QObject chain and reports
  * "Cannot assign binding of type T to QObject [incompatible-type]" (e.g. on Connections.target).
  * Needs no `QML_*` macro: qmltyperegistrar emits it on its own as the base of the registered
  * engines (verified in qmltypes). Do not make this a template or add a second QObject-derived base.
  */
-class MunadiBase : public QObject
+class AppBase : public QObject
 {
     Q_OBJECT
 
-    template <typename Engine_t> friend class MunadiEngine;
+    template <typename Engine_t> friend class AppEngine;
 
   protected:
     /**
-     * @brief Construct a new Munadi Base object. Not default constructible. Requires a
+     * @brief Construct a new App Base object. Not default constructible. Requires a
      * QLoggingCategory object to be passed from the deriver class for message context.
      *
      * @param category: The reference to message context object to use for logging. For most
      * purposes, use `Q_STATIC_LOGGING_CATEGORY()` macro in implementation file and pass the object.
      * @param parent: Parent of the class. Usually left empty for auto-managed hierarchy
      */
-    explicit MunadiBase(const QLoggingCategory &category, QObject *parent = nullptr) noexcept
+    explicit AppBase(const QLoggingCategory &category, QObject *parent = nullptr) noexcept
         : QObject{parent}, m_logCategory{category}
     {
     }
@@ -108,28 +108,28 @@ class MunadiBase : public QObject
 
 /**
  * @brief An F-bound/CRTP mixin class template for generalizing (static) typed-members of each
- * engine. Deliberately NOT a QObject and NOT dervied from `MunadiBase`, only contains statics
- * without any stateful members. `MunadiEngine<T>` calls through `base()` when it needs access to
- * members from `MunadiBase` (see its brief further below). Engines should be deriving this class
- * following MunadiBase to avoid tooling warnings (see the brief in `MunadiBase`). Due to the
+ * engine. Deliberately NOT a QObject and NOT dervied from `AppBase`, only contains statics
+ * without any stateful members. `AppEngine<T>` calls through `base()` when it needs access to
+ * members from `AppBase` (see its brief further below). Engines should be deriving this class
+ * following AppBase to avoid tooling warnings (see the brief in `AppBase`). Due to the
  * design, there is effectively no state-mixing/diamond hazard issues when an engine derives from
- * both MunadiBase (first) and MunadiEngine<T> (second). Clangd check `fuchsia-multiple-inheritence`
+ * both AppBase (first) and AppEngine<T> (second). Clangd check `fuchsia-multiple-inheritence`
  * was so disabled exactly for this reason.
  *
  * Do's
- * - Use with MunadiBase, alone won't work
- * - Preceed MunadiBase before this in derive-list
+ * - Use with AppBase, alone won't work
+ * - Preceed AppBase before this in derive-list
  * - Override or use the members in this class with appropriate type
  *
  * Don'ts
- * - Derive from MunadiBase
- * - Merge to MunadiBase
+ * - Derive from AppBase
+ * - Merge to AppBase
  * - Add stateful class members (i.e. members NOT static)
  * - Fix `*multiple-inheritence` class warnings by violating the above don'ts
  *
  * @tparam Engine_t: Replace with engine's class; i.e. `CoreEngine`, `PrayerEngine`, `MyEngine` etc
  */
-template <typename Engine_t> class MunadiEngine
+template <typename Engine_t> class AppEngine
 {
   public:
     /**
@@ -183,8 +183,8 @@ template <typename Engine_t> class MunadiEngine
                            int retriesLeft = 19) noexcept -> void; // NOLINT(*-magic-numbers)
 
   protected:
-    MunadiEngine()  = default;
-    ~MunadiEngine() = default;
+    AppEngine()  = default;
+    ~AppEngine() = default;
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     //  Variables //////////////////////////////////////////////////////////////////////////////
@@ -220,16 +220,16 @@ template <typename Engine_t> class MunadiEngine
      * @brief Doesn't get propagated to derivers so each engine should be including this in its
      * class. Mostly kept to pass linter checks
      */
-    Q_DISABLE_COPY_MOVE(MunadiEngine)
+    Q_DISABLE_COPY_MOVE(AppEngine)
 
     /**
-     * @brief An accessor to MunadiBase's members. In simple sense, this digs a path through the
-     * _constructed_ class' state to MunadiBase. This therefore won't work without a class deriving
-     * _both_ MunadiBase followed by MunadiEngine<T>.
+     * @brief An accessor to AppBase's members. In simple sense, this digs a path through the
+     * _constructed_ class' state to AppBase. This therefore won't work without a class deriving
+     * _both_ AppBase followed by AppEngine<T>.
      *
-     * @return MunadiBase*: The instance of MunadiBase's class
+     * @return AppBase*: The instance of AppBase's class
      */
-    auto base() noexcept -> MunadiBase *
+    auto base() noexcept -> AppBase *
     { return static_cast<Engine_t *>(this); }
 };
-} // namespace Munadi
+} // namespace App

@@ -2,9 +2,9 @@
 #include <MultimediaEngine.hpp>
 #include <UiEngine.hpp>
 
-Q_STATIC_LOGGING_CATEGORY(munadi, "UiEngine")
+Q_STATIC_LOGGING_CATEGORY(cat, "UiEngine")
 
-namespace Munadi
+namespace App
 {
 
 using Prayer = PrayerEngine::Prayer;
@@ -12,15 +12,15 @@ using Sunnah = PrayerEngine::Sunnah;
 
 UiEngine *UiEngine::create(QQmlEngine *qmlEngine, QJSEngine * /* jsEngine */)
 {
-    logDebug(munadi) << "Creating instance from QML call";
+    logDebug(cat) << "Creating instance from QML call";
 
-    qmlEngine->singletonInstance<MultimediaEngine *>("Munadi"_L1, "MultimediaEngine"_L1);
+    qmlEngine->singletonInstance<MultimediaEngine *>("App"_L1, "MultimediaEngine"_L1);
 
     return new UiEngine{};
 }
 
 const QLoggingCategory &UiEngine::logCategory() noexcept
-{ return munadi(); }
+{ return cat(); }
 
 QString UiEngine::getFormFactor() noexcept
 {
@@ -42,7 +42,7 @@ void UiEngine::resetDateOffset() noexcept
 //  Protected Members
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UiEngine::UiEngine(QObject *parent) : MunadiBase{munadi(), parent}
+UiEngine::UiEngine(QObject *parent) : AppBase{cat(), parent}
 {
     this->bootEngine();
     CoreEngine::onceOnline(this, [this] -> void { this->onCoreOnline(); });
@@ -69,9 +69,9 @@ void UiEngine::connectToAlarmsReset() const noexcept
     if (const auto conn =
             QObject::connect(core, &CoreEngine::alarmsReset, this, &UiEngine::onAlarmsReset);
         conn == nullptr)
-        logWarning(munadi) << "alarmsReset signal not connected";
+        logWarning(cat) << "alarmsReset signal not connected";
     else
-        logDebug(munadi) << "alarmsReset signal connected";
+        logDebug(cat) << "alarmsReset signal connected";
 }
 
 void UiEngine::connectToAthanPlayingChanged() const noexcept
@@ -79,9 +79,9 @@ void UiEngine::connectToAthanPlayingChanged() const noexcept
     if (const auto conn = QObject::connect(mEngine, &MultimediaEngine::athanPlayingChanged, this,
                                            &UiEngine::onAthanPlayingChanged);
         conn == nullptr)
-        logWarning(munadi) << "athanPlayingChanged signal not connected";
+        logWarning(cat) << "athanPlayingChanged signal not connected";
     else
-        logDebug(munadi) << "athanPlayingChanged signal connected";
+        logDebug(cat) << "athanPlayingChanged signal connected";
 }
 
 void UiEngine::connectToCalcChanged() const noexcept
@@ -89,9 +89,9 @@ void UiEngine::connectToCalcChanged() const noexcept
     if (const auto conn =
             QObject::connect(pEngine, &PrayerEngine::calcChanged, this, &UiEngine::onCalcChanged);
         conn == nullptr)
-        logWarning(munadi) << "calcChanged signal not connected";
+        logWarning(cat) << "calcChanged signal not connected";
     else
-        logDebug(munadi) << "calcChanged signal connected";
+        logDebug(cat) << "calcChanged signal connected";
 }
 
 void UiEngine::connectToDateChanged() const noexcept
@@ -99,9 +99,9 @@ void UiEngine::connectToDateChanged() const noexcept
     if (const auto conn =
             QObject::connect(core, &CoreEngine::dateChanged, this, &UiEngine::onDateChanged);
         conn == nullptr)
-        logWarning(munadi) << "dateChanged signal not connected";
+        logWarning(cat) << "dateChanged signal not connected";
     else
-        logDebug(munadi) << "dateChanged signal connected";
+        logDebug(cat) << "dateChanged signal connected";
 }
 
 void UiEngine::connectToLocaleChanged() const noexcept
@@ -109,9 +109,9 @@ void UiEngine::connectToLocaleChanged() const noexcept
     if (const auto conn =
             QObject::connect(core, &CoreEngine::localeChanged, this, &UiEngine::onLocaleChanged);
         conn == nullptr)
-        logWarning(munadi) << "localeChanged signal not connected";
+        logWarning(cat) << "localeChanged signal not connected";
     else
-        logDebug(munadi) << "localeChanged signal connected";
+        logDebug(cat) << "localeChanged signal connected";
 }
 
 void UiEngine::connectToMinuteChanged() const noexcept
@@ -119,9 +119,9 @@ void UiEngine::connectToMinuteChanged() const noexcept
     if (const auto conn =
             QObject::connect(core, &CoreEngine::minuteChanged, this, &UiEngine::onMinuteChanged);
         conn == nullptr)
-        logWarning(munadi) << "minuteChanged signal not connected";
+        logWarning(cat) << "minuteChanged signal not connected";
     else
-        logDebug(munadi) << "minuteChanged signal connected";
+        logDebug(cat) << "minuteChanged signal connected";
 }
 
 void UiEngine::defaultConfigs() noexcept
@@ -170,15 +170,15 @@ void UiEngine::initConfigs() noexcept
     this->m_madhhabDisplayIndex =
         UiEngine::indexOfValue(this->m_madhhabDisplayNames, pEngine->getMadhhab());
 
-    logDebug(munadi) << "calcMethodsIdx inited as: [" << this->m_calcMethodsDisplayIndex << ", "
-                     << pEngine->getCalcMethod() << "]";
-    logDebug(munadi) << "madhhabIdx inited as: [" << this->m_madhhabDisplayIndex << ", "
-                     << pEngine->getMadhhab() << "]";
+    logDebug(cat) << "calcMethodsIdx inited as: [" << this->m_calcMethodsDisplayIndex << ", "
+                  << pEngine->getCalcMethod() << "]";
+    logDebug(cat) << "madhhabIdx inited as: [" << this->m_madhhabDisplayIndex << ", "
+                  << pEngine->getMadhhab() << "]";
 }
 
 int UiEngine::indexOfValue(const QVariantList &list, const QString &value) noexcept
 {
-    logDebug(munadi) << "Value: " << value;
+    logDebug(cat) << "Value: " << value;
     const auto it{std::ranges::find_if(list, [&value](const QVariant &item) -> bool {
         return item.toHash().value("name"_L1).toString() == value;
     })};
@@ -269,7 +269,7 @@ QVariantList &UiEngine::langDisplayNames() noexcept
 
 void UiEngine::loadConfigs() noexcept
 {
-    logDebug(munadi) << "Loading configs from persistent config file";
+    logDebug(cat) << "Loading configs from persistent config file";
 
     bool          configMigrated{true};
     const QString migrateKey{u"UiEngineConfigMigrated"_s};
@@ -286,7 +286,7 @@ void UiEngine::loadConfigs() noexcept
             if (!core->readSettings(migrateKey).toBool())
                 realValue /= maxBlur;
 
-            logDebug(munadi) << "blur: " << realValue;
+            logDebug(cat) << "blur: " << realValue;
             this->setProperty("blur", realValue);
         },
         configMigrated);
@@ -338,7 +338,7 @@ void UiEngine::loadConfigs() noexcept
     loadConfigKey({}, "App/Language"_L1, {}, [this](const QVariant &value) -> void {
         const int index = UiEngine::indexOfValue(this->m_langDisplayNames, value.toString());
 
-        logDebug(munadi) << "Loaded from config: langIdx: " << index;
+        logDebug(cat) << "Loaded from config: langIdx: " << index;
         this->setLangDisplayIdx(index);
     });
 
@@ -411,7 +411,7 @@ void UiEngine::saveConfigs() noexcept
     // Ensure the very last config to be saved has the third parameter set to "true". Otherwise
     // (later) settings are not saved
 
-    logDebug(munadi) << "Saving UI configurations";
+    logDebug(cat) << "Saving UI configurations";
 
     core->writeSettings("App/BackgroundImage"_L1, this->m_bgImage);
     core->writeSettings("App/Blur"_L1, this->m_blur);
@@ -427,14 +427,14 @@ void UiEngine::saveConfigs() noexcept
 
 void UiEngine::setCalcMethodDisplayIdx(const QVariant &index) noexcept
 {
-    logDebug(munadi) << "Received index: " << index;
+    logDebug(cat) << "Received index: " << index;
     fetchAndSetKey(index.toInt(), this->m_calcMethodsDisplayNames, this->m_calcMethodsDisplayIndex,
                    [](const QString &name) -> void { pEngine->setCalcMethod(name); });
 }
 
 void UiEngine::setCalendarDisplayIdx(const QVariant &index) noexcept
 {
-    logDebug(munadi) << "Received index: " << index;
+    logDebug(cat) << "Received index: " << index;
     fetchAndSetKey(index.toInt(), this->m_calendarDisplayNames, this->m_calendarDisplayIndex,
                    [this](const QString &name) -> void { this->setCalendarKey(name); });
     emit this->calendarIdxChanged();
@@ -442,13 +442,13 @@ void UiEngine::setCalendarDisplayIdx(const QVariant &index) noexcept
 
 void UiEngine::setCalendarKey(const QString &name) noexcept
 {
-    if (setConfig(this->m_calendarDateDisplay, name, this->calendarKey))
+    if (setConfig(this->m_calendarDateDisplay, name, this->calendarKey, cat()))
         emit this->calendarChanged();
 }
 
 void UiEngine::setDateOffset(int offset) noexcept
 {
-    logDebug(munadi) << "Received offset: " << offset;
+    logDebug(cat) << "Received offset: " << offset;
 
     this->m_dateOffset = offset;
 
@@ -459,13 +459,13 @@ void UiEngine::setDateOffset(int offset) noexcept
 
 void UiEngine::setHijriOffset(double offset) noexcept
 {
-    logDebug(munadi) << "Received offset: " << offset;
+    logDebug(cat) << "Received offset: " << offset;
 
     const int old{this->m_hijriOffset};
 
     this->m_hijriOffset = static_cast<int>(offset);
 
-    logDebug(munadi) << "Replaced " << old << " with " << this->m_hijriOffset;
+    logDebug(cat) << "Replaced " << old << " with " << this->m_hijriOffset;
     this->initCalendarDates();
     emit this->hijriOffsetChanged();
     emit this->calendarChanged();
@@ -473,7 +473,7 @@ void UiEngine::setHijriOffset(double offset) noexcept
 
 void UiEngine::setLangDisplayIdx(const QVariant &index) noexcept
 {
-    logDebug(munadi) << "Received index: " << index;
+    logDebug(cat) << "Received index: " << index;
     fetchAndSetKey(index.toInt(), this->m_langDisplayNames, this->m_langDisplayIndex,
                    [](const QString &name) -> void { core->setLang(name); });
     emit this->langIdxChanged();
@@ -481,7 +481,7 @@ void UiEngine::setLangDisplayIdx(const QVariant &index) noexcept
 
 void UiEngine::setMadhhabDisplayIdx(const QVariant &index) noexcept
 {
-    logDebug(munadi) << "Received index: " << index;
+    logDebug(cat) << "Received index: " << index;
     fetchAndSetKey(index.toInt(), this->m_madhhabDisplayNames, this->m_madhhabDisplayIndex,
                    [](const QString &name) -> void { pEngine->setMadhhab(name); });
 }
@@ -584,7 +584,7 @@ void UiEngine::onDateChanged() noexcept
 
 void UiEngine::onLocaleChanged() noexcept
 {
-    logDebug(munadi) << "Detected language change, refreshing texts...";
+    logDebug(cat) << "Detected language change, refreshing texts...";
     this->initTexts();
     emit this->calendarChanged();
     emit this->displayTimesChanged();
@@ -594,7 +594,7 @@ void UiEngine::onLocaleChanged() noexcept
 
 void UiEngine::onMinuteChanged() noexcept
 {
-    logDebug(munadi) << "60s_tick event received";
+    logDebug(cat) << "60s_tick event received";
     emit this->timeChanged();
 }
 
@@ -603,9 +603,9 @@ void UiEngine::onMultimediaEngineOnline() noexcept
 
 void UiEngine::onPrayerEngineOnline() noexcept
 {
-    logDebug(munadi) << "Executing onPrayerEngineOnline()";
+    logDebug(cat) << "Executing onPrayerEngineOnline()";
     this->connectToCalcChanged();
     this->loadConfigs(); // loadConfigs() needs to be before initConfigs()
     this->initConfigs();
 }
-} // namespace Munadi
+} // namespace App

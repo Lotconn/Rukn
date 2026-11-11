@@ -4,7 +4,7 @@ import QtQuick.Controls.Material
 import QtQuick.Dialogs
 import QtQuick.Layouts
 
-import Munadi
+import App
 
 ColumnLayout {
     RowLayout {
@@ -17,7 +17,7 @@ ColumnLayout {
         }
 
         Button {
-            icon.source: MultimediaEngine.previewPlaying ? "qrc:/qt/qml/Munadi/img/stop.png" : "qrc:/qt/qml/Munadi/img/start.png"
+            icon.source: MultimediaEngine.previewPlaying ? "qrc:/qt/qml/App/img/stop.png" : "qrc:/qt/qml/App/img/start.png"
             implicitWidth: height
 
             onClicked: MultimediaEngine.previewPlaying ? MultimediaEngine.previewStop() : MultimediaEngine.previewPlay(athanListCBox.currentIndex)

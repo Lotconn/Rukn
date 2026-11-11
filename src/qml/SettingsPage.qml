@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.Layouts
-import Munadi
+import App
 
 Page {
     Flickable {
@@ -221,7 +221,7 @@ Page {
                     }
 
                     SettingSubtitle {
-                        text: qsTr("When closing Munadi, hide it instead.")
+                        text: qsTr("When closing the app, hide it instead.")
                     }
                 }
 
@@ -452,7 +452,7 @@ Page {
                 SettingTitle {
                     font.italic: true
                     horizontalAlignment: Text.AlignHCenter
-                    text: qsTr("About Munadi")
+                    text: qsTr("About App")
                 }
 
                 Line {

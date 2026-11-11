@@ -34,7 +34,7 @@ bool Engine::fullscreen()
 
 QString Engine::getWhatsNew()
 {
-    QFile whats_new(":/qt/qml/Munadi/data/whatsnew.html");
+    QFile whats_new(":/qt/qml/App/data/whatsnew.html");
     std::ignore = whats_new.open(QFile::ReadOnly | QFile::Text);
     QTextStream ts(&whats_new);
 

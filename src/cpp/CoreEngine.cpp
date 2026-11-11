@@ -7,7 +7,7 @@
 
 #include "internal-helpers.hpp"
 
-#ifdef MUNADI_FLATPAK_DIST
+#ifdef APP_FLATPAK_DIST
 #include <QDBusConnection>
 #include <QDBusMessage>
 #include <QDBusObjectPath>
@@ -19,9 +19,9 @@
 #include <sys/socket.h>
 #endif
 
-Q_STATIC_LOGGING_CATEGORY(munadi, "CoreEngine")
+Q_STATIC_LOGGING_CATEGORY(cat, "CoreEngine")
 
-namespace Munadi
+namespace App
 {
 
 const QHash<QString, std::function<void(CoreEngine *)>> CoreEngine::triggerRelays{
@@ -31,16 +31,15 @@ const QHash<QString, std::function<void(CoreEngine *)>> CoreEngine::triggerRelay
     {u"athan"_s,        &CoreEngine::athanAlarm   }
 };
 
-CoreEngine::CoreEngine(QObject *parent) : MunadiBase{munadi(), parent}, m_alarm{createAlarm(this)}
+CoreEngine::CoreEngine(QObject *parent) : AppBase{cat(), parent}, m_alarm{createAlarm(this)}
 {
     this->bootEngine();
 
 #ifdef Q_OS_UNIX
-    logDebug(munadi) << "Unix signal connection status: "
-                     << CoreEngine::installUnixSignalHandlers();
+    logDebug(cat) << "Unix signal connection status: " << CoreEngine::installUnixSignalHandlers();
 
     if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sigtermFd.data()) != 0)
-        logFatal(munadi) << "Couldn't create TERM socketpair";
+        logFatal(cat) << "Couldn't create TERM socketpair";
 
     snTerm = new QSocketNotifier{sigtermFd[1], QSocketNotifier::Read, this};
 
@@ -50,26 +49,20 @@ CoreEngine::CoreEngine(QObject *parent) : MunadiBase{munadi(), parent}, m_alarm{
     const QString appName{QCoreApplication::applicationName()};
     const QString orgName{QCoreApplication::organizationName()};
 
-    if (appName.isEmpty())
-        logCritical(munadi) << "Not setting up persistnent config due to missing application "
-                               "name. Settings won't be saved.";
-    else
-    {
-        const QString stateDir{QStandardPaths::writableLocation(QStandardPaths::StateLocation)};
+    const QString stateDir{QStandardPaths::writableLocation(QStandardPaths::StateLocation)};
 
-        this->settings =
-            new QSettings{QSettings::IniFormat, QSettings::UserScope, orgName, appName, this};
-        this->stateFile = new QSettings{stateDir + u"rc"_s, QSettings::IniFormat, this};
+    this->settings =
+        new QSettings{QSettings::IniFormat, QSettings::UserScope, orgName, appName, this};
+    this->stateFile = new QSettings{stateDir + u"rc"_s, QSettings::IniFormat, this};
 
-        logDebug(munadi) << "Settings file: " << this->settings->fileName();
-        logDebug(munadi) << "State file: " << this->stateFile->fileName();
-    }
+    logDebug(cat) << "Settings file: " << this->settings->fileName();
+    logDebug(cat) << "State file: " << this->stateFile->fileName();
 
     if (this->oldSettings = new QSettings{orgName, appName, this};
         QFileInfo::exists(this->oldSettings->fileName()))
-        logInfo(munadi) << "Old config detected, relevant configurations will be migrated";
+        logInfo(cat) << "Old config detected, relevant configurations will be migrated";
 
-    logDebug(munadi) << "Old config path: " << this->oldSettings->fileName();
+    logDebug(cat) << "Old config path: " << this->oldSettings->fileName();
 
     // These are in order of dependency, not in lexical order
     qApp->installEventFilter(this);
@@ -84,7 +77,7 @@ CoreEngine::CoreEngine(QObject *parent) : MunadiBase{munadi(), parent}, m_alarm{
 }
 
 const QLoggingCategory &CoreEngine::logCategory() noexcept
-{ return munadi(); }
+{ return cat(); }
 
 Alarm &CoreEngine::alarmManager() const noexcept
 { return *this->m_alarm; }
@@ -103,14 +96,14 @@ QVariant CoreEngine::readOldSettings(QAnyStringView  oldKey,
 {
     if (oldKey.isEmpty())
     {
-        logCritical(munadi) << "Provided key is empty";
+        logCritical(cat) << "Provided key is empty";
 
         return {};
     }
 
     if (this->oldSettings == nullptr)
     {
-        logDebug(munadi) << "Old settings doesn't exist, skipping migration";
+        logDebug(cat) << "Old settings doesn't exist, skipping migration";
 
         return {};
     }
@@ -127,22 +120,22 @@ QVariantList CoreEngine::readOldSettingsJsArray(QAnyStringView    oldKey,
 
     if (err.error != QJsonParseError::NoError)
     {
-        logWarning(munadi) << "Failed to parse JSON";
-        logDebug(munadi) << "Error at offset " << err.offset << ": " << err.errorString();
+        logWarning(cat) << "Failed to parse JSON";
+        logDebug(cat) << "Error at offset " << err.offset << ": " << err.errorString();
 
         return defaultArray.toVariantList();
     }
 
     if (jsonDoc.isEmpty() || jsonDoc.isNull())
     {
-        logWarning(munadi) << "Parsed JSON is empty, using default value";
+        logWarning(cat) << "Parsed JSON is empty, using default value";
 
         return defaultArray.toVariantList();
     }
 
     if (!jsonDoc.isArray())
     {
-        logWarning(munadi) << "Parsed JSON is not an array, using default value";
+        logWarning(cat) << "Parsed JSON is not an array, using default value";
 
         return defaultArray.toVariantList();
     }
@@ -154,7 +147,7 @@ QVariant CoreEngine::readSettings(QAnyStringView key, const QVariant &defaultVal
 {
     if (key.isEmpty())
     {
-        logCritical(munadi) << "Provided key is empty";
+        logCritical(cat) << "Provided key is empty";
 
         return {};
     }
@@ -169,7 +162,7 @@ QVariantList CoreEngine::readSettingsArray(QAnyStringView group) const noexcept
 {
     if (group.isEmpty())
     {
-        logCritical(munadi) << "Provided key group is empty";
+        logCritical(cat) << "Provided key group is empty";
 
         return {};
     }
@@ -180,7 +173,7 @@ QVariantList CoreEngine::readSettingsArray(QAnyStringView group) const noexcept
     if (this->settings == nullptr)
         return {};
 
-    logDebug(munadi) << "Array size for \"" << group << "\" is " << size;
+    logDebug(cat) << "Array size for \"" << group << "\" is " << size;
 
     for (qsizetype i = 0; i < size; ++i)
     {
@@ -188,14 +181,14 @@ QVariantList CoreEngine::readSettingsArray(QAnyStringView group) const noexcept
 
         QVariantMap map;
 
-        logDebug(munadi) << "Child keys in array " << i << ": " << this->settings->childKeys();
+        logDebug(cat) << "Child keys in array " << i << ": " << this->settings->childKeys();
 
         // NOLINTNEXTLINE(clazy-range-loop*)
         for (const QString &key : this->settings->childKeys())
         {
             const QVariant value{CoreEngine::readValueOfKey(*this->settings, key)};
 
-            logDebug(munadi) << "Value of key \"" << key << "\": " << value;
+            logDebug(cat) << "Value of key \"" << key << "\": " << value;
 
             map.insert(key, value);
         }
@@ -212,7 +205,7 @@ QVariant CoreEngine::readState(const QString &key, const QVariant &defaultValue)
 {
     if (key.isEmpty())
     {
-        logCritical(munadi) << "Provided key is empty";
+        logCritical(cat) << "Provided key is empty";
 
         return {};
     }
@@ -227,7 +220,7 @@ void CoreEngine::set60sTicker() const noexcept
 {
     constexpr static quint8 minSecs{60};
 
-    logDebug(munadi) << "Registering 60s_ticker";
+    logDebug(cat) << "Registering 60s_ticker";
 
     this->m_alarm->clear("60s_tick"_L1);
     // This is not regular arithmetic, do not simplify the math here
@@ -246,7 +239,7 @@ void CoreEngine::setAutoStart(bool enabled) noexcept // NOLINT(*member*to-static
 
 #ifdef Q_OS_WIN
     this->setAutoStart_win(enabled);
-#elifdef MUNADI_FLATPAK_DIST
+#elifdef APP_FLATPAK_DIST
     this->setAutoStart_flatpak(enabled);
 #elif defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
     CoreEngine::setAutoStart_linux(enabled);
@@ -260,9 +253,9 @@ void CoreEngine::setLang(const QString &lang) noexcept
 {
     QString currLang{QLocale::languageToString(QLocale{}.language())};
 
-    logDebug(munadi) << "lang: " << lang;
-    logDebug(munadi) << "locale: " << CoreEngine::s_lang.value(lang);
-    logDebug(munadi) << "current lang: " << currLang;
+    logDebug(cat) << "lang: " << lang;
+    logDebug(cat) << "locale: " << CoreEngine::s_lang.value(lang);
+    logDebug(cat) << "current lang: " << currLang;
 
     if (setConfig(CoreEngine::s_lang, lang, currLang))
         this->applyLocale(CoreEngine::s_lang.value(lang));
@@ -273,7 +266,7 @@ void CoreEngine::writeSettings(QAnyStringView key, const QVariant &value,
 {
     if (key.isEmpty())
     {
-        logCritical(munadi) << "Provided key is empty";
+        logCritical(cat) << "Provided key is empty";
 
         return;
     }
@@ -289,7 +282,7 @@ void CoreEngine::writeSettingsArray(QAnyStringView group, const QVariantList &en
 {
     if (group.isEmpty())
     {
-        logCritical(munadi) << "Provided key group is empty";
+        logCritical(cat) << "Provided key group is empty";
 
         return;
     }
@@ -321,7 +314,7 @@ void CoreEngine::writeState(const QString &key, const QVariant &value,
 {
     if (key.isEmpty())
     {
-        logCritical(munadi) << "Provided key is empty";
+        logCritical(cat) << "Provided key is empty";
 
         return;
     }
@@ -338,8 +331,8 @@ void CoreEngine::writeState(const QString &key, const QVariant &value,
 
 void CoreEngine::onReceivedMessage(quint32 instanceId, const QByteArray &message)
 {
-    logDebug(munadi) << "Received message from instance: " << instanceId;
-    logInfo(munadi) << "Received Message: " << message;
+    logDebug(cat) << "Received message from instance: " << instanceId;
+    logInfo(cat) << "Received Message: " << message;
     emit this->exposeInstance();
 }
 
@@ -356,12 +349,12 @@ bool CoreEngine::eventFilter(QObject *object, QEvent *event) noexcept
     {
     case QEvent::LocaleChange:
         // OS-level change
-        logDebug(munadi) << "Locale change detected";
+        logDebug(cat) << "Locale change detected";
         this->applyLocale();
         return true;
     case QEvent::LanguageChange:
         // App-level change, e.g. language selected from options
-        logDebug(munadi) << "Translations changed";
+        logDebug(cat) << "Translations changed";
 
         return true;
     default:
@@ -375,7 +368,7 @@ bool CoreEngine::eventFilter(QObject *object, QEvent *event) noexcept
 
 void CoreEngine::applyLocale(const QLocale &locale) noexcept
 {
-    logDebug(munadi) << "Removing current translator: " << this->translator.language();
+    logDebug(cat) << "Removing current translator: " << this->translator.language();
     qApp->removeTranslator(&this->translator); // no-op if none installed
 
     QLocale l{locale};
@@ -386,15 +379,15 @@ void CoreEngine::applyLocale(const QLocale &locale) noexcept
 
         QLocale::setDefault(l);
 
-        if (this->translator.load(l, "munadi"_L1, "_"_L1, ":/qt/qml/Munadi/i18n"_L1))
+        if (this->translator.load(l, qAppName().toLower(), "_"_L1, ":/qt/qml/App/i18n"_L1))
         {
-            logDebug(munadi) << "Installing updated translator: " << this->translator.language();
+            logDebug(cat) << "Installing updated translator: " << this->translator.language();
             qApp->installTranslator(&this->translator);
         }
     }
     else
     {
-        logInfo(munadi) << "Language not supported, using en_US as fallback";
+        logInfo(cat) << "Language not supported, using en_US as fallback";
         QLocale::setDefault(QLocale{"en_US"_L1});
     }
 
@@ -404,7 +397,7 @@ void CoreEngine::applyLocale(const QLocale &locale) noexcept
 
     if (QQmlEngine *engine = qmlEngine(this))
     {
-        logDebug(munadi) << "Reloading Qml translations";
+        logDebug(cat) << "Reloading Qml translations";
         engine->retranslate();
     }
 
@@ -416,9 +409,9 @@ void CoreEngine::connectToAboutToQuit() const noexcept
     if (const auto conn = QObject::connect(qApp, &QCoreApplication::aboutToQuit, this,
                                            &CoreEngine::onAboutToQuit);
         conn == nullptr)
-        logWarning(munadi) << "aboutToQuit signal not connected";
+        logWarning(cat) << "aboutToQuit signal not connected";
     else
-        logDebug(munadi) << "aboutToQuit signal connected";
+        logDebug(cat) << "aboutToQuit signal connected";
 }
 
 void CoreEngine::connectToTrigger() const noexcept
@@ -426,9 +419,9 @@ void CoreEngine::connectToTrigger() const noexcept
     if (const auto conn =
             QObject::connect(this->m_alarm, &Alarm::trigger, this, &CoreEngine::onTrigger);
         conn == nullptr)
-        logWarning(munadi) << "Trigger signal not connected";
+        logWarning(cat) << "Trigger signal not connected";
     else
-        logDebug(munadi) << "Trigger signal connected";
+        logDebug(cat) << "Trigger signal connected";
 }
 
 QLocale CoreEngine::getCurrentLocale() noexcept
@@ -443,8 +436,8 @@ void CoreEngine::installTickers() const noexcept
 
     if (!QSystemTrayIcon::isSystemTrayAvailable())
     {
-        logWarning(munadi) << "System tray is not available";
-        logDebug(munadi) << "Not registering 60s_ticker";
+        logWarning(cat) << "System tray is not available";
+        logDebug(cat) << "Not registering 60s_ticker";
         return;
     }
 
@@ -473,7 +466,7 @@ int CoreEngine::installUnixSignalHandlers()
 
 void CoreEngine::loadConfigs() noexcept
 {
-    logDebug(munadi) << "Loading configs from persistent config file";
+    logDebug(cat) << "Loading configs from persistent config file";
 
     bool          configMigrated{true};
     const QString migrateKey{u"CoreEngineConfigMigrated"_s};
@@ -509,21 +502,20 @@ void CoreEngine::migrateStore() const noexcept
 
     if (QFileInfo::exists(oldStorePath) && !QFileInfo{oldStorePath}.isDir())
     {
-        logDebug(munadi)
-            << oldStorePath
-            << "already exists which is not a directory, refusing to initiate migration";
+        logDebug(cat) << oldStorePath
+                      << "already exists which is not a directory, refusing to initiate migration";
         return;
     }
 
     const QDir newStoreDir{QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)};
 
-    logInfo(munadi) << "Old store detected, attempting migration...";
-    logDebug(munadi) << "Old store path: " << oldStorePath;
-    logDebug(munadi) << "New store path: " << newStoreDir.absolutePath();
+    logInfo(cat) << "Old store detected, attempting migration...";
+    logDebug(cat) << "Old store path: " << oldStorePath;
+    logDebug(cat) << "New store path: " << newStoreDir.absolutePath();
 
     if (newStoreDir.absolutePath() == oldStorePath)
     {
-        logInfo(munadi) << "Old and new store are the same, skipping migration";
+        logInfo(cat) << "Old and new store are the same, skipping migration";
         return;
     }
 
@@ -544,11 +536,11 @@ void CoreEngine::migrateStore() const noexcept
 
         if (bool ret{oldStoreDir.rename(src, destPath)}; ret)
         {
-            logDebug(munadi) << "Moving " << src << " to " << destPath;
+            logDebug(cat) << "Moving " << src << " to " << destPath;
             ok = ret;
         }
         else
-            logWarning(munadi) << "Error while moving " << src << " to " << destPath;
+            logWarning(cat) << "Error while moving " << src << " to " << destPath;
     }
 
     if (ok)
@@ -558,18 +550,17 @@ void CoreEngine::migrateStore() const noexcept
 QVariant CoreEngine::readValueOfKey(QSettings &settings, QAnyStringView key,
                                     const QVariant &defaultValue) noexcept
 {
-    logDebug(munadi) << "Fetching value of key \"" << key << "\"";
+    logDebug(cat) << "Fetching value of key \"" << key << "\"";
 
     QVariant value{settings.value(key)};
 
     switch (settings.status())
     {
     case QSettings::AccessError:
-        logWarning(munadi) << "Failed to read config";
+        logWarning(cat) << "Failed to read config";
         return defaultValue;
     case QSettings::FormatError:
-        logWarning(munadi) << "Config for key \"" << key
-                           << "\" is malformed, returning default value";
+        logWarning(cat) << "Config for key \"" << key << "\" is malformed, returning default value";
         return defaultValue;
     default:
         break;
@@ -577,13 +568,13 @@ QVariant CoreEngine::readValueOfKey(QSettings &settings, QAnyStringView key,
 
     if (value.isNull())
     {
-        logWarning(munadi) << "Failed to fetch a valid value for key \"" << key
-                           << "\", returning default value";
+        logWarning(cat) << "Failed to fetch a valid value for key \"" << key
+                        << "\", returning default value";
 
         return defaultValue;
     }
 
-    logDebug(munadi) << "Key: \"" << key << "\"; Value: \"" << value << "\"";
+    logDebug(cat) << "Key: \"" << key << "\"; Value: \"" << value << "\"";
 
     return value;
 }
@@ -595,7 +586,7 @@ QVariant CoreEngine::readValueOfKey(QSettings &settings, QAnyStringView key,
 
 void CoreEngine::saveConfigs() noexcept
 {
-    logDebug(munadi) << "Saving configurations";
+    logDebug(cat) << "Saving configurations";
 
     this->writeSettings("App/AutoStart"_L1, this->m_autoStartSet);
     this->writeSettings("App/LastVersion"_L1, CoreEngine::s_appVersion, true);
@@ -605,7 +596,7 @@ void CoreEngine::setValueOfKey(QSettings &settings, QAnyStringView key, const QV
                                bool flushOnWrite) noexcept
 {
     if (value.isNull())
-        logWarning(munadi) << "Value is empty. Make sure this is intended.";
+        logWarning(cat) << "Value is empty. Make sure this is intended.";
 
     settings.setValue(key, value);
 
@@ -615,14 +606,13 @@ void CoreEngine::setValueOfKey(QSettings &settings, QAnyStringView key, const QV
     switch (settings.status())
     {
     case QSettings::AccessError:
-        logWarning(munadi) << "Failed to read config";
+        logWarning(cat) << "Failed to read config";
         break;
     case QSettings::FormatError:
-        logWarning(munadi) << "Config for key \"" << key
-                           << "\" is malformed, returning default value";
+        logWarning(cat) << "Config for key \"" << key << "\" is malformed, returning default value";
         break;
     default:
-        // logDebug(munadi) << key << "=" << value << " successfully saved";
+        // logDebug(cat) << key << "=" << value << " successfully saved";
         break;
     }
 }
@@ -631,7 +621,7 @@ void CoreEngine::setValueOfKey(QSettings &settings, QAnyStringView key, const QV
 void CoreEngine::setAutoStart_flatpak(bool enabled) noexcept
 {
     Q_UNUSED(enabled)
-#ifdef MUNADI_FLATPAK_DIST
+#ifdef APP_FLATPAK_DIST
     QDBusConnection bus{QDBusConnection::sessionBus()};
 
     QDBusMessage msg{QDBusMessage::createMethodCall(
@@ -641,7 +631,7 @@ void CoreEngine::setAutoStart_flatpak(bool enabled) noexcept
     // NOLINTNEXTLINE(*magic-numbers)
     const int     token{QRandomGenerator::global()->bounded(1000, 9999)};
     const QString sender{bus.baseService().mid(1).replace(u'.', u'_')};
-    const QString handleToken{u"munadi_%1"_s.arg(token)};
+    const QString handleToken{qAppName() + u"_%1"_s.arg(token)};
     const QString requestPath{
         u"/org/freedesktop/portal/desktop/request/%1/%2"_s.arg(sender, handleToken)};
 
@@ -652,11 +642,11 @@ void CoreEngine::setAutoStart_flatpak(bool enabled) noexcept
                 SLOT(onAutoStartResponse(uint, QVariantMap)));
 
     const QVariantMap options{
-        {u"autostart"_s,    enabled                                       },
-        {u"background"_s,   enabled                                       },
-        {u"commandline"_s,  QStringList{u"munadi"_s, u"--hidden"_s}       },
-        {u"reason"_s,       u"Automatically launch application at login"_s},
-        {u"handle_token"_s, u"munadi_%1"_s.arg(token)                     },
+        {u"autostart"_s,    enabled                                         },
+        {u"background"_s,   enabled                                         },
+        {u"commandline"_s,  QStringList{qAppName().toLower(), u"--hidden"_s}},
+        {u"reason"_s,       u"Automatically launch application at login"_s  },
+        {u"handle_token"_s, qAppName() + u"_%1"_s.arg(token)                },
     };
 
     msg << ""_L1 << options; // Empty parent window ID
@@ -664,7 +654,7 @@ void CoreEngine::setAutoStart_flatpak(bool enabled) noexcept
 
     // Handle response and connect to signal for final status
     if (response.type() != QDBusMessage::ReplyMessage)
-        logWarning(munadi) << "Portal request failed: " << response.errorMessage();
+        logWarning(cat) << "Portal request failed: " << response.errorMessage();
 #endif
 }
 
@@ -672,7 +662,7 @@ void CoreEngine::setAutoStart_flatpak(bool enabled) noexcept
 void CoreEngine::setAutoStart_linux(bool enabled) noexcept
 {
     Q_UNUSED(enabled)
-#ifndef MUNADI_FLATPAK_DIST
+#ifndef APP_FLATPAK_DIST
     const QString desktopName{qApp->desktopFileName() + u"-sfx.desktop"_s};
     const QString autostartPath{
         QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + u"/autostart/"_s +
@@ -681,9 +671,9 @@ void CoreEngine::setAutoStart_linux(bool enabled) noexcept
     if (!enabled)
     {
         if (!QFileInfo::exists(autostartPath) || !QFile::remove(autostartPath))
-            logWarning(munadi) << "Couldn't remove autostart file " << autostartPath;
+            logWarning(cat) << "Couldn't remove autostart file " << autostartPath;
         else
-            logInfo(munadi) << "Autostart disabled successfully";
+            logInfo(cat) << "Autostart disabled successfully";
 
         this->m_autoStartSet = enabled;
         return;
@@ -694,22 +684,23 @@ void CoreEngine::setAutoStart_linux(bool enabled) noexcept
 
     if (desktopPath.isEmpty())
     {
-        logWarning(munadi) << "No desktop file found installed in system";
+        logWarning(cat) << "No desktop file found installed in system";
         return;
     }
 
-    logDebug(munadi) << "Using desktop file at " << desktopPath;
+    logDebug(cat) << "Using desktop file at " << desktopPath;
 
     QFile desktopFile{desktopPath};
 
     if (!desktopFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        logCritical(munadi) << "Couldn't open " << desktopPath << " for reading";
+        logCritical(cat) << "Couldn't open " << desktopPath << " for reading";
         return;
     }
 
+    const QString cmdline{u"bin/"_s + qAppName().toLower()};
     const QString contents{
-        QString{desktopFile.readAll()}.replace("bin/munadi"_L1, "bin/munadi --hidden"_L1)};
+        QString{desktopFile.readAll()}.replace(cmdline, cmdline + " --hidden"_L1)};
 
     desktopFile.close();
 
@@ -717,17 +708,17 @@ void CoreEngine::setAutoStart_linux(bool enabled) noexcept
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        logCritical(munadi) << "Couldn't open " << autostartPath << " for writing";
+        logCritical(cat) << "Couldn't open " << autostartPath << " for writing";
         return;
     }
 
     file.write(contents.toUtf8());
 
     if (!file.commit())
-        logCritical(munadi) << "Failed to write at " << autostartPath;
+        logCritical(cat) << "Failed to write at " << autostartPath;
     else
     {
-        logDebug(munadi) << "File " << autostartPath << " successfully written";
+        logDebug(cat) << "File " << autostartPath << " successfully written";
 
         this->m_autoStartSet = enabled;
     }
@@ -738,7 +729,7 @@ void CoreEngine::setAutoStart_linux(bool enabled) noexcept
 void CoreEngine::setAutoStart_win(bool enabled) noexcept
 {
     Q_UNUSED(enabled)
-#ifdef Q_OS_WIN
+    // #ifdef Q_OS_WIN
     const QString appName{QCoreApplication::applicationName()};
     const QString appPath{QDir::toNativeSeparators(QCoreApplication::applicationFilePath())};
     QSettings     settings{R"(HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run)"_L1,
@@ -749,17 +740,16 @@ void CoreEngine::setAutoStart_win(bool enabled) noexcept
     switch (settings.status())
     {
     case QSettings::AccessError:
-        logWarning(munadi) << "Failed to read config";
+        logWarning(cat) << "Failed to read config";
         return;
     case QSettings::FormatError:
-        logWarning(munadi) << "Value \"" << appPath << "\" for key \"" << appName
-                           << "\" is malformed";
+        logWarning(cat) << "Value \"" << appPath << "\" for key \"" << appName << "\" is malformed";
         return;
     default:
         this->m_autoStartSet = enabled;
         break;
     }
-#endif
+    // #endif
 }
 
 void CoreEngine::termSignalHandler(int /* unused */)
@@ -789,10 +779,10 @@ void CoreEngine::onAboutToQuit() noexcept
 void CoreEngine::onAutoStartResponse(uint ret, const QVariantMap & /* unused */) noexcept
 {
     if (ret > 0)
-        logWarning(munadi) << "Request to autostart was cancelled";
+        logWarning(cat) << "Request to autostart was cancelled";
     else
     {
-        logDebug(munadi) << "Autostart set successfully";
+        logDebug(cat) << "Autostart set successfully";
 
         this->m_autoStartSet = this->interimStore;
     }
@@ -800,11 +790,11 @@ void CoreEngine::onAutoStartResponse(uint ret, const QVariantMap & /* unused */)
 
 void CoreEngine::onTrigger(const QString &id) noexcept
 {
-    logDebug(munadi) << "trigger id: " << id;
+    logDebug(cat) << "trigger id: " << id;
 
     if (!CoreEngine::triggerRelays.contains(id))
     {
-        logWarning(munadi) << "\"" << id << "\" is not a valid alarm ID";
+        logWarning(cat) << "\"" << id << "\" is not a valid alarm ID";
         return;
     }
 
@@ -827,4 +817,4 @@ void CoreEngine::onUnixSigTerm() const
     qApp->quit();
 #endif
 }
-} // namespace Munadi
+} // namespace App

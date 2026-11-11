@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
         AllowSetForegroundWindow(DWORD(app.primaryPid()));
 #endif
         app.sendMessage(QApplication::arguments().join(' ').toUtf8());
-        qWarning() << "Munadi is already running.";
+        qWarning() << "App is already running.";
         qDebug() << "Primary instance PID: " << app.primaryPid();
         qDebug() << "Primary instance user: " << app.primaryUser().toLatin1().constData();
 
@@ -44,11 +44,11 @@ int main(int argc, char *argv[])
     QApplication::setOrganizationDomain("munadi.org"_L1);
     QApplication::setOrganizationName("munadi"_L1);
     QApplication::setStyle(QStyleFactory::create("gnome"_L1));
-    QApplication::setWindowIcon(QIcon{":/qt/qml/Munadi/img/munadi.png"_L1});
+    QApplication::setWindowIcon(QIcon{":/qt/qml/App/img/munadi.png"_L1});
 
-    QFontDatabase::addApplicationFont(":/qt/qml/Munadi/data/NotoNaskhArabic-VariableFont.ttf"_L1);
-    QFontDatabase::addApplicationFont(":/qt/qml/Munadi/data/NotoSans-VariableFont.ttf"_L1);
-    QFontDatabase::addApplicationFont(":/qt/qml/Munadi/data/NotoSansBengali-VariableFont.ttf"_L1);
+    QFontDatabase::addApplicationFont(":/qt/qml/App/data/NotoNaskhArabic-VariableFont.ttf"_L1);
+    QFontDatabase::addApplicationFont(":/qt/qml/App/data/NotoSans-VariableFont.ttf"_L1);
+    QFontDatabase::addApplicationFont(":/qt/qml/App/data/NotoSansBengali-VariableFont.ttf"_L1);
 
     const QFont font{"Noto Sans, Noto Naskh Arabic, Noto Sans Bengali"_L1};
     QApplication::setFont(font);
@@ -58,10 +58,10 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine qae;
 
     // These call is necessary for making `core` available before connection
-    qae.singletonInstance<Munadi::CoreEngine *>("Munadi"_L1, "CoreEngine"_L1);
+    qae.singletonInstance<App::CoreEngine *>("App"_L1, "CoreEngine"_L1);
 
     if (const auto conn = QObject::connect(&app, &SingleApplication::receivedMessage, core,
-                                           &Munadi::CoreEngine::onReceivedMessage);
+                                           &App::CoreEngine::onReceivedMessage);
 
         conn == nullptr)
         qWarning() << "Connection not established with SingleApplication";
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
     }
 
     qae.rootContext()->setContextProperty("engine"_L1, &engine);
-    qae.loadFromModule("Munadi"_L1, "Main"_L1);
+    qae.loadFromModule("App"_L1, "Main"_L1);
 
 #ifdef Q_OS_MACOS
     if (auto *window = qobject_cast<QQuickWindow *>(qae.rootObjects().first()))

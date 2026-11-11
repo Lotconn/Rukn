@@ -4,7 +4,7 @@ import QtQuick.Controls.Material
 import QtQuick.Effects
 import QtQuick.Layouts
 
-import Munadi
+import App
 
 RowLayout {
     id: prayerRow

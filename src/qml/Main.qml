@@ -4,7 +4,7 @@ import QtQuick.Effects
 import QtQuick.Window
 import Qt.labs.platform
 
-import Munadi
+import App
 
 ApplicationWindow {
     id: mainWindow
@@ -28,7 +28,7 @@ ApplicationWindow {
 
             anchors.fill: parent
             fillMode: Image.PreserveAspectCrop
-            source: "qrc:/qt/qml/Munadi/img/bg/" + (PrayerEngine.currentPrayer % 6) + ".jpg"
+            source: "qrc:/qt/qml/App/img/bg/" + (PrayerEngine.currentPrayer % 6) + ".jpg"
         }
 
         MultiEffect {
@@ -82,7 +82,7 @@ ApplicationWindow {
         id: theme
     }
 
-    MunadiModel {
+    AppModel {
         id: mm
     }
 
@@ -246,7 +246,7 @@ ApplicationWindow {
 
     SystemTrayIcon {
         icon.name: "org.munadi.Munadi-symbolic"
-        icon.source: "qrc:/qt/qml/Munadi/img/munadi-symbolic.svg"
+        icon.source: "qrc:/qt/qml/App/img/munadi-symbolic.svg"
         tooltip: qsTr("Munadi") + ((UiEngine.timeLeftDisplay === "") ? "" : "\n" + UiEngine.timeLeftDisplay)
         visible: true
 
@@ -254,42 +254,42 @@ ApplicationWindow {
             visible: false
 
             MenuItem {
-                icon.source: "qrc:/qt/qml/Munadi/img/prayerTimes/fajr.svg"
+                icon.source: "qrc:/qt/qml/App/img/prayerTimes/fajr.svg"
                 text: " " + UiEngine.prayerDisplayTimes.Fajr
             }
 
             MenuItem {
-                icon.source: "qrc:/qt/qml/Munadi/img/prayerTimes/sunrise.svg"
+                icon.source: "qrc:/qt/qml/App/img/prayerTimes/sunrise.svg"
                 text: " " + UiEngine.prayerDisplayTimes.Sunrise
             }
 
             MenuItem {
-                icon.source: "qrc:/qt/qml/Munadi/img/prayerTimes/dhuhr.svg"
+                icon.source: "qrc:/qt/qml/App/img/prayerTimes/dhuhr.svg"
                 text: " " + UiEngine.prayerDisplayTimes.Dhuhr
             }
 
             MenuItem {
-                icon.source: "qrc:/qt/qml/Munadi/img/prayerTimes/asr.svg"
+                icon.source: "qrc:/qt/qml/App/img/prayerTimes/asr.svg"
                 text: " " + UiEngine.prayerDisplayTimes.Asr
             }
 
             MenuItem {
-                icon.source: "qrc:/qt/qml/Munadi/img/prayerTimes/maghrib.svg"
+                icon.source: "qrc:/qt/qml/App/img/prayerTimes/maghrib.svg"
                 text: " " + UiEngine.prayerDisplayTimes.Maghrib
             }
 
             MenuItem {
-                icon.source: "qrc:/qt/qml/Munadi/img/prayerTimes/isha.svg"
+                icon.source: "qrc:/qt/qml/App/img/prayerTimes/isha.svg"
                 text: " " + UiEngine.prayerDisplayTimes.Isha
             }
 
             MenuItem {
-                icon.source: "qrc:/qt/qml/Munadi/img/prayerTimes/midnight.svg"
+                icon.source: "qrc:/qt/qml/App/img/prayerTimes/midnight.svg"
                 text: " " + UiEngine.prayerDisplayTimes.Midnight
             }
 
             MenuItem {
-                icon.source: "qrc:/qt/qml/Munadi/img/prayerTimes/lastThirdNight.svg"
+                icon.source: "qrc:/qt/qml/App/img/prayerTimes/lastThirdNight.svg"
                 text: " " + UiEngine.prayerDisplayTimes.LastThirdNight
             }
 

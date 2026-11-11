@@ -30,116 +30,7 @@
     </message>
 </context>
 <context>
-    <name>AudioManComp</name>
-    <message>
-        <location filename="../qml/AudioManComp.qml" line="55"/>
-        <source>Please choose an audio file</source>
-        <translation>অডিও ফাইল নির্বাচন করুন</translation>
-    </message>
-    <message>
-        <location filename="../qml/AudioManComp.qml" line="32"/>
-        <source>Add</source>
-        <translation>যুক্ত করুন</translation>
-    </message>
-    <message>
-        <location filename="../qml/AudioManComp.qml" line="39"/>
-        <source>Remove</source>
-        <translation>মুছুন</translation>
-    </message>
-</context>
-<context>
-    <name>CompassPage</name>
-    <message>
-        <location filename="../qml/CompassPage.qml" line="17"/>
-        <source>Qibla Direction</source>
-        <translation>ক্বিবলার দিক</translation>
-    </message>
-    <message>
-        <location filename="../qml/CompassPage.qml" line="78"/>
-        <source>%1° with respect to North</source>
-        <translation>উত্তর থেকে %1°</translation>
-    </message>
-</context>
-<context>
-    <name>DateRow</name>
-    <message>
-        <location filename="../qml/DateRow.qml" line="30"/>
-        <source>&lt;</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../qml/DateRow.qml" line="81"/>
-        <source>&gt;</source>
-        <translation></translation>
-    </message>
-</context>
-<context>
-    <name>LocationInfoRow</name>
-    <message>
-        <location filename="../qml/LocationInfoRow.qml" line="18"/>
-        <source>Set your location ...</source>
-        <translation>অবস্থান নির্ধারণ করুন ...</translation>
-    </message>
-</context>
-<context>
-    <name>LocationSearchComponent</name>
-    <message>
-        <location filename="../qml/LocationSearchComponent.qml" line="36"/>
-        <source>Enter city name</source>
-        <translation>শহর নির্ধারণ করুন</translation>
-    </message>
-    <message>
-        <location filename="../qml/LocationSearchComponent.qml" line="44"/>
-        <source>Search</source>
-        <translation>খুঁজুন</translation>
-    </message>
-</context>
-<context>
-    <name>Main</name>
-    <message>
-        <location filename="../qml/Main.qml" line="70"/>
-        <source>QT_LAYOUT_DIRECTION</source>
-        <comment>QGuiApplication</comment>
-        <translation>LTR</translation>
-    </message>
-    <message>
-        <location filename="../qml/Main.qml" line="250"/>
-        <source>Munadi</source>
-        <translation>মুনাদি</translation>
-    </message>
-    <message>
-        <location filename="../qml/Main.qml" line="312"/>
-        <source>Show</source>
-        <translation>প্রদর্শন</translation>
-    </message>
-    <message>
-        <location filename="../qml/Main.qml" line="312"/>
-        <source>Hide</source>
-        <translation>লুকান</translation>
-    </message>
-    <message>
-        <location filename="../qml/Main.qml" line="318"/>
-        <source>Quit</source>
-        <translation>বন্ধ</translation>
-    </message>
-</context>
-<context>
-    <name>Munadi::UiEngine</name>
-    <message>
-        <location filename="../cpp/UiEngine.cpp" line="219"/>
-        <source>Muslim World League</source>
-        <translation>মুসলিম ওয়ার্ল্ড লীগ</translation>
-    </message>
-    <message>
-        <location filename="../cpp/UiEngine.cpp" line="222"/>
-        <source>Umm al-Qura</source>
-        <translation>উম্মুল-ক্বুরা</translation>
-    </message>
-    <message>
-        <location filename="../cpp/UiEngine.cpp" line="221"/>
-        <source>Moonsighting Committee</source>
-        <translation>মুনসাইটিং কমিটি</translation>
-    </message>
+    <name>App::UiEngine</name>
     <message>
         <location filename="../cpp/UiEngine.cpp" line="213"/>
         <source>Both</source>
@@ -154,6 +45,21 @@
         <location filename="../cpp/UiEngine.cpp" line="215"/>
         <source>Gregorian</source>
         <translation>গ্রেগোরিয়ান</translation>
+    </message>
+    <message>
+        <location filename="../cpp/UiEngine.cpp" line="219"/>
+        <source>Muslim World League</source>
+        <translation>মুসলিম ওয়ার্ল্ড লীগ</translation>
+    </message>
+    <message>
+        <location filename="../cpp/UiEngine.cpp" line="221"/>
+        <source>Moonsighting Committee</source>
+        <translation>মুনসাইটিং কমিটি</translation>
+    </message>
+    <message>
+        <location filename="../cpp/UiEngine.cpp" line="222"/>
+        <source>Umm al-Qura</source>
+        <translation>উম্মুল-ক্বুরা</translation>
     </message>
     <message>
         <location filename="../cpp/UiEngine.cpp" line="223"/>
@@ -272,29 +178,123 @@
         <translation>গাঢ়</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="517"/>
-        <source>h&apos;h&apos; m&apos;m&apos;</source>
-        <translation>h&apos;ঘ&apos; m&apos;মি&apos;</translation>
-    </message>
-    <message>
-        <location filename="../cpp/UiEngine.cpp" line="517"/>
-        <source>m&apos;m&apos;</source>
-        <translation>m&apos;মি&apos;</translation>
-    </message>
-    <message>
-        <location filename="../cpp/UiEngine.cpp" line="505"/>
+        <location filename="../cpp/UiEngine.cpp" line="504"/>
         <source>athan</source>
         <translation>আযান</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="522"/>
+        <location filename="../cpp/UiEngine.cpp" line="516"/>
+        <source>h&apos;h&apos; m&apos;m&apos;</source>
+        <translation>h&apos;ঘ&apos; m&apos;মি&apos;</translation>
+    </message>
+    <message>
+        <location filename="../cpp/UiEngine.cpp" line="516"/>
+        <source>m&apos;m&apos;</source>
+        <translation>m&apos;মি&apos;</translation>
+    </message>
+    <message>
+        <location filename="../cpp/UiEngine.cpp" line="521"/>
         <source>Seconds to</source>
         <translation>কিছুক্ষণ বাকি:</translation>
     </message>
     <message>
-        <location filename="../cpp/UiEngine.cpp" line="524"/>
+        <location filename="../cpp/UiEngine.cpp" line="523"/>
         <source>to</source>
         <translation>:</translation>
+    </message>
+</context>
+<context>
+    <name>AudioManComp</name>
+    <message>
+        <location filename="../qml/AudioManComp.qml" line="55"/>
+        <source>Please choose an audio file</source>
+        <translation>অডিও ফাইল নির্বাচন করুন</translation>
+    </message>
+    <message>
+        <location filename="../qml/AudioManComp.qml" line="32"/>
+        <source>Add</source>
+        <translation>যুক্ত করুন</translation>
+    </message>
+    <message>
+        <location filename="../qml/AudioManComp.qml" line="39"/>
+        <source>Remove</source>
+        <translation>মুছুন</translation>
+    </message>
+</context>
+<context>
+    <name>CompassPage</name>
+    <message>
+        <location filename="../qml/CompassPage.qml" line="17"/>
+        <source>Qibla Direction</source>
+        <translation>ক্বিবলার দিক</translation>
+    </message>
+    <message>
+        <location filename="../qml/CompassPage.qml" line="78"/>
+        <source>%1° with respect to North</source>
+        <translation>উত্তর থেকে %1°</translation>
+    </message>
+</context>
+<context>
+    <name>DateRow</name>
+    <message>
+        <location filename="../qml/DateRow.qml" line="30"/>
+        <source>&lt;</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../qml/DateRow.qml" line="81"/>
+        <source>&gt;</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>LocationInfoRow</name>
+    <message>
+        <location filename="../qml/LocationInfoRow.qml" line="18"/>
+        <source>Set your location ...</source>
+        <translation>অবস্থান নির্ধারণ করুন ...</translation>
+    </message>
+</context>
+<context>
+    <name>LocationSearchComponent</name>
+    <message>
+        <location filename="../qml/LocationSearchComponent.qml" line="36"/>
+        <source>Enter city name</source>
+        <translation>শহর নির্ধারণ করুন</translation>
+    </message>
+    <message>
+        <location filename="../qml/LocationSearchComponent.qml" line="44"/>
+        <source>Search</source>
+        <translation>খুঁজুন</translation>
+    </message>
+</context>
+<context>
+    <name>Main</name>
+    <message>
+        <location filename="../qml/Main.qml" line="70"/>
+        <source>QT_LAYOUT_DIRECTION</source>
+        <comment>QGuiApplication</comment>
+        <translation>LTR</translation>
+    </message>
+    <message>
+        <location filename="../qml/Main.qml" line="250"/>
+        <source>Munadi</source>
+        <translation>মুনাদি</translation>
+    </message>
+    <message>
+        <location filename="../qml/Main.qml" line="312"/>
+        <source>Show</source>
+        <translation>প্রদর্শন</translation>
+    </message>
+    <message>
+        <location filename="../qml/Main.qml" line="312"/>
+        <source>Hide</source>
+        <translation>লুকান</translation>
+    </message>
+    <message>
+        <location filename="../qml/Main.qml" line="318"/>
+        <source>Quit</source>
+        <translation>বন্ধ</translation>
     </message>
 </context>
 <context>
@@ -346,8 +346,8 @@
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="224"/>
-        <source>When closing Munadi, hide it instead.</source>
-        <translation>মুনাদি বন্ধ না হয়ে ট্রে-তে লুকিয়ে থাকবে।</translation>
+        <source>When closing the app, hide it instead.</source>
+        <translation>অ্যাপ বন্ধ না হয়ে ট্রে-তে লুকিয়ে থাকবে।</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="241"/>
@@ -436,8 +436,8 @@
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="455"/>
-        <source>About Munadi</source>
-        <translation>মুনাদির সম্পর্কে</translation>
+        <source>About App</source>
+        <translation>অ্যাপ সম্পর্কে</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="469"/>

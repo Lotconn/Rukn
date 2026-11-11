@@ -2,13 +2,13 @@
 
 #include <QQmlEngine>
 
-#include <MunadiEngine.hpp>
+#include <AppEngine.hpp>
 #include <PrayerEngine.hpp>
 
-namespace Munadi
+namespace App
 {
 
-class UiEngine : public MunadiBase, public MunadiEngine<UiEngine>
+class UiEngine : public AppBase, public AppEngine<UiEngine>
 {
     Q_OBJECT
     Q_CLASSINFO("RegisterEnumClassesUnscoped", "false")
@@ -188,4 +188,4 @@ class UiEngine : public MunadiBase, public MunadiEngine<UiEngine>
     void onLocaleChanged() noexcept;
 };
 
-} // namespace Munadi
+} // namespace App

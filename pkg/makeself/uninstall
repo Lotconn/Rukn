@@ -3,21 +3,26 @@
 set -e
 set -o pipefail
 
-declare -i _nocleanup=0              # bool
-declare -i _debug=${MUNADI_DEBUG:-0} # bool
-declare -i _noask=0                  # bool
-declare -i _noexec=0                 # bool
-declare -i _noscript=0               # bool
-declare -i _priv=0                   # bool
-declare -i _quiet=0                  # bool
-declare -i _sane=1                   # bool
-declare -i _verbose=0                # bool
+declare -i _nocleanup=0           # bool
+declare -i _debug=${APP_DEBUG:-0} # bool
+declare -i _noask=0               # bool
+declare -i _noexec=0              # bool
+declare -i _noscript=0            # bool
+declare -i _priv=0                # bool
+declare -i _quiet=0               # bool
+declare -i _sane=1                # bool
+declare -i _verbose=0             # bool
 ((_debug)) && _verbose=1
 
+_appname=Munadi
+_orgname=munadi
+_domain=org
+_prog=munadi
+_rdns=$_domain.$_orgname.$_appname
 _script=uninstall
 _arch=x86_64
-_errout=$(mktemp "${TMPROOT:-/tmp}/munadi-stderr.XXXXXX")
-_logfile=$(mktemp "${TMPROOT:-/tmp}/munadi-$_script-XXXXXX.log")
+_errout=$(mktemp "${TMPROOT:-/tmp}/$_prog-stderr.XXXXXX")
+_logfile=$(mktemp "${TMPROOT:-/tmp}/$_prog-$_script-XXXXXX.log")
 _v_args=' -v '
 _ver=26.11
 _trapexec=('rm -f "$_errout"')
@@ -33,37 +38,37 @@ for dir in "${XDG_RUNTIME_DIR:-}" /dev/shm "${TMPROOT:-/tmp}"; do
 	[[ -d "$dir" && -w "$dir" ]] && break
 done
 
-_cmdout=$(mktemp "$dir/munadi-cmd.XXXXXX")
+_cmdout=$(mktemp "$dir/$_prog-cmd.XXXXXX")
 unset -v dir
 
 log() {
-	echo -e "$(date --rfc-3339 ns):munadi:$_script:$*" &>>"$_logfile"
+	echo -e "$(date --rfc-3339 ns):$_appname:$_script:$*" &>>"$_logfile"
 }
 
 debug_print() {
 	if ((_debug)); then
-		echo -e "\e[0;34mmunadi:$_script:debug::\t$*\e[0;m" >&2
+		echo -e "\e[0;34m$_appname:$_script:debug::\t$*\e[0;m" >&2
 	fi
 	log "debug:: $*"
 }
 
 error_print() {
 	if ((!_quiet)); then
-		echo -e "\e[0;31mmunadi:$_script:error::\t$*\e[0;m" >&2
+		echo -e "\e[0;31m$_appname:$_script:error::\t$*\e[0;m" >&2
 	fi
 	log "error:: $*"
 }
 
 warn_print() {
 	if ((!_quiet)); then
-		echo -e "\e[0;33mmunadi:$_script:warn::\t$*\e[0;m" >&2
+		echo -e "\e[0;33m$_appname:$_script:warn::\t$*\e[0;m" >&2
 	fi
 	log "warn:: $*"
 }
 
 info_print() {
 	if ((_verbose)); then
-		echo -e "munadi:$_script:info::\t$*"
+		echo -e "$_appname:$_script:info::\t$*"
 	fi
 	log "info:: $*"
 }
@@ -96,7 +101,7 @@ show_help() {
 	echo "  -y, --assumeyes   Assume yes on confirmation"
 	echo "  -v, --verbose     Show more messages. '-q' will have no effect"
 	echo
-	echo "  MUNADI_DEBUG=1    Show debug messages. Implies '-v'"
+	echo "  APP_DEBUG=1    Show debug messages. Implies '-v'"
 	echo
 }
 
@@ -189,18 +194,18 @@ debug_print 'Checking UID and GID...'
 debug_print "Effective UID is $EUID ($USER)"
 if ((EUID == 0)); then
 	warn_print 'Script is running with superuser privilege.'
-	_prefix=/opt/munadi
+	_prefix=/opt/$_orgname/$_appname
 	_priv=1
 	# Check all user installations
 	for home in /home/*; do
-		debug_print "Checking $home/.local/libexec/munadi/munadi.version ..."
+		debug_print "Checking $home/.local/libexec/$_orgname/$_appname/$_appname.version ..."
 		_old_ver=$(sed -n 's/^_ver=//p' \
-			"$home/.local/libexec/munadi/munadi.version" 2>/dev/null || _old_ver='')
+			"$home/.local/libexec/$_orgname/$_appname/$_appname.version" 2>/dev/null || _old_ver='')
 		if [[ -z "$_old_ver" ]]; then
 			debug_print "Earlier installation not detected in $home."
 		else
 			info_print \
-				"Skipping another installation of Munadi $_old_ver under $home/.local ."
+				"Skipping another installation of $_appname $_old_ver under $home/.local ."
 			info_print "Use regular privilege to $_script it."
 		fi
 	done
@@ -209,14 +214,14 @@ else
 	_prefix="$HOME/.local"
 	_priv=0
 	# Check system-wide installation
-	debug_print "Checking /opt/munadi/libexec/munadi/munadi.version ..."
+	debug_print "Checking /opt/$_orgname/$_appname/libexec/$_orgname/$_appname/$_appname.version ..."
 	_old_ver=$(sed -n 's/^_ver=//p' \
-		/opt/munadi/libexec/munadi/munadi.version 2>/dev/null || true)
+		/opt/$_orgname/$_appname/libexec/$_orgname/$_appname/$_appname.version 2>/dev/null || true)
 	if [[ -z "$_old_ver" ]]; then
-		debug_print "Earlier installation not detected in /opt/munadi"
+		debug_print "Earlier installation not detected in /opt/$_orgname/$_appname"
 	else
 		info_print \
-			"Skipping another installation of Munadi $_old_ver at /opt/munadi."
+			"Skipping another installation of $_appname $_old_ver at /opt/$_orgname/$_appname."
 		info_print "Use superuser privilege to $_script it."
 	fi
 fi
@@ -225,16 +230,16 @@ fi
 #+++++++++++++++++++++++++++++++++++++++++++++++++++
 # Previous installation detection
 
-debug_print "Checking $_prefix/libexec/munadi/munadi.version ..."
+debug_print "Checking $_prefix/libexec/$_orgname/$_appname/$_appname.version ..."
 _old_ver=$(sed -n 's/^_ver=//p' \
-	"$_prefix/libexec/munadi/munadi.version" 2>/dev/null || :)
+	"$_prefix/libexec/$_orgname/$_appname/$_appname.version" 2>/dev/null || :)
 if [[ -z "$_old_ver" ]]; then
 	warn_print "Could not detect previous installation under $_prefix."
 	((_noexec)) && info_print "Exiting cleanly." && exit 0
 	warn_print "Continuing anyway."
 else
 	info_print \
-		"Selecting previous installation of Munadi $_old_ver under $_prefix ."
+		"Selecting previous installation of $_appname $_old_ver under $_prefix ."
 fi
 #---------------------------------------------------
 #---------------------------------------------------
@@ -245,7 +250,7 @@ fi
 ((_noscript)) && warn_print "Pre/post scripts won't be executed."
 
 if ((!_noask)); then
-	warn_print "Munadi $_ver will be ${_script}ed under $_prefix ."
+	warn_print "$_appname $_ver will be ${_script}ed under $_prefix ."
 	((_verbose)) || warn_print "Pass '--verbose' to see ${_script}ed files."
 
 	_trapexec+=("unset REPLY")
@@ -267,7 +272,7 @@ fi
 #   cd "${0%/*}"
 
 # ((_verbose)) && _v_args=' -v '
-info_print "Uninstalling Munadi $_old_ver from $_prefix ..."
+info_print "Uninstalling $_appname $_old_ver from $_prefix ..."
 debug_print 'Uninstall phase in progress...'
 
 if [[ -d "$_prefix" || -L "$_prefix" ]]; then
@@ -275,25 +280,27 @@ if [[ -d "$_prefix" || -L "$_prefix" ]]; then
 	debug_print "====== BEGIN from $(hash -t rm) ======"
 
 	log_cmd rm -f $_v_args \
-		./bin/munadi \
-		./libexec/munadi/install \
-		./libexec/munadi/munadi.version \
-		./libexec/munadi/uninstall \
-		./share/licenses/munadi/LICENSE || :
+		./bin/$_prog \
+		./libexec/$_orgname/$_appname/install \
+		./libexec/$_orgname/$_appname/$_appname.version \
+		./libexec/$_orgname/$_appname/uninstall \
+		./share/licenses/$_orgname/$_appname/LICENSE || :
 
 	if ((!_nocleanup)); then
 		log_cmd rm -f $_v_args \
-			$HOME/.config/autostart/org.munadi.Munadi-sfx.desktop \
-			$HOME/.config/munadi/[mM]unadi.{conf,ini} || :
-		log_cmd rm -rf $_v_args ./share/[mM]unadi/ ./state/[mM]unadi $HOME/.local/state/[mM]unadi || :
+			$HOME/.config/autostart/$_rdns-sfx.desktop \
+			$HOME/.config/$_orgname/$_appname.{conf,ini} || :
+		log_cmd rm -rf $_v_args ./share/$_orgname/$_appname/ \
+			./state/{$_orgname,$_appname} \
+			$HOME/.local/state/{$_orgname,$_appname} || :
 	fi
 
 	if ((_priv)); then _data_prefix=/usr; else _data_prefix=.; fi
 
 	log_cmd rm -f $_v_args \
-		$_data_prefix/share/metainfo/org.munadi.Munadi.metainfo.xml \
-		$_data_prefix/share/icons/hicolor/scalable/apps/org.munadi.Munadi-symbolic.svg \
-		$_data_prefix/share/icons/hicolor/symbolic/apps/org.munadi.Munadi-symbolic.svg || :
+		$_data_prefix/share/metainfo/$_rdns.metainfo.xml \
+		$_data_prefix/share/icons/hicolor/scalable/apps/$_rdns-symbolic.svg \
+		$_data_prefix/share/icons/hicolor/symbolic/apps/$_rdns-symbolic.svg || :
 
 	debug_print "======== END from $(hash -t rm) ======"
 
@@ -301,8 +308,8 @@ if [[ -d "$_prefix" || -L "$_prefix" ]]; then
 
 	log_cmd rmdir -p $_v_args \
 		./bin/ \
-		./libexec/munadi/ \
-		./share/licenses/munadi/ \
+		./libexec/$_orgname/$_appname/ \
+		./share/licenses/$_orgname/$_appname/ \
 		./share/metainfo/ \
 		./share/icons/hicolor/scalable/apps/ \
 		./share/icons/hicolor/symbolic/apps/ \
@@ -329,14 +336,14 @@ _trapexec+=('unset -v XDG_UTILS_DEBUG_LEVEL')
 
 debug_print "====== BEGIN from $(hash -t xdg-desktop-menu) ======"
 
-log_cmd xdg-desktop-menu uninstall org.munadi.Munadi-sfx.desktop
+log_cmd xdg-desktop-menu uninstall $_rdns-sfx.desktop
 
 debug_print "======== END from $(hash -t xdg-desktop-menu) ======"
 
 debug_print "====== BEGIN from $(hash -t xdg-icon-resource) ======"
 
 for size in 16 22 24 32 36 48 64 72 80 96 128 192 256 480 512; do
-	log_cmd xdg-icon-resource uninstall --noupdate --size $size org.munadi.Munadi
+	log_cmd xdg-icon-resource uninstall --noupdate --size $size $_rdns
 done
 
 log_cmd xdg-icon-resource forceupdate
@@ -353,13 +360,13 @@ if ((!_noscript)); then
 	((_verbose)) && _v_args=' --echo '
 	debug_print "====== BEGIN from $(hash -t pkill) ======"
 
-	log_cmd pkill $_v_args --exact --signal SIGTERM munadi ||
-		debug_print 'No other instances of munadi found.' && :
+	log_cmd pkill $_v_args --exact --signal SIGTERM $_prog ||
+		debug_print "No other instances of $_appname found." && :
 
 	debug_print "======== END from $(hash -t pkill) ======"
 fi
 #---------------------------------------------------
 
-warn_print "Munadi $_old_ver ${_script}ed successfully."
+warn_print "$_appname $_old_ver ${_script}ed successfully."
 
 exit 0

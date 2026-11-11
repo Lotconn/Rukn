@@ -4,18 +4,18 @@
 #include <LocationEngine.hpp>
 #include <PrayerEngine.hpp>
 
-Q_STATIC_LOGGING_CATEGORY(munadi, "PrayerEngine")
+Q_STATIC_LOGGING_CATEGORY(cat, "PrayerEngine")
 
-namespace Munadi
+namespace App
 {
 
 using Prayer = PrayerEngine::Prayer;
 
 PrayerEngine *PrayerEngine::create(QQmlEngine *qmlEngine, QJSEngine * /* jsEngine */)
 {
-    logDebug(munadi) << "Creating instance from QML call";
+    logDebug(cat) << "Creating instance from QML call";
 
-    qmlEngine->singletonInstance<LocationEngine *>("Munadi"_L1, "LocationEngine"_L1);
+    qmlEngine->singletonInstance<LocationEngine *>("App"_L1, "LocationEngine"_L1);
 
     return new PrayerEngine{};
 }
@@ -61,7 +61,7 @@ QVariant PrayerEngine::getPrayerConfig(Prayer prayerEnum, const QString &field) 
 {
     if (!this->prayerConfigFields.contains(field))
     {
-        logCritical(munadi) << field << " is not a valid field in PrayerConfig";
+        logCritical(cat) << field << " is not a valid field in PrayerConfig";
         return {};
     }
 
@@ -76,7 +76,7 @@ double PrayerEngine::getQiblaDegrees(const std::optional<QGeoCoordinate> &coordi
 }
 
 const QLoggingCategory &PrayerEngine::logCategory() noexcept
-{ return munadi(); }
+{ return cat(); }
 
 // Intentionally a read-only getter, not a reference accessor, although a QMetaEnum object is
 // inherently read-only
@@ -91,7 +91,7 @@ void PrayerEngine::modifyPrayerConfig(const QString &key, const QVariantHash &en
     // QMetaEnum object returns -1 for invalid `keyToValue()` parameter
     if (enumVal == -1)
     {
-        logCritical(munadi) << key << " resolves to unknown enum value";
+        logCritical(cat) << key << " resolves to unknown enum value";
         return;
     }
 
@@ -99,7 +99,7 @@ void PrayerEngine::modifyPrayerConfig(const QString &key, const QVariantHash &en
     if (static_cast<Prayer>(enumVal) == Prayer::Sunrise ||
         static_cast<Prayer>(enumVal) == Prayer::None)
     {
-        logWarning(munadi) << "Modifying \"" << enumName << "\" is not allowed";
+        logWarning(cat) << "Modifying \"" << enumName << "\" is not allowed";
         return;
     }
 
@@ -109,17 +109,17 @@ void PrayerEngine::modifyPrayerConfig(const QString &key, const QVariantHash &en
     // Using the QVariantHash overload of `isValidEntry()`
     if (!isValidEntry(entry, this->prayerConfigEntrySize, this->prayerConfigFields))
     {
-        logCritical(munadi) << "[" << entry << "] is not a valid entry in prayerConfig";
+        logCritical(cat) << "[" << entry << "] is not a valid entry in prayerConfig";
         return;
     }
 
     if (tempMap == entry)
     {
-        logDebug(munadi) << "Skipping setting identical entry";
+        logDebug(cat) << "Skipping setting identical entry";
         return;
     }
 
-    logDebug(munadi) << "Assigning value " << entry << " to key " << key;
+    logDebug(cat) << "Assigning value " << entry << " to key " << key;
     tempMap.insert(entry);                     // modifying the configuration hash here
     this->m_prayerConfig.insert(key, tempMap); // modifying the parent hash here
 
@@ -140,17 +140,17 @@ PrayerEngine::Prayer PrayerEngine::nextPrayer() const noexcept
 
 void PrayerEngine::setCalcMethod(const QString &method) noexcept
 {
-    logDebug(munadi) << "Using calculation method: " << method;
+    logDebug(cat) << "Using calculation method: " << method;
 
-    if (setConfig(PrayerEngine::s_calcMethods, method, this->m_calcMethodKey, munadi()))
+    if (setConfig(PrayerEngine::s_calcMethods, method, this->m_calcMethodKey, cat()))
         emit this->invalidate();
 }
 
 void PrayerEngine::setMadhhab(const QString &madhhab) noexcept
 {
-    logDebug(munadi) << "madhhab: " << madhhab;
+    logDebug(cat) << "madhhab: " << madhhab;
 
-    if (setConfig(PrayerEngine::s_madhhab, madhhab, this->m_madhhabKey, munadi()))
+    if (setConfig(PrayerEngine::s_madhhab, madhhab, this->m_madhhabKey, cat()))
         emit this->invalidate();
 }
 
@@ -287,8 +287,8 @@ qint64 PrayerEngine::timeToNextPrayer(const std::optional<QDateTime> &since_ms) 
 
     // These disabled logs are very useful
 
-    // logDebug(munadi) << "Since: " << since.toString();
-    // logDebug(munadi) << "Next day date: " << nextDay.toString();
+    // logDebug(cat) << "Since: " << since.toString();
+    // logDebug(cat) << "Next day date: " << nextDay.toString();
 
     const std::unique_ptr<Adhan::PrayerTimes> currentPT{
         (since_ms.has_value())
@@ -303,10 +303,10 @@ qint64 PrayerEngine::timeToNextPrayer(const std::optional<QDateTime> &since_ms) 
     // Qt converts the time to UTC before converting to epoch time
     Adhan::Prayer next{currentPT->nextPrayer(since.toStdSysMilliseconds())};
 
-    // logDebug(munadi) << "Current prayer: "
+    // logDebug(cat) << "Current prayer: "
     //                  << Adhan::PrayerUtils::to_string(
     //                         currentPT->currentPrayer(since.toStdSysMilliseconds()));
-    // logDebug(munadi) << "Next prayer: " << Adhan::PrayerUtils::to_string(next);
+    // logDebug(cat) << "Next prayer: " << Adhan::PrayerUtils::to_string(next);
 
     // Quirks from `nextPrayer()` apply
     if (currentPT->date == since.date() && next == Adhan::Prayer::None)
@@ -317,9 +317,9 @@ qint64 PrayerEngine::timeToNextPrayer(const std::optional<QDateTime> &since_ms) 
     else
         nextTime = this->timeForPrayer(PrayerEngine::s_revPrayerEnumMap.value(next), since.date());
 
-    // logDebug(munadi) << "Resolved next prayer: " << Adhan::PrayerUtils::to_string(next);
-    // logDebug(munadi) << "Next prayer at: " << nextTime.toString();
-    // logDebug(munadi)
+    // logDebug(cat) << "Resolved next prayer: " << Adhan::PrayerUtils::to_string(next);
+    // logDebug(cat) << "Next prayer at: " << nextTime.toString();
+    // logDebug(cat)
     //     << "Time to next prayer: "
     //     << QTime::fromMSecsSinceStartOfDay(static_cast<int>(since.msecsTo(nextTime))).toString();
 
@@ -336,7 +336,7 @@ QString PrayerEngine::toString(Prayer prayerEnum) noexcept
     // QML-side invalid int index -> Prayer enum cast guard
     if (key == nullptr)
     {
-        logCritical(munadi) << "\"" << prayerEnum << "\" does not resolve to a valid Prayer enum";
+        logCritical(cat) << "\"" << prayerEnum << "\" does not resolve to a valid Prayer enum";
         return {};
     }
 
@@ -350,7 +350,7 @@ QString PrayerEngine::toString(Sunnah sunnahEnum) noexcept
     // QML-side invalid int index -> Prayer enum cast guard
     if (key == nullptr)
     {
-        logCritical(munadi) << "\"" << sunnahEnum << "\" does not resolve to a valid Prayer enum";
+        logCritical(cat) << "\"" << sunnahEnum << "\" does not resolve to a valid Prayer enum";
         return {};
     }
 
@@ -361,7 +361,7 @@ QString PrayerEngine::toString(Sunnah sunnahEnum) noexcept
 //  Protected Members
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-PrayerEngine::PrayerEngine(QObject *parent) : MunadiBase{munadi(), parent}
+PrayerEngine::PrayerEngine(QObject *parent) : AppBase{cat(), parent}
 {
     this->bootEngine();
 
@@ -410,7 +410,7 @@ void PrayerEngine::defaultPrayerConfig() noexcept
 
 void PrayerEngine::loadConfigs() noexcept
 {
-    logDebug(munadi) << "Loading prayer settings from config file"; // from [PrayerConfig] group
+    logDebug(cat) << "Loading prayer settings from config file"; // from [PrayerConfig] group
 
     bool          configMigrated{true}; // do not pass this for keys having no related old keys
     const QString migrateKey{"PrayerEngineConfigMigrated"_L1};
@@ -435,7 +435,7 @@ void PrayerEngine::loadPrayerConfig(bool &configMigrated) noexcept
         oldPrayerConfig = core->readOldSettingsJsArray("Adhan/prayerConfig"_L1);
 
     if (!oldPrayerConfig.isEmpty())
-        logInfo(munadi) << "Migrating from old config";
+        logInfo(cat) << "Migrating from old config";
 
     for (const QString &prayerName : std::as_const(this->prayerConfigKeys))
     {
@@ -443,14 +443,14 @@ void PrayerEngine::loadPrayerConfig(bool &configMigrated) noexcept
 
         if (i == -1)
         {
-            logCritical(munadi) << prayerName << " resolves to unknown enum value";
+            logCritical(cat) << prayerName << " resolves to unknown enum value";
 
             continue;
         }
 
         if (static_cast<Prayer>(i) == Prayer::Sunrise || static_cast<Prayer>(i) == Prayer::None)
         {
-            logWarning(munadi) << "Modifying \"" << prayerName << "\" is not allowed";
+            logWarning(cat) << "Modifying \"" << prayerName << "\" is not allowed";
 
             return;
         }
@@ -466,13 +466,13 @@ void PrayerEngine::loadPrayerConfig(bool &configMigrated) noexcept
                                               entry.value(key))
                          : oldPrayerConfig.at(i).toHash().value(key);
 
-            logDebug(munadi) << "Value for key \"" << key << "\" in list item " << prayerName
-                             << ": " << cfgVal;
+            logDebug(cat) << "Value for key \"" << key << "\" in list item " << prayerName << ": "
+                          << cfgVal;
 
             if (!cfgVal.convert(QMetaType(this->prayerConfigFields.value(key))))
             {
-                logWarning(munadi) << "Failed converting stored value for \"" << key
-                                   << "\" to expected type; keeping default";
+                logWarning(cat) << "Failed converting stored value for \"" << key
+                                << "\" to expected type; keeping default";
                 continue;
             }
 
@@ -494,7 +494,7 @@ void PrayerEngine::loadPrayerConfig(bool &configMigrated) noexcept
 
 void PrayerEngine::saveConfigs() noexcept
 {
-    logDebug(munadi) << "Saving prayer configurations"; // under [PrayerConfig] group
+    logDebug(cat) << "Saving prayer configurations"; // under [PrayerConfig] group
 
     // Ensure the very last config to be saved has the third parameter set to "true". Otherwise
     // (later) settings are not saved
@@ -520,14 +520,14 @@ void PrayerEngine::setPrayerConfig(const QVariantHash &prayerConfig) noexcept
 {
     if (prayerConfig.isEmpty())
     {
-        logDebug(munadi) << "Skipping empty config list";
+        logDebug(cat) << "Skipping empty config list";
 
         return;
     }
 
     if (prayerConfig == this->m_prayerConfig)
     {
-        logDebug(munadi) << "Skipping setting identical list";
+        logDebug(cat) << "Skipping setting identical list";
 
         return;
     }
@@ -535,7 +535,7 @@ void PrayerEngine::setPrayerConfig(const QVariantHash &prayerConfig) noexcept
     if (!isValidEntry(prayerConfig, this->prayerConfigEntrySize, this->prayerConfigFields,
                       this->prayerConfigMapSize))
     {
-        logCritical(munadi) << "Config [" << prayerConfig << "] is not a valid configuration";
+        logCritical(cat) << "Config [" << prayerConfig << "] is not a valid configuration";
 
         return;
     }
@@ -550,9 +550,9 @@ void PrayerEngine::setupAlarmsResetRelay() const noexcept
     if (const auto conn =
             QObject::connect(core, &CoreEngine::alarmsReset, this, &PrayerEngine::invalidate);
         conn == nullptr)
-        logWarning(munadi) << "alarmsReset signal not relayed to invalidate";
+        logWarning(cat) << "alarmsReset signal not relayed to invalidate";
     else
-        logDebug(munadi) << "alarmsReset signal relayed to invalidate";
+        logDebug(cat) << "alarmsReset signal relayed to invalidate";
 }
 
 void PrayerEngine::setupAthanAlarmRelay() const noexcept
@@ -560,9 +560,9 @@ void PrayerEngine::setupAthanAlarmRelay() const noexcept
     if (const auto conn =
             QObject::connect(core, &CoreEngine::athanAlarm, this, &PrayerEngine::calcChanged);
         conn == nullptr)
-        logWarning(munadi) << "athanAlarm signal not relayed to calcChanged";
+        logWarning(cat) << "athanAlarm signal not relayed to calcChanged";
     else
-        logDebug(munadi) << "athanAlarm signal relayed to calcChanged";
+        logDebug(cat) << "athanAlarm signal relayed to calcChanged";
 }
 
 void PrayerEngine::setupDateChangedRelay() const noexcept
@@ -570,9 +570,9 @@ void PrayerEngine::setupDateChangedRelay() const noexcept
     if (const auto conn =
             QObject::connect(core, &CoreEngine::dateChanged, this, &PrayerEngine::invalidate);
         conn == nullptr)
-        logWarning(munadi) << "dateChanged signal not relayed to invalidate";
+        logWarning(cat) << "dateChanged signal not relayed to invalidate";
     else
-        logDebug(munadi) << "dateChanged signal relayed to invalidate";
+        logDebug(cat) << "dateChanged signal relayed to invalidate";
 }
 
 void PrayerEngine::setupInternalConnections() const noexcept
@@ -580,16 +580,16 @@ void PrayerEngine::setupInternalConnections() const noexcept
     if (const auto conn = QObject::connect(this, &PrayerEngine::prayerConfigChanged, this,
                                            &PrayerEngine::invalidate);
         conn == nullptr)
-        logWarning(munadi) << "prayerConfigChanged signal not relayed to invalidate";
+        logWarning(cat) << "prayerConfigChanged signal not relayed to invalidate";
     else
-        logDebug(munadi) << "prayerConfigChanged signal relayed to invalidate";
+        logDebug(cat) << "prayerConfigChanged signal relayed to invalidate";
 
     if (const auto conn =
             QObject::connect(this, &PrayerEngine::invalidate, this, &PrayerEngine::onInvalidate);
         conn == nullptr)
-        logWarning(munadi) << "invalidate signal not connected";
+        logWarning(cat) << "invalidate signal not connected";
     else
-        logDebug(munadi) << "invalidate signal connected";
+        logDebug(cat) << "invalidate signal connected";
 }
 
 void PrayerEngine::setupLocationChangedRelay() const noexcept
@@ -597,9 +597,9 @@ void PrayerEngine::setupLocationChangedRelay() const noexcept
     if (const auto conn = QObject::connect(lEngine, &LocationEngine::locationChanged, this,
                                            &PrayerEngine::invalidate);
         conn == nullptr)
-        logWarning(munadi) << "locationChanged signal not relayed to invalidate";
+        logWarning(cat) << "locationChanged signal not relayed to invalidate";
     else
-        logDebug(munadi) << "locationChanged signal relayed to invalidate";
+        logDebug(cat) << "locationChanged signal relayed to invalidate";
 }
 
 void PrayerEngine::setupMinuteChangedRelay() const noexcept
@@ -607,9 +607,9 @@ void PrayerEngine::setupMinuteChangedRelay() const noexcept
     if (const auto conn =
             QObject::connect(core, &CoreEngine::minuteChanged, this, &PrayerEngine::calcChanged);
         conn == nullptr)
-        logWarning(munadi) << "minuteChanged signal not relayed to calcChanged";
+        logWarning(cat) << "minuteChanged signal not relayed to calcChanged";
     else
-        logDebug(munadi) << "minuteChanged signal relayed to calcChanged";
+        logDebug(cat) << "minuteChanged signal relayed to calcChanged";
 }
 
 void PrayerEngine::updateCalc()
@@ -662,7 +662,7 @@ void PrayerEngine::updateCalc()
 
 void PrayerEngine::onCoreOnline() noexcept
 {
-    MunadiBase::onCoreOnline();
+    AppBase::onCoreOnline();
     // These four could be packed in one method, but better to keep granular for future benefits
     this->setupAlarmsResetRelay();
     this->setupAthanAlarmRelay();
@@ -672,7 +672,7 @@ void PrayerEngine::onCoreOnline() noexcept
 
 void PrayerEngine::onInvalidate()
 {
-    logDebug(munadi) << "Updating calculations...";
+    logDebug(cat) << "Updating calculations...";
 
     this->updateCalc();
     emit this->calcChanged(); // deliberately NOT inside `updateCalc()`
@@ -681,4 +681,4 @@ void PrayerEngine::onInvalidate()
 void PrayerEngine::onLocationEngineOnline() noexcept
 { this->setupLocationChangedRelay(); }
 
-} // namespace Munadi
+} // namespace App
