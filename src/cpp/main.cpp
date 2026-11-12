@@ -39,12 +39,12 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    QApplication::setApplicationName("Munadi"_L1);
-    QApplication::setDesktopFileName("org.munadi.Munadi"_L1);
-    QApplication::setOrganizationDomain("munadi.org"_L1);
-    QApplication::setOrganizationName("munadi"_L1);
+    QApplication::setApplicationName("Rukn"_L1);
+    QApplication::setDesktopFileName("org.lotconn.Rukn"_L1);
+    QApplication::setOrganizationDomain("lotconn.org"_L1);
+    QApplication::setOrganizationName("Lotconn"_L1);
     QApplication::setStyle(QStyleFactory::create("gnome"_L1));
-    QApplication::setWindowIcon(QIcon{":/qt/qml/App/img/munadi.png"_L1});
+    QApplication::setWindowIcon(QIcon{":/qt/qml/App/img/rukn.png"_L1});
 
     QFontDatabase::addApplicationFont(":/qt/qml/App/data/NotoNaskhArabic-VariableFont.ttf"_L1);
     QFontDatabase::addApplicationFont(":/qt/qml/App/data/NotoSans-VariableFont.ttf"_L1);

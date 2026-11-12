@@ -53,7 +53,7 @@ Pane {
                 minimumPointSize: 1
                 opacity: timeleftBox.opacity
                 verticalAlignment: Text.AlignVCenter
-                visible: progressBar.visible || MultimediaEngine.athanPlaying
+                visible: progressBar.visible || MultimediaEngine.adhanPlaying
             }
 
             ProgressBar {
@@ -79,9 +79,9 @@ Pane {
                 flat: true
                 icon.source: "qrc:/qt/qml/App/img/stop.png"
                 opacity: 0.57
-                visible: MultimediaEngine.athanPlaying
+                visible: MultimediaEngine.adhanPlaying
 
-                onClicked: MultimediaEngine.athanStop()
+                onClicked: MultimediaEngine.adhanStop()
             }
         }
 

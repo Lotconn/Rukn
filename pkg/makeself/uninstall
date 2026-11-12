@@ -14,11 +14,11 @@ declare -i _sane=1                # bool
 declare -i _verbose=0             # bool
 ((_debug)) && _verbose=1
 
-_appname=Munadi
-_orgname=munadi
+_appname=Rukn
+_orgname=Lotconn
 _domain=org
-_prog=munadi
-_rdns=$_domain.$_orgname.$_appname
+_prog=rukn
+_rdns=$_domain.${_orgname,,}.$_appname
 _script=uninstall
 _arch=x86_64
 _errout=$(mktemp "${TMPROOT:-/tmp}/$_prog-stderr.XXXXXX")

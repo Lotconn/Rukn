@@ -1,6 +1,6 @@
 {
   "[cmake]": {
-    "editor.defaultFormatter": "KylinIdeTeam.cmake-intellisence"
+    "editor.defaultFormatter": "paralleldimension.cmake-fmt"
   },
   "[cpp]": {
     "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"

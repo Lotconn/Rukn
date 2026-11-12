@@ -45,7 +45,7 @@ ColumnLayout {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
-                athanTime: UiEngine.prayerDisplayTimes.Fajr
+                adhanTime: UiEngine.prayerDisplayTimes.Fajr
                 prayerId: PrayerEngine.Prayer.Fajr
 
                 iconComponent: FajrIcon {}
@@ -60,7 +60,7 @@ ColumnLayout {
                 Layout.preferredHeight: 30
                 Layout.rightMargin: Layout.leftMargin
                 Layout.topMargin: -20 * theme.unit
-                athanTime: UiEngine.prayerDisplayTimes.Sunrise
+                adhanTime: UiEngine.prayerDisplayTimes.Sunrise
                 muted: true
                 prayerId: PrayerEngine.Prayer.Sunrise
             }
@@ -73,7 +73,7 @@ ColumnLayout {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
-                athanTime: UiEngine.prayerDisplayTimes.Dhuhr
+                adhanTime: UiEngine.prayerDisplayTimes.Dhuhr
                 prayerId: PrayerEngine.Prayer.Dhuhr
 
                 iconComponent: DhuhrIcon {}
@@ -87,7 +87,7 @@ ColumnLayout {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
-                athanTime: UiEngine.prayerDisplayTimes.Asr
+                adhanTime: UiEngine.prayerDisplayTimes.Asr
                 prayerId: PrayerEngine.Prayer.Asr
 
                 iconComponent: AsrIcon {}
@@ -101,7 +101,7 @@ ColumnLayout {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
-                athanTime: UiEngine.prayerDisplayTimes.Maghrib
+                adhanTime: UiEngine.prayerDisplayTimes.Maghrib
                 prayerId: PrayerEngine.Prayer.Maghrib
 
                 iconComponent: MaghribIcon {}
@@ -115,7 +115,7 @@ ColumnLayout {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
-                athanTime: UiEngine.prayerDisplayTimes.Isha
+                adhanTime: UiEngine.prayerDisplayTimes.Isha
                 prayerId: PrayerEngine.Prayer.Isha
 
                 iconComponent: IshaIcon {}
@@ -130,7 +130,7 @@ ColumnLayout {
                 Layout.preferredHeight: 30
                 Layout.rightMargin: Layout.leftMargin
                 Layout.topMargin: -20 * theme.unit
-                athanTime: UiEngine.prayerDisplayTimes.Midnight
+                adhanTime: UiEngine.prayerDisplayTimes.Midnight
                 muted: true
                 prayerId: PrayerEngine.Prayer.Isha + PrayerEngine.Sunnah.Midnight
             }
@@ -145,7 +145,7 @@ ColumnLayout {
                 Layout.preferredHeight: 30
                 Layout.rightMargin: Layout.leftMargin
                 Layout.topMargin: -15 * theme.unit
-                athanTime: UiEngine.prayerDisplayTimes.LastThirdNight
+                adhanTime: UiEngine.prayerDisplayTimes.LastThirdNight
                 muted: true
                 prayerId: PrayerEngine.Prayer.Isha + PrayerEngine.Sunnah.LastThirdNight
             }

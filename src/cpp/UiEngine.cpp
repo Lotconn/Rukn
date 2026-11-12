@@ -74,14 +74,14 @@ void UiEngine::connectToAlarmsReset() const noexcept
         logDebug(cat) << "alarmsReset signal connected";
 }
 
-void UiEngine::connectToAthanPlayingChanged() const noexcept
+void UiEngine::connectToAdhanPlayingChanged() const noexcept
 {
-    if (const auto conn = QObject::connect(mEngine, &MultimediaEngine::athanPlayingChanged, this,
-                                           &UiEngine::onAthanPlayingChanged);
+    if (const auto conn = QObject::connect(mEngine, &MultimediaEngine::adhanPlayingChanged, this,
+                                           &UiEngine::onAdhanPlayingChanged);
         conn == nullptr)
-        logWarning(cat) << "athanPlayingChanged signal not connected";
+        logWarning(cat) << "adhanPlayingChanged signal not connected";
     else
-        logDebug(cat) << "athanPlayingChanged signal connected";
+        logDebug(cat) << "adhanPlayingChanged signal connected";
 }
 
 void UiEngine::connectToCalcChanged() const noexcept
@@ -142,7 +142,7 @@ void UiEngine::defaultConfigs() noexcept
     this->m_isoClock             = false;
     this->m_opacity              = defaultOpacity;
     this->m_langDisplayIndex     = defaultLangIdx;
-    this->m_showOnAthan          = false;
+    this->m_showOnAdhan          = false;
     this->m_themeDisplayIndex    = defaultThemeIdx;
     this->calendarKey            = u"Both"_s;
 }
@@ -355,7 +355,7 @@ void UiEngine::loadConfigs() noexcept
     loadConfigKey("App/opacity"_L1, "App/Opacity"_L1, migrateKey, this, "opacity"_L1,
                   configMigrated);
 
-    loadConfigKey("App/showOnAthan"_L1, "App/ShowOnAthan"_L1, migrateKey, this, "showOnAthan"_L1,
+    loadConfigKey("App/showOnAdhan"_L1, "App/ShowOnAdhan"_L1, migrateKey, this, "showOnAdhan"_L1,
                   configMigrated);
 
     loadConfigKey(
@@ -421,7 +421,7 @@ void UiEngine::saveConfigs() noexcept
     core->writeSettings("App/ISOClock"_L1, this->m_isoClock);
     core->writeSettings("App/Language"_L1, this->getCurrentLang());
     core->writeSettings("App/Opacity"_L1, this->m_opacity);
-    core->writeSettings("App/ShowOnAthan"_L1, this->m_showOnAthan);
+    core->writeSettings("App/ShowOnAdhan"_L1, this->m_showOnAdhan);
     core->writeSettings("App/Theme"_L1, this->getCurrentTheme(), true);
 }
 
@@ -500,8 +500,8 @@ QString UiEngine::timeLeftDisplay() noexcept
             .value("trText"_L1)
             .toString()};
 
-    if (mEngine->isAthanPlaying())
-        return currentPrayer + u" "_s + tr("athan") + u"..."_s;
+    if (mEngine->isAdhanPlaying())
+        return currentPrayer + u" "_s + tr("adhan") + u"..."_s;
 
     const QTime timeLeft{QTime::fromMSecsSinceStartOfDay(pEngine->timeToNextPrayer())};
 
@@ -547,7 +547,7 @@ void UiEngine::onAlarmsReset() noexcept
     emit this->calendarChanged();
 }
 
-void UiEngine::onAthanPlayingChanged(bool /* playing */) noexcept
+void UiEngine::onAdhanPlayingChanged(bool /* playing */) noexcept
 {
     emit this->calendarChanged();
     emit this->timeChanged();
@@ -599,7 +599,7 @@ void UiEngine::onMinuteChanged() noexcept
 }
 
 void UiEngine::onMultimediaEngineOnline() noexcept
-{ this->connectToAthanPlayingChanged(); }
+{ this->connectToAdhanPlayingChanged(); }
 
 void UiEngine::onPrayerEngineOnline() noexcept
 {

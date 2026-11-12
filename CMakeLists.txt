@@ -1,12 +1,14 @@
-cmake_minimum_required(VERSION 3.16...4.4)
+cmake_minimum_required(VERSION 3.30...4.4)
 
-project(munadi
+project(Rukn
   VERSION 26.11
-  DESCRIPTION "Your Simple and Beautiful Athan App"
-  LANGUAGES CXX C
+  DESCRIPTION "Your Simple and Beautiful Adhan App"
+  LANGUAGES
+    CXX
+    C
 )
 
-# CheckIPOSupported for opportunistically enabling IPO/LTO 
+# CheckIPOSupported for opportunistically enabling IPO/LTO
 include(CheckIPOSupported)
 include(FetchContent)
 
@@ -25,39 +27,40 @@ set(CMAKE_PROJECT_SPDX_LICENSE "AGPL-3.0-or-later")
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
 check_ipo_supported(RESULT IPOresult OUTPUT IPOoutput)
-if(IPOresult)
+if (IPOresult)
   set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
-else()
+else ()
   message(STATUS "Not enabling IPO: ${IPOoutput}")
-endif()
+endif ()
 
 # Ccache
 find_program(CCACHE_PROGRAM ccache)
-if(CCACHE_PROGRAM)
+if (CCACHE_PROGRAM)
   message(STATUS "Using Ccache")
   set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
-endif()
+endif ()
 
 set(CF_PROTECTION_FLAG -fcf-protection=none)
 set(CF_PROTECTION_FLAG_MSVC "")
-if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64")
+
+if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64")
   message(STATUS "Enabling Intel CET for x86_64/amd64")
   set(CF_PROTECTION_FLAG -fcf-protection)
   set(CF_PROTECTION_FLAG_MSVC /guard:cf)
-endif()
+endif ()
 
-if(LINUX)
+if (LINUX)
   set(APP_LINUX_DIST "Default" CACHE STRING "Distribution Type")
   set(CACHE APP_LINUX_DIST PROPERTY STRINGS Default Flatpak)
 
   # optionally set from commandline or autodetects if omitted
-  if(APP_LINUX_DIST STREQUAL Flatpak OR NOT "$ENV{FLATPAK_ID}" STREQUAL "")
+  if (APP_LINUX_DIST STREQUAL Flatpak OR NOT "$ENV{FLATPAK_ID}" STREQUAL "")
     message(STATUS "Building for Flatpak: $ENV{FLATPAK_ID}")
     set(APP_FLATPAK_DIST ON CACHE BOOL "Flatpak Build")
-  elseif(APP_LINUX_DIST STREQUAL Default)
+  elseif (APP_LINUX_DIST STREQUAL Default)
     unset(APP_LINUX_DIST)
-  endif()
-endif()
+  endif ()
+endif ()
 
 configure_file(src/cpp/config.hpp.in config.hpp NO_SOURCE_PERMISSIONS @ONLY)
 
@@ -66,26 +69,24 @@ configure_file(src/cpp/config.hpp.in config.hpp NO_SOURCE_PERMISSIONS @ONLY)
 #
 
 # Qt
-find_package(Qt6
-  REQUIRED
+find_package(Qt6 REQUIRED
   COMPONENTS
-  Core
-  Gui
-  LinguistTools
-  Location
-  Multimedia
-  Positioning
-  Qml
-  Quick
-  QuickControls2
-  Widgets
-  OPTIONAL_COMPONENTS
-  QuickTools
+    Core
+    Gui
+    LinguistTools
+    Location
+    Multimedia
+    Positioning
+    Qml
+    Quick
+    QuickControls2
+    Widgets
+  OPTIONAL_COMPONENTS QuickTools
 )
 
-if(LINUX)
+if (LINUX)
   find_package(Qt6 REQUIRED COMPONENTS DBus WaylandClient)
-endif()
+endif ()
 
 qt_standard_project_setup(REQUIRES 6.11 I18N_TRANSLATED_LANGUAGES ar bn)
 
@@ -122,28 +123,12 @@ FetchContent_Declare(FileMan
 )
 FetchContent_MakeAvailable(FileMan)
 
-if(ANDROID)
-  FetchContent_Declare(android_openssl
-    DOWNLOAD_EXTRACT_TIMESTAMP true
-    URL https://github.com/KDAB/android_openssl/archive/refs/heads/master.zip
-  )
-  FetchContent_MakeAvailable(android_openssl)
-  include(${android_openssl_SOURCE_DIR}/android_openssl.cmake)
-
-  set_property(TARGET
-    ${PROJECT_NAME}
-    APPEND
-    PROPERTY
-    QT_ANDROID_PACKAGE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/android
-  )
-  add_android_openssl_libraries(${PROJECT_NAME})
-endif()
-
 #
 # Project Setup
 #
 
-add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/src/data/whatsnew.html
+add_custom_command(
+  OUTPUT ${PROJECT_SOURCE_DIR}/src/data/whatsnew.html
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
   COMMAND ${PROJECT_SOURCE_DIR}/gen_whatsnew
 )
@@ -170,65 +155,47 @@ set(APP_QML_FILES
   src/qml/TimeLeftRow.qml
 )
 
-if(NOT TARGET Qt::QuickTools)
+if (NOT TARGET Qt::QuickTools)
   list(APPEND APP_QML_FILES
-    src/qml/icons/FajrIcon.qml
-    src/qml/icons/DhuhrIcon.qml
     src/qml/icons/AsrIcon.qml
-    src/qml/icons/MaghribIcon.qml
+    src/qml/icons/DhuhrIcon.qml
+    src/qml/icons/FajrIcon.qml
     src/qml/icons/IshaIcon.qml
+    src/qml/icons/MaghribIcon.qml
   )
-endif()
+endif ()
 
 set(APP_SOURCES
   src/cpp/alarm.h
-  src/cpp/engine.h
-  src/cpp/AppEngine.hpp
-  src/cpp/CoreEngine.hpp
-  src/cpp/LocationEngine.hpp
-  src/cpp/PrayerEngine.hpp
-  src/cpp/MultimediaEngine.hpp
-  src/cpp/UiEngine.hpp
-  src/cpp/UpdateEngine.hpp
-  src/cpp/internal-helpers.hpp
+  src/cpp/AppEngine.hpp src/cpp/AppEngine.cpp
+  src/cpp/CoreEngine.hpp src/cpp/CoreEngine.cpp
+  src/cpp/engine.h src/cpp/engine.cpp
+  src/cpp/internal-helpers.hpp src/cpp/internal-helpers.cpp
+  src/cpp/LocationEngine.hpp src/cpp/LocationEngine.cpp
   src/cpp/macos_window.h
-  src/cpp/engine.cpp
-  src/cpp/internal-helpers.cpp
-  src/cpp/AppEngine.cpp
-  src/cpp/CoreEngine.cpp
-  src/cpp/LocationEngine.cpp
-  src/cpp/PrayerEngine.cpp
-  src/cpp/MultimediaEngine.cpp
-  src/cpp/UiEngine.cpp
-  src/cpp/UpdateEngine.cpp
+  src/cpp/MultimediaEngine.hpp src/cpp/MultimediaEngine.cpp
+  src/cpp/PrayerEngine.hpp src/cpp/PrayerEngine.cpp
+  src/cpp/UiEngine.hpp src/cpp/UiEngine.cpp
+  src/cpp/UpdateEngine.hpp src/cpp/UpdateEngine.cpp
 )
 
-if(APPLE)
+if (APPLE)
   list(APPEND APP_SOURCES
     src/cpp/alarm_macos.cpp
     src/cpp/macos_window.mm
   )
-elseif(LINUX)
+elseif (LINUX)
   list(APPEND APP_SOURCES src/cpp/alarm_linux.cpp)
-endif()
+endif ()
 
 set(APP_RESOURCES
-  src/data/athan-arRashid.ogg
-  src/data/athan-makkah.ogg
-  src/data/fajr-athan.ogg
+  src/data/adhan-arRashid.ogg
+  src/data/adhan-makkah.ogg
+  src/data/fajr-adhan.ogg
   src/data/NotoNaskhArabic-VariableFont.ttf
   src/data/NotoSans-VariableFont.ttf
   src/data/NotoSansBengali-VariableFont.ttf
-  src/data/timezones.tsv
   src/data/whatsnew.html
-  src/img/prayerTimes/fajr.svg
-  src/img/prayerTimes/sunrise.svg
-  src/img/prayerTimes/dhuhr.svg
-  src/img/prayerTimes/asr.svg
-  src/img/prayerTimes/maghrib.svg
-  src/img/prayerTimes/isha.svg
-  src/img/prayerTimes/midnight.svg
-  src/img/prayerTimes/lastThirdNight.svg
   src/img/about.png
   src/img/arrow.png
   src/img/bg/0.jpg
@@ -240,32 +207,34 @@ set(APP_RESOURCES
   src/img/compass.png
   src/img/info.png
   src/img/minus.png
-  src/img/munadi-symbolic.svg
-  src/img/munadi.png
   src/img/plus.png
+  src/img/prayerTimes/asr.svg
+  src/img/prayerTimes/dhuhr.svg
+  src/img/prayerTimes/fajr.svg
+  src/img/prayerTimes/isha.svg
+  src/img/prayerTimes/lastThirdNight.svg
+  src/img/prayerTimes/maghrib.svg
+  src/img/prayerTimes/midnight.svg
+  src/img/prayerTimes/sunrise.svg
+  src/img/rukn-symbolic.svg
+  src/img/rukn.png
   src/img/settings.png
   src/img/start.png
   src/img/stop.png
 )
 
-foreach(filePath IN LISTS APP_QML_FILES APP_RESOURCES)
+foreach (filePath IN LISTS APP_QML_FILES APP_RESOURCES)
   string(REGEX REPLACE "^src/" "" qrc_filePath "${filePath}")
-  set_source_files_properties("${filePath}"
-    PROPERTIES
-    QT_RESOURCE_ALIAS "${qrc_filePath}"
-  )
-endforeach()
+  set_source_files_properties("${filePath}" PROPERTIES QT_RESOURCE_ALIAS "${qrc_filePath}")
+endforeach ()
 
 qt_add_executable(${PROJECT_NAME} src/cpp/main.cpp)
 qt_add_qml_module(${PROJECT_NAME}
   URI App
   VERSION ${PROJECT_VERSION}
-  QML_FILES
-  "${APP_QML_FILES}"
-  SOURCES
-  "${APP_SOURCES}"
-  RESOURCES
-  "${APP_RESOURCES}"
+  QML_FILES "${APP_QML_FILES}"
+  SOURCES "${APP_SOURCES}"
+  RESOURCES "${APP_RESOURCES}"
 )
 
 qt_add_translations(${PROJECT_NAME}
@@ -276,29 +245,27 @@ qt_add_translations(${PROJECT_NAME}
   RESOURCE_PREFIX qt/qml/App/i18n
 )
 
-if(TARGET Qt::QuickTools)
+if (TARGET Qt::QuickTools)
   qt_target_qml_from_svg(${PROJECT_NAME}
     CURVE_RENDERER ASYNCHRONOUS_SHAPES OPTIMIZE_PATHS
     FILES
-    src/img/prayerTimes/fajr.svg
-    src/img/prayerTimes/dhuhr.svg
-    src/img/prayerTimes/asr.svg
-    src/img/prayerTimes/maghrib.svg
-    src/img/prayerTimes/isha.svg
+      src/img/prayerTimes/asr.svg
+      src/img/prayerTimes/dhuhr.svg
+      src/img/prayerTimes/fajr.svg
+      src/img/prayerTimes/isha.svg
+      src/img/prayerTimes/maghrib.svg
     OUTPUTS
-    qml/FajrIcon.qml qml/DhuhrIcon.qml qml/AsrIcon.qml qml/MaghribIcon.qml qml/IshaIcon.qml
+      qml/AsrIcon.qml
+      qml/DhuhrIcon.qml
+      qml/FajrIcon.qml
+      qml/IshaIcon.qml
+      qml/MaghribIcon.qml
   )
-endif()
+endif ()
 
-set_source_files_properties(src/qtquickcontrols2.conf
-  PROPERTIES
-  QT_RESOURCE_ALIAS qtquickcontrols2.conf
+set_source_files_properties(src/qtquickcontrols2.conf PROPERTIES QT_RESOURCE_ALIAS qtquickcontrols2.conf
 )
-qt_target_qml_sources(${PROJECT_NAME}
-  PREFIX "/"
-  RESOURCES
-  src/qtquickcontrols2.conf
-)
+qt_target_qml_sources(${PROJECT_NAME} PREFIX "/" RESOURCES src/qtquickcontrols2.conf)
 
 #
 # Project Compilation
@@ -354,13 +321,13 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   Threads::Threads
 )
 
-if(APPLE)
+if (APPLE)
   target_link_libraries(${PROJECT_NAME} PRIVATE "-framework AppKit")
-endif()
+endif ()
 
-if(LINUX)
+if (LINUX)
   target_link_libraries(${PROJECT_NAME} PRIVATE Qt::DBus Qt::WaylandClient)
-endif()
+endif ()
 
 target_link_options(${PROJECT_NAME} PRIVATE
   $<$<AND:$<CXX_COMPILER_ID:Clang>,$<NOT:$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:-fuse-ld=lld>
@@ -380,7 +347,7 @@ target_link_options(${PROJECT_NAME} PRIVATE
 # Packaging
 #
 
-if(LINUX)
+if (LINUX)
   install(TARGETS ${PROJECT_NAME})
-  install(DIRECTORY xdg/icons xdg/metainfo xdg/applications TYPE DATA)
-endif()
+  install(DIRECTORY xdg/applications xdg/icons xdg/metainfo TYPE DATA)
+endif ()

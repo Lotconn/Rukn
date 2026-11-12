@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2026 Lotconn <lotconn.org> -->
+<component type="desktop-application">
+  <id>org.lotconn.Rukn</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>AGPL-3.0-or-later</project_license>
+  <name>Rukn</name>
+  <name xml:lang="ar">ركن</name>
+  <name xml:lang="bn">রুকন</name>
+  <summary>Your simple and beautiful adhan app</summary>
+  <summary xml:lang="ar">تطبيق أذان بسيط وجميل</summary>
+  <summary xml:lang="bn">আপনার সহজ ও সুন্দর আযান অ্যাপ</summary>
+  <update_contact>hasanesa_AT_proton.me</update_contact>
+  <developer id="org.lotconn">
+    <name>Lotconn Inc.</name>
+    <name xml:lang="bn">লটকন ইনক.</name>
+  </developer>
+  <description>
+    <p>Rukn is a simple yet powerful adhan app designed to be a companion in your daily life. It
+      offers a clean, beautiful interface free from advertisements and tracking, delivering precise
+      prayer alerts for any city worldwide. The app includes dual calendar support (Gregorian and
+      Hijri), multiple calculation methods, and the ability to view prayer schedules for any date -
+      past or future. A range of thoughtful settings allows you to tailor the experience to your
+      personal needs.</p>
+    <p>Features:</p>
+    <ul>
+      <li>Prayer times for nearly any city around the globe</li>
+      <li>Qibla direction for current location</li>
+      <li>Countdown to the next prayer, also visible in tooltips</li>
+      <li>View prayer times for past or future dates</li>
+      <li>Support for various global calculation methods</li>
+      <li>Flexible time format options</li>
+      <li>Fine-tune prayer times and Hijri date offsets</li>
+      <li>Option to assign a unique and custom adhan for each prayer</li>
+      <li>Individual control to enable, mute, or adjust adhan volumes</li>
+      <li>Lightweight design with no advertisements or tracking</li>
+      <li>Automatic switching between Dark and Light themes</li>
+      <li>Customizable UI visual effects</li>
+      <li>Dynamic wallpapers that reflect the time of prayer</li>
+      <li>Language choices from Arabic and Bangla, with complete RTL layout support</li>
+      <li>Convenient system-tray support</li>
+    </ul>
+    <p>This app continues the open-source effort of now-closed-source Munadi</p>
+    <p xml:lang="ar">ركن هو تطبيق أذان بسيط ولكنه فعال، مصمم ليكون رفيقك في حياتك اليومية. يوفر
+      التطبيق واجهة أنيقة وجذابة خالية من الإعلانات والتتبع، ويقدم تنبيهات دقيقة لمواعيد الصلاة في
+      أي مدينة حول العالم. يدعم التطبيق التقويمين الميلادي والهجري، كما يوفر طرق حساب متعددة،
+      وإمكانية عرض مواعيد الصلاة لأي تاريخ سواء كان ماضياًأو مستقبلاً. تتيح لك مجموعة من الإعدادات
+      المدروسة تخصيص تجربة الاستخدام لتناسب احتياجاتك الشخصية.</p>
+    <p xml:lang="ar">سمات:</p>
+    <ul>
+      <li xml:lang="ar">إمكانية تعيين أذان فريد لكل صلاة</li>
+      <li xml:lang="ar">اعرض مواقيت الصلاة للمواعيد السابقة والتالية</li>
+      <li xml:lang="ar">التحويل التلقائي بين السمة الفاتحة والمظلمة</li>
+      <li xml:lang="ar">تحكم فردي لتمكين أو كتم أو ضبط مستويات صوت الأذان</li>
+      <li xml:lang="ar">تصميم خفيف بدون إعلانات أو تتبع</li>
+      <li xml:lang="ar">خلفيات متحركة تبين وقت الصلاة</li>
+      <li xml:lang="ar">خيارات مرنة لصيغة الوقت</li>
+      <li xml:lang="ar">دعم طرق الحساب العالمية المختلفة</li>
+      <li xml:lang="ar">دعم كامل للغة العربية والبنغالية مع تخطيطات RTL</li>
+      <li xml:lang="ar">دعم مريح لصينية النظام</li>
+      <li xml:lang="ar">ضبط أوقات الصلاة وتعديلات التاريخ الهجري</li>
+      <li xml:lang="ar">عد تنازلي للصلاة التالية، ظاهر في الأدوات</li>
+      <li xml:lang="ar">مؤثرات بصرية قابلة للتخصيص لواجهة المستخدم</li>
+      <li xml:lang="ar">مواقيت الصلاة لكل مدينة تقريبا حول العالم</li>
+    </ul>
+    <p xml:lang="bn">রুকন একটি সহজ কিন্তু শক্তিশালী আযান অ্যাপ, যা আপনার দৈনন্দিন জীবনের সঙ্গী
+      হিসেবে ডিজাইন করা হয়েছে। এটি বিজ্ঞাপন ও ট্র্যাকিংমুক্ত একটি পরিচ্ছন্ন ও সুন্দর ইন্টারফেস
+      প্রদান করে, যা বিশ্বের যেকোনো শহরের জন্য নির্ভুল সালাতের সময়সূচি জানায়। এই অ্যাপে দ্বৈত
+      পঞ্জিকা (খ্রিস্টাব্দ ও হিজরি), একাধিক গণনা পদ্ধতি এবং অতীত বা ভবিষ্যতের যেকোনো তারিখের সালাতের
+      সময়সূচি দেখার সুবিধা রয়েছে। এছাড়াও, বিভিন্ন সুচিন্তিত সেটিংসের মাধ্যমে আপনি আপনার ব্যক্তিগত
+      প্রয়োজন অনুযায়ী অ্যাপকে সাজিয়ে নিতে পারবেন।</p>
+    <p xml:lang="bn">বৈশিষ্ট্যসমূহ:</p>
+    <ul>
+      <li xml:lang="bn">বিশ্বের প্রায় যেকোনো শহরের সালাতের সময়সূচি</li>
+      <li xml:lang="bn">বর্তমান অবস্থানের ক্বিবলা দিক</li>
+      <li xml:lang="bn">পরবর্তী সালাতের কাউন্টডাউন, টুলটিপেও প্রদর্শিত</li>
+      <li xml:lang="bn">অতীত বা ভবিষ্যতের যেকোনো তারিখের সালাতের সময়সূচি দেখার সুবিধা</li>
+      <li xml:lang="bn">বিভিন্ন বৈশ্বিক গণনা পদ্ধতির সমর্থন</li>
+      <li xml:lang="bn">নমনীয় সময় ফরম্যাট অপশন</li>
+      <li xml:lang="bn">সালাতের সময় ও হিজরি তারিখের অফসেট সূক্ষ্মভাবে সমন্বয় করার সুবিধা</li>
+      <li xml:lang="bn">প্রতিটি সালাতের জন্য আলাদা ও নিজস্ব আযান নির্ধারণ করার অপশন</li>
+      <li xml:lang="bn">আযান আলাদাভাবে চালু, নিঃশব্দ বা ভলিউম নিয়ন্ত্রণের সুবিধা</li>
+      <li xml:lang="bn">বিজ্ঞাপন ও ট্র্যাকিংমুক্ত সাবলীল ডিজাইন</li>
+      <li xml:lang="bn">ডার্ক ও লাইট থিমের মধ্যে স্বয়ংক্রিয় পরিবর্তন</li>
+      <li xml:lang="bn">কাস্টমাইজযোগ্য ইউআই ভিজ্যুয়াল ইফেক্ট</li>
+      <li xml:lang="bn">সালাতের সময় অনুযায়ী পরিবর্তনশীল ওয়ালপেপার</li>
+      <li xml:lang="bn">পূর্ণাঙ্গ আরটিএল (RTL) লেআউট সাপোর্টসহ আরবি ও বাংলা ভাষা অপশন</li>
+      <li xml:lang="bn">সুবিধাজনক সিস্টেম-ট্রে</li>
+    </ul>
+  </description>
+  <launchable
+    type="desktop-id">org.lotconn.Rukn.desktop</launchable>
+  <provides>
+    <binary>rukn</binary>
+    <id>rukn.desktop</id>
+  </provides>
+  <categories>
+    <category>Utility</category>
+    <category>Spirituality</category>
+  </categories>
+  <keywords>
+    <keyword>Adhan</keyword>
+    <keyword>Athan</keyword>
+    <keyword>Azan</keyword>
+    <keyword>Hijri</keyword>
+    <keyword>Islam</keyword>
+    <keyword>Islamic</keyword>
+    <keyword>Munadi</keyword>
+    <keyword>KDE</keyword>
+    <keyword>Linux</keyword>
+    <keyword>Muslim</keyword>
+    <keyword>Namaj</keyword>
+    <keyword>Namaz</keyword>
+    <keyword>Prayer</keyword>
+    <keyword>Qt</keyword>
+    <keyword>Salah</keyword>
+    <keyword>Salat</keyword>
+    <keyword>Time</keyword>
+    <keyword>Tray</keyword>
+    <keyword>Wallpaper</keyword>
+    <keyword>Waqt</keyword>
+    <keyword xml:lang="ar">أذان</keyword>
+    <keyword xml:lang="ar">هجري</keyword>
+    <keyword xml:lang="ar">إسلام</keyword>
+    <keyword xml:lang="ar">إسلامي</keyword>
+    <keyword xml:lang="ar">منادي</keyword>
+    <keyword xml:lang="ar">كي دي اي</keyword>
+    <keyword xml:lang="ar">لينكس</keyword>
+    <keyword xml:lang="ar">مسلم</keyword>
+    <keyword xml:lang="ar">صلاة</keyword>
+    <keyword xml:lang="ar">كيو تي</keyword>
+    <keyword xml:lang="ar">كيوت</keyword>
+    <keyword xml:lang="ar">صلاة</keyword>
+    <keyword xml:lang="ar">وقت</keyword>
+    <keyword xml:lang="ar">صينية النظام</keyword>
+    <keyword xml:lang="ar">خلفية</keyword>
+    <keyword xml:lang="ar">وقت</keyword>
+    <keyword xml:lang="bn">আযান</keyword>
+    <keyword xml:lang="bn">আজান</keyword>
+    <keyword xml:lang="bn">নামাজ</keyword>
+    <keyword xml:lang="bn">সালাত</keyword>
+    <keyword xml:lang="bn">হিজরি</keyword>
+    <keyword xml:lang="bn">ইসলাম</keyword>
+    <keyword xml:lang="bn">মুসলিম</keyword>
+    <keyword xml:lang="bn">ওয়াক্ত</keyword>
+    <keyword xml:lang="bn">মুনাদি</keyword>
+  </keywords>
+  <branding>
+    <color type="primary" scheme_preference="light">#aed6f1</color>
+    <color type="primary" scheme_preference="dark">#5dade2</color>
+  </branding>
+  <content_rating
+    type="oars-1.1" />
+  <url type="bugtracker">https://gitlab.com/lotconn/rukn/-/work_items</url>
+  <url
+    type="homepage">https://lotconn.org/</url>
+  <url type="faq">
+    https://gitlab.com/lotconn/rukn/-/blob/master/README.md</url>
+  <url type="contribute">
+    https://gitlab.com/lotconn/rukn/-/blob/master/CONTRIBUTING.md</url>
+  <url type="vcs-browser">
+    https://gitlab.com/lotconn/rukn/-/tree/master</url>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Main page showing Fajr prayer time</caption>
+      <caption xml:lang="ar">الصفحة الرئيسية تظهر وقت صلاة الفجر</caption>
+      <caption xml:lang="bn">মূল পৃষ্ঠায় ফজরের সালাতের সময় প্রদর্শিত হচ্ছে</caption>
+      <image>https://gitlab.com/lotconn/rukn/raw/master/screenshots/2611/fajr.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Main page at Sunrise</caption>
+      <caption xml:lang="ar">الصفحة الرئيسية عند الغروب</caption>
+      <caption xml:lang="bn">মূল পৃষ্ঠায় সূর্যোদয়ের সময় প্রদর্শিত হচ্ছে</caption>
+      <image>https://gitlab.com/lotconn/rukn/raw/master/screenshots/2611/sunrise.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Main page showing Dhuhr prayer time</caption>
+      <caption xml:lang="ar">الصفحة الرئيسية تظهر وقت صلاة الظهر</caption>
+      <caption xml:lang="bn">মূল পৃষ্ঠায় যুহরের সালাতের সময় প্রদর্শিত হচ্ছে</caption>
+      <image>https://gitlab.com/lotconn/rukn/raw/master/screenshots/2611/dhuhr.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Main page showing Asr prayer time</caption>
+      <caption xml:lang="ar">الصفحة الرئيسية تظهر وقت صلاة العصر</caption>
+      <caption xml:lang="bn">মূল পৃষ্ঠায় আছরের সালাতের সময় প্রদর্শিত হচ্ছে</caption>
+      <image>https://gitlab.com/lotconn/rukn/raw/master/screenshots/2611/asr.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Main page showing Maghrib prayer time</caption>
+      <caption xml:lang="ar">الصفحة الرئيسية تبين وقت صلاة المغرب</caption>
+      <caption xml:lang="bn">মূল পৃষ্ঠায় মাগরিবের সালাতের সময় প্রদর্শিত হচ্ছে</caption>
+      <image>https://gitlab.com/lotconn/rukn/raw/master/screenshots/2611/maghrib.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Main page showing Isha prayer time</caption>
+      <caption xml:lang="ar">الصفحة الرئيسية تبين وقت صلاة العشاء</caption>
+      <caption xml:lang="bn">মূল পৃষ্ঠায় ইশার সালাতের সময় প্রদর্শিত হচ্ছে</caption>
+      <image>https://gitlab.com/lotconn/rukn/raw/master/screenshots/2611/isha.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Main page with Material Light theme</caption>
+      <caption xml:lang="ar">الصفحة الرئيسية مع سمة فاتحة</caption>
+      <caption xml:lang="bn">মূল পৃষ্ঠা ম্যাটেরিয়াল লাইট থিম সহ</caption>
+      <image>
+        https://gitlab.com/lotconn/rukn/raw/master/screenshots/2611/material-light.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Main page with Material Dark theme</caption>
+      <caption xml:lang="ar">الصفحة الرئيسية مع سمة مظلمة</caption>
+      <caption xml:lang="bn">মূল পৃষ্ঠা ম্যাটেরিয়াল ডার্ক থিম সহ</caption>
+      <image>
+        https://gitlab.com/lotconn/rukn/raw/master/screenshots/2611/material-dark.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Settings page (Light)</caption>
+      <caption xml:lang="ar">صفحة الإعدادات (فاتحة)</caption>
+      <image>https://gitlab.com/lotconn/rukn/raw/master/screenshots/2611/settings-1.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Settings page (Dark)</caption>
+      <caption xml:lang="ar">صفحة الإعدادات (مظلمة)</caption>
+      <image>https://gitlab.com/lotconn/rukn/raw/master/screenshots/2611/settings-2.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Tray menu</caption>
+      <caption xml:lang="ar">قائمة شريط النظام</caption>
+      <image>https://gitlab.com/lotconn/rukn/raw/master/screenshots/2611/tray-menu.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Tray tooltip showing time left</caption>
+      <caption xml:lang="ar">تلميح شريط النظام يعرض الوقت المتبقي</caption>
+      <image>https://gitlab.com/lotconn/rukn/raw/master/screenshots/2611/tray-tooltip.png</image>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="26.11" date="2026-11-14">
+      <url type="details">https://gitlab.com/lotconn/rukn/-/blob/master/CHANGELOG.md#rukn-2611</url>
+      <description>
+        <p>First exciting release of Rukn. Forked from Munadi, this very first version introduces
+          plethora of visible and backend overhauling in the app, improving the overall experience
+          throughout the whole spectrum. Check them out below!</p>
+        <p>New</p>
+        <ul>
+          <li>Added prayer-time icons! System-tray icons are also updated.</li>
+          <li>Sunnah times like midnight and last third of the night times were added</li>
+          <li>The qibla page is back! Currently it only shows static qibla direction for the
+            currently set location without device compass support</li>
+          <li>Added new calculation method "University of Tehran"</li>
+          <li>Language can now be selected from UI, or let system-default be followed as usual</li>
+          <li>Relevant controls can now be adjusted using spinboxes</li>
+          <li>AppEngine, the new C++ core that migrates from the former JS-based app-logic
+            operations in Rukn. The abstract AppEngine is realized in handful of engines which
+            carry out responsibilities obvious for their purposes.</li>
+          <li>Now using an in-house C++ adhan calcuations library, Adhan-C++, replacing the former
+            JS-based one providing the same level of precision, but with additional type-safety and
+            better performance, while also being actively maintained and improved by us. The whole
+            is integrated in the new C++ core.</li>
+        </ul>
+        <p>Improvements</p>
+        <ul>
+          <li>The UI has a fresh look with bolder texts that stands out with more refined and
+            proportional UI components</li>
+          <li>The location searching operation has been improved to be more robust in cases of
+            network failures and repeated requests</li>
+          <li>Translations were updated along with automatic RTL layout switching according to
+            language</li>
+          <li>Location is now shown in full address rather than truncated in short</li>
+        </ul>
+        <p>Notable Fixes</p>
+        <ul>
+          <li>RTL switch now correctly happens when system-wide Arabic language is detected or when
+            selected from language option</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
+  <supports>
+    <control>keyboard</control>
+    <control>pointing</control>
+    <control>touch</control>
+  </supports>
+  <requires>
+    <display_length compare="ge">360</display_length>
+  </requires>
+</component>

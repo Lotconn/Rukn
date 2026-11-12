@@ -245,9 +245,9 @@ ApplicationWindow {
     }
 
     SystemTrayIcon {
-        icon.name: "org.munadi.Munadi-symbolic"
-        icon.source: "qrc:/qt/qml/App/img/munadi-symbolic.svg"
-        tooltip: qsTr("Munadi") + ((UiEngine.timeLeftDisplay === "") ? "" : "\n" + UiEngine.timeLeftDisplay)
+        icon.name: "org.lotconn.Rukn-symbolic"
+        icon.source: "qrc:/qt/qml/App/img/rukn-symbolic.svg"
+        tooltip: qsTr("Rukn") + ((UiEngine.timeLeftDisplay === "") ? "" : "\n" + UiEngine.timeLeftDisplay)
         visible: true
 
         menu: Menu {
@@ -298,10 +298,10 @@ ApplicationWindow {
             MenuItem {
                 id: timeleft
 
-                text: UiEngine.timeLeftDisplay + (MultimediaEngine.athanPlaying ? " 🔇" : "")
+                text: UiEngine.timeLeftDisplay + (MultimediaEngine.adhanPlaying ? " 🔇" : "")
                 visible: text.length > 0
 
-                onTriggered: MultimediaEngine.athanPlaying ? MultimediaEngine.athanStop() : mainWindow.show()
+                onTriggered: MultimediaEngine.adhanPlaying ? MultimediaEngine.adhanStop() : mainWindow.show()
             }
 
             MenuSeparator {}
@@ -336,8 +336,8 @@ ApplicationWindow {
     }
 
     Connections {
-        function onAthanAlarm() {
-            if (UiEngine.showOnAthan) {
+        function onAdhanAlarm() {
+            if (UiEngine.showOnAdhan) {
                 mainWindow.show();
                 mainWindow.raise();
                 mainWindow.requestActivate();

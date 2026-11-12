@@ -9,10 +9,10 @@ import App
 ColumnLayout {
     RowLayout {
         ComboBox {
-            id: athanListCBox
+            id: adhanListCBox
 
             Layout.fillWidth: true
-            model: MultimediaEngine.athanList
+            model: MultimediaEngine.adhanList
             textRole: "name"
         }
 
@@ -20,7 +20,7 @@ ColumnLayout {
             icon.source: MultimediaEngine.previewPlaying ? "qrc:/qt/qml/App/img/stop.png" : "qrc:/qt/qml/App/img/start.png"
             implicitWidth: height
 
-            onClicked: MultimediaEngine.previewPlaying ? MultimediaEngine.previewStop() : MultimediaEngine.previewPlay(athanListCBox.currentIndex)
+            onClicked: MultimediaEngine.previewPlaying ? MultimediaEngine.previewStop() : MultimediaEngine.previewPlay(adhanListCBox.currentIndex)
         }
     }
 
@@ -39,9 +39,9 @@ ColumnLayout {
             text: qsTr("Remove")
 
             onClicked: {
-                MultimediaEngine.removeAthan(athanListCBox.currentIndex);
+                MultimediaEngine.removeAdhan(adhanListCBox.currentIndex);
 
-                athanListCBox.currentIndex = MultimediaEngine.athanList.length - 1;
+                adhanListCBox.currentIndex = MultimediaEngine.adhanList.length - 1;
             }
         }
     }
@@ -56,9 +56,9 @@ ColumnLayout {
 
         onAccepted: {
             for (const file of selectedFiles)
-                MultimediaEngine.addAthan(file);
+                MultimediaEngine.addAdhan(file);
 
-            athanListCBox.currentIndex = MultimediaEngine.athanList.length - 1;
+            adhanListCBox.currentIndex = MultimediaEngine.adhanList.length - 1;
         }
     }
 }

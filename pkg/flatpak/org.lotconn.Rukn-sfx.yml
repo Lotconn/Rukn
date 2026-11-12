@@ -1,0 +1,46 @@
+app-id: org.lotconn.Rukn
+runtime: org.freedesktop.Platform
+runtime-version: "26.08"
+sdk: org.freedesktop.Sdk
+command: rukn
+
+finish-args:
+  - --device=dri
+  - --filesystem=xdg-run/pipewire-0
+  - --share=ipc
+  - --share=network
+  - --socket=pulseaudio
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --talk-name=org.freedesktop.Notifications
+  - --talk-name=org.kde.StatusNotifierWatcher
+  - --env=QT_QPA_PLATFORMTHEME=gnome
+
+modules:
+  - name: rukn
+    buildsystem: simple
+    build-commands:
+      - sh ./Rukn.run -nx ./
+      - install -Dm0755 ./rukn -t ${FLATPAK_DEST}/bin/
+      - install -t ${FLATPAK_DEST}/share/applications/ -Dm0644 ./xdg/applications/org.lotconn.Rukn.desktop
+      - cp -rt ${FLATPAK_DEST}/share/ ./xdg/icons/
+      - install -t ${FLATPAK_DEST}/share/metainfo/ -Dm0644 ./xdg/metainfo/org.lotconn.Rukn.metainfo.xml
+    sources:
+      - type: file
+        url: "https://gitlab.com/lotconn/rukn/-/jobs/artifacts/26.11/raw/pkg/makeself/Rukn-26.11.run?job=build-static"
+        sha256: e0ffbafb3267da85e781fa467caa67fa9a4ae5eb3eeb90a16e5a2d308c079019
+        dest-filename: Rukn.run
+        only-arches:
+          - x86_64
+
+      - type: git
+        url: https://gitlab.com/lotconn/rukn.git
+        tag: "26.11"
+        commit: d54236a1ae3476a5f448dfe35a182cdf952f65ce
+        disable-modules: true
+      - type: file
+        path: xdg/applications/org.lotconn.Rukn.desktop
+      - type: file
+        path: xdg/metainfo/org.lotconn.Rukn.metainfo.xml
+      - type: dir
+        path: xdg/icons/

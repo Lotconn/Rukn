@@ -28,7 +28,7 @@ const QHash<QString, std::function<void(CoreEngine *)>> CoreEngine::triggerRelay
     {u"24h_tick"_s,     &CoreEngine::dateChanged  },
     {u"60s_tick"_s,     &CoreEngine::minuteChanged},
     {u"alarms_reset"_s, &CoreEngine::alarmsReset  },
-    {u"athan"_s,        &CoreEngine::athanAlarm   }
+    {u"adhan"_s,        &CoreEngine::adhanAlarm   }
 };
 
 CoreEngine::CoreEngine(QObject *parent) : AppBase{cat(), parent}, m_alarm{createAlarm(this)}

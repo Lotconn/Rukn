@@ -9,7 +9,7 @@ import App
 RowLayout {
     id: prayerRow
 
-    property string athanTime
+    property string adhanTime
     property Component iconComponent
     property bool muted: false
     property int prayerId
@@ -98,7 +98,7 @@ RowLayout {
                 font.pointSize: prayerLabel.fontInfo.pointSize
                 font.weight: prayerLabel.fontInfo.weight
                 opacity: prayerLabel.opacity
-                text: prayerRow.athanTime.substring(0, 5)
+                text: prayerRow.adhanTime.substring(0, 5)
             }
 
             Text {
@@ -107,7 +107,7 @@ RowLayout {
                 font.pointSize: prayerTime.fontInfo.pointSize / 1.5
                 font.weight: prayerTime.font.weight
                 opacity: prayerTime.opacity
-                text: prayerRow.athanTime.substring(5)
+                text: prayerRow.adhanTime.substring(5)
                 visible: text.length > 0
             }
         }

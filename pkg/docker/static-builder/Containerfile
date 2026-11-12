@@ -35,23 +35,23 @@ RUN \
     rm -rf /mnt/rootfs/var/cache/* /mnt/rootfs/var/log/dnf* /mnt/rootfs/var/log/yum.*
 
 FROM scratch
-LABEL maintainer="Munadi.org"
-LABEL name="munadi/builder"
-LABEL summary="Munadi static app builder image"
+LABEL maintainer="Lotconn.org"
+LABEL name="rukn/builder"
+LABEL summary="Rukn static app builder image"
 LABEL distribution-scope="public"
 LABEL cpe="cpe:/o:rocky:rocky:10::baseos"
 
 
-LABEL com.redhat.component="munadi-static-builder"
+LABEL com.redhat.component="rukn-static-builder"
 
-LABEL org.opencontainers.image.authors="Abou Abbad, Hasan Esa"
-LABEL org.opencontainers.image.url="https://gitlab.com/munadi/munadi/container_registry"
-LABEL org.opencontainers.image.source="https://gitlab.com/munadi/munadi"
+LABEL org.opencontainers.image.authors="Hasan Esa"
+LABEL org.opencontainers.image.url="https://ghcr.io/lotconn/rukn/static-builder"
+LABEL org.opencontainers.image.source="https://gitlab.com/lotconn/Rukn"
 LABEL org.opencontainers.image.version="26.11"
-LABEL org.opencontainers.image.revision="3"
-LABEL org.opencontainers.image.vendor="Munadi.org"
-LABEL org.opencontainers.image.licenses="AGPL-3.0, GPL-3.0 or LGPL"
-LABEL org.opencontainers.image.title="Munadi static builder image"
+LABEL org.opencontainers.image.revision="4"
+LABEL org.opencontainers.image.vendor="Lotconn.org"
+LABEL org.opencontainers.image.licenses="GPL-3.0"
+LABEL org.opencontainers.image.title="Rukn static builder image"
 LABEL org.opencontainers.image.description="Dev image for app development tasks (static building + packaging)"
 LABEL org.opencontainers.image.base.name="rockylinux/rockylinux:10.2-ubi"
 

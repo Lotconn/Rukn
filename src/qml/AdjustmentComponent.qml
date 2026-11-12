@@ -54,10 +54,10 @@ ColumnLayout {
             enabled: prayerTab.currentIndex !== PrayerEngine.Prayer.Sunrise || prayerTab.currentIndex <= PrayerEngine.Prayer.Isha
             snapMode: Slider.SnapAlways
             stepSize: 0.05
-            value: MultimediaEngine.athanConfig[prayerTab.prayer].volume
+            value: MultimediaEngine.adhanConfig[prayerTab.prayer].volume
             wheelEnabled: true
 
-            onMoved: MultimediaEngine.modifyAthanConfig(prayerTab.prayer, {
+            onMoved: MultimediaEngine.modifyAdhanConfig(prayerTab.prayer, {
                 "volume": volumeSlider.value
             })
         }
@@ -67,7 +67,7 @@ ColumnLayout {
 
             storeVar: volumeSlider.value
 
-            onEdited: value => MultimediaEngine.modifyAthanConfig(prayerTab.prayer, {
+            onEdited: value => MultimediaEngine.modifyAdhanConfig(prayerTab.prayer, {
                     "volume": value
                 })
         }
@@ -116,23 +116,23 @@ ColumnLayout {
         }
 
         Text {
-            id: athanLabel
+            id: adhanLabel
 
             color: Material.secondaryTextColor
-            text: qsTr("Athan")
+            text: qsTr("Adhan")
         }
 
         ComboBox {
-            id: athanComboBox
+            id: adhanComboBox
 
             Layout.fillWidth: true
-            currentIndex: MultimediaEngine.athanConfig[prayerTab.prayer].athan_idx
+            currentIndex: MultimediaEngine.adhanConfig[prayerTab.prayer].adhan_idx
             enabled: prayerTab.currentIndex !== PrayerEngine.Prayer.Sunrise || prayerTab.currentIndex <= PrayerEngine.Prayer.Isha
-            model: MultimediaEngine.athanList
+            model: MultimediaEngine.adhanList
             textRole: "name"
 
-            onActivated: MultimediaEngine.modifyAthanConfig(prayerTab.prayer, {
-                "athan_idx": athanComboBox.currentIndex
+            onActivated: MultimediaEngine.modifyAdhanConfig(prayerTab.prayer, {
+                "adhan_idx": adhanComboBox.currentIndex
             })
         }
 

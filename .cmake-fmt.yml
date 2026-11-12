@@ -1,0 +1,52 @@
+control_flow_space_before_paren: true
+final_newline: true
+indent_width: 2
+inline_single_keyword: true
+max_line_length: 100
+sort_sources: alphabetical
+source_grouping: headers_first
+use_tabs: false
+
+command_grammars:
+  ExternalProject_Add:
+    one_value_keywords:
+      - BUILD_COMMAND
+      - BUILD_IN_SOURCE
+      - CONFIGURE_COMMAND
+      - DOWNLOAD_NO_PROGRESS
+      - INSTALL_COMMAND
+      - URL
+      - URL_HASH
+    multi_value_keywords:
+      - STEP_TARGETS
+  FetchContent_Declare:
+    one_value_keywords:
+      - GIT_REPOSITORY
+      - GIT_TAG
+  qt_add_qml_module:
+    options:
+      - STATIC
+    one_value_keywords:
+      - URI
+      - VERSION
+    multi_value_keywords:
+      - QML_FILES
+      - RESOURCES
+      - SOURCES
+  qt_add_translations:
+    options:
+      - MERGE_QT_TRANSLATIONS
+    one_value_keywords:
+      - RESOURCE_PREFIX
+      - TS_FILE_BASE
+      - TS_OUTPUT_DIRECTORY
+    multi_value_keywords:
+      - SOURCE_TARGETS
+  qt_target_qml_from_svg:
+    options:
+      - ASYNCHRONOUS_SHAPES
+      - CURVE_RENDERER
+      - OPTIMIZE_PATHS
+    multi_value_keywords:
+      - FILES
+      - OUTPUTS

@@ -5,19 +5,19 @@ cat << EOF > "$archname"
 # independent of the Makeself license (GPL)
 
 
-APPNAME=Munadi
-ORGNAME=munadi
+APPNAME=Rukn
+ORGNAME=Lotconn
 DOMAIN=org
-PROGNAME=munadi
+PROGNAME=rukn
 SUMMARY="Your simple and beautiful adhan app"
 VER=26.11
 ARCH=x86_64
 
 ARCHIVE_DIR="\${0%/*}"
 ARCHIVE_NAME="\${0##*/}"
-DNS=\$ORGNAME.\$DOMAIN
+DNS=\${ORGNAME,,}.\$DOMAIN
 ORIG_UMASK=\$(umask)
-RDNS=\$DOMAIN.\$ORGNAME.\$APPNAME
+RDNS=\$DOMAIN.\${ORGNAME,,}.\$APPNAME
 SHA="$SHAsum"
 SIGNATURE="$Signature"
 TMPROOT=\${TMPDIR:=/tmp}

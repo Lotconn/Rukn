@@ -259,18 +259,18 @@ Page {
 
                 ColumnLayout {
                     SettingTitle {
-                        text: qsTr("Show on Athan")
+                        text: qsTr("Show on Adhan")
                     }
 
                     SettingSubtitle {
-                        text: qsTr("Try to show window on Athan.")
+                        text: qsTr("Try to show window on Adhan.")
                     }
                 }
 
                 Switch {
-                    checked: UiEngine.showOnAthan
+                    checked: UiEngine.showOnAdhan
 
-                    onClicked: UiEngine.showOnAthan = checked
+                    onClicked: UiEngine.showOnAdhan = checked
                 }
             }
 
@@ -295,31 +295,31 @@ Page {
                 }
             }
 
-            RowLayout {
-                enabled: UiEngine.getFormFactor() === "desktop"
-                visible: enabled
+            // RowLayout {
+            //     enabled: UiEngine.getFormFactor() === "desktop"
+            //     visible: enabled
 
-                ColumnLayout {
-                    SettingTitle {
-                        text: qsTr("Check for updates")
-                    }
+            //     ColumnLayout {
+            //         SettingTitle {
+            //             text: qsTr("Check for updates")
+            //         }
 
-                    SettingSubtitle {
-                        text: qsTr("Munadi will check for updates when it first starts.")
-                    }
-                }
+            //         SettingSubtitle {
+            //             text: qsTr("Rukn will check for updates when it first starts.")
+            //         }
+            //     }
 
-                Switch {
-                    checked: UpdateEngine.checkUpdates
+            //     Switch {
+            //         checked: UpdateEngine.checkUpdates
 
-                    onClicked: UpdateEngine.checkUpdates = checked
-                }
-            }
+            //         onClicked: UpdateEngine.checkUpdates = checked
+            //     }
+            // }
 
             SettingTitle {
                 font.italic: true
                 horizontalAlignment: Text.AlignHCenter
-                text: qsTr("Athan")
+                text: qsTr("Adhan")
             }
 
             Line {
@@ -331,13 +331,13 @@ Page {
                     RowLayout {
                         SettingTitle {
                             Layout.fillWidth: true
-                            text: qsTr("Mute all Athans")
+                            text: qsTr("Mute all Adhans")
                         }
 
                         Switch {
-                            checked: MultimediaEngine.athanMuted
+                            checked: MultimediaEngine.adhanMuted
 
-                            onClicked: MultimediaEngine.athanMuted = checked
+                            onClicked: MultimediaEngine.adhanMuted = checked
                         }
                     }
                 }
@@ -485,7 +485,7 @@ Page {
                 }
 
                 TextButton {
-                    property string link: "https://munadi.org"
+                    property string link: "https://lotconn.org"
 
                     text: link
 
@@ -502,7 +502,7 @@ Page {
                 //     font.italic: true
                 // }
                 // TextButton {
-                //     property string link: "https://munadi.org/contact"
+                //     property string link: "https://lotconn.org/contact"
                 //     text: link
                 //     onClicked: Qt.openUrlExternally(link)
                 // }
@@ -514,7 +514,7 @@ Page {
                 }
 
                 TextButton {
-                    property string link: "https://gitlab.com/munadi/munadi/-/work_items"
+                    property string link: "https://gitlab.com/lotconn/rukn/-/work_items"
 
                     Layout.fillWidth: true
                     text: link

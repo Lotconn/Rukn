@@ -13,7 +13,7 @@ using namespace Qt::StringLiterals;
 
 QString Engine::show_help(bool /*flag*/)
 {
-    return "\nUsage: munadi [options]\n"
+    return "\nUsage: rukn [options]\n"
            "Options:\n"
            "  --hidden        Start minimized to system tray\n"
            "  --fullscreen    Start in fullscreen mode\n"

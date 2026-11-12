@@ -1,8 +1,8 @@
-# Munadi
+# Rukn
 
-## Your Simple and Beautiful Athan App
+## Your Simple and Beautiful Adhan App
 
-Munadi is a simple yet powerful Athan app designed to be a companion in your daily life. It offers a
+Rukn is a simple yet powerful Adhan app designed to be a companion in your daily life. It offers a
 clean, beautiful interface free from advertisements and tracking, delivering precise prayer alerts
 for any city worldwide. The app includes dual calendar support (Gregorian & Hijri), multiple
 calculation methods, and the ability to view prayer schedules for any date - past or future. A range
@@ -17,14 +17,16 @@ of thoughtful settings allows you to tailor the experience to your personal need
 - Support for various global calculation methods
 - Flexible time format options
 - Fine-tune prayer times and Hijri date offsets
-- Option to assign a unique and custom athan for each prayer
-- Individual control to enable, mute, or adjust athan volumes
+- Option to assign a unique and custom adhan for each prayer
+- Individual control to enable, mute, or adjust adhan volumes
 - Lightweight design with no advertisements or tracking
 - Automatic switching between Dark and Light themes
 - Customizable UI visual effects
 - Dynamic wallpapers that reflect the time of prayer
 - Language choices from Arabic and Bangla, with complete RTL layout support
 - Convenient system-tray support
+
+This app continues the open-source effort of now-closed-source [Munadi](https://munadi.org)
 
 ## Screenshots
 
@@ -50,7 +52,7 @@ of thoughtful settings allows you to tailor the experience to your personal need
 
 | Packaging | Platform                      |                                                                                      Status                                                                                       |
 | --------- | ----------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| Makeself  | linux/x86_64                  |                        [![pipeline status](https://gitlab.com/munadi/munadi/badges/26.11/pipeline.svg)](https://gitlab.com/munadi/munadi/-/commits/26.11)                         |
+| Makeself  | linux/x86_64                  |                         [![pipeline status](https://gitlab.com/lotconn/rukn/badges/26.11/pipeline.svg)](https://gitlab.com/lotconn/rukn/-/commits/26.11)                          |
 | Flatpak   | linux/x86_64<br>linux/aarch64 | [![Build pipeline](https://github.com/flathub-infra/vorarbeiter/actions/workflows/build.yml/badge.svg)](https://github.com/flathub-infra/vorarbeiter/actions/workflows/build.yml) |
 | APK       | android/arm64-v8a             |                                                                                       Alpha                                                                                       |
 
@@ -60,34 +62,32 @@ of thoughtful settings allows you to tailor the experience to your personal need
 
 ## Installing
 
-### Primary Release
+<div align="center">
+  <a href='https://flathub.org/apps/details/org.lotconn.Rukn'>
+    <img height='96' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/>
+  </a>
+</div>
 
-**Munadi Self-Extracting Installer**
+### Other Sources
 
-[![Latest Release](https://gitlab.com/munadi/munadi/-/badges/release.svg)](https://gitlab.com/munadi/munadi/-/releases)
+#### Rukn Self-Extracting Installer
+
+[![Latest Release](https://gitlab.com/lotconn/rukn/-/badges/release.svg)](https://gitlab.com/lotconn/rukn/-/releases)
 
 No dependencies required - just download & install:
 
 ```bash
-# Replace VER with the file's version, e.g. Munadi-26.11.run
-sh Munadi-<VER>.run -q
+# Replace VER with the file's version, e.g. Rukn-26.11.run
+sh Rukn-<VER>.run -q
 ```
 
 Alternatively:
 
 ```bash
-sh ./Munadi-<VER>.run
+sh ./Rukn-<VER>.run
 ```
 
 and follow instructions.
-
-### Other Sources
-
-<div align="center">
-  <a href='https://flathub.org/apps/details/org.munadi.Munadi'>
-    <img height='96' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/>
-  </a>
-</div>
 
 ## Contributing and Building from Source
 
@@ -103,7 +103,7 @@ workflow before reporting bugs:
 1. Install the app using the self-extracting archive:
 
 ```bash
-MUNADI_DEBUG=1 sh Munadi-<ver>.run
+APP_DEBUG=1 sh Rukn-<ver>.run
 ```
 
 Note the log location printed after (hopefully) successful installation. Retain it on a good place.
@@ -111,15 +111,14 @@ Note the log location printed after (hopefully) successful installation. Retain 
 2. Remove old configs and caches:
 
 ```bash
-rm -rf ~/.cache/[mM]unadi
-mv ~/.config/munadi{,.bak}
+rm -rf ~/.cache/Lotconn
+mv ~/.config/Lotconn/Rukn.ini{,.bak}
 ```
 
 3. Do
 
 ```bash
-QT_LOGGING_RULES='*.debug=true;qt.*.debug=false;qt.qml.import=true' \
-  munadi > munadi.log 2>&1
+QT_LOGGING_RULES='*.debug=true;qt.*.debug=false;qt.qml.import=true' rukn > rukn.log 2>&1
 ```
 
 and try reproducing the issues
@@ -130,35 +129,35 @@ and try reproducing the issues
 2. Remove old configs and caches:
 
 ```bash
-mv ~/.var/app/org.munadi.Munadi{,.bak}
+mv ~/.var/app/org.lotconn.Rukn{,.bak}
 ```
 
 3. Run from terminal:
 
 ```bash
 flatpak run \
-  --command=munadi \
+  --command=rukn \
   --env=QT_LOGGING_RULES='*.debug=true;qt.*.info=true;kf.*.debug=false;qt.qml.import=true' \
-  org.munadi.Munadi > munadi-log.txt 2>&1
+  org.lotconn.Rukn > rukn-log.txt 2>&1
 ```
 
 and try reproducing the issues.
 
-If issues persist, [open an issue](https://gitlab.com/munadi/munadi/-/work_items) with `munadi.log`,
+If issues persist, [open an issue](https://gitlab.com/lotconn/rukn/-/work_items) with `rukn.log`,
 the install logs you retained earlier and the one in the CWD when installing. Explain as detail as
 possible with your current app version and relevant distro details.
 
 ## License
 
-This project is licensed under the AGPL-3.0-or-later license. FFmpeg is built on the default LGPL
-license. Licenses apply to individual tools used in this project. See the [LICENSE](LICENSE) file
-for details, and [Acknowledgements](#acknowledgements) for licenses for used libraries.
+This project is licensed under the AGPL-3.0-or-later. FFmpeg is built on the default LGPL license.
+Licenses apply to individual tools used in this project. See the [LICENSE](LICENSE) file for
+details, and [Acknowledgements](#acknowledgements) for licenses for used libraries.
 
-- **Homepage**: [munadi.org](https://munadi.org)
-- **Bug Tracker**: [Issues](https://gitlab.com/munadi/munadi/-/issues) |
-  [Flathub Issues](https://github.com/flathub/org.munadi.Munadi/issues)
-- **Source Code**: [Source](https://gitlab.com/munadi/munadi) |
-  [Flathub](https://github.com/flathub/org.munadi.Munadi)
+- **Homepage**: [lotconn.org](https://lotconn.org)
+- **Bug Tracker**: [Issues](https://gitlab.com/lotconn/rukn/-/issues) |
+  [Flathub Issues](https://github.com/flathub/org.lotconn.Rukn/issues)
+- **Source Code**: [Source](https://gitlab.com/lotconn/rukn) |
+  [Flathub](https://github.com/flathub/org.lotconn.Rukn)
 
 ## Acknowledgements
 
@@ -171,11 +170,6 @@ for details, and [Acknowledgements](#acknowledgements) for licenses for used lib
   - Source: <https://github.com/lotconn/adhan-cpp>
   - Mirror (Codeberg): <https://codeberg.org/lotconn/adhan-cpp>
 
-- **Android Openssl** by Klarälvdalens Datakonsult AB
-  - Project Implementation: SSL library for Android builds
-  - License: Apache
-  - Source: <https://github.com/KDAB/android_openssl>
-
 - **FileMan** by Lotconn Inc.
   - Project Implementation: File management backend
   - License: MIT
@@ -185,13 +179,19 @@ for details, and [Acknowledgements](#acknowledgements) for licenses for used lib
 
 - **makeself** by megastep
   - Project Implementation: Self-extracting installer
-  - License: GPL v2
+  - License: GPL v2 (code only, excluding archives created)
   - Homepage: <https://makeself.io/>
   - Source: <https://github.com/megastep/makeself>
 
+- **Munadi** by Munadi
+  - Project Implementation: Alarm library
+  - License: AGPL-3.0-or-later
+  - Homepage: <https://munadi.org/>
+  - Source: <https://gitlab.com/munadi/munadi>
+
 - **Qt** by The Qt Company
   - Project Implementation: UI and core code
-  - License: GPL v3 and LGPL v3
+  - License: LGPL v3
   - Homepage: <https://www.qt.io/>
   - Source: <https://code.qt.io/cgit/>
 
@@ -203,10 +203,7 @@ for details, and [Acknowledgements](#acknowledgements) for licenses for used lib
 
 ### Contributors
 
-- **Project Author:** AA [@hakpw](https://gitlab.com/hakpw)
-- Hasan Esa [@HasanEsa](https://gitlab.com/HasanEsa)
-- Damascene
-- Khaled Khamis [@khaledkhamis26](https://gitlab.com/khaledkhamis26)
+- **Project Author:** Hasan Esa [@HasanEsa](https://gitlab.com/HasanEsa)
 
 ---
 

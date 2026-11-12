@@ -81,31 +81,30 @@ void UpdateEngine::connectToNetMan() const noexcept
 }
 
 void UpdateEngine::defaultConfigs() noexcept
-{ this->m_checkUpdates = true; }
+{ this->m_checkUpdates = false; }
 
-void UpdateEngine::loadConfigs() noexcept
-{
-    logDebug(cat) << "Loading configs from persistent config file";
+// void UpdateEngine::loadConfigs() noexcept
+// {
+//     logDebug(cat) << "Loading configs from persistent config file";
 
-    bool          configMigrated{true};
-    const QString migrateKey{u"UpdateEngineConfigMigrated"_s};
+//     bool          configMigrated{true};
+//     const QString migrateKey{u"UpdateEngineConfigMigrated"_s};
 
-    loadConfigKey("App/checkForUpdates"_L1, "App/CheckUpdates"_L1, migrateKey, this,
-                  "checkUpdates"_L1, configMigrated);
+//     // loadConfigKey({}, "App/CheckUpdates"_L1, {}, this, "checkUpdates"_L1);
 
-    if (configMigrated)
-        core->writeSettings("UpdateEngineConfigMigrated"_L1, true);
-}
+//     // if (configMigrated)
+//     //     core->writeSettings("UpdateEngineConfigMigrated"_L1, true);
+// }
 
-void UpdateEngine::saveConfigs() noexcept
-{
-    logDebug(cat) << "Saving update configurations";
+// void UpdateEngine::saveConfigs() noexcept
+// {
+//     logDebug(cat) << "Saving update configurations";
 
-    // Ensure the very last config to be saved has the third parameter set to "true". Otherwise
-    // (later) settings are not saved
+//     // Ensure the very last config to be saved has the third parameter set to "true". Otherwise
+//     // (later) settings are not saved
 
-    core->writeSettings("App/CheckUpdates"_L1, this->m_checkUpdates, true);
-}
+//     // core->writeSettings("App/CheckUpdates"_L1, this->m_checkUpdates, true);
+// }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  Private Slots

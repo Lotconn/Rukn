@@ -1,5 +1,0 @@
-flask
-flask-ext
-flask-mail
-flask-wtf
-gunicorn

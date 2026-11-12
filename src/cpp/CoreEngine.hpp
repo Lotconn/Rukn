@@ -499,9 +499,9 @@ class CoreEngine : public AppBase, public AppEngine<CoreEngine>
     void alarmsReset();
 
     /**
-     * @brief Relay of `trigger()` carrying "athan" ID. Implicitly bound to `trigger()` signal.
+     * @brief Relay of `trigger()` carrying "adhan" ID. Implicitly bound to `trigger()` signal.
      */
-    void athanAlarm();
+    void adhanAlarm();
 
     /**
      * @brief Notifies about auto-start changed, carrying the state information along. Implicitly

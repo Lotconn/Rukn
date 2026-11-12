@@ -43,9 +43,9 @@ function getParentDirs() {
 # e.g. makeself.sh [args] archive_dir file_name label startup_script [script_args]
 
 VER=26.11
-APP=Munadi
-PROG=munadi
-RDNS="org.munadi.Munadi"
+APP=Rukn
+PROG=rukn
+RDNS="org.lotconn.Rukn"
 REPO_FILES=('LICENSE' 'pkg/makeself/install'
 	'pkg/makeself/uninstall' "xdg/applications/$RDNS.desktop" "xdg/metainfo/$RDNS.metainfo.xml")
 REPO_FOLDERS=('xdg/icons/')

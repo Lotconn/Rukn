@@ -11,8 +11,14 @@ namespace App
 class UiEngine : public AppBase, public AppEngine<UiEngine>
 {
     Q_OBJECT
+
+    // Enums must be access scoped in QML
     Q_CLASSINFO("RegisterEnumClassesUnscoped", "false")
+
+    // Construct a QML module from this class
     QML_ELEMENT
+
+    // The QML module is a singleton
     QML_SINGLETON
 
     Q_PROPERTY(bool bgImage MEMBER m_bgImage NOTIFY bgImageChanged)
@@ -41,7 +47,7 @@ class UiEngine : public AppBase, public AppEngine<UiEngine>
     Q_PROPERTY(double opacity MEMBER m_opacity NOTIFY opacityChanged)
     Q_PROPERTY(QVariantList prayerDisplayNames READ prayerDisplayNames NOTIFY translationChanged)
     Q_PROPERTY(QVariantHash prayerDisplayTimes READ prayerDisplayTimes NOTIFY displayTimesChanged)
-    Q_PROPERTY(bool showOnAthan MEMBER m_showOnAthan NOTIFY showOnAthanChanged)
+    Q_PROPERTY(bool showOnAdhan MEMBER m_showOnAdhan NOTIFY showOnAdhanChanged)
     // Q_PROPERTY(int textsRefresher READ textsRefresher NOTIFY translationChanged)
     Q_PROPERTY(int themeDisplayIndex MEMBER m_themeDisplayIndex NOTIFY themeChanged)
     Q_PROPERTY(QVariantList themeDisplayNames READ themeDisplayNames NOTIFY translationChanged)
@@ -49,8 +55,36 @@ class UiEngine : public AppBase, public AppEngine<UiEngine>
     Q_PROPERTY(double timeLeftProgress READ timeLeftProgress NOTIFY timeChanged)
 
   public:
-    static auto create(QQmlEngine *qmlEngine, QJSEngine *jsEngine) -> UiEngine *;
-    static auto logCategory() noexcept -> const QLoggingCategory &;
+    /**
+     * @brief The QML factory, creating the singleton as a QML module, called by QmlEngine itself.
+     * The created instance therefore is parented by the QmlEngine which can be accessed through
+     * `qmlEngine`. This engine class here can request the QML engine to instantiate any other
+     * dependent engine classes it requires through a call to
+     * `qmlEngine->singletonInstance<OtherEngine *>()` which too would be parented by the QmlEngine,
+     * avoiding loads of recurred problems, one among which is nested parenting if the dependent
+     * engines would be instantiated right in this engine's constructor. However, QmlEngine prefers
+     * the default-constructible `public` constructor over this if its available, so this never gets
+     * called if it's present. The class constructor therefore needs to be hidden from `public` -
+     * preferrably in `protected` segment for QmlEngine to call this factory. For reducing redundant
+     * codes and actually using the class constructor preserving all the expected behaviors as
+     * usual, this factory then needs to act as a wrapper around the "hidden" constructor which
+     * artfully accomplishes both goals. Returns an instance of the engine class - in here, by
+     * calling the `protected` constructor.
+     *
+     * @param qmlEngine: The QmlEngine instance, passed by the QmlEngine during its call
+     * @param jsEngine: Present only for historical purposes, everything is done through the
+     * QmlEngine instance these days. Not used here.
+     * @return LocationEngine*: The class instance
+     */
+    static UiEngine *create(QQmlEngine *qmlEngine, QJSEngine * /* jsEngine */);
+    ~UiEngine() override = default;
+
+    /**
+     * @brief Accessor needed by AppEngine<T> for logging purposes
+     *
+     * @return const QLoggingCategory&: The instance created by Q_STATIC_LOGGING_CATEGORY()
+     */
+    static const QLoggingCategory &logCategory() noexcept;
 
     Q_INVOKABLE static QString getFormFactor() noexcept;
 
@@ -61,6 +95,10 @@ class UiEngine : public AppBase, public AppEngine<UiEngine>
     void resetDateOffset() noexcept;
 
   private:
+    /**
+     * @brief Singleton library designed to be only one instance, not to be copied, or transferred
+     * ownership to other instance.
+     */
     Q_DISABLE_COPY_MOVE(UiEngine);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -115,7 +153,7 @@ class UiEngine : public AppBase, public AppEngine<UiEngine>
     QVariantList            m_madhhabDisplayNames;
     double                  m_opacity;
     QVariantList            m_prayerDisplayNames;
-    bool                    m_showOnAthan;
+    bool                    m_showOnAdhan;
     int                     m_themeDisplayIndex;
     QVariantList            m_themeDisplayNames;
 
@@ -129,15 +167,20 @@ class UiEngine : public AppBase, public AppEngine<UiEngine>
     // static auto textsRefresher() -> int;
     static auto timeLeftProgress() noexcept -> double;
 
-    auto               calcMethodsDisplayNames() noexcept -> QVariantList &;
-    auto               calendarDateDisplay() noexcept -> QString;
-    auto               calendarDisplayNames() noexcept -> QVariantList &;
-    auto               connectToAlarmsReset() const noexcept -> void;
-    auto               connectToAthanPlayingChanged() const noexcept -> void;
-    auto               connectToCalcChanged() const noexcept -> void;
-    auto               connectToDateChanged() const noexcept -> void;
-    auto               connectToLocaleChanged() const noexcept -> void;
-    auto               connectToMinuteChanged() const noexcept -> void;
+    auto calcMethodsDisplayNames() noexcept -> QVariantList &;
+    auto calendarDateDisplay() noexcept -> QString;
+    auto calendarDisplayNames() noexcept -> QVariantList &;
+    auto connectToAlarmsReset() const noexcept -> void;
+    auto connectToAdhanPlayingChanged() const noexcept -> void;
+    auto connectToCalcChanged() const noexcept -> void;
+    auto connectToDateChanged() const noexcept -> void;
+    auto connectToLocaleChanged() const noexcept -> void;
+    auto connectToMinuteChanged() const noexcept -> void;
+
+    /**
+     * @brief Customized override of `AppBase::defaultConfigs()`. See
+     * `AppBase::defaultConfigs()` brief
+     */
     auto               defaultConfigs() noexcept -> void override;
     [[nodiscard]] auto getCurrentLang() const noexcept -> QString;
     [[nodiscard]] auto getCurrentTheme() const noexcept -> QString;
@@ -145,11 +188,20 @@ class UiEngine : public AppBase, public AppEngine<UiEngine>
     auto               initConfigs() noexcept -> void;
     auto               initTexts() noexcept -> void;
     auto               langDisplayNames() noexcept -> QVariantList &;
-    auto               loadConfigs() noexcept -> void override;
+
+    /**
+     * @brief Customized override of `AppBase::loadConfigs()`. Additionally takes care of
+     * old-settings migration.
+     */
+    void               loadConfigs() noexcept override;
     auto               madhhabDisplayNames() noexcept -> QVariantList &;
     auto               prayerDisplayNames() noexcept -> QVariantList &;
     [[nodiscard]] auto prayerDisplayTimes() const noexcept -> QVariantHash;
-    auto               saveConfigs() noexcept -> void override;
+
+    /**
+     * @brief Customized override of `AppBase::saveConfigs()`
+     */
+    void               saveConfigs() noexcept override;
     auto               setCalcMethodDisplayIdx(const QVariant &index) noexcept -> void;
     auto               setCalendarKey(const QString &name) noexcept -> void;
     auto               setCalendarDisplayIdx(const QVariant &index) noexcept -> void;
@@ -171,19 +223,23 @@ class UiEngine : public AppBase, public AppEngine<UiEngine>
     auto langIdxChanged() -> void;
     auto opacityChanged() -> void;
     auto prayerCalcChanged() -> void;
-    auto showOnAthanChanged() -> void;
+    auto showOnAdhanChanged() -> void;
     auto themeChanged() -> void;
     auto timeChanged() -> void;
     auto translationChanged() -> void;
 
   private slots:
     void onAlarmsReset() noexcept;
-    void onAthanPlayingChanged(bool playing) noexcept;
+    void onAdhanPlayingChanged(bool playing) noexcept;
     void onCalcChanged() noexcept;
     void onDateChanged() noexcept;
     void onMinuteChanged() noexcept;
     void onMultimediaEngineOnline() noexcept;
     void onPrayerEngineOnline() noexcept;
+    /**
+     * @brief Customized overridden extension of `AppBase::onCoreOnline`. See its brief for
+     * details
+     */
     void onCoreOnline() noexcept override;
     void onLocaleChanged() noexcept;
 };

@@ -653,11 +653,11 @@ class PrayerEngine : public AppBase, public AppEngine<PrayerEngine>
     void setupAlarmsResetRelay() const noexcept;
 
     /**
-     * @brief Establishes a relay-connection between `CoreEngine::athanAlarm()` and `calcChanged()`
+     * @brief Establishes a relay-connection between `CoreEngine::adhanAlarm()` and `calcChanged()`
      * signals. A direct connection to `CoreEngine::alarmManager()` instead is deliberately not
      * established to prefer simpler setups and respect the chain of responsibility.
      */
-    void setupAthanAlarmRelay() const noexcept;
+    void setupAdhanAlarmRelay() const noexcept;
 
     /**
      * @brief Establishes a relay-connection between `CoreEngine::dateChanged()` and `invalidate()`
@@ -704,7 +704,7 @@ class PrayerEngine : public AppBase, public AppEngine<PrayerEngine>
     /**
      * @brief Group signal notifying about prayer-times calculations being modified. Also implicitly
      * forces a re-read of `currentPrayer`, `nextPrayer` and `qibla` properties. Implicitly bound to
-     * `CoreEngine::athanAlarm()`, `CoreEngine::minuteChanged()` (as soft, re-read relays), and
+     * `CoreEngine::adhanAlarm()`, `CoreEngine::minuteChanged()` (as soft, re-read relays), and
      * `invalidate()` signal (as hard change-notifier). However, `invalidate()` signal is not
      * directly relayed; this signal must be emitted only after changes have been finalized and
      * committed. See `onInvalidate()` for further details.

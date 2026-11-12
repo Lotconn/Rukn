@@ -21,7 +21,7 @@ MultimediaEngine *MultimediaEngine::create(QQmlEngine *qmlEngine, QJSEngine * /*
     return new MultimediaEngine{};
 }
 
-void MultimediaEngine::addAthan(const QUrl &fileUrl) noexcept
+void MultimediaEngine::addAdhan(const QUrl &fileUrl) noexcept
 {
     const add_file_t result = this->fileman->addFile(fileUrl, FileMan::Audio | FileMan::Video);
 
@@ -32,67 +32,67 @@ void MultimediaEngine::addAthan(const QUrl &fileUrl) noexcept
         return;
     }
 
-    this->m_athanList.append(QVariantMap{
+    this->m_adhanList.append(QVariantMap{
         {u"name"_s, FileMan::getFileName(fileUrl)      },
         {u"path"_s, result.location().toDisplayString()}
     });
 
-    emit this->athanListChanged();
+    emit this->adhanListChanged();
 }
 
 // QMediaPlayer::play()/stop() toggles playbackState property and in-turn emits playbackStateChanged
 // signal synchronously. Mind the slots bound to these signals when adding read/write locks
-void MultimediaEngine::athanPlay() noexcept
+void MultimediaEngine::adhanPlay() noexcept
 {
     const QString prayerName{PrayerEngine::toString(pEngine->currentPrayer())};
-    const int     athanIdx{
-        this->m_athanConfig.value(prayerName).toHash().value("athan_idx"_L1).toInt()};
-    const QUrl src{this->m_athanList.at(athanIdx).toMap().value("path"_L1).toUrl()};
+    const int     adhanIdx{
+        this->m_adhanConfig.value(prayerName).toHash().value("adhan_idx"_L1).toInt()};
+    const QUrl src{this->m_adhanList.at(adhanIdx).toMap().value("path"_L1).toUrl()};
 
-    this->athanPlayer->setAudioOutput(this->athanOutput);
-    this->athanOutput->setMuted(this->m_athanMuted);
-    this->athanOutput->setVolume(
-        this->m_athanConfig.value(prayerName).toHash().value("volume"_L1).toFloat());
+    this->adhanPlayer->setAudioOutput(this->adhanOutput);
+    this->adhanOutput->setMuted(this->m_adhanMuted);
+    this->adhanOutput->setVolume(
+        this->m_adhanConfig.value(prayerName).toHash().value("volume"_L1).toFloat());
 
-    if (const float volume{this->athanOutput->volume()};
-        volume <= 0 || this->athanOutput->isMuted())
+    if (const float volume{this->adhanOutput->volume()};
+        volume <= 0 || this->adhanOutput->isMuted())
         return;
 
-    logDebug(cat) << "Athan file: " << src.toDisplayString();
-    this->athanPlayer->setSource(src);
+    logDebug(cat) << "Adhan file: " << src.toDisplayString();
+    this->adhanPlayer->setSource(src);
 
-    if (!this->isAthanPlaying())
-        this->athanPlayer->play();
+    if (!this->isAdhanPlaying())
+        this->adhanPlayer->play();
     else
         logDebug(cat) << "Play ignored; media already playing";
 }
 
-void MultimediaEngine::athanStop() noexcept
+void MultimediaEngine::adhanStop() noexcept
 {
-    if (this->isAthanPlaying())
+    if (this->isAdhanPlaying())
     {
-        this->athanPlayer->stop();
-        this->athanPlayer->setAudioOutput(nullptr);
+        this->adhanPlayer->stop();
+        this->adhanPlayer->setAudioOutput(nullptr);
     }
     else
         logDebug(cat) << "Stop ignored; media is not playing";
 }
 
-QVariant MultimediaEngine::getAthanConfig(Prayer prayerEnum, const QString &field) noexcept
+QVariant MultimediaEngine::getAdhanConfig(Prayer prayerEnum, const QString &field) noexcept
 {
-    if (!this->athanConfigFields.contains(field))
+    if (!this->adhanConfigFields.contains(field))
     {
-        logCritical(cat) << field << "is not a valid field in AthanConfig";
+        logCritical(cat) << field << "is not a valid field in AdhanConfig";
         return {};
     }
 
-    return this->m_athanConfig.value(PrayerEngine::toString(prayerEnum)).toHash().value(field);
+    return this->m_adhanConfig.value(PrayerEngine::toString(prayerEnum)).toHash().value(field);
 }
 
 const QLoggingCategory &MultimediaEngine::logCategory() noexcept
 { return cat(); }
 
-void MultimediaEngine::modifyAthanConfig(const QString &key, const QVariantHash &entry) noexcept
+void MultimediaEngine::modifyAdhanConfig(const QString &key, const QVariantHash &entry) noexcept
 {
     const int enumVal{PrayerEngine::metaPrayerEnum().keyToValue(qPrintable(key))};
 
@@ -113,11 +113,11 @@ void MultimediaEngine::modifyAthanConfig(const QString &key, const QVariantHash 
         return;
     }
 
-    QVariantHash tempMap{this->m_athanConfig.value(key).toHash()};
+    QVariantHash tempMap{this->m_adhanConfig.value(key).toHash()};
 
-    if (!isValidEntry(entry, this->athanConfigEntrySize, this->athanConfigFields))
+    if (!isValidEntry(entry, this->adhanConfigEntrySize, this->adhanConfigFields))
     {
-        logCritical(cat) << "[" << entry << "] is not a valid entry in athanConfig";
+        logCritical(cat) << "[" << entry << "] is not a valid entry in adhanConfig";
 
         return;
     }
@@ -130,22 +130,22 @@ void MultimediaEngine::modifyAthanConfig(const QString &key, const QVariantHash 
     }
 
     tempMap.insert(entry);
-    this->m_athanConfig.insert(key, tempMap);
-    emit this->athanConfigChanged();
+    this->m_adhanConfig.insert(key, tempMap);
+    emit this->adhanConfigChanged();
 }
 
-void MultimediaEngine::previewPlay(int athanListIdx) noexcept
+void MultimediaEngine::previewPlay(int adhanListIdx) noexcept
 {
-    if (athanListIdx < 0 || athanListIdx >= this->m_athanList.size())
+    if (adhanListIdx < 0 || adhanListIdx >= this->m_adhanList.size())
     {
-        logCritical(cat) << "Index " << athanListIdx << " out of valid range";
+        logCritical(cat) << "Index " << adhanListIdx << " out of valid range";
 
         return;
     }
 
     this->previewPlayer->setAudioOutput(this->previewOutput);
     this->previewPlayer->setSource(
-        this->m_athanList.at(athanListIdx).toMap().value("path"_L1).toUrl());
+        this->m_adhanList.at(adhanListIdx).toMap().value("path"_L1).toUrl());
     // this->previewOutput->setVolume(1.0) // not necessary, defaults to 1.0
 
     if (!this->isPreviewPlaying())
@@ -165,16 +165,16 @@ void MultimediaEngine::previewStop() noexcept
         logDebug(cat) << "Stop ignored; media is not playing";
 }
 
-void MultimediaEngine::removeAthan(qsizetype rmIdx) noexcept
+void MultimediaEngine::removeAdhan(qsizetype rmIdx) noexcept
 {
-    if (rmIdx < this->defaultAthans || rmIdx >= this->m_athanList.size())
+    if (rmIdx < this->defaultAdhans || rmIdx >= this->m_adhanList.size())
     {
         logCritical(cat) << "Invalid index value \"" << rmIdx << "\"";
 
         return;
     }
 
-    const QUrl      fileUrl{this->m_athanList.at(rmIdx).toMap().value("path"_L1).toUrl()};
+    const QUrl      fileUrl{this->m_adhanList.at(rmIdx).toMap().value("path"_L1).toUrl()};
     const rm_file_t result(this->fileman->rmFile(QUrl(fileUrl)));
 
     logDebug(cat) << "Result: " << result.status_l() << " " << result.status_h();
@@ -186,30 +186,30 @@ void MultimediaEngine::removeAthan(qsizetype rmIdx) noexcept
         return;
     }
 
-    for (const auto &[field, entry] : this->m_athanConfig.asKeyValueRange())
+    for (const auto &[field, entry] : this->m_adhanConfig.asKeyValueRange())
     {
         QVariantHash map{entry.toHash()};
-        const int    currentIdx{map.value("athan_idx"_L1).toInt()};
+        const int    currentIdx{map.value("adhan_idx"_L1).toInt()};
 
         if (currentIdx == rmIdx)
         {
             if (field == u"Fajr"_s)
-                map.insert("athan_idx"_L1, MultimediaEngine::defaultFajrAthan);
+                map.insert("adhan_idx"_L1, MultimediaEngine::defaultFajrAdhan);
             else if (field == u"Maghrib"_s)
-                map.insert("athan_idx"_L1, MultimediaEngine::defaultMaghribAthan);
+                map.insert("adhan_idx"_L1, MultimediaEngine::defaultMaghribAdhan);
             else
-                map.insert("athan_idx"_L1, MultimediaEngine::defaultAthan);
+                map.insert("adhan_idx"_L1, MultimediaEngine::defaultAdhan);
         }
         else if (currentIdx > rmIdx)
-            map.insert("athan_idx"_L1, currentIdx - 1);
+            map.insert("adhan_idx"_L1, currentIdx - 1);
 
-        this->m_athanConfig.insert(field, map);
+        this->m_adhanConfig.insert(field, map);
     }
 
-    this->m_athanList.removeAt(rmIdx);
-    this->m_athanList.squeeze();
-    emit this->athanListChanged();
-    emit this->athanConfigChanged();
+    this->m_adhanList.removeAt(rmIdx);
+    this->m_adhanList.squeeze();
+    emit this->adhanListChanged();
+    emit this->adhanConfigChanged();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -217,8 +217,8 @@ void MultimediaEngine::removeAthan(qsizetype rmIdx) noexcept
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 MultimediaEngine::MultimediaEngine(QObject *parent)
-    : AppBase{cat(), parent}, athanOutput{new QAudioOutput{this}},
-      athanPlayer{new QMediaPlayer{this}}, fileman{new FileMan{this}},
+    : AppBase{cat(), parent}, adhanOutput{new QAudioOutput{this}},
+      adhanPlayer{new QMediaPlayer{this}}, fileman{new FileMan{this}},
       previewOutput{new QAudioOutput{this}}, previewPlayer{new QMediaPlayer{this}}
 {
     this->bootEngine();
@@ -226,15 +226,15 @@ MultimediaEngine::MultimediaEngine(QObject *parent)
 
     logDebug(cat) << "FileMan::refreshStore() return: " << this->fileman->refreshStore();
 
-    this->athanPlayer->setAudioOutput(this->athanOutput);
+    this->adhanPlayer->setAudioOutput(this->adhanOutput);
 
     if (const QMetaObject::Connection conn =
-            QObject::connect(this->athanPlayer, &QMediaPlayer::playbackStateChanged, this,
-                             &MultimediaEngine::onAthanPlaybackChanged);
+            QObject::connect(this->adhanPlayer, &QMediaPlayer::playbackStateChanged, this,
+                             &MultimediaEngine::onAdhanPlaybackChanged);
         conn == nullptr)
-        logWarning(cat) << "Failed to establish athan playback state connection";
+        logWarning(cat) << "Failed to establish adhan playback state connection";
     else
-        logDebug(cat) << "Athan playback state connection established";
+        logDebug(cat) << "Adhan playback state connection established";
 
     if (const QMetaObject::Connection conn =
             QObject::connect(this->previewPlayer, &QMediaPlayer::playbackStateChanged, this,
@@ -251,17 +251,17 @@ MultimediaEngine::MultimediaEngine(QObject *parent)
 //  Private Members
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void MultimediaEngine::connectToAthanAlarm() const noexcept
+void MultimediaEngine::connectToAdhanAlarm() const noexcept
 {
     if (const auto conn =
-            QObject::connect(core, &CoreEngine::athanAlarm, this, &MultimediaEngine::onAthanAlarm);
+            QObject::connect(core, &CoreEngine::adhanAlarm, this, &MultimediaEngine::onAdhanAlarm);
         conn == nullptr)
-        logWarning(cat) << "athanAlarm signal not connected";
+        logWarning(cat) << "adhanAlarm signal not connected";
     else
-        logDebug(cat) << "athanAlarm signal connected";
+        logDebug(cat) << "adhanAlarm signal connected";
 }
 
-void MultimediaEngine::defaultAthanConfig() noexcept
+void MultimediaEngine::defaultAdhanConfig() noexcept
 {
     const std::double_t defaultVolume{1.0}; // 0.0 - 1.0
     const std::double_t defaultFajrVolume{0.2};
@@ -271,82 +271,82 @@ void MultimediaEngine::defaultAthanConfig() noexcept
         {u"AllMuted"_s, QMetaType::Bool},
     };
 
-    this->m_athanConfig = {
-        {u"Fajr"_s,    QVariantHash{{u"athan_idx"_s, MultimediaEngine::defaultFajrAthan},
+    this->m_adhanConfig = {
+        {u"Fajr"_s,    QVariantHash{{u"adhan_idx"_s, MultimediaEngine::defaultFajrAdhan},
                                  {u"volume"_s, defaultFajrVolume}}  },
-        {u"Dhuhr"_s,   QVariantHash{{u"athan_idx"_s, MultimediaEngine::defaultAthan},
+        {u"Dhuhr"_s,   QVariantHash{{u"adhan_idx"_s, MultimediaEngine::defaultAdhan},
                                   {u"volume"_s, defaultVolume}}    },
-        {u"Asr"_s,     QVariantHash{{u"athan_idx"_s, MultimediaEngine::defaultAthan},
+        {u"Asr"_s,     QVariantHash{{u"adhan_idx"_s, MultimediaEngine::defaultAdhan},
                                 {u"volume"_s, defaultVolume}}        },
-        {u"Maghrib"_s, QVariantHash{{u"athan_idx"_s, MultimediaEngine::defaultMaghribAthan},
+        {u"Maghrib"_s, QVariantHash{{u"adhan_idx"_s, MultimediaEngine::defaultMaghribAdhan},
                                     {u"volume"_s, defaultVolume}}},
-        {u"Isha"_s,    QVariantHash{{u"athan_idx"_s, MultimediaEngine::defaultAthan},
+        {u"Isha"_s,    QVariantHash{{u"adhan_idx"_s, MultimediaEngine::defaultAdhan},
                                  {u"volume"_s, defaultIshaVolume}}  }
     };
 
-    const QVariantHash maps{this->m_athanConfig.value("Fajr"_L1).toHash()};
+    const QVariantHash maps{this->m_adhanConfig.value("Fajr"_L1).toHash()};
 
-    this->athanConfigKeys =
-        QSet(this->m_athanConfig.keyBegin(), this->m_athanConfig.keyEnd()); // do not use braces {}
-    this->athanConfigMapSize   = this->m_athanConfig.size();
-    this->athanConfigEntrySize = maps.size();
+    this->adhanConfigKeys =
+        QSet(this->m_adhanConfig.keyBegin(), this->m_adhanConfig.keyEnd()); // do not use braces {}
+    this->adhanConfigMapSize   = this->m_adhanConfig.size();
+    this->adhanConfigEntrySize = maps.size();
 
     for (const auto &[key, value] : maps.asKeyValueRange())
-        this->athanConfigFields.insert(key, value.typeId());
+        this->adhanConfigFields.insert(key, value.typeId());
 }
 
-void MultimediaEngine::defaultAthanList() noexcept
+void MultimediaEngine::defaultAdhanList() noexcept
 {
-    this->m_athanList = {
+    this->m_adhanList = {
         QVariantMap{{u"name"_s, u"Makkah (built-in)"_s},
-                    {u"path"_s, u"qrc:/qt/qml/App/data/athan-makkah.ogg"_s}  },
+                    {u"path"_s, u"qrc:/qt/qml/App/data/adhan-makkah.ogg"_s}  },
         QVariantMap{{u"name"_s, u"Ar-Rashid (built-in)"_s},
-                    {u"path"_s, u"qrc:/qt/qml/App/data/athan-arRashid.ogg"_s}},
+                    {u"path"_s, u"qrc:/qt/qml/App/data/adhan-arRashid.ogg"_s}},
         QVariantMap{{u"name"_s, u"Fajr (built-in)"_s},
-                    {u"path"_s, u"qrc:/qt/qml/App/data/fajr-athan.ogg"_s}    }
+                    {u"path"_s, u"qrc:/qt/qml/App/data/fajr-adhan.ogg"_s}    }
     };
 
-    const QVariantMap maps{this->m_athanList.at(0).toMap()};
+    const QVariantMap maps{this->m_adhanList.at(0).toMap()};
 
-    this->athanListMapSize = maps.size();
-    this->defaultAthans    = this->m_athanList.size();
+    this->adhanListMapSize = maps.size();
+    this->defaultAdhans    = this->m_adhanList.size();
 
     for (const auto &[key, value] : maps.asKeyValueRange())
-        this->athanListKeys.insert(key, value.typeId());
+        this->adhanListKeys.insert(key, value.typeId());
 }
 
 void MultimediaEngine::defaultConfigs() noexcept
 {
-    this->m_athanMuted = false;
+    this->m_adhanMuted = false;
 
-    this->defaultAthanConfig();
-    this->defaultAthanList();
+    this->defaultAdhanConfig();
+    this->defaultAdhanList();
 }
 
-QVariantList &MultimediaEngine::getAthanList() noexcept
-{ return this->m_athanList; }
+QVariantList &MultimediaEngine::getAdhanList() noexcept
+{ return this->m_adhanList; }
 
 // Do not add any readlocker here
-bool MultimediaEngine::isAthanPlaying() noexcept
-{ return this->athanPlayer->isPlaying(); }
+bool MultimediaEngine::isAdhanPlaying() noexcept
+{ return this->adhanPlayer->isPlaying(); }
 
 // Do not add any readlocker here
 bool MultimediaEngine::isPreviewPlaying() noexcept
 { return this->previewPlayer->isPlaying(); }
 
-void MultimediaEngine::loadAthanConfig(bool &configMigrated) noexcept
+void MultimediaEngine::loadAdhanConfig(bool &configMigrated) noexcept
 {
-    QVariantHash cfgMap{this->m_athanConfig};
-    QVariantList oldAthanConfig;
+    QVariantHash cfgMap{this->m_adhanConfig};
+    QVariantList oldAdhanConfig;
     const bool   migrated{core->readSettings("MultimediaEngineConfigMigrated"_L1).toBool()};
 
     if (!migrated)
-        oldAthanConfig = core->readOldSettingsJsArray("Adhan/prayerConfig"_L1);
+        oldAdhanConfig = core->readOldSettingsJsArray("Adhan/prayerConfig"_L1);
 
-    if (!oldAthanConfig.isEmpty())
+    if (!oldAdhanConfig.isEmpty())
         logInfo(cat) << "Migrating from old config";
 
-    for (const QString &prayerName : std::as_const(this->athanConfigKeys))
+    for (const QString &prayerName : std::as_const(this->adhanConfigKeys))
     {
         const int i = PrayerEngine::metaPrayerEnum().keyToValue(qPrintable(prayerName));
 
@@ -364,21 +364,21 @@ void MultimediaEngine::loadAthanConfig(bool &configMigrated) noexcept
             return;
         }
 
-        QVariantHash entry{this->m_athanConfig.value(prayerName).toHash()};
+        QVariantHash entry{this->m_adhanConfig.value(prayerName).toHash()};
 
-        for (const auto &[key, value] : this->athanConfigFields.asKeyValueRange())
+        for (const auto &[key, value] : this->adhanConfigFields.asKeyValueRange())
         {
             QVariant cfgVal;
 
-            cfgVal = (oldAthanConfig.isEmpty())
-                         ? core->readSettings("AthanConfig/Prayer/"_L1 + prayerName + '/'_L1 + key,
+            cfgVal = (oldAdhanConfig.isEmpty())
+                         ? core->readSettings("AdhanConfig/Prayer/"_L1 + prayerName + '/'_L1 + key,
                                               entry.value(key))
-                         : oldAthanConfig.at(i).toHash().value(key);
+                         : oldAdhanConfig.at(i).toHash().value(key);
 
             logDebug(cat) << "Value for key \"" << key << "\" in list item " << prayerName << ": "
                           << cfgVal;
 
-            if (!cfgVal.convert(QMetaType(this->athanConfigFields.value(key))))
+            if (!cfgVal.convert(QMetaType(this->adhanConfigFields.value(key))))
             {
                 logWarning(cat) << "Failed converting stored value for \"" << key
                                 << "\" to expected type; keeping default";
@@ -391,17 +391,17 @@ void MultimediaEngine::loadAthanConfig(bool &configMigrated) noexcept
         cfgMap.insert(prayerName, entry);
     }
 
-    this->setAthanConfig(cfgMap);
+    this->setAdhanConfig(cfgMap);
 
     if (migrated)
         configMigrated = false;
 }
 
-void MultimediaEngine::loadAthanList(bool &configMigrated) noexcept
+void MultimediaEngine::loadAdhanList(bool &configMigrated) noexcept
 {
     if (core->readSettings("MultimediaEngineConfigMigrated"_L1).toBool())
     {
-        this->setAthanList(core->readSettingsArray("Athans"_L1));
+        this->setAdhanList(core->readSettingsArray("Adhans"_L1));
 
         configMigrated = false;
 
@@ -416,9 +416,9 @@ void MultimediaEngine::loadAthanList(bool &configMigrated) noexcept
     const QString newStorePath{
         QUrl::fromLocalFile(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation))
             .toDisplayString()};
-    QVariantList oldAthanList(core->readOldSettingsJsArray("Adhan/audioList"_L1));
+    QVariantList oldAdhanList(core->readOldSettingsJsArray("Adhan/audioList"_L1));
 
-    for (auto &entry : oldAthanList)
+    for (auto &entry : oldAdhanList)
     {
         QVariantMap map{entry.toMap()};
 
@@ -433,21 +433,21 @@ void MultimediaEngine::loadAthanList(bool &configMigrated) noexcept
         entry = map;
     }
 
-    this->setAthanList(oldAthanList);
+    this->setAdhanList(oldAdhanList);
     logInfo(cat) << "Migrated from old config";
 }
 
 void MultimediaEngine::loadConfigs() noexcept
 {
-    logDebug(cat) << "Loading athan settings from config file";
+    logDebug(cat) << "Loading adhan settings from config file";
 
     bool          configMigrated{true};
     const QString migrateKey{u"PrayerEngineConfigMigrated"_s};
 
-    this->loadAthanConfig(configMigrated);
-    this->loadAthanList(configMigrated);
-    loadConfigKey("Adhan/athanMuted"_L1, "AthanConfig/AllMuted"_L1, migrateKey, this,
-                  "athanMuted"_L1, configMigrated);
+    this->loadAdhanConfig(configMigrated);
+    this->loadAdhanList(configMigrated);
+    loadConfigKey("Adhan/adhanMuted"_L1, "AdhanConfig/AllMuted"_L1, migrateKey, this,
+                  "adhanMuted"_L1, configMigrated);
 
     if (configMigrated)
         core->writeSettings("MultimediaEngineConfigMigrated"_L1, true);
@@ -458,125 +458,125 @@ void MultimediaEngine::saveConfigs() noexcept
     // Ensure the very last config to be saved has the third parameter set to "true". Otherwise
     // (later) settings are not saved
 
-    logDebug(cat) << "Saving athan configurations";
+    logDebug(cat) << "Saving adhan configurations";
 
-    for (const QString &prayerName : std::as_const(this->athanConfigKeys))
+    for (const QString &prayerName : std::as_const(this->adhanConfigKeys))
     {
         // prayerName == "Sunrise" and prayerEnum == "None" checks are not necessary
         if (prayerName.isEmpty())
             continue;
 
         for (const auto &[key, value] :
-             this->m_athanConfig.value(prayerName).toHash().asKeyValueRange())
-            core->writeSettings("AthanConfig/Prayer/"_L1 + prayerName + '/'_L1 + key, value);
+             this->m_adhanConfig.value(prayerName).toHash().asKeyValueRange())
+            core->writeSettings("AdhanConfig/Prayer/"_L1 + prayerName + '/'_L1 + key, value);
     }
 
-    logDebug(cat) << "Saving athan list";
+    logDebug(cat) << "Saving adhan list";
 
-    core->writeSettingsArray("Athans"_L1, this->m_athanList);
-    core->writeSettings("AthanConfig/AllMuted"_L1, this->m_athanMuted, true);
+    core->writeSettingsArray("Adhans"_L1, this->m_adhanList);
+    core->writeSettings("AdhanConfig/AllMuted"_L1, this->m_adhanMuted, true);
 }
 
-void MultimediaEngine::setAthanConfig(const QVariantHash &athanConfig) noexcept
+void MultimediaEngine::setAdhanConfig(const QVariantHash &adhanConfig) noexcept
 {
-    if (athanConfig.isEmpty())
+    if (adhanConfig.isEmpty())
     {
         logDebug(cat) << "Skipping empty config list";
 
         return;
     }
 
-    if (athanConfig == this->m_athanConfig)
+    if (adhanConfig == this->m_adhanConfig)
     {
         logDebug(cat) << "Skipping setting identical list";
 
         return;
     }
 
-    if (!isValidEntry(athanConfig, this->athanConfigEntrySize, this->athanConfigFields,
-                      this->athanConfigMapSize))
+    if (!isValidEntry(adhanConfig, this->adhanConfigEntrySize, this->adhanConfigFields,
+                      this->adhanConfigMapSize))
     {
-        logCritical(cat) << "Config [" << athanConfig << "] is not a valid configuration";
+        logCritical(cat) << "Config [" << adhanConfig << "] is not a valid configuration";
 
         return;
     }
 
-    this->m_athanConfig = athanConfig;
+    this->m_adhanConfig = adhanConfig;
 
-    emit this->athanConfigChanged();
+    emit this->adhanConfigChanged();
 }
 
-void MultimediaEngine::setAthanList(const QVariantList &athanList) noexcept
+void MultimediaEngine::setAdhanList(const QVariantList &adhanList) noexcept
 {
-    if (athanList.isEmpty())
+    if (adhanList.isEmpty())
     {
-        logDebug(cat) << "Skipping empty athan list";
+        logDebug(cat) << "Skipping empty adhan list";
 
         return;
     }
 
-    if (athanList == this->m_athanList)
+    if (adhanList == this->m_adhanList)
     {
         logDebug(cat) << "Skipping setting identical list";
 
         return;
     }
 
-    if (athanList.first(this->defaultAthans) != this->m_athanList.first(this->defaultAthans))
+    if (adhanList.first(this->defaultAdhans) != this->m_adhanList.first(this->defaultAdhans))
     {
-        logCritical(cat) << "Dropping malformed list [" << athanList << "]";
+        logCritical(cat) << "Dropping malformed list [" << adhanList << "]";
         logDebug(cat) << "List attempts to modify protected default list";
         logDebug(cat) << "\n"
-                      << athanList.first(this->defaultAthans) << "\nvs\n"
-                      << this->m_athanList.first(this->defaultAthans);
+                      << adhanList.first(this->defaultAdhans) << "\nvs\n"
+                      << this->m_adhanList.first(this->defaultAdhans);
 
         return;
     }
 
-    if (!isValidEntry(athanList, this->athanListMapSize, this->athanListKeys))
+    if (!isValidEntry(adhanList, this->adhanListMapSize, this->adhanListKeys))
     {
-        logCritical(cat) << "Dropping malformed list [" << athanList << "]";
+        logCritical(cat) << "Dropping malformed list [" << adhanList << "]";
 
         return;
     }
 
-    this->m_athanList = athanList;
+    this->m_adhanList = adhanList;
 
-    emit this->athanListChanged();
+    emit this->adhanListChanged();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  Private Slots
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void MultimediaEngine::onAthanAlarm() noexcept
+void MultimediaEngine::onAdhanAlarm() noexcept
 {
-    logDebug(cat) << "Received athan alarm at: " << QDateTime::currentDateTime().toString();
-    this->athanPlay();
+    logDebug(cat) << "Received adhan alarm at: " << QDateTime::currentDateTime().toString();
+    this->adhanPlay();
 }
 
-void MultimediaEngine::onAthanPlaybackChanged(QMediaPlayer::PlaybackState state)
+void MultimediaEngine::onAdhanPlaybackChanged(QMediaPlayer::PlaybackState state)
 {
     switch (state)
     {
     case QMediaPlayer::PlayingState:
-        logInfo(cat) << "Athan playing";
+        logInfo(cat) << "Adhan playing";
         break;
     case QMediaPlayer::StoppedState:
-        logInfo(cat) << "Athan stopped";
+        logInfo(cat) << "Adhan stopped";
         break;
     case QMediaPlayer::PausedState:
-        logInfo(cat) << "Athan paused";
+        logInfo(cat) << "Adhan paused";
         break;
     }
 
-    emit this->athanPlayingChanged(state == QMediaPlayer::PlayingState);
+    emit this->adhanPlayingChanged(state == QMediaPlayer::PlayingState);
 }
 
 void MultimediaEngine::onCoreOnline() noexcept
 {
     AppBase::onCoreOnline();
-    this->connectToAthanAlarm();
+    this->connectToAdhanAlarm();
 }
 
 void MultimediaEngine::onPreviewPlaybackChanged(QMediaPlayer::PlaybackState state)

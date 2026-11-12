@@ -555,14 +555,14 @@ void PrayerEngine::setupAlarmsResetRelay() const noexcept
         logDebug(cat) << "alarmsReset signal relayed to invalidate";
 }
 
-void PrayerEngine::setupAthanAlarmRelay() const noexcept
+void PrayerEngine::setupAdhanAlarmRelay() const noexcept
 {
     if (const auto conn =
-            QObject::connect(core, &CoreEngine::athanAlarm, this, &PrayerEngine::calcChanged);
+            QObject::connect(core, &CoreEngine::adhanAlarm, this, &PrayerEngine::calcChanged);
         conn == nullptr)
-        logWarning(cat) << "athanAlarm signal not relayed to calcChanged";
+        logWarning(cat) << "adhanAlarm signal not relayed to calcChanged";
     else
-        logDebug(cat) << "athanAlarm signal relayed to calcChanged";
+        logDebug(cat) << "adhanAlarm signal relayed to calcChanged";
 }
 
 void PrayerEngine::setupDateChangedRelay() const noexcept
@@ -641,19 +641,19 @@ void PrayerEngine::updateCalc()
         *this->coordinates, QDate::currentDate().toStdSysDays(), *this->calcParams);
     this->m_sunnahTimes = std::make_unique<Adhan::SunnahTimes>(*this->m_prayerTimes);
 
-    core->alarmManager().clear("athan"_L1);
+    core->alarmManager().clear("adhan"_L1);
 
     // `Sunrise` is omitted, unless necessary
     if (const QDateTime dt{this->timeForPrayer(Prayer::Fajr)}; dt.isValid())
-        core->alarmManager().add("athan"_L1, dt);
+        core->alarmManager().add("adhan"_L1, dt);
     if (const QDateTime dt{this->timeForPrayer(Prayer::Dhuhr)}; dt.isValid())
-        core->alarmManager().add("athan"_L1, dt);
+        core->alarmManager().add("adhan"_L1, dt);
     if (const QDateTime dt{this->timeForPrayer(Prayer::Asr)}; dt.isValid())
-        core->alarmManager().add("athan"_L1, dt);
+        core->alarmManager().add("adhan"_L1, dt);
     if (const QDateTime dt{this->timeForPrayer(Prayer::Maghrib)}; dt.isValid())
-        core->alarmManager().add("athan"_L1, dt);
+        core->alarmManager().add("adhan"_L1, dt);
     if (const QDateTime dt{this->timeForPrayer(Prayer::Isha)}; dt.isValid())
-        core->alarmManager().add("athan"_L1, dt);
+        core->alarmManager().add("adhan"_L1, dt);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -665,7 +665,7 @@ void PrayerEngine::onCoreOnline() noexcept
     AppBase::onCoreOnline();
     // These four could be packed in one method, but better to keep granular for future benefits
     this->setupAlarmsResetRelay();
-    this->setupAthanAlarmRelay();
+    this->setupAdhanAlarmRelay();
     this->setupDateChangedRelay();
     this->setupMinuteChangedRelay();
 }
