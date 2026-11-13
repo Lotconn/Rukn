@@ -89,7 +89,7 @@ ApplicationWindow {
     MainPage {
         id: mainPage
 
-        property double marg: Math.max(mainWindow.width, mainWindow.height) * mm.page_margins_p
+        property double marg: Math.max(mainWindow.width, mainWindow.height) * theme.page_margins_p
 
         anchors.bottomMargin: marg
         anchors.fill: parent

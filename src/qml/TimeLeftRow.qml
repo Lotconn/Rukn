@@ -13,7 +13,7 @@ Pane {
     readonly property var textColor: (muted) ? Material.secondaryTextColor : Material.primaryTextColor
     readonly property real textOpacity: (muted) ? 0.37 : 0.57
 
-    Material.elevation: mm.pane_elevation
+    Material.elevation: theme.pane_elevation
 
     RowLayout {
         anchors.fill: parent

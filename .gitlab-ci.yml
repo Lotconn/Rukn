@@ -1,0 +1,80 @@
+stages:
+  - build
+  - release
+
+default:
+  image:
+    name: $IMAGE_REGISTRY/static-builder:latest
+    pull_policy: always
+    entrypoint: [""]
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^\d{2}\.\d{2}(\.\d+)?$/
+
+variables:
+  IMAGE_REGISTRY: ghcr.io/lotconn/rukn
+  APPNAME: Rukn
+  ORGNAME: Lotconn
+  DOMAIN: lotconn.org
+  RDNS: org.lotconn.Rukn
+
+build-static:
+  stage: build
+  needs: []
+  interruptible: true
+  image:
+    name: $IMAGE_REGISTRY/static-builder:latest
+    pull_policy: always
+    entrypoint: [""]
+  variables:
+    GIT_DEPTH: 1
+    GIT_SUBMODULE_STRATEGY: recursive
+  before_script:
+    - |
+      SCRIPT_VER=$(sed -n 's/^VER=//p' pkg/makeself/generate_installer)
+      if [ "$SCRIPT_VER" != "$CI_COMMIT_TAG" ]; then
+        echo "ERROR: Git tag '$CI_COMMIT_TAG' does not match" \
+             "VER='$SCRIPT_VER' in pkg/makeself/generate_installer." \
+             "Bump the version before tagging."
+        exit 1
+      fi
+  script:
+    - cmake -S . -B build -G"Ninja Multi-Config" --fresh
+    - cmake --build build --parallel --config Release
+    - cd pkg/makeself && ./generate_installer
+  artifacts:
+    name: "$APPNAME-$CI_COMMIT_TAG"
+    paths:
+      - pkg/makeself/$APPNAME-*.run
+    expire_in: 1 year
+
+create-release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  needs:
+    - build-static
+  script:
+    - echo "Generating SHA256 checksum for the package..."
+    - sha256sum pkg/makeself/$APPNAME-$CI_COMMIT_TAG.run > pkg/makeself/$APPNAME-$CI_COMMIT_TAG.run.sha256
+    - |
+      {
+        echo "See [CHANGELOG]($CI_PROJECT_URL/-/blob/$CI_COMMIT_TAG/CHANGELOG.md) for what's new."
+        echo ""
+        echo "### Checksum"
+        echo "\`\`\`"
+        cat pkg/makeself/$APPNAME-$CI_COMMIT_TAG.run.sha256
+        echo "\`\`\`"
+      } > release-description.md
+  release:
+    tag_name: $CI_COMMIT_TAG
+    name: "$APPNAME $CI_COMMIT_TAG"
+    description: release-description.md
+    assets:
+      links:
+        - name: "$APPNAME-$CI_COMMIT_TAG.run"
+          url: "$CI_PROJECT_URL/-/jobs/artifacts/$CI_COMMIT_TAG/raw/pkg/makeself/$APPNAME-$CI_COMMIT_TAG.run?job=build-static"
+          link_type: package
+        - name: "$APPNAME-$CI_COMMIT_TAG.run.sha256"
+          url: "$CI_PROJECT_URL/-/jobs/artifacts/$CI_COMMIT_TAG/raw/pkg/makeself/$APPNAME-$CI_COMMIT_TAG.run.sha256?job=create-release"
+          link_type: other

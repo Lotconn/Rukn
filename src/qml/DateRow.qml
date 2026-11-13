@@ -12,7 +12,7 @@ Pane {
 
     LayoutMirroring.childrenInherit: true
     LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft
-    Material.elevation: mm.pane_elevation
+    Material.elevation: theme.pane_elevation
 
     RowLayout {
         anchors.fill: parent

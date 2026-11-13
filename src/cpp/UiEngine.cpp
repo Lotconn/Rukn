@@ -424,11 +424,6 @@ void UiEngine::updateConfigs() noexcept {
       UiEngine::indexOfValue(this->m_calcMethodsDisplayNames, pEngine->getCalcMethod());
   this->m_madhhabDisplayIndex =
       UiEngine::indexOfValue(this->m_madhhabDisplayNames, pEngine->getMadhhab());
-
-  logDebug(cat) << "calcMethodsIdx set as: [" << this->m_calcMethodsDisplayIndex << ", "
-                << pEngine->getCalcMethod() << "]";
-  logDebug(cat) << "madhhabIdx set as: [" << this->m_madhhabDisplayIndex << ", "
-                << pEngine->getMadhhab() << "]";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -479,5 +474,10 @@ void UiEngine::onLocaleChanged() noexcept {
 void UiEngine::onPrayerEngineOnline() noexcept {
   this->loadConfigs(); // loadConfigs() needs to be before updateConfigs()
   this->updateConfigs();
+
+  logDebug(cat) << "calcMethodsIdx set as: [" << this->m_calcMethodsDisplayIndex << ", "
+                << pEngine->getCalcMethod() << "]";
+  logDebug(cat) << "madhhabIdx set as: [" << this->m_madhhabDisplayIndex << ", "
+                << pEngine->getMadhhab() << "]";
 }
 } // namespace App

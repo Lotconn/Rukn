@@ -33,7 +33,7 @@ ColumnLayout {
         Layout.preferredHeight: 400
         Layout.preferredWidth: parent.preferredWidth
         Layout.topMargin: 10 * theme.unit
-        Material.elevation: mm.pane_elevation
+        Material.elevation: theme.pane_elevation
         background.opacity: UiEngine.opacity
 
         ColumnLayout {

@@ -2,12 +2,6 @@ import QtQuick
 import QtQuick.Controls.Material
 
 QtObject {
-    property double overrideOffsetBy
-    property double page_margins_p: 0.02
-    property int pane_elevation: 6
-    property int rectangle_radius: 3
-    property bool stickerMode: false
-
     function applyTheme(theme) {
         if (theme === "System")
             mainWindow.Material.theme = Material.System;

@@ -228,7 +228,8 @@ foreach (filePath IN LISTS APP_QML_FILES APP_RESOURCES)
   set_source_files_properties("${filePath}" PROPERTIES QT_RESOURCE_ALIAS "${qrc_filePath}")
 endforeach ()
 
-qt_add_executable(${PROJECT_NAME} src/cpp/main.cpp)
+qt_add_executable(${PROJECT_NAME} MANUAL_FINALIZATION src/cpp/main.cpp)
+
 qt_add_qml_module(${PROJECT_NAME}
   URI App
   VERSION ${PROJECT_VERSION}
@@ -342,6 +343,9 @@ target_link_options(${PROJECT_NAME} PRIVATE
   ${CF_PROTECTION_FLAG_MSVC}
   >
 )
+
+set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME_LOWER})
+qt_finalize_target(${PROJECT_NAME})
 
 #
 # Packaging
