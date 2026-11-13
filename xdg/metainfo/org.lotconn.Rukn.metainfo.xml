@@ -224,7 +224,7 @@
     <screenshot>
       <caption>Tray menu</caption>
       <caption xml:lang="ar">قائمة شريط النظام</caption>
-      <image>https://gitlab.com/lotconn/rukn/raw/master/screenshots/2611/tray-menu.png</image>
+      <image>https://gitlab.com/lotconn/rukn/raw/master/screenshots/2611/tray-menu-light.png</image>
     </screenshot>
     <screenshot>
       <caption>Tray tooltip showing time left</caption>
@@ -233,28 +233,28 @@
     </screenshot>
   </screenshots>
   <releases>
-    <release version="26.11" date="2026-11-14">
+    <release version="26.11" date="2026-11-16">
       <url type="details">https://gitlab.com/lotconn/rukn/-/blob/master/CHANGELOG.md#rukn-2611</url>
       <description>
         <p>First exciting release of Rukn. Forked from Munadi, this very first version introduces
-          plethora of visible and backend overhauling in the app, improving the overall experience
-          throughout the whole spectrum. Check them out below!</p>
+          plethora of visible and backend overhauls, improving the overall experience in both
+          feature and form. Check them out below!</p>
         <p>New</p>
         <ul>
           <li>Added prayer-time icons! System-tray icons are also updated.</li>
+          <li>Background images were updated with new and fresher visuals</li>
           <li>Sunnah times like midnight and last third of the night times were added</li>
           <li>The qibla page is back! Currently it only shows static qibla direction for the
             currently set location without device compass support</li>
           <li>Added new calculation method "University of Tehran"</li>
           <li>Language can now be selected from UI, or let system-default be followed as usual</li>
           <li>Relevant controls can now be adjusted using spinboxes</li>
-          <li>AppEngine, the new C++ core that migrates from the former JS-based app-logic
-            operations in Rukn. The abstract AppEngine is realized in handful of engines which
-            carry out responsibilities obvious for their purposes.</li>
-          <li>Now using an in-house C++ adhan calcuations library, Adhan-C++, replacing the former
-            JS-based one providing the same level of precision, but with additional type-safety and
-            better performance, while also being actively maintained and improved by us. The whole
-            is integrated in the new C++ core.</li>
+          <li>Rukn's core was rewritten from scratch, bringing improvements in robustness,
+            performance while being lightweight as before</li>
+          <li>Also using an in-house adhan calcuations library now providing the same level of
+            precision as before, but with additional improvements and better performance, while also
+            being actively maintained and improved by us. The whole is integrated in Rukn's new
+            core.</li>
         </ul>
         <p>Improvements</p>
         <ul>
@@ -262,14 +262,14 @@
             proportional UI components</li>
           <li>The location searching operation has been improved to be more robust in cases of
             network failures and repeated requests</li>
-          <li>Translations were updated along with automatic RTL layout switching according to
-            language</li>
+          <li>Translations were updated along with automatic Right-to-Left layout switching
+            according to language</li>
           <li>Location is now shown in full address rather than truncated in short</li>
         </ul>
         <p>Notable Fixes</p>
         <ul>
-          <li>RTL switch now correctly happens when system-wide Arabic language is detected or when
-            selected from language option</li>
+          <li>Right-to-Left switch now correctly happens when system-wide Arabic language is
+            detected or when selected from language option</li>
         </ul>
       </description>
     </release>

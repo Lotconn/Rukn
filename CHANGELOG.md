@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 <div><a id="rukn-26.11"></a></div>
 <div><a name="rukn-26.11"></a></div>
 
-## 26.11 - 2026-11-14
+## 26.11 - 2026-11-16
 
 The first introduction of Rukn. Changes here reflect modifications past the fork from munadi/Munadi
 
@@ -36,6 +36,9 @@ The first introduction of Rukn. Changes here reflect modifications past the fork
 - Rukn now uses a new C++ adhan calcuations lib from
   [Lotconn/Adhan-C++](https://github.com/lotconn/adhan-cpp) replacing the former JS lib. The whole
   is integrated in the C++ backend (PrayerEngine).
+- Background images were updated with new and fresher visuals
+- Updated screenshots for 2611 version
+- Auto update checks are disabled until an API is formed
 
 ### Fixes
 
@@ -74,6 +77,8 @@ The first introduction of Rukn. Changes here reflect modifications past the fork
 
 #### CI/CD & Packaging
 
+- **DIFF**: (ci) Web-server building is disabled
+- **DIFF**: (static-builder) The image container is now at `ghcr.io/lotconn/rukn`
 - **DIFF**: (static-builder) Do not link Openssl in Qt build anymore, use the system-installed
   library
 - **ENH**: (static-builder) Download-stage in static-builder image building are parallelized

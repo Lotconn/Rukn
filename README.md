@@ -42,9 +42,9 @@ This app continues the open-source effort of now-closed-source [Munadi](https://
 | :----------------------------------------------------------: | :--------------------------------------------------------: | :-------------------------------------------------------: | :------------------------------------------------------: |
 |                        Material Light                        |                       Material Dark                        |                   Settings Page (Dark)                    |                  Settings Page (Light)                   |
 
-| ![Tray Menu](screenshots/2611/tray-menu.png) | ![Tray Tooltip](screenshots/2611/tray-tooltip.png) |
-| :------------------------------------------: | :------------------------------------------------: |
-|                  Tray Menu                   |                      Tooltip                       |
+| ![Tray Menu](screenshots/2611/tray-menu-light.png) | ![Tray Tooltip](screenshots/2611/tray-tooltip.png) |
+| :------------------------------------------------: | :------------------------------------------------: |
+|                     Tray Menu                      |                      Tooltip                       |
 
 </div>
 
