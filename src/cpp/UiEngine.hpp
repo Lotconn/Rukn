@@ -135,11 +135,9 @@ private:
   auto calendarDateDisplay() noexcept -> QString;
   auto calendarDisplayNames() noexcept -> QVariantList &;
   void connectToAlarmsReset() const noexcept;
-  void connectToAdhanPlayingChanged() const noexcept;
   void connectToCalcChanged() const noexcept;
   void connectToDateChanged() const noexcept;
   void connectToLocaleChanged() const noexcept;
-  void connectToMinuteChanged() const noexcept;
 
   /**
    * @brief Customized override of `AppBase::defaultConfigs()`. See
@@ -192,8 +190,6 @@ signals:
   void translationChanged();
 
 private slots:
-  void onAlarmsReset() noexcept;
-  void onAdhanPlayingChanged(bool playing) noexcept;
   void onCalcChanged() noexcept;
   void onDateChanged() noexcept;
   void onPrayerEngineOnline() noexcept;

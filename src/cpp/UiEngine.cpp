@@ -41,7 +41,7 @@ UiEngine::UiEngine(QObject *parent) : AppBase{cat(), parent} {
   this->bootEngine();
   this->connectToCalcChanged();
   PrayerEngine::onceOnline(this, [this] -> void { this->onPrayerEngineOnline(); });
-  this->connectToAdhanPlayingChanged();
+  QObject::connect(mEngine, &MultimediaEngine::adhanPlayingChanged, this, &UiEngine::timeChanged);
   this->makeOnline();
 }
 
@@ -61,20 +61,11 @@ QVariantList &UiEngine::calendarDisplayNames() noexcept { return this->m_calenda
 
 void UiEngine::connectToAlarmsReset() const noexcept {
   if (const auto conn =
-          QObject::connect(core, &CoreEngine::alarmsReset, this, &UiEngine::onAlarmsReset);
+          QObject::connect(core, &CoreEngine::alarmsReset, this, &UiEngine::onDateChanged);
       conn == nullptr)
     logWarning(cat) << "alarmsReset signal not connected";
   else
     logDebug(cat) << "alarmsReset signal connected";
-}
-
-void UiEngine::connectToAdhanPlayingChanged() const noexcept {
-  if (const auto conn = QObject::connect(mEngine, &MultimediaEngine::adhanPlayingChanged, this,
-                                         &UiEngine::onAdhanPlayingChanged);
-      conn == nullptr)
-    logWarning(cat) << "adhanPlayingChanged signal not connected";
-  else
-    logDebug(cat) << "adhanPlayingChanged signal connected";
 }
 
 void UiEngine::connectToCalcChanged() const noexcept {
@@ -102,15 +93,6 @@ void UiEngine::connectToLocaleChanged() const noexcept {
     logWarning(cat) << "localeChanged signal not connected";
   else
     logDebug(cat) << "localeChanged signal connected";
-}
-
-void UiEngine::connectToMinuteChanged() const noexcept {
-  if (const auto conn =
-          QObject::connect(core, &CoreEngine::minuteChanged, this, &UiEngine::timeChanged);
-      conn == nullptr)
-    logWarning(cat) << "minuteChanged signal not connected";
-  else
-    logDebug(cat) << "minuteChanged signal connected";
 }
 
 void UiEngine::defaultConfigs() noexcept {
@@ -430,16 +412,6 @@ void UiEngine::updateConfigs() noexcept {
 //  Private Slots
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void UiEngine::onAlarmsReset() noexcept {
-  this->initCalendarDates();
-  emit this->calendarChanged();
-}
-
-void UiEngine::onAdhanPlayingChanged(bool /* playing */) noexcept {
-  emit this->calendarChanged();
-  emit this->timeChanged();
-}
-
 void UiEngine::onCalcChanged() noexcept {
   this->updateConfigs();
   emit this->prayerCalcChanged();
@@ -452,7 +424,7 @@ void UiEngine::onCoreOnline() noexcept {
   this->initTexts();
   this->connectToAlarmsReset();
   this->connectToDateChanged();
-  this->connectToMinuteChanged();
+  QObject::connect(core, &CoreEngine::minuteChanged, this, &UiEngine::timeChanged);
   this->connectToCoreOffline();
 }
 
