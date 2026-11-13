@@ -339,7 +339,7 @@ same month follows `YY.MM.m` convention (e.g., `21.04.1` for another release on 
 
 #### Code Guidelines
 
-The codebase follows a preferred coding and formatting style derived from Microsoft style. Usage of
+The codebase follows a preferred coding and formatting style derived from LLVM style. Usage of
 clang-tidy is highly recommended. Please try following these guidelines for easier merge and
 fathomable diffs. Too much deviation in code-style may cause MRs/contributions to be dropped.
 

@@ -1,8 +1,5 @@
-#ifndef MACOS_WINDOW_H
-#define MACOS_WINDOW_H
+#pragma once
 
 class QQuickWindow;
 
 void makeTitleBarTransparent(QQuickWindow *window);
-
-#endif

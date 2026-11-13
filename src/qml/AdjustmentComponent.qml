@@ -126,13 +126,13 @@ ColumnLayout {
             id: adhanComboBox
 
             Layout.fillWidth: true
-            currentIndex: MultimediaEngine.adhanConfig[prayerTab.prayer].adhan_idx
+            currentIndex: MultimediaEngine.adhanConfig[prayerTab.prayer].adhan_id
             enabled: prayerTab.currentIndex !== PrayerEngine.Prayer.Sunrise || prayerTab.currentIndex <= PrayerEngine.Prayer.Isha
             model: MultimediaEngine.adhanList
             textRole: "name"
 
             onActivated: MultimediaEngine.modifyAdhanConfig(prayerTab.prayer, {
-                "adhan_idx": adhanComboBox.currentIndex
+                "adhan_id": adhanComboBox.currentIndex
             })
         }
 

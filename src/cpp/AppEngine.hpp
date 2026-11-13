@@ -1,10 +1,19 @@
 #pragma once
 
+#include <QLoggingCategory>
 #include <QObject>
+#include <QQmlEngine>
 #include <QtQml/qqmlregistration.h>
 
-namespace App
-{
+// NOLINTBEGIN(cppcoreguidelines-macro-usage)
+#define logDebug(logCategory)    qCDebug(logCategory).noquote().nospace() << __func__ << ": "
+#define logInfo(logCategory)     qCInfo(logCategory).noquote().nospace()
+#define logWarning(logCategory)  qCWarning(logCategory).noquote().nospace()
+#define logCritical(logCategory) qCCritical(logCategory).noquote().nospace() << __func__ << ": "
+#define logFatal(logCategory)    qCFatal(logCategory).noquote().nospace() << __func__ << ": "
+// NOLINTEND(cppcoreguidelines-macro-usage)
+
+namespace App {
 
 using Qt::StringLiterals::operator""_s;
 using Qt::StringLiterals::operator""_L1;
@@ -24,86 +33,97 @@ using Qt::StringLiterals::operator""_L1;
  * Needs no `QML_*` macro: qmltyperegistrar emits it on its own as the base of the registered
  * engines (verified in qmltypes). Do not make this a template or add a second QObject-derived base.
  */
-class AppBase : public QObject
-{
-    Q_OBJECT
+class AppBase : public QObject {
+  Q_OBJECT
 
-    template <typename Engine_t> friend class AppEngine;
+  template <typename Engine_t> friend class AppEngine;
 
-  protected:
-    /**
-     * @brief Construct a new App Base object. Not default constructible. Requires a
-     * QLoggingCategory object to be passed from the deriver class for message context.
-     *
-     * @param category: The reference to message context object to use for logging. For most
-     * purposes, use `Q_STATIC_LOGGING_CATEGORY()` macro in implementation file and pass the object.
-     * @param parent: Parent of the class. Usually left empty for auto-managed hierarchy
-     */
-    explicit AppBase(const QLoggingCategory &category, QObject *parent = nullptr) noexcept
-        : QObject{parent}, m_logCategory{category}
-    {
-    }
+protected:
+  /**
+   * @brief Construct a new App Base object. Not default constructible. Requires a
+   * QLoggingCategory object to be passed from the deriver class for message context.
+   *
+   * @param category: The reference to message context object to use for logging. For most
+   * purposes, use `Q_STATIC_LOGGING_CATEGORY()` macro in implementation file and pass the object.
+   * @param parent: Parent of the class. Usually left empty for auto-managed hierarchy
+   */
+  explicit AppBase(const QLoggingCategory &category, QObject *parent = nullptr) noexcept
+      : QObject{parent}, m_logCategory{category} {}
 
-    ////////////////////////////////////////////////////////////////////////////////////////////
-    //  Functions //////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  //  Functions //////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * @brief connects to the `engineOffline()` signal from CoreEngine, required by all engines.
-     * Additionally handles connection success/failure logging
-     */
-    virtual void connectToCoreOffline() const noexcept;
+  /**
+   * @brief connects to the `engineOffline()` signal from CoreEngine, required by all engines.
+   * Additionally handles connection success/failure logging
+   */
+  virtual void connectToCoreOffline() const noexcept;
 
-    /**
-     * @brief Sets all default values of members before engine onlines, especially the ones related
-     * to class' state
-     */
-    virtual void defaultConfigs() {};
+  /**
+   * @brief connects to the `engineOnline()` signal from CoreEngine, required by all engines.
+   * Additionally handles connection success/failure logging. Calls the slot directly to reconcile
+   * late connection
+   */
+  virtual void connectToCoreOnline() noexcept;
 
-    /**
-     * @brief Loads all relevant settings from persistent config file before engine onlines.
-     * Requires CoreEngine's instance to exist.
-     */
-    virtual void loadConfigs() {};
+  /**
+   * @brief Sets all default values of members before engine onlines, especially the ones related
+   * to class' state
+   */
+  virtual void defaultConfigs() {};
 
-    /**
-     * @brief Saves all relevant settings to persistent config file before engine offline. Requires
-     * CoreEngine's instance to exist.
-     */
-    virtual void saveConfigs() {};
+  /**
+   * @brief Loads all relevant settings from persistent config file before engine onlines.
+   * Requires CoreEngine's instance to exist.
+   */
+  virtual void loadConfigs() {};
 
-  signals:
-    /**
-     * @brief Notifies that engine has effectively shutdown, but not necessarily destroyed. In
-     * DirectConnection type, this means offlining is blocked until connected slots return, so this
-     * signal effectively means "shutting down". In QueudConnection type however, the slot is
-     * executed in callers thread, so engine may go offline (and possibly destroyed) before other
-     * engines' slots dependent on this engine's instance return. It is highly recommended
-     * therefore, to explicitly specify DiretConnection type while connecting to this signal.
-     */
-    void engineOffline();
+  /**
+   * @brief Saves all relevant settings to persistent config file before engine offline. Requires
+   * CoreEngine's instance to exist.
+   */
+  virtual void saveConfigs() {};
 
-    /**
-     * @brief Notifies that engine has completed all its boot procedures since constructor was
-     * called, has come online and ready to serve. This signal is immune to threading consequences
-     * from previous brief.
-     */
-    void engineOnline();
+signals:
+  /**
+   * @brief Notifies that engine has effectively shutdown, but not necessarily destroyed. In
+   * DirectConnection type, this means offlining is blocked until connected slots return, so this
+   * signal effectively means "shutting down". In QueudConnection type however, the slot is
+   * executed in callers thread, so engine may go offline (and possibly destroyed) before other
+   * engines' slots dependent on this engine's instance return. It is highly recommended
+   * therefore, to explicitly specify DiretConnection type while connecting to this signal.
+   */
+  void engineOffline();
 
-  protected slots:
-    /**
-     * @brief Jobs to perform once CoreEngine is offline (QueudConnection) or while it is going
-     * offline (DirectConnection). See `engineOffline()` signal's brief
-     */
-    virtual void onCoreOffline();
+  /**
+   * @brief Notifies that engine has completed all its boot procedures since constructor was
+   * called, has come online and ready to serve. This signal is immune to threading consequences
+   * from previous brief.
+   */
+  void engineOnline();
 
-    /**
-     * @brief Jobs to perform once CoreEngine is online. Immune to threading consequencing from
-     * before
-     */
-    virtual void onCoreOnline();
+protected slots:
+  /**
+   * @brief Jobs to perform once CoreEngine is offline (QueudConnection) or while it is going
+   * offline (DirectConnection). See `engineOffline()` signal's brief
+   */
+  virtual void onCoreOffline();
 
-  private:
-    const QLoggingCategory &m_logCategory;
+  /**
+   * @brief Jobs to perform once CoreEngine is online. Immune to threading consequencing from
+   * before
+   */
+  virtual void onCoreOnline();
+
+private:
+  const QLoggingCategory &m_logCategory;
+
+  /**
+   * @brief Points to the deriving engine's `AppEngine<T>::s_online`. Registered by
+   * `AppEngine<T>::bootEngine()` so this non-template base can clear the flag in
+   * `onCoreOffline()` without knowing `T`. Null until the engine boots.
+   */
+  bool *m_online{};
 };
 
 /**
@@ -129,107 +149,139 @@ class AppBase : public QObject
  *
  * @tparam Engine_t: Replace with engine's class; i.e. `CoreEngine`, `PrayerEngine`, `MyEngine` etc
  */
-template <typename Engine_t> class AppEngine
-{
-  public:
-    /**
-     * @brief Returns whether the engine class singleton pointer exists or not. Recommended check
-     * before calling any engine's instance to avoid fatal quit. Not similar to `isOnline()` (see
-     * its brief)
-     *
-     * @return true: singleton pointer exists
-     * @return false: pointer is null
-     */
-    static auto instanceExists() noexcept -> bool;
+template <typename Engine_t> class AppEngine {
+public:
+  /**
+   * @brief Returns whether the engine class singleton pointer exists or not. Recommended check
+   * before calling any engine's instance to avoid fatal quit. Not similar to `isOnline()` (see
+   * its brief)
+   *
+   * @return true: singleton pointer exists
+   * @return false: pointer is null
+   */
+  static bool instanceExists() noexcept { return AppEngine::s_singletonInstance != nullptr; }
 
-    /**
-     * @brief Returns the singleton pointer for the engine class. Fatal quit if called without
-     * constructing an instance (i.e. when pointer is null)
-     *
-     * @return Engine_t*: Singleton pointer for the engine class
-     */
-    static auto instance() noexcept -> Engine_t *;
+  /**
+   * @brief Returns the singleton pointer for the engine class. Fatal quit if called without
+   * constructing an instance (i.e. when pointer is null)
+   *
+   * @return Engine_t*: Singleton pointer for the engine class
+   */
+  static Engine_t *instance() noexcept {
+    if (!AppEngine::instanceExists())
+      logFatal(Engine_t::logCategory())
+          << "No instance constructed. Explicit instantiation is required before invoking "
+             "the instance";
 
-    /**
-     * @brief Returns whether the engine is online or not. Not necessarily similar to
-     * `instanceExists()`. Engines (should) set online (or offline) status after all their boot (or
-     * shutdown) procedures are completed and ready (or closed) to serve. Therefore, there is a gap
-     * in time from constructor (or destructor) being called, singleton instance possibly being set
-     * and engines changing state. This is therefore a much safer check than `instanceExists()` for
-     * callers needing the full operational state as it gurantees engine is genuinely ready (or
-     * closed) to serve rather than singleton pointer barely being available (or not) while possibly
-     * being in the midst of necessary boot (or cleanup) routines.
-     *
-     * @return true: Engine is online
-     * @return false: Engine is offline
-     */
-    static auto isOnline() noexcept -> bool;
+    return AppEngine::s_singletonInstance;
+  }
 
-    /**
-     * @brief A convenient static helper that runs in connectee engine's own class once its
-     * singleton state exists to connect "context"'s "slot" to the its `engineOnline()` signal -
-     * possibly before it's emitted - avoiding polls externally from the connector "context". If the
-     * engine is offline when this static is called, a spin-table call to `instanceExists()` runs
-     * for a specified number of retries (`retriesLeft`) to wait while engine state becomes
-     * available before `slot` is executed. Returns without connecting if retries are exceeded. If
-     * the function is called after engine is online and `engineOnline()` signal has possibly been
-     * emitted, the `slot` is executed "by-hand" to reconcile the miss.
-     *
-     * @param context: One who owns `slot`. For most cases, use `this`
-     * @param slot: The routine to be executed if `engineOnline()` signal is emitted
-     * @param retriesLeft: Number of retries before failing
-     */
-    static auto onceOnline(QObject *context, std::function<void()> slot,
-                           int retriesLeft = 19) noexcept -> void; // NOLINT(*-magic-numbers)
+  /**
+   * @brief Returns whether the engine is online or not. Not necessarily similar to
+   * `instanceExists()`. Engines (should) set online (or offline) status after all their boot (or
+   * shutdown) procedures are completed and ready (or closed) to serve. Therefore, there is a gap
+   * in time from constructor (or destructor) being called, singleton instance possibly being set
+   * and engines changing state. This is therefore a much safer check than `instanceExists()` for
+   * callers needing the full operational state as it gurantees engine is genuinely ready (or
+   * closed) to serve rather than singleton pointer barely being available (or not) while possibly
+   * being in the midst of necessary boot (or cleanup) routines.
+   *
+   * @return true: Engine is online
+   * @return false: Engine is offline
+   */
+  static bool isOnline() noexcept { return AppEngine::s_online; }
 
-  protected:
-    AppEngine()  = default;
-    ~AppEngine() = default;
+  /**
+   * @brief A convenient static helper that runs in connectee engine's own class to connect
+   * "context"'s "slot" to the its `engineOnline()` signal - possibly _after_ it's emitted. The
+   * `slot` is therefore executed "by-hand" to reconcile the miss while retaining the connection for
+   * future catch
+   *
+   * @param context: One who owns `slot`. For most cases, use `this`
+   * @param slot: The routine to be executed if `engineOnline()` signal is emitted
+   */
+  static void onceOnline(QObject *context, std::function<void()> slot) noexcept {
+    if (const auto conn =
+            QObject::connect(AppEngine::instance(), &AppBase::engineOnline, context, slot);
+        conn == nullptr)
+      logWarning(Engine_t::logCategory()) << "engineOnline signal not connected";
+    else
+      logDebug(Engine_t::logCategory()) << "engineOnline signal connected";
 
-    ////////////////////////////////////////////////////////////////////////////////////////////
-    //  Variables //////////////////////////////////////////////////////////////////////////////
+    // Reconcile missed `engineOnline()` signal
+    if (AppEngine::isOnline())
+      slot();
+  }
 
-    /**
-     * @brief The singleton state pointer. Publicly accessed through `instance()` and checked
-     * through `instanceExists()`. Available through the lifetime of the class.
-     */
-    inline static QPointer<Engine_t> s_singletonInstance;
+protected:
+  AppEngine()  = default;
+  ~AppEngine() = default;
 
-    /**
-     * @brief Holds the online state of "this" engine. Checked through `isOnline()`. Available
-     * through the lifetime of the class, i.e. almost as long as `s_singletonInstance` exists.
-     */
-    inline static bool s_online{};
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  //  Variables //////////////////////////////////////////////////////////////////////////////
 
-    ////////////////////////////////////////////////////////////////////////////////////////////
-    //  Functions //////////////////////////////////////////////////////////////////////////////
+  /**
+   * @brief The singleton state pointer. Publicly accessed through `instance()` and checked
+   * through `instanceExists()`. Available through the lifetime of the class.
+   */
+  inline static QPointer<Engine_t> s_singletonInstance;
 
-    /**
-     * @brief (Ideally) holds all boot-up routines.
-     */
-    virtual void bootEngine();
+  /**
+   * @brief Holds the online state of "this" engine. Checked through `isOnline()`. Available
+   * through the lifetime of the class, i.e. almost as long as `s_singletonInstance` exists.
+   */
+  inline static bool s_online{};
 
-    /**
-     * @brief DRY functional wrapping essential routines to make an engine online. Also takes care
-     * of QML-module ownership control.
-     */
-    virtual void makeOnline();
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  //  Functions //////////////////////////////////////////////////////////////////////////////
 
-  private:
-    /**
-     * @brief Doesn't get propagated to derivers so each engine should be including this in its
-     * class. Mostly kept to pass linter checks
-     */
-    Q_DISABLE_COPY_MOVE(AppEngine)
+  /**
+   * @brief (Ideally) holds all boot-up routines.
+   */
+  virtual void bootEngine() {
+    if (AppEngine::instanceExists())
+      logFatal(Engine_t::logCategory())
+          << "A second instance was constructed; only one instance may exist per process";
 
-    /**
-     * @brief An accessor to AppBase's members. In simple sense, this digs a path through the
-     * _constructed_ class' state to AppBase. This therefore won't work without a class deriving
-     * _both_ AppBase followed by AppEngine<T>.
-     *
-     * @return AppBase*: The instance of AppBase's class
-     */
-    auto base() noexcept -> AppBase *
-    { return static_cast<Engine_t *>(this); }
+    logDebug(Engine_t::logCategory()) << "Booting engine...";
+
+    AppEngine::s_singletonInstance = static_cast<Engine_t *>(this);
+
+    this->base()->m_online = &AppEngine::s_online;
+    this->base()->defaultConfigs();
+    this->base()->connectToCoreOnline();
+  }
+
+  /**
+   * @brief DRY functional wrapping essential routines to make an engine online. Also takes care
+   * of QML-module ownership control.
+   */
+  virtual void makeOnline() {
+    // The singleton's lifetime is owned by this TU (main()/first construction), not by the
+    // QQmlEngine. Make that explicit so the engine never attempts to garbage-collect or delete
+    // it.
+    QQmlEngine::setObjectOwnership(AppEngine::instance(), QQmlEngine::CppOwnership);
+
+    AppEngine::s_online = true;
+
+    logDebug(Engine_t::logCategory()) << "Engine online";
+    emit this->base()->engineOnline();
+  }
+
+private:
+  /**
+   * @brief Doesn't get propagated to derivers so each engine should be including this in its
+   * class. Mostly kept to pass linter checks
+   */
+  Q_DISABLE_COPY_MOVE(AppEngine)
+
+  /**
+   * @brief An accessor to AppBase's members. In simple sense, this digs a path through the
+   * _constructed_ class' state to AppBase. This therefore won't work without a class deriving
+   * _both_ AppBase followed by AppEngine<T>.
+   *
+   * @return AppBase*: The instance of AppBase's class
+   */
+  AppBase *base() noexcept { return static_cast<Engine_t *>(this); }
 };
 } // namespace App

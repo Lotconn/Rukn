@@ -1,5 +1,4 @@
-#ifndef ENGINE_H
-#define ENGINE_H
+#pragma once
 
 #include <QObject>
 
@@ -10,25 +9,22 @@
 #include <QtPositioning/QGeoPositionInfoSource>
 #endif
 
-class Engine : public QObject
-{
-    Q_OBJECT
+class Engine : public QObject {
+  Q_OBJECT
 
-  public:
-    explicit Engine() = default;
+public:
+  explicit Engine() = default;
 
-    Q_INVOKABLE QString getWhatsNew();
-    QString             show_help(bool);
+  Q_INVOKABLE QString getWhatsNew();
+  QString             show_help(bool);
 
-    void             start_hidden(bool);
-    Q_INVOKABLE bool start_hidden();
+  void             start_hidden(bool);
+  Q_INVOKABLE bool start_hidden();
 
-    void             fullscreen(bool);
-    Q_INVOKABLE bool fullscreen();
+  void             fullscreen(bool);
+  Q_INVOKABLE bool fullscreen();
 
-  private:
-    bool _hidden     = false;
-    bool _fullscreen = false;
+private:
+  bool _hidden     = false;
+  bool _fullscreen = false;
 };
-
-#endif // ENGINE_H

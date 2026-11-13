@@ -1,17 +1,6 @@
 #pragma once
 
-#include <QLoggingCategory>
-#include <QTimer>
-
 #include <CoreEngine.hpp>
-
-// NOLINTBEGIN(cppcoreguidelines-macro-usage)
-#define logDebug(logCategory)    qCDebug(logCategory).noquote().nospace() << __func__ << ": "
-#define logInfo(logCategory)     qCInfo(logCategory).noquote().nospace()
-#define logWarning(logCategory)  qCWarning(logCategory).noquote().nospace()
-#define logCritical(logCategory) qCCritical(logCategory).noquote().nospace() << __func__ << ": "
-#define logFatal(logCategory)    qCFatal(logCategory).noquote().nospace() << __func__ << ": "
-// NOLINTEND(cppcoreguidelines-macro-usage)
 
 /**
  * @brief Validates `index` against a reference list `refList`. Passes if `index` has a valid value
@@ -22,25 +11,22 @@
  * @return true: Validations passed, and `index` can be safely used for `refList`'s operations
  * @return false: Validations failed
  */
-template <typename T> bool checkIndex(const QVariant &index, const QList<T> &refList) noexcept
-{
-    const QLoggingCategory common{"Common"};
+template <typename T> bool checkIndex(const QVariant &index, const QList<T> &refList) noexcept {
+  const QLoggingCategory common{"Common"};
 
-    if (index.isNull())
-    {
-        logDebug(common) << "No value was provided";
-        return false;
-    }
+  if (index.isNull()) {
+    logDebug(common) << "No value was provided";
+    return false;
+  }
 
-    const int idx{index.toInt()};
+  const int idx{index.toInt()};
 
-    if (idx < 0 || idx >= refList.size())
-    {
-        logCritical(common) << "Index " << idx << " out of range";
-        return false;
-    }
+  if (idx < 0 || idx >= refList.size()) {
+    logCritical(common) << "Index " << idx << " out of range";
+    return false;
+  }
 
-    return true;
+  return true;
 }
 
 /**
@@ -61,14 +47,12 @@ void fetchAndSetKey(int index, const QVariantList &refList, int &idxVar,
                     const QString &id = QStringLiteral("name")) noexcept;
 
 /**
- * @brief Validates a candidate nested hash/map-table `entryMaps`, ideally a full-table. Checks are
- * performed for each entry atom in `entryMaps` against a ceiling hash/map size `maxEntrySize`, and
- * required fields and their value types as in `refFields`. An optionally passed non-zero and
- * positive `refMapSize` additionally enables size validation for `entryMaps`. See `isValidMaps()`
- * for further details.
+ * @brief Validates a candidate nested hash/map-table `entryMaps`. Checks are performed for each
+ * entry atom in `entryMaps` against a ceiling hash/map size `maxEntrySize`, and required fields and
+ * their value types as in `refFields`. An optionally passed non-zero and positive `refMapSize`
+ * additionally enables size validation for `entryMaps`. See `isValidMaps()` for further details.
  *
- * @param entryMaps: The candidate nested hash/map-table, ideally a full-table. Returns false if
- * empty.
+ * @param entryMaps: The candidate nested hash/map-table. Returns false if empty.
  * @param maxEntrySize: The maximum allowed size of each entry atoms in `entryMaps`. Returns false
  * if 0 or negative.
  * @param refFields: A map of required fields to exist in an ideal entry atom versus their value
@@ -83,14 +67,13 @@ bool isValidEntry(const QVariantHash &entryMaps, qsizetype maxEntrySize,
                   const QHash<QString, int> &refFields, qsizetype refMapSize = 0) noexcept;
 
 /**
- * @brief Map-list overload of `isValidEntry()`. Validates a candidate hash/map-list `entryList`,
- * ideally a full list. Checks are performed for each map entry in `entryList` against a ceiling
- * hash/map size `maxMapSize`, and required fields and their value types as in `refFields`. An
- * optionally passed non-zero and positive `refListSize` additionally enables size validation for
- * `entryList`. See `isValidMaps()` and `isValidEntry()` for further details.
+ * @brief Map-list overload of `isValidEntry()`. Validates a candidate hash/map-list `entryList`
+ * Checks are performed for each map entry in `entryList` against a ceiling hash/map size
+ * `maxMapSize`, and required fields and their value types as in `refFields`. An optionally passed
+ * non-zero and positive `refListSize` additionally enables size validation for `entryList`. See
+ * `isValidMaps()` and `isValidEntry()` for further details.
  *
- * @param entryMaps: The candidate hash/map-list, ideally a full list. Returns false if
- * empty.
+ * @param entryMaps: The candidate hash/map-list. Returns false if empty.
  * @param maxEntrySize: The maximum allowed size of each map entry in `entryList`. Returns false
  * if 0 or negative.
  * @param refFields: A map of required fields to exist in an ideal map entry versus their value
@@ -123,72 +106,39 @@ bool isValidMap(const QVariantHash &entry, qsizetype maxMapSize,
 /**
  * @brief Loads the value from the provided config key and sets it using `setFunc`. Skips
  * setting if value fetched is invalid. Uses `preLoadConfigKey()` method for the main routine.
- * Opportunistically reads from `oldKey` if `migrateKey` in settings file reads (bool evaluated)
- * `false` (non-existent key also evaluates to `false`) and `oldKey` actually has a valid value.
- * Migration-read is always priotrized over present config read if conditions pass. However, value
- * fetched from only the first successful read is set. An optional `configMigrated` mutable bool
- * variable can be provided to explicitly inform about whether migration-read was not performed.
- * However, success reads from old config does not alter the variable's existant state. This
- * behavior so can preserve a logical-AND chain when successive calls to this function for a
- * load-config routine is performed - when the same `configMigrated` variable is passed to all of
- * them, if one of them fails to migrate-read, the whole chain becomes falsified, possibly
- * inhibiting further migration routine. Note that this function does not remove `oldKey` from the
- * old settings file once tasks are done.
  *
- * @param oldKey: Key in old config to read. Skipped if empty.
- * @param newKey: Key in present config to read. Skipped if empty. Note, `oldKey` and `newKey`
- * cannot both be empty.
- * @param migrateKey: A migration status key in config file read to decide whether to read from old
- * config file or not. When empty, a "force-migration read" is implied.
+ * @param key: Key in config to read. Cannot be empty.
  * @param setFunc: A setter method that takes `const QVariant &` parameter and returns `void`. The
  * value read previously is set using this method.
- * @param configMigrated: (optional) A mutable boolean variable assigned `false` to inform whether
- * migration-read was not performed or doesn't apply. Success state in this regard retains the state
- * of the variable and does not assign `true`.
+ * @param category  : (Optional) QLogging category for logging purposes
  */
-void loadConfigKey(QAnyStringView oldKey, QAnyStringView newKey, const QString &migrateKey,
-                   const std::function<void(const QVariant &)> &setFunc,
-                   std::optional<bool> configMigrated = std::nullopt) noexcept;
+void loadConfigKey(QAnyStringView key, const std::function<void(const QVariant &)> &setFunc,
+                   const QLoggingCategory &category = QLoggingCategory{"Common"}) noexcept;
+
 /**
  * @brief Overload of `loadConfigKey()` using the `property` of `obj` to set the fetched value.
  * Behaviours otherwise are retained. See its brief for further details.
  *
- * @param oldKey: Key in old config to read. Skipped if empty.
- * @param newKey: Key in present config to read. Skipped if empty. Note, `oldKey` and `newKey`
- * cannot both be empty.
- * @param migrateKey: A migration status key in config file read to decide whether to read from old
- * config file or not. When empty, a "force-migration read" is implied.
+ * @param key: Key in config to read. Cannot be empty.
  * @param obj: The object whose property is to be set.
  * @param property: The property to set the read value to. Does not assign to properties that
  * doesn't exist in `obj`.
- * @param configMigrated: (optional) A mutable boolean variable assigned `false` to inform whether
- * migration-read was not performed or doesn't apply. Success state in this regard retains the state
- * of the variable and does not assign `true`.
+ * @param category  : (Optional) QLogging category for logging purposes
  */
-void loadConfigKey(QAnyStringView oldKey, QAnyStringView newKey, const QString &migrateKey,
-                   QObject *obj, const QString &property,
-                   std::optional<bool> configMigrated = std::nullopt) noexcept;
+void loadConfigKey(QAnyStringView key, QObject *obj, const QString &property,
+                   const QLoggingCategory &category = QLoggingCategory{"Common"}) noexcept;
 
 /**
  * @brief The core routine for `loadConfigKey()`. All its behaviors inherently sprout from this
  * function. See `loadConfigKey()` briefings and inline comments of this function in the
  * implementation file for details.
  *
- * @param oldKey: Key in old config to read. Skipped if empty.
- * @param newKey: Key in present config to read. Skipped if empty. Note, `oldKey` and `newKey`
- * cannot both be empty.
- * @param migrateKey: A migration status key in config file read to decide whether to read from old
- * config file or not. When empty, a "force-migration read" is implied.
- * @param configMigrated: (optional) A mutable boolean variable assigned `false` to inform whether
- * migration-read was not performed or doesn't apply. Success state in this regard retains the state
- * of the variable and does not assign `true`.
- * @return QVariant: The read value from either of `oldKey` or `newKey` successfully fetched first.
- * Empty on failure.
+ * @param newKey: Key in config to read. Cannot be empty.
+ * @param category  : (Optional) QLogging category for logging purposes
+ * @return QVariant: The read value from `key` fetched. Empty on failure.
  */
-QVariant preLoadConfigKey(QAnyStringView oldKey, QAnyStringView newKey, const QString &migrateKey,
-                          std::optional<bool> configMigrated) noexcept;
-
-// auto textsRefresherReal() -> int;
+QVariant preLoadConfigKey(QAnyStringView          key,
+                          const QLoggingCategory &category = QLoggingCategory{"Common"}) noexcept;
 
 /**
  * @brief Set `key` to `var` if it's a valid key from `table`, optionally set the logging category
@@ -205,24 +155,21 @@ QVariant preLoadConfigKey(QAnyStringView oldKey, QAnyStringView newKey, const QS
  */
 template <typename Key, typename T>
 bool setConfig(const QHash<Key, T> &table, const QString &key, QString &var,
-               const QLoggingCategory &category = QLoggingCategory{"Common"}) noexcept
-{
-    if (!table.contains(key))
-    {
-        logCritical(category) << "Key " << key << " not recognized";
+               const QLoggingCategory &category = QLoggingCategory{"Common"}) noexcept {
+  if (!table.contains(key)) {
+    logCritical(category) << "Key " << key << " not recognized";
 
-        return false;
-    }
+    return false;
+  }
 
-    if (var == key)
-    {
-        logInfo(category) << "Skipping setting identical key";
+  if (var == key) {
+    logInfo(category) << "Skipping setting identical key";
 
-        return false;
-    }
+    return false;
+  }
 
-    logDebug(category) << "Replacing " << var << " with " << key;
-    var = key;
+  logDebug(category) << "Replacing " << var << " with " << key;
+  var = key;
 
-    return true;
+  return true;
 }

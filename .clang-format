@@ -1,4 +1,4 @@
-BasedOnStyle: Microsoft
+BasedOnStyle: LLVM
 AlignArrayOfStructures: Left
 AlignConsecutiveAssignments:
   Enabled: true
