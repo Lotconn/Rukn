@@ -1,0 +1,16 @@
+[Desktop Entry]
+Categories=Utility;
+Comment[ar]=تطبيق أذان بسيط وجميل
+Comment[bn_BD]=আপনার সহজ ও সুন্দর আযান অ্যাপ
+Comment[en_US]=Your simple and beautiful adhan app
+Comment=Your simple and beautiful adhan app
+Exec=rukn
+Icon=org.lotconn.Rukn
+Name[ar]=ركن
+Name[bn_BD]=রুকন
+Name[en_US]=Rukn
+Name=Rukn
+SingleMainWindow=true
+StartupNotify=true
+Terminal=false
+Type=Application

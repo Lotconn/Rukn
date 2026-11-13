@@ -4,9 +4,15 @@ import QtQuick.Controls.Material
 import QtQuick.Layouts
 
 Pane {
+    id: dateBox
+
+    property bool muted: false
+    readonly property var textColor: (muted) ? Material.secondaryTextColor : Material.primaryTextColor
+    readonly property real textOpacity: (muted) ? 0.37 : 0.57
+
     LayoutMirroring.childrenInherit: true
     LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft
-    Material.elevation: mm.pane_elevation
+    Material.elevation: theme.pane_elevation
 
     RowLayout {
         anchors.fill: parent
@@ -16,14 +22,14 @@ Pane {
             Layout.minimumWidth: parent.height
 
             RoundButton {
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.verticalCenter: parent.verticalCenter
+                anchors.centerIn: parent
                 autoRepeat: true
                 flat: true
-                opacity: 0.5
+                font.pointSize: dateText.fontInfo.pointSize
+                opacity: 0.57
                 text: qsTr("<")
 
-                onPressed: mm.prevDate()
+                onPressed: --UiEngine.dateOffset
             }
         }
 
@@ -34,13 +40,18 @@ Pane {
             Text {
                 id: dateText
 
+                anchors.bottomMargin: parent.height / 5
                 anchors.fill: parent
-                color: Material.secondaryTextColor
+                anchors.topMargin: anchors.bottomMargin
+                color: dateBox.textColor
                 elide: Text.ElideMiddle
-                font.pixelSize: height / 2
-                font.weight: Font.DemiBold
+                font.pointSize: 72
+                font.weight: Font.Medium
+                fontSizeMode: Text.VerticalFit
                 horizontalAlignment: Text.AlignHCenter
-                text: mm.currentDateStr
+                minimumPointSize: 1
+                opacity: dateBox.opacity
+                text: UiEngine.calendarDateDisplay
                 verticalAlignment: Text.AlignVCenter
 
                 MouseArea {
@@ -51,13 +62,8 @@ Pane {
                     hoverEnabled: true
 
                     onHoveredChanged: containsMouse ? dateText.font.underline = true : dateText.font.underline = false
-                    onPressed: mm.todayDate()
-                    onWheel: {
-                        if (wheel.angleDelta.x < 0 || wheel.angleDelta.y > 0)
-                            mm.nextDate();
-                        else
-                            mm.prevDate();
-                    }
+                    onPressed: UiEngine.dateOffset = undefined
+                    onWheel: wheel => (wheel.angleDelta.x < 0 || wheel.angleDelta.y > 0) ? ++UiEngine.dateOffset : --UiEngine.dateOffset
                 }
             }
         }
@@ -67,14 +73,14 @@ Pane {
             Layout.minimumWidth: parent.height
 
             RoundButton {
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.verticalCenter: parent.verticalCenter
+                anchors.centerIn: parent
                 autoRepeat: true
                 flat: true
-                opacity: 0.5
+                font.pointSize: dateText.fontInfo.pointSize
+                opacity: 0.57
                 text: qsTr(">")
 
-                onPressed: mm.nextDate()
+                onPressed: ++UiEngine.dateOffset
             }
         }
     }

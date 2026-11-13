@@ -1,5 +1,5 @@
-BasedOnStyle: Microsoft
-AlignArrayOfStructures: Right
+BasedOnStyle: LLVM
+AlignArrayOfStructures: Left
 AlignConsecutiveAssignments:
   Enabled: true
   AcrossEmptyLines: false

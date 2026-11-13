@@ -1,0 +1,15 @@
+<svg class="lucide" fill="none" stroke="#707070" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <style type="text/css" id="current-color-scheme">
+        .ColorScheme-Text {
+            color: #232629;
+        }
+    </style>
+    <path d="m12 2v8"/>
+    <path d="m4.93 10.93 1.41 1.41"/>
+    <path d="m2 18h2"/>
+    <path d="m20 18h2"/>
+    <path d="m19.07 10.93-1.41 1.41"/>
+    <path d="M22 22H2"/>
+    <path d="m8 6 4-4 4 4"/>
+    <path d="m16 18a4 4 0 0 0-8 0"/>
+</svg>

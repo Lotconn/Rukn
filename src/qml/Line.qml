@@ -5,6 +5,6 @@ import QtQuick.Layouts
 Rectangle {
     Layout.alignment: Qt.AlignHCenter
     Layout.preferredWidth: parent.width - parent.width / 8
-    color: Material.secondaryTextColor
-    height: 1
+    color: Material.dividerColor
+    height: 1.5
 }

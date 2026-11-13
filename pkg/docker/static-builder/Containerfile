@@ -1,85 +1,83 @@
-FROM rockylinux/rockylinux:10.1-ubi AS builder
+FROM rockylinux/rockylinux:10.2-ubi AS builder
 
 RUN mkdir -p /mnt/rootfs
 
 RUN \
-    dnf install -y --installroot=/mnt/rootfs --releasever=10.1 \
-        --setopt=install_weak_deps=False --nodocs --nogpgcheck  \
-        rocky-release && \
-    rpm --root=/mnt/rootfs --import \
-        /mnt/rootfs/etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-10
+    dnf install -y --installroot=/mnt/rootfs --releasever=10.2 --setopt=install_weak_deps=False \
+        --nodocs --nogpgcheck rocky-release && \
+    rpm --root=/mnt/rootfs --import /mnt/rootfs/etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-10
 
 RUN \
-    dnf install -y --installroot=/mnt/rootfs --releasever=10.1 \
-        --setopt=install_weak_deps=False --nodocs \
-        --setopt=reposdir=/etc/yum.repos.d/ \
-        coreutils-single glibc-minimal-langpack
+    dnf install -y --installroot=/mnt/rootfs --releasever=10.2 --setopt=install_weak_deps=False \
+        --nodocs --setopt=reposdir=/etc/yum.repos.d/ coreutils-single glibc-minimal-langpack
 RUN \
-    dnf install -y --setopt=install_weak_deps=False --nodocs \
-        --setopt=reposdir=/etc/yum.repos.d/ \
+    dnf install -y --setopt=install_weak_deps=False --nodocs --setopt=reposdir=/etc/yum.repos.d/ \
     https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm && \
-    sed -i -r '/^\[crb\]/,/^\[/ s/(enabled\s*=\s*)0/\11/g' \
-        /etc/yum.repos.d/rocky.repo && \
-    dnf dsync -y --installroot=/mnt/rootfs --releasever=10.1 \
-        --setopt=install_weak_deps=False --nodocs \
-        --setopt=reposdir=/etc/yum.repos.d/ && \
-    dnf install -y --installroot=/mnt/rootfs --releasever=10.1 \
-        --setopt=install_weak_deps=False --nodocs \
-        --setopt=reposdir=/etc/yum.repos.d/ \
-        # Build utils
-        dnf epel-release ccache clang cmake diffutils \
-        gcc-c++ lld llvm nasm ninja-build \
-        # Required libraries
-        libglvnd-devel libxkbcommon-devel libXrandr-devel \
-        openssl-devel pipewire-devel wayland-devel && \
-    dnf install -y --installroot=/mnt/rootfs --releasever=10.1 \
-         --setopt=install_weak_deps=False --nodocs \
-         --setopt=reposdir=/etc/yum.repos.d/ \
-         # Other necessary utils
-         bash-color-prompt bash-completion clang-tools-extra git ncurses \
-         procps-ng rootfiles shellcheck tar vim xdg-utils zstd && \
+    sed -i -r '/^\[crb\]/,/^\[/ s/(enabled\s*=\s*)0/\11/g' /etc/yum.repos.d/rocky.repo
+RUN \
+    dnf dsync -y --installroot=/mnt/rootfs --releasever=10.2 --setopt=install_weak_deps=False \
+        --nodocs --setopt=reposdir=/etc/yum.repos.d/
+RUN \
+    # Build utils & required libraries
+    dnf install -y --installroot=/mnt/rootfs --releasever=10.2 --setopt=install_weak_deps=False \
+        --nodocs --setopt=reposdir=/etc/yum.repos.d/ \
+        dnf epel-release ccache clang cmake dbus-devel diffutils gcc-c++ lld llvm ninja-build nasm \
+        libglvnd-devel libxkbcommon-devel libzstd-devel openssl-devel pipewire-devel \
+        vulkan-loader-devel wayland-devel
+RUN \
+    # Other necessary utils
+    dnf install -y --installroot=/mnt/rootfs --releasever=10.2 --setopt=install_weak_deps=False \
+        --nodocs --setopt=reposdir=/etc/yum.repos.d/ \
+         bash-color-prompt bash-completion clang-tools-extra git ncurses procps-ng rootfiles \
+         shellcheck tar vim xdg-utils zstd
+RUN \
     dnf --installroot /mnt/rootfs clean all && \
-    rm -rf /mnt/rootfs/var/cache/* /mnt/rootfs/var/log/dnf* \
-        /mnt/rootfs/var/log/yum.*
+    rm -rf /mnt/rootfs/var/cache/* /mnt/rootfs/var/log/dnf* /mnt/rootfs/var/log/yum.*
 
 FROM scratch
-LABEL maintainer="Munadi.org"
-LABEL name="munadi/builder"
-LABEL summary="Munadi static app builder image"
+LABEL maintainer="Lotconn.org"
+LABEL name="rukn/builder"
+LABEL summary="Rukn static app builder image"
 LABEL distribution-scope="public"
 LABEL cpe="cpe:/o:rocky:rocky:10::baseos"
 
 
-LABEL com.redhat.component="munadi-static-builder"
+LABEL com.redhat.component="rukn-static-builder"
 
-LABEL org.opencontainers.image.authors="Abou Abbad, Hasan Esa"
-LABEL org.opencontainers.image.url="https://gitlab.com/munadi/munadi/container_registry"
-LABEL org.opencontainers.image.source="https://gitlab.com/munadi/munadi"
-LABEL org.opencontainers.image.version="26.08"
-LABEL org.opencontainers.image.revision="1"
-LABEL org.opencontainers.image.vendor="Munadi.org"
-LABEL org.opencontainers.image.licenses="AGPL-3.0, GPL-3.0 or LGPL"
-LABEL org.opencontainers.image.title="Munadi static builder image"
+LABEL org.opencontainers.image.authors="Hasan Esa"
+LABEL org.opencontainers.image.url="https://ghcr.io/lotconn/rukn/static-builder"
+LABEL org.opencontainers.image.source="https://gitlab.com/lotconn/Rukn"
+LABEL org.opencontainers.image.version="26.11"
+LABEL org.opencontainers.image.revision="4"
+LABEL org.opencontainers.image.vendor="Lotconn.org"
+LABEL org.opencontainers.image.licenses="GPL-3.0"
+LABEL org.opencontainers.image.title="Rukn static builder image"
 LABEL org.opencontainers.image.description="Dev image for app development tasks (static building + packaging)"
-LABEL org.opencontainers.image.base.name="rockylinux/rockylinux:10.1-ubi"
+LABEL org.opencontainers.image.base.name="rockylinux/rockylinux:10.2-ubi"
 
 COPY --from=builder /mnt/rootfs/ /
 COPY --from=builder /etc/yum.repos.d/*.repo /etc/yum.repos.d/
 
 WORKDIR /tmp
 COPY CMakeLists.txt .
+
+# Non UTF-8 locale causes tar extraction troubles - among other viable problems
+ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
+
 RUN \
-    --mount=type=cache,target=/root/.ccache \
-    --mount=type=cache,target=/root/.cache,sharing=locked \
-    cmake . -GNinja && \
-    cmake --build . --parallel --config Release && \
-    rm -rf /tmp/{,.}*
+    --mount=type=cache,target=/root/.ccache --mount=type=cache,target=/root/.cache,sharing=locked \
+    # Note -G and BUILD_TYPE has no effect in CMakeLists.txt
+    cmake -S . -B . && cmake --build . --parallel && rm -rf /tmp/{,.}*
 
 RUN \
     cp /usr/share/rootfiles/.* /root && \
-    echo "cmake -S . -B build --fresh -G'Ninja Multi-Config' -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release --parallel" >> /root/.bash_history && \
+    echo "cmake -S . -B build --fresh -G'Ninja Multi-Config' && cmake --build build --parallel --config Release" >> /root/.bash_history && \
     echo "cd pkg/makeself && ./generate_installer && cd -" >> /root/.bash_history && \
     git config --system --add safe.directory /src
+
+# This toolchain file will set some handy defaults
+RUN echo -e "set(CMAKE_C_COMPILER clang)\nset(CMAKE_CXX_COMPILER clang++)\ninclude(/usr/lib/cmake/Qt6/qt.toolchain.cmake)" > /root/tc-host-linux-x64-native.cmake
+ENV CMAKE_TOOLCHAIN_FILE=/root/tc-host-linux-x64-native.cmake
 
 WORKDIR /src
 ENTRYPOINT ["/bin/bash", "-l"]

@@ -1,15 +1,6 @@
-#ifndef MUNADIENGINE_H
-#define MUNADIENGINE_H
+#pragma once
 
-#include <QtCore>
-#include <QtDebug>
-#include <QtGui>
-
-#include <version.hpp>
-
-#define MUNADI_API_URL "https://munadi.org/"
-
-#include <updater.h>
+#include <QObject>
 
 #ifdef Q_OS_ANDROID
 #include <QtPositioning/QGeoAddress>
@@ -18,46 +9,22 @@
 #include <QtPositioning/QGeoPositionInfoSource>
 #endif
 
-class Engine : public QObject
-{
-    Q_OBJECT
+class Engine : public QObject {
+  Q_OBJECT
 
-  public:
-    Engine();
+public:
+  explicit Engine() = default;
 
-    Q_INVOKABLE QString getDate(const QDate   &date      = QDate::currentDate(),
-                                const QString &format    = QString(),
-                                const QString &calSystem = QLatin1String("Gregorian"),
-                                const int     &offset    = 0) const;
+  Q_INVOKABLE QString getWhatsNew();
+  QString             show_help(bool);
 
-    Q_INVOKABLE QString getVersionNo()
-    { return APP_VERSION; }
-    Q_INVOKABLE QString getWhatsNew();
-    QString             show_help(bool);
+  void             start_hidden(bool);
+  Q_INVOKABLE bool start_hidden();
 
-    Q_INVOKABLE void autostart(bool set);
+  void             fullscreen(bool);
+  Q_INVOKABLE bool fullscreen();
 
-    Q_INVOKABLE QString ff() // Form factor
-    {
-#if defined Q_OS_WIN || defined Q_OS_MACOS || (defined Q_OS_LINUX && !defined Q_OS_ANDROID)
-        return "d";
-#else
-        return "m";
-#endif
-    }
-
-    Updater         *updater;
-    void             autostart_hidden(bool);
-    Q_INVOKABLE bool autostart_hidden();
-
-    void             fullscreen(bool);
-    Q_INVOKABLE bool fullscreen();
-
-  private:
-    bool _hidden     = false;
-    bool _fullscreen = false;
-
-    bool init();
+private:
+  bool _hidden     = false;
+  bool _fullscreen = false;
 };
-
-#endif // MUNADIENGINE_H

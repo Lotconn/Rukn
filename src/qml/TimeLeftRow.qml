@@ -3,12 +3,17 @@ import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.Layouts
 
-import "qrc:/qt/qml/Munadi/data/Adhan.js" as Adhan
+import App
 
 Pane {
-    property alias text: timeLeftLabel.text
+    id: timeleftBox
 
-    Material.elevation: mm.pane_elevation
+    property bool muted: false
+    property alias text: timeLeftLabel.text
+    readonly property var textColor: (muted) ? Material.secondaryTextColor : Material.primaryTextColor
+    readonly property real textOpacity: (muted) ? 0.37 : 0.57
+
+    Material.elevation: theme.pane_elevation
 
     RowLayout {
         anchors.fill: parent
@@ -20,9 +25,9 @@ Pane {
             RoundButton {
                 anchors.centerIn: parent
                 flat: true
-                icon.source: "qrc:/qt/qml/Munadi/img/settings.png"
+                icon.source: "qrc:/qt/qml/App/img/settings.png"
                 icon.width: parent.width
-                opacity: 0.5
+                opacity: 0.57
 
                 onClicked: settingsPopup.open()
             }
@@ -36,14 +41,19 @@ Pane {
             Text {
                 id: timeLeftLabel
 
+                anchors.bottomMargin: parent.height / 5
                 anchors.fill: parent
-                color: Material.secondaryTextColor
+                anchors.topMargin: anchors.bottomMargin
+                color: timeleftBox.textColor
                 elide: Text.ElideRight
-                font.pixelSize: height / 2
-                font.weight: Font.DemiBold
+                font.pointSize: 72
+                font.weight: Font.Medium
+                fontSizeMode: Text.VerticalFit
                 horizontalAlignment: Text.AlignHCenter
+                minimumPointSize: 1
+                opacity: timeleftBox.opacity
                 verticalAlignment: Text.AlignVCenter
-                visible: progressBar.visible || athan.isOn
+                visible: progressBar.visible || MultimediaEngine.adhanPlaying
             }
 
             ProgressBar {
@@ -52,17 +62,10 @@ Pane {
                 Material.accent: timeLeftLabel.color
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: timeLeftLabel.bottom
-                anchors.topMargin: 2
-                from: if (mm.timeForCurrentPrayer)
-                    mm.timeForCurrentPrayer.getTime()
-                else
-                    0
-                to: if (mm.timeForNextPrayer)
-                    mm.timeForNextPrayer.getTime()
-                else
-                    0
-                value: mm.currentTime.getTime()
-                visible: mm.currentPrayer !== Adhan.Prayer.None && mm.nextPrayer !== Adhan.Prayer.None && !athan.isOn && mm.dateNavOffset === 0
+                anchors.topMargin: theme.unit
+                opacity: timeleftBox.opacity
+                value: UiEngine.timeLeftProgress
+                visible: timeLeftLabel.text !== ""
                 width: parent.width / 1.5
             }
         }
@@ -74,11 +77,26 @@ Pane {
             RoundButton {
                 anchors.centerIn: parent
                 flat: true
-                icon.source: "qrc:/qt/qml/Munadi/img/stop.png"
-                opacity: 0.5
-                visible: athan.isOn
+                icon.source: "qrc:/qt/qml/App/img/stop.png"
+                opacity: 0.57
+                visible: MultimediaEngine.adhanPlaying
 
-                onClicked: athan.stop()
+                onClicked: MultimediaEngine.adhanStop()
+            }
+        }
+
+        Item {
+            Layout.fillHeight: true
+            Layout.minimumWidth: parent.height
+
+            RoundButton {
+                anchors.centerIn: parent
+                flat: true
+                icon.source: "qrc:/qt/qml/App/img/compass.png"
+                icon.width: parent.width
+                opacity: 0.57
+
+                onClicked: compassPopup.open()
             }
         }
     }

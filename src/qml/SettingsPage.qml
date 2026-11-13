@@ -2,21 +2,9 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.Layouts
-
-// import QtCore
-// import QtPositioning
-// import QtQuick.Dialogs
-
-// import "qrc:/qt/qml/Munadi/data/Adhan.js" as Adhan
+import App
 
 Page {
-    Component.onCompleted: {
-        mathhab.currentIndex = mm.madhab - 1;
-        algo.currentIndex = mm.calcMethodIndex;
-        hijriSlider.value = mm.hijriDateOffset;
-        calendar.currentIndex = mm.calendarPreferenceIndex;
-    }
-
     Flickable {
         LayoutMirroring.childrenInherit: true
         LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft
@@ -47,19 +35,25 @@ Page {
 
 
             ColumnLayout {
-                width: parent.width
+                SettingTitle {
+                    font.italic: true
+                    horizontalAlignment: Text.AlignHCenter
+                    text: qsTr("Location")
+                }
 
                 Line {
                     Layout.fillWidth: true
                 }
+            }
+
+            ColumnLayout {
+                implicitWidth: parent.width
 
                 LocationInfoRow {
                     id: locationInfoRow
 
-                    Layout.preferredHeight: 30
                     Layout.preferredWidth: parent.width
-                    cityName: mm.cityName
-                    countryName: mm.countryName
+                    address: LocationEngine.location.address
                 }
             }
 
@@ -78,6 +72,24 @@ Page {
             RowLayout {
                 Text {
                     color: Material.secondaryTextColor
+                    text: qsTr("Language")
+                }
+
+                ComboBox {
+                    id: langChoice
+
+                    Layout.fillWidth: true
+                    currentIndex: UiEngine.langDisplayIndex
+                    model: UiEngine.langDisplayNames
+                    textRole: "trText"
+
+                    onActivated: UiEngine.langDisplayIndex = currentIndex
+                }
+            }
+
+            RowLayout {
+                Text {
+                    color: Material.secondaryTextColor
                     text: qsTr("Theme")
                 }
 
@@ -85,39 +97,44 @@ Page {
                     id: themeChoice
 
                     Layout.fillWidth: true
-                    currentIndex: mm.themeListIndex
-                    model: mm.themeList
+                    currentIndex: UiEngine.themeDisplayIndex
+                    model: UiEngine.themeDisplayNames
+                    textRole: "trText"
 
                     onActivated: {
-                        mm.themeListIndex = currentIndex;
+                        UiEngine.themeDisplayIndex = currentIndex;
+
+                        mm.applyTheme(currentValue.name);
                     }
                 }
             }
 
             GridLayout {
-                columns: 2
+                columns: 3
                 rows: 2
 
                 Text {
+                    id: blurLabel
+
                     color: Material.secondaryTextColor
                     text: qsTr("Blur")
                 }
 
                 Slider {
-                    id: blur
+                    id: blurSlider
 
                     Layout.fillWidth: true
-                    from: 0
-                    stepSize: 1
-                    to: 64
-                    value: mm.bg_img_blur
+                    from: 0.0
+                    snapMode: Slider.SnapAlways
+                    stepSize: 0.01
+                    to: 1.0
+                    value: UiEngine.blur
+                    wheelEnabled: true
 
-                    onMoved: {
-                        mm.bg_img_blur = value;
-                    }
+                    onMoved: UiEngine.blur = value
                     onPressedChanged: {
                         if (pressed) {
-                            settingsPopup.opacity = 0;
+                            settingsPopup.opacity = 0.1;
                             settingsPopup.modal = false;
                         } else {
                             settingsPopup.opacity = 1;
@@ -126,26 +143,36 @@ Page {
                     }
                 }
 
+                SpinBoxComp {
+                    id: blurValue
+
+                    storeVar: UiEngine.blur
+
+                    onEdited: newValue => UiEngine.blur = newValue
+                }
+
                 Text {
+                    id: opacityLabel
+
                     color: Material.secondaryTextColor
                     text: qsTr("Opacity")
                 }
 
                 Slider {
-                    id: opacity
+                    id: opacitySlider
 
                     Layout.fillWidth: true
                     from: 0
-                    stepSize: .01
+                    snapMode: Slider.SnapAlways
+                    stepSize: 0.01
                     to: 1
-                    value: mm.rectangle_opacity
+                    value: UiEngine.opacity
+                    wheelEnabled: true
 
-                    onMoved: {
-                        mm.rectangle_opacity = value;
-                    }
+                    onMoved: UiEngine.opacity = value
                     onPressedChanged: {
                         if (pressed) {
-                            settingsPopup.opacity = 0;
+                            settingsPopup.opacity = 0.1;
                             settingsPopup.modal = false;
                         } else {
                             settingsPopup.opacity = 1;
@@ -153,10 +180,18 @@ Page {
                         }
                     }
                 }
+
+                SpinBoxComp {
+                    id: opacityValue
+
+                    storeVar: UiEngine.opacity
+
+                    onEdited: newValue => UiEngine.opacity = newValue
+                }
             }
 
             RowLayout {
-                enabled: engine.ff() === "d"
+                enabled: UiEngine.getFormFactor() === "desktop"
                 visible: enabled
 
                 ColumnLayout {
@@ -170,14 +205,14 @@ Page {
                 }
 
                 Switch {
-                    checked: mm.bgImage
+                    checked: UiEngine.bgImage
 
-                    onCheckedChanged: mm.bgImage = checked
+                    onClicked: UiEngine.bgImage = checked
                 }
             }
 
             RowLayout {
-                enabled: engine.ff() === "d"
+                enabled: UiEngine.getFormFactor() === "desktop"
                 visible: enabled
 
                 ColumnLayout {
@@ -186,19 +221,19 @@ Page {
                     }
 
                     SettingSubtitle {
-                        text: qsTr("When closing Munadi, hide it instead.")
+                        text: qsTr("When closing the app, hide it instead.")
                     }
                 }
 
                 Switch {
-                    checked: mm.hideOnClose
+                    checked: UiEngine.hideOnClose
 
-                    onCheckedChanged: mm.hideOnClose = checked
+                    onClicked: UiEngine.hideOnClose = checked
                 }
             }
 
             RowLayout {
-                enabled: engine.ff() === "d"
+                enabled: UiEngine.getFormFactor() === "desktop"
                 visible: enabled
 
                 ColumnLayout {
@@ -212,35 +247,35 @@ Page {
                 }
 
                 Switch {
-                    checked: mm.isoClock
+                    checked: UiEngine.isoClock
 
-                    onCheckedChanged: mm.isoClock = checked
+                    onClicked: UiEngine.isoClock = checked
                 }
             }
 
             RowLayout {
-                enabled: engine.ff() === "d"
+                enabled: UiEngine.getFormFactor() === "desktop"
                 visible: enabled
 
                 ColumnLayout {
                     SettingTitle {
-                        text: qsTr("Show on Athan")
+                        text: qsTr("Show on Adhan")
                     }
 
                     SettingSubtitle {
-                        text: qsTr("Try to show window on Athan.")
+                        text: qsTr("Try to show window on Adhan.")
                     }
                 }
 
                 Switch {
-                    checked: mm.showOnAthan
+                    checked: UiEngine.showOnAdhan
 
-                    onCheckedChanged: mm.showOnAthan = checked
+                    onClicked: UiEngine.showOnAdhan = checked
                 }
             }
 
             RowLayout {
-                enabled: engine.ff() === "d"
+                enabled: UiEngine.getFormFactor() === "desktop"
                 visible: enabled
 
                 ColumnLayout {
@@ -254,42 +289,37 @@ Page {
                 }
 
                 Switch {
-                    checked: mainWindow.autoStartUp
+                    checked: CoreEngine.autoStart
 
-                    onCheckedChanged: {
-                        if (mainWindow.autoStartUp === checked)
-                            return;
-                        mainWindow.autoStartUp = checked;
-                        engine.autostart(checked);
-                    }
+                    onClicked: CoreEngine.autoStart = checked
                 }
             }
 
-            RowLayout {
-                enabled: engine.ff() === "d"
-                visible: enabled
+            // RowLayout {
+            //     enabled: UiEngine.getFormFactor() === "desktop"
+            //     visible: enabled
 
-                ColumnLayout {
-                    SettingTitle {
-                        text: qsTr("Check for updates")
-                    }
+            //     ColumnLayout {
+            //         SettingTitle {
+            //             text: qsTr("Check for updates")
+            //         }
 
-                    SettingSubtitle {
-                        text: qsTr("Munadi will check for updates when it first starts.")
-                    }
-                }
+            //         SettingSubtitle {
+            //             text: qsTr("Rukn will check for updates when it first starts.")
+            //         }
+            //     }
 
-                Switch {
-                    checked: mm.checkForUpdates
+            //     Switch {
+            //         checked: UpdateEngine.checkUpdates
 
-                    onCheckedChanged: mm.checkForUpdates = checked
-                }
-            }
+            //         onClicked: UpdateEngine.checkUpdates = checked
+            //     }
+            // }
 
             SettingTitle {
                 font.italic: true
                 horizontalAlignment: Text.AlignHCenter
-                text: qsTr("Athan")
+                text: qsTr("Adhan")
             }
 
             Line {
@@ -301,16 +331,13 @@ Page {
                     RowLayout {
                         SettingTitle {
                             Layout.fillWidth: true
-                            text: qsTr("Mute all Athans")
+                            text: qsTr("Mute all Adhans")
                         }
 
                         Switch {
-                            checked: mm.athanMuted
+                            checked: MultimediaEngine.adhanMuted
 
-                            onCheckedChanged: {
-                                mm.athanMuted = checked;
-                                athan.audioOutput.muted = checked;
-                            }
+                            onClicked: MultimediaEngine.adhanMuted = checked
                         }
                     }
                 }
@@ -358,20 +385,11 @@ Page {
                     id: mathhab
 
                     Layout.fillWidth: true
+                    currentIndex: UiEngine.madhhabDisplayIndex
+                    model: UiEngine.madhhabDisplayNames
+                    textRole: "trText"
 
-                    model: ListModel {
-                        ListElement {
-                            text: qsTr("Majority")
-                        }
-
-                        ListElement {
-                            text: qsTr("Hanafi")
-                        }
-                    }
-
-                    onActivated: {
-                        mm.madhab = currentIndex + 1;
-                    }
+                    onActivated: UiEngine.madhhabDisplayIndex = currentIndex
                 }
 
                 Text {
@@ -383,13 +401,11 @@ Page {
                     id: algo
 
                     Layout.fillWidth: true
-                    model: mm.calcMethod
-                    textRole: 'name'
+                    currentIndex: UiEngine.calcMethodDisplayIndex
+                    model: UiEngine.calcMethodsDisplayNames
+                    textRole: 'trText'
 
-                    onActivated: {
-                        mm.calcMethodIndex = currentIndex;
-                        console.debug('calcIdx: ', mm.calcMethodIndex);
-                    }
+                    onActivated: UiEngine.calcMethodDisplayIndex = currentIndex
                 }
 
                 Text {
@@ -402,13 +418,11 @@ Page {
                         id: calendar
 
                         Layout.fillWidth: true
-                        model: mm.calendarPreference
-                        textRole: 'name'
+                        currentIndex: UiEngine.calendarDisplayIndex
+                        model: UiEngine.calendarDisplayNames
+                        textRole: 'trText'
 
-                        onActivated: {
-                            mm.calendarPreferenceIndex = currentIndex;
-                            console.debug('calPrefIdx: ', mm.calendarPreferenceIndex);
-                        }
+                        onActivated: UiEngine.calendarDisplayIndex = currentIndex
                     }
 
                     Slider {
@@ -419,8 +433,10 @@ Page {
                         snapMode: Slider.SnapAlways
                         stepSize: 1
                         to: 4
+                        value: UiEngine.hijriOffset
+                        wheelEnabled: true
 
-                        onValueChanged: mm.hijriDateOffset = value
+                        onMoved: UiEngine.hijriOffset = value
                     }
 
                     Text {
@@ -436,7 +452,7 @@ Page {
                 SettingTitle {
                     font.italic: true
                     horizontalAlignment: Text.AlignHCenter
-                    text: qsTr("About Munadi")
+                    text: qsTr("About App")
                 }
 
                 Line {
@@ -454,7 +470,7 @@ Page {
                 }
 
                 TextButton {
-                    text: engine.getVersionNo()
+                    text: CoreEngine.getAppVersion()
 
                     onClicked: {
                         whatsNewPopup.text = engine.getWhatsNew();
@@ -469,7 +485,7 @@ Page {
                 }
 
                 TextButton {
-                    property string link: "https://munadi.org"
+                    property string link: "https://lotconn.org"
 
                     text: link
 
@@ -486,7 +502,7 @@ Page {
                 //     font.italic: true
                 // }
                 // TextButton {
-                //     property string link: "https://munadi.org/contact"
+                //     property string link: "https://lotconn.org/contact"
                 //     text: link
                 //     onClicked: Qt.openUrlExternally(link)
                 // }
@@ -498,7 +514,7 @@ Page {
                 }
 
                 TextButton {
-                    property string link: "https://gitlab.com/munadi/munadi/-/work_items"
+                    property string link: "https://gitlab.com/lotconn/rukn/-/work_items"
 
                     Layout.fillWidth: true
                     text: link

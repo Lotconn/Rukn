@@ -32,6 +32,6 @@ Button {
         hoverEnabled: true
 
         onHoveredChanged: textId.font.underline = containsMouse
-        onPressed: mouse.accepted = false
+        onPressed: mouse => mouse.accepted = false
     }
 }

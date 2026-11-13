@@ -3,11 +3,12 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Controls.Material
 
-import "qrc:/qt/qml/Munadi/data/Adhan.js" as Adhan
+import App
 
 ColumnLayout {
     property int defaultAlignment: isWide ? Layout.Left : Layout.Center
     property bool isWide: width > height
+    property real preferredWidth: isWide ? height * theme.uiPortraitRatio : width
 
     LayoutMirroring.childrenInherit: true
     LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft
@@ -19,23 +20,21 @@ ColumnLayout {
         Layout.alignment: parent.defaultAlignment
         Layout.fillHeight: true
         Layout.preferredHeight: 40
-        Layout.preferredWidth: isWide ? parent.height * theme.uiPortraitRatio : parent.width
-        background.opacity: mm.rectangle_opacity
+        Layout.preferredWidth: parent.preferredWidth
+        background.opacity: UiEngine.opacity
     }
 
     Pane {
         id: table
 
-        property int lineHeight: height / 100
-
         Layout.alignment: parent.defaultAlignment
         Layout.bottomMargin: Layout.topMargin
         Layout.fillHeight: true
         Layout.preferredHeight: 400
-        Layout.preferredWidth: isWide ? parent.height * theme.uiPortraitRatio : parent.width
-        Layout.topMargin: 20
-        Material.elevation: mm.pane_elevation
-        background.opacity: mm.rectangle_opacity
+        Layout.preferredWidth: parent.preferredWidth
+        Layout.topMargin: 10 * theme.unit
+        Material.elevation: theme.pane_elevation
+        background.opacity: UiEngine.opacity
 
         ColumnLayout {
             anchors.fill: parent
@@ -43,20 +42,27 @@ ColumnLayout {
             PrayerRow {
                 id: fajr
 
+                Layout.fillHeight: true
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
-                athanTime: mm.fajr
-                prayerId: Adhan.adhan.Prayer.Fajr
+                adhanTime: UiEngine.prayerDisplayTimes.Fajr
+                prayerId: PrayerEngine.Prayer.Fajr
+
+                iconComponent: FajrIcon {}
             }
 
             PrayerRow {
                 id: sunrise
 
+                Layout.fillHeight: true
                 Layout.fillWidth: true
+                Layout.leftMargin: 15 * theme.unit
                 Layout.preferredHeight: 30
-                Layout.topMargin: -20
-                athanTime: mm.srise
-                prayerId: Adhan.adhan.Prayer.Sunrise
+                Layout.rightMargin: Layout.leftMargin
+                Layout.topMargin: -20 * theme.unit
+                adhanTime: UiEngine.prayerDisplayTimes.Sunrise
+                muted: true
+                prayerId: PrayerEngine.Prayer.Sunrise
             }
 
             Line {}
@@ -64,10 +70,13 @@ ColumnLayout {
             PrayerRow {
                 id: duhr
 
+                Layout.fillHeight: true
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
-                athanTime: mm.duhr
-                prayerId: Adhan.adhan.Prayer.Dhuhr
+                adhanTime: UiEngine.prayerDisplayTimes.Dhuhr
+                prayerId: PrayerEngine.Prayer.Dhuhr
+
+                iconComponent: DhuhrIcon {}
             }
 
             Line {}
@@ -75,10 +84,13 @@ ColumnLayout {
             PrayerRow {
                 id: asr
 
+                Layout.fillHeight: true
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
-                athanTime: mm.asr
-                prayerId: Adhan.adhan.Prayer.Asr
+                adhanTime: UiEngine.prayerDisplayTimes.Asr
+                prayerId: PrayerEngine.Prayer.Asr
+
+                iconComponent: AsrIcon {}
             }
 
             Line {}
@@ -86,10 +98,13 @@ ColumnLayout {
             PrayerRow {
                 id: mgrb
 
+                Layout.fillHeight: true
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
-                athanTime: mm.mgrb
-                prayerId: Adhan.adhan.Prayer.Maghrib
+                adhanTime: UiEngine.prayerDisplayTimes.Maghrib
+                prayerId: PrayerEngine.Prayer.Maghrib
+
+                iconComponent: MaghribIcon {}
             }
 
             Line {}
@@ -97,23 +112,57 @@ ColumnLayout {
             PrayerRow {
                 id: isha
 
+                Layout.fillHeight: true
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
-                athanTime: mm.isha
-                prayerId: Adhan.adhan.Prayer.Isha
+                adhanTime: UiEngine.prayerDisplayTimes.Isha
+                prayerId: PrayerEngine.Prayer.Isha
+
+                iconComponent: IshaIcon {}
             }
+
+            PrayerRow {
+                id: midnight
+
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                Layout.leftMargin: 15 * theme.unit
+                Layout.preferredHeight: 30
+                Layout.rightMargin: Layout.leftMargin
+                Layout.topMargin: -20 * theme.unit
+                adhanTime: UiEngine.prayerDisplayTimes.Midnight
+                muted: true
+                prayerId: PrayerEngine.Prayer.Isha + PrayerEngine.Sunnah.Midnight
+            }
+
+            PrayerRow {
+                id: lastThirdNight
+
+                Layout.bottomMargin: -5 * theme.unit
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                Layout.leftMargin: 15 * theme.unit
+                Layout.preferredHeight: 30
+                Layout.rightMargin: Layout.leftMargin
+                Layout.topMargin: -15 * theme.unit
+                adhanTime: UiEngine.prayerDisplayTimes.LastThirdNight
+                muted: true
+                prayerId: PrayerEngine.Prayer.Isha + PrayerEngine.Sunnah.LastThirdNight
+            }
+
+            Line {}
         }
     }
 
     TimeLeftRow {
         id: timeLeft
 
-        Layout.alignment: defaultAlignment
+        Layout.alignment: parent.defaultAlignment
         Layout.fillHeight: true
         Layout.preferredHeight: 40
-        Layout.preferredWidth: isWide ? parent.height * theme.uiPortraitRatio : parent.width
-        background.opacity: mm.rectangle_opacity
-        text: mm.timeLeftStr
-        visible: !mm.locationNotSet
+        Layout.preferredWidth: parent.preferredWidth
+        background.opacity: UiEngine.opacity
+        text: UiEngine.timeLeftDisplay
+        visible: LocationEngine.isLocationSet
     }
 }

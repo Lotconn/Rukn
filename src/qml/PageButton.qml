@@ -11,7 +11,7 @@ Rectangle {
     border.color: main.borderColour
 
     //radius: height / 15
-    color: ma.containsMouse && engine.ff() === "d" ? "lightgrey" : "white"
+    color: ma.containsMouse && UiEngine.getFormFactor() === "desktop" ? "lightgrey" : "white"
 
     Image {
         id: img

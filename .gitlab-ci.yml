@@ -1,11 +1,10 @@
 stages:
-  - build-web-server
   - build
   - release
 
 default:
   image:
-    name: $CI_REGISTRY_IMAGE/static-builder:latest
+    name: $IMAGE_REGISTRY/static-builder:latest
     pull_policy: always
     entrypoint: [""]
 
@@ -14,42 +13,20 @@ workflow:
     - if: $CI_COMMIT_TAG =~ /^\d{2}\.\d{2}(\.\d+)?$/
 
 variables:
-
-build-web-server:
-  tags:
-    - saas-linux-small-amd64
-  stage: build-web-server
-  image: docker:27
-  services:
-    - docker:27-dind
-  interruptible: true
-  variables:
-    BUILDER_CACHE: "$CI_REGISTRY_IMAGE/builder:buildcache"
-    BUILDER_IMAGE: "$CI_REGISTRY_IMAGE/web-server:$CI_COMMIT_TAG-$CI_COMMIT_SHORT_SHA"
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
-    DOCKER_DRIVER: overlay2
-    GIT_DEPTH: 0
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
-    - docker system prune -a
-    - docker buildx prune -a
-  script:
-    - df -h
-    - df -i
-    - env | grep CI_REGISTRY
-    - |
-      docker build \
-        --tag "$BUILDER_IMAGE" \
-        --file pkg/docker/web-server/Dockerfile \
-        pkg/docker/web-server
-    - docker push "$BUILDER_IMAGE"
-    - docker push "$BUILDER_IMAGE" "$CI_REGISTRY_IMAGE/web-server:latest"
+  IMAGE_REGISTRY: ghcr.io/lotconn/rukn
+  APPNAME: Rukn
+  ORGNAME: Lotconn
+  DOMAIN: lotconn.org
+  RDNS: org.lotconn.Rukn
 
 build-static:
   stage: build
   needs: []
   interruptible: true
+  image:
+    name: $IMAGE_REGISTRY/static-builder:latest
+    pull_policy: always
+    entrypoint: [""]
   variables:
     GIT_DEPTH: 1
     GIT_SUBMODULE_STRATEGY: recursive
@@ -63,13 +40,13 @@ build-static:
         exit 1
       fi
   script:
-    - cmake -S . -B build -G"Ninja Multi-Config" -DCMAKE_BUILD_TYPE=Release --fresh
-    - cmake --build build --config Release --parallel
+    - cmake -S . -B build -G"Ninja Multi-Config" --fresh
+    - cmake --build build --parallel --config Release
     - cd pkg/makeself && ./generate_installer
   artifacts:
-    name: "Munadi-${CI_COMMIT_TAG}"
+    name: "$APPNAME-$CI_COMMIT_TAG"
     paths:
-      - pkg/makeself/Munadi-*.run
+      - pkg/makeself/$APPNAME-*.run
     expire_in: 1 year
 
 create-release:
@@ -79,25 +56,25 @@ create-release:
     - build-static
   script:
     - echo "Generating SHA256 checksum for the package..."
-    - sha256sum pkg/makeself/Munadi-$CI_COMMIT_TAG.run > pkg/makeself/Munadi-$CI_COMMIT_TAG.run.sha256
+    - sha256sum pkg/makeself/$APPNAME-$CI_COMMIT_TAG.run > pkg/makeself/$APPNAME-$CI_COMMIT_TAG.run.sha256
     - |
       {
         echo "See [CHANGELOG]($CI_PROJECT_URL/-/blob/$CI_COMMIT_TAG/CHANGELOG.md) for what's new."
         echo ""
         echo "### Checksum"
         echo "\`\`\`"
-        cat pkg/makeself/Munadi-$CI_COMMIT_TAG.run.sha256
+        cat pkg/makeself/$APPNAME-$CI_COMMIT_TAG.run.sha256
         echo "\`\`\`"
       } > release-description.md
   release:
     tag_name: $CI_COMMIT_TAG
-    name: "Munadi $CI_COMMIT_TAG"
+    name: "$APPNAME $CI_COMMIT_TAG"
     description: release-description.md
     assets:
       links:
-        - name: "Munadi-$CI_COMMIT_TAG.run"
-          url: "$CI_PROJECT_URL/-/jobs/artifacts/$CI_COMMIT_TAG/raw/pkg/makeself/Munadi-$CI_COMMIT_TAG.run?job=build-static"
+        - name: "$APPNAME-$CI_COMMIT_TAG.run"
+          url: "$CI_PROJECT_URL/-/jobs/artifacts/$CI_COMMIT_TAG/raw/pkg/makeself/$APPNAME-$CI_COMMIT_TAG.run?job=build-static"
           link_type: package
-        - name: "Munadi-$CI_COMMIT_TAG.run.sha256"
-          url: "$CI_PROJECT_URL/-/jobs/artifacts/$CI_COMMIT_TAG/raw/pkg/makeself/Munadi-$CI_COMMIT_TAG.run.sha256?job=create-release"
+        - name: "$APPNAME-$CI_COMMIT_TAG.run.sha256"
+          url: "$CI_PROJECT_URL/-/jobs/artifacts/$CI_COMMIT_TAG/raw/pkg/makeself/$APPNAME-$CI_COMMIT_TAG.run.sha256?job=create-release"
           link_type: other

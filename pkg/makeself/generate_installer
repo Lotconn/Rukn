@@ -17,6 +17,7 @@ function fixMtime() {
 function addGitFiles() {
 	declare -n in_files=$1
 	declare -n out_files=$2
+
 	for file in "${in_files[@]}"; do
 		while read -r gitFilePath; do
 			if [[ -n "$gitFilePath" ]]; then
@@ -32,6 +33,7 @@ function addGitFiles() {
 function getParentDirs() {
 	declare -n in_folders=$1
 	declare -n p_dir=$2
+
 	for folder in "${in_folders[@]}"; do
 		p_dir+=("${folder%%/*}")
 	done
@@ -40,10 +42,12 @@ function getParentDirs() {
 # makeself.sh /home/joe/mysoft mysoft.sh "Joe's Nice Software Package" ./setup
 # e.g. makeself.sh [args] archive_dir file_name label startup_script [script_args]
 
-VER=26.08
+VER=26.11
+APP=Rukn
+PROG=rukn
+RDNS="org.lotconn.Rukn"
 REPO_FILES=('LICENSE' 'pkg/makeself/install'
-	'pkg/makeself/uninstall' 'xdg/applications/org.munadi.Munadi.desktop'
-	'xdg/metainfo/org.munadi.Munadi.metainfo.xml')
+	'pkg/makeself/uninstall' "xdg/applications/$RDNS.desktop" "xdg/metainfo/$RDNS.metainfo.xml")
 REPO_FOLDERS=('xdg/icons/')
 
 cd ../../
@@ -59,16 +63,18 @@ mkdir -m 0755 /tmp/files/
 
 cp --parents -prt /tmp/files/ "${FOLDERS[@]}"
 
+shopt -s nullglob
 for p in "${PARENTS[@]}"; do
 	mv /tmp/files/$p/{.,}* /tmp/files/ || :
 	rmdir /tmp/files/$p
 done
+shopt -u nullglob
 
-cp -prt /tmp/files/ "${FILES[@]}" build/Release/munadi
+cp -prt /tmp/files/ "${FILES[@]}" build/Release/$PROG
 
 find /tmp/files/ -depth -type d -exec sh -c 'touch -r "$0/$(ls -At "$0" | head -n1)" "$0"' {} \;
 
-strip /tmp/files/munadi
+strip /tmp/files/$PROG
 
 cd - >/dev/null
 makeself/makeself.sh \
@@ -77,6 +83,6 @@ makeself/makeself.sh \
 	--tar-format posix --tar-extra "
     --numeric-owner --owner 0 --group 0 --mode=go+u,go-w --posix 
 		--pax-option=exthdr.name=%d/PaxHeaders/%f --pax-option=delete=atime,delete=ctime" \
-	/tmp/files Munadi-${VER}.run "Munadi $VER Installer" ./install
+	/tmp/files ${APP}-${VER}.run "$APP $VER Installer" ./install
 
 exit 0

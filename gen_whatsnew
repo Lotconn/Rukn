@@ -2,11 +2,11 @@
 
 import xml.etree.ElementTree as ET
 
-root = ET.parse("xdg/metainfo/org.munadi.Munadi.metainfo.xml").getroot()
+root = ET.parse("xdg/metainfo/org.lotconn.Rukn.metainfo.xml").getroot()
 output = ""
 
 for r in root.findall(".releases/release"):
-    output += f"<h1>Munadi {r.attrib['version']}</h1>\n"
+    output += f"<h1>Rukn {r.attrib['version']}</h1>\n"
     output += "".join([ET.tostring(e, method="html", encoding="unicode") for e in r[1]])
     output += "\n"
 
