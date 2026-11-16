@@ -5,13 +5,11 @@ sdk: org.kde.Sdk
 command: rukn
 finish-args:
   - --device=dri
-  - --filesystem=xdg-run/pipewire-0
   - --share=ipc
   - --share=network
   - --socket=pulseaudio
   - --socket=wayland
   - --socket=fallback-x11
-  - --talk-name=org.freedesktop.Notifications
   - --talk-name=org.kde.StatusNotifierWatcher
 cleanup:
   - /include

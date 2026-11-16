@@ -50,27 +50,23 @@ This app continues the open-source effort of now-closed-source [Munadi](https://
 
 ## Status
 
-| Packaging | Platform                      |                                                                                      Status                                                                                       |
-| --------- | ----------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| Makeself  | linux/x86_64                  |                         [![pipeline status](https://gitlab.com/lotconn/rukn/badges/26.11/pipeline.svg)](https://gitlab.com/lotconn/rukn/-/commits/26.11)                          |
-| Flatpak   | linux/x86_64<br>linux/aarch64 | [![Build pipeline](https://github.com/flathub-infra/vorarbeiter/actions/workflows/build.yml/badge.svg)](https://github.com/flathub-infra/vorarbeiter/actions/workflows/build.yml) |
-| APK       | android/arm64-v8a             |                                                                                       Alpha                                                                                       |
-
-> [!Note]
->
-> The self-extracting makeself installer is the preferred method.
+| Packaging | Platform          |                                                              Status                                                              |
+| --------- | ----------------- | :------------------------------------------------------------------------------------------------------------------------------: |
+| Makeself  | linux/x86_64      | [![pipeline status](https://gitlab.com/lotconn/rukn/badges/26.11/pipeline.svg)](https://gitlab.com/lotconn/rukn/-/commits/26.11) |
+| APK       | android/arm64-v8a |                                                              Alpha                                                               |
 
 ## Installing
 
+<!--
 <div align="center">
   <a href='https://flathub.org/apps/details/org.lotconn.Rukn'>
     <img height='96' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/>
   </a>
 </div>
 
-### Other Sources
+### Other Sources -->
 
-#### Rukn Self-Extracting Installer
+### Rukn Self-Extracting Installer
 
 [![Latest Release](https://gitlab.com/lotconn/rukn/-/badges/release.svg)](https://gitlab.com/lotconn/rukn/-/releases)
 
@@ -123,6 +119,7 @@ QT_LOGGING_RULES='*.debug=true;qt.*.debug=false;qt.qml.import=true' rukn > rukn.
 
 and try reproducing the issues
 
+<!--
 **_If using flatpak version_**
 
 1. Run `flatpak update --appstream` and `flatpak update -y`
@@ -141,7 +138,7 @@ flatpak run \
   org.lotconn.Rukn > rukn-log.txt 2>&1
 ```
 
-and try reproducing the issues.
+and try reproducing the issues. -->
 
 If issues persist, [open an issue](https://gitlab.com/lotconn/rukn/-/work_items) with `rukn.log`,
 the install logs you retained earlier and the one in the CWD when installing. Explain as detail as
@@ -154,10 +151,10 @@ Licenses apply to individual tools used in this project. See the [LICENSE](LICEN
 details, and [Acknowledgements](#acknowledgements) for licenses for used libraries.
 
 - **Homepage**: [lotconn.org](https://lotconn.org)
-- **Bug Tracker**: [Issues](https://gitlab.com/lotconn/rukn/-/issues) |
-  [Flathub Issues](https://github.com/flathub/org.lotconn.Rukn/issues)
-- **Source Code**: [Source](https://gitlab.com/lotconn/rukn) |
-  [Flathub](https://github.com/flathub/org.lotconn.Rukn)
+- **Bug Tracker**: [Issues](https://gitlab.com/lotconn/rukn/-/issues)
+  <!-- [Flathub Issues](https://github.com/flathub/org.lotconn.Rukn/issues) -->
+- **Source Code**: [Source](https://gitlab.com/lotconn/rukn)
+  <!-- [Flathub](https://github.com/flathub/org.lotconn.Rukn) -->
 
 ## Acknowledgements
 

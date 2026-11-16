@@ -192,20 +192,15 @@ flatpak install -y flathub org.flatpak.Builder
 
 # Add the flathub repo user-wide
 flatpak remote-add --if-not-exists --user flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-
-# Then build the manifest
-flatpak run --command=flathub-build org.flatpak.Builder --install org.lotconn.Rukn.yml
-
-# Run the app (provided no previous installation of flatpak Rukn is present)
-flatpak run org.lotconn.Rukn
 ```
 
-<details><summary>Further Developer Notes (Click to expand)</summary>
+<!--
+<details><summary>Further Developer Notes (Click to expand)</summary> -->
 
 There are two manifests already present under `pkg/flatpak`:
 
-- **`org.lotconn.Rukn.yml`** — Regular build using platform runtimes, closely resembling actual
-  flathub manifest
+- **`org.lotconn.Rukn.yml`** — Regular build using platform runtimes,
+<!-- closely resembling actual flathub manifest -->
 - **`org.lotconn.Rukn-sfx.yml`** - Using latest pre-built
   [SFX archive](#3-static-build-via-builder-image)
 
@@ -247,10 +242,10 @@ flatpak-builder --run \
 #### Known Issues
 
 - Few core & UI features like adding custom adhan doesn't work as expected due to flatpak sandboxing
-  when using `flatpak-builder`. Alternative is to install and run the app from the functional
-  sandbox but introduces more clutter.
-
-</details>
+when using `flatpak-builder`. Alternative is to install and run the app from the functional sandbox
+but introduces more clutter.
+<!--
+</details> -->
 
 ### 3. Static Build via Builder Image
 
@@ -495,5 +490,6 @@ After passing all validations and ensuring code-base follows guidelines,
 [submit a merge request](https://gitlab.com/lotconn/rukn/-/merge_requests/new) to master branch with
 a brief summary of the MR. Only include necessary points that make the MR noteworthy.
 
+<!--
 Contributions are also warmly accepted on the
-[flathub repository](https://github.com/flathub/org.lotconn.Rukn).
+[flathub repository](https://github.com/flathub/org.lotconn.Rukn). -->

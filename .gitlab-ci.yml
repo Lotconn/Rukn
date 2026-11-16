@@ -23,10 +23,6 @@ build-static:
   stage: build
   needs: []
   interruptible: true
-  image:
-    name: $IMAGE_REGISTRY/static-builder:latest
-    pull_policy: always
-    entrypoint: [""]
   variables:
     GIT_DEPTH: 1
     GIT_SUBMODULE_STRATEGY: recursive
